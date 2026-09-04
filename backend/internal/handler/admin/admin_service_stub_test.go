@@ -79,6 +79,13 @@ type stubAdminService struct {
 		sortOrder string
 		calls     int
 	}
+	lastBalanceUpdate struct {
+		userID    int64
+		balance   float64
+		operation string
+		notes     string
+		calls     int
+	}
 	mu sync.Mutex
 }
 
@@ -189,6 +196,11 @@ func (s *stubAdminService) DeleteUser(ctx context.Context, id int64) error {
 }
 
 func (s *stubAdminService) UpdateUserBalance(ctx context.Context, userID int64, balance float64, operation string, notes string) (*service.User, error) {
+	s.lastBalanceUpdate.userID = userID
+	s.lastBalanceUpdate.balance = balance
+	s.lastBalanceUpdate.operation = operation
+	s.lastBalanceUpdate.notes = notes
+	s.lastBalanceUpdate.calls++
 	user := service.User{ID: userID, Balance: balance, Status: service.StatusActive}
 	return &user, nil
 }

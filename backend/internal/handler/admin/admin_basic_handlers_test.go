@@ -138,6 +138,41 @@ func TestUserHandlerEndpoints(t *testing.T) {
 	require.Equal(t, http.StatusOK, rec.Code)
 }
 
+func TestUserHandlerUpdateBalanceValidation(t *testing.T) {
+	tests := []struct {
+		name       string
+		body       string
+		wantStatus int
+		wantCalls  int
+	}{
+		{name: "set accepts zero", body: `{"balance":0,"operation":"set","notes":"withdraw all"}`, wantStatus: http.StatusOK, wantCalls: 1},
+		{name: "add rejects zero", body: `{"balance":0,"operation":"add"}`, wantStatus: http.StatusBadRequest},
+		{name: "subtract rejects zero", body: `{"balance":0,"operation":"subtract"}`, wantStatus: http.StatusBadRequest},
+		{name: "set rejects negative", body: `{"balance":-1,"operation":"set"}`, wantStatus: http.StatusBadRequest},
+		{name: "balance is required", body: `{"operation":"set"}`, wantStatus: http.StatusBadRequest},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			router, adminSvc := setupAdminRouter()
+			rec := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPost, "/api/v1/admin/users/7/balance", bytes.NewBufferString(tt.body))
+			req.Header.Set("Content-Type", "application/json")
+
+			router.ServeHTTP(rec, req)
+
+			require.Equal(t, tt.wantStatus, rec.Code)
+			require.Equal(t, tt.wantCalls, adminSvc.lastBalanceUpdate.calls)
+			if tt.wantCalls == 1 {
+				require.Equal(t, int64(7), adminSvc.lastBalanceUpdate.userID)
+				require.Zero(t, adminSvc.lastBalanceUpdate.balance)
+				require.Equal(t, "set", adminSvc.lastBalanceUpdate.operation)
+				require.Equal(t, "withdraw all", adminSvc.lastBalanceUpdate.notes)
+			}
+		})
+	}
+}
+
 func TestUserHandlerBindAuthIdentityMapsRequest(t *testing.T) {
 	router, adminSvc := setupAdminRouter()
 

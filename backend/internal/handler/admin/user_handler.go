@@ -92,9 +92,9 @@ type UpdateUserRequest struct {
 
 // UpdateBalanceRequest represents balance update request
 type UpdateBalanceRequest struct {
-	Balance   float64 `json:"balance" binding:"required,gt=0"`
-	Operation string  `json:"operation" binding:"required,oneof=set add subtract"`
-	Notes     string  `json:"notes"`
+	Balance   *float64 `json:"balance" binding:"required"`
+	Operation string   `json:"operation" binding:"required,oneof=set add subtract"`
+	Notes     string   `json:"notes"`
 }
 
 type BindUserAuthIdentityRequest struct {
@@ -399,6 +399,10 @@ func (h *UserHandler) UpdateBalance(c *gin.Context) {
 		response.BadRequest(c, "Invalid request: "+err.Error())
 		return
 	}
+	if *req.Balance < 0 || (req.Operation != "set" && *req.Balance == 0) {
+		response.BadRequest(c, "Invalid request: balance must be non-negative for set and positive for add or subtract")
+		return
+	}
 
 	idempotencyPayload := struct {
 		UserID int64                `json:"user_id"`
@@ -408,7 +412,7 @@ func (h *UserHandler) UpdateBalance(c *gin.Context) {
 		Body:   req,
 	}
 	executeAdminIdempotentJSON(c, "admin.users.balance.update", idempotencyPayload, service.DefaultWriteIdempotencyTTL(), func(ctx context.Context) (any, error) {
-		user, execErr := h.adminService.UpdateUserBalance(ctx, userID, req.Balance, req.Operation, req.Notes)
+		user, execErr := h.adminService.UpdateUserBalance(ctx, userID, *req.Balance, req.Operation, req.Notes)
 		if execErr != nil {
 			return nil, execErr
 		}

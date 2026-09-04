@@ -111,6 +111,7 @@ func TestAdminService_UpdateUserBalance_UsesAtomicPrimitives(t *testing.T) {
 		{name: "add", operation: "add", amount: 5, want: BalanceChange{Old: 10, New: 15}},
 		{name: "subtract", operation: "subtract", amount: 4, want: BalanceChange{Old: 10, New: 6}},
 		{name: "set", operation: "set", amount: 2, want: BalanceChange{Old: 10, New: 2}},
+		{name: "set zero", operation: "set", amount: 0, want: BalanceChange{Old: 10, New: 0}},
 	}
 
 	for _, tt := range tests {

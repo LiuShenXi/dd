@@ -8,7 +8,7 @@
       <div>
         <label class="input-label">{{ operation === 'add' ? t('admin.users.depositAmount') : t('admin.users.withdrawAmount') }}</label>
         <div class="relative flex gap-2">
-          <div class="relative flex-1"><div class="absolute left-3 top-1/2 -translate-y-1/2 font-medium text-gray-500">$</div><input v-model.number="form.amount" type="number" step="any" min="0" required class="input pl-8" /></div>
+          <div class="relative flex-1"><div class="absolute left-3 top-1/2 -translate-y-1/2 font-medium text-gray-500">$</div><input v-model.number="form.amount" type="number" step="any" min="0" required class="input pl-8" @input="withdrawAll = false" /></div>
           <button v-if="operation === 'subtract'" type="button" @click="fillAllBalance" class="btn btn-secondary whitespace-nowrap">{{ t('admin.users.withdrawAll') }}</button>
         </div>
       </div>
@@ -35,8 +35,8 @@ import BaseDialog from '@/components/common/BaseDialog.vue'
 const props = defineProps<{ show: boolean, user: AdminUser | null, operation: 'add' | 'subtract' }>()
 const emit = defineEmits(['close', 'success']); const { t } = useI18n(); const appStore = useAppStore()
 
-const submitting = ref(false); const form = reactive({ amount: 0, notes: '' })
-watch(() => props.show, (v) => { if(v) { form.amount = 0; form.notes = '' } })
+const submitting = ref(false); const withdrawAll = ref(false); const form = reactive({ amount: 0, notes: '' })
+watch(() => props.show, (v) => { if(v) { form.amount = 0; form.notes = ''; withdrawAll.value = false } })
 
 // 格式化余额：显示完整精度，去除尾部多余的0
 const formatBalance = (value: number) => {
@@ -54,6 +54,7 @@ const formatBalance = (value: number) => {
 const fillAllBalance = () => {
   if (props.user) {
     form.amount = props.user.balance
+    withdrawAll.value = true
   }
 }
 
@@ -70,13 +71,15 @@ const handleBalanceSubmit = async () => {
     return
   }
   // 退款时验证金额不超过实际余额
-  if (props.operation === 'subtract' && form.amount > props.user.balance) {
+  if (props.operation === 'subtract' && !withdrawAll.value && form.amount > props.user.balance) {
     appStore.showError(t('admin.users.insufficientBalance'))
     return
   }
   submitting.value = true
   try {
-    await adminAPI.users.updateBalance(props.user.id, form.amount, props.operation, form.notes)
+    const operation = props.operation === 'subtract' && withdrawAll.value ? 'set' : props.operation
+    const amount = operation === 'set' ? 0 : form.amount
+    await adminAPI.users.updateBalance(props.user.id, amount, operation, form.notes)
     appStore.showSuccess(t('common.success')); emit('success'); emit('close')
   } catch (e: any) {
     console.error('Failed to update balance:', e)
