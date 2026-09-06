@@ -136,6 +136,7 @@
           <template #cell-group="{ row }">
             <div class="group/dropdown relative">
               <button
+                v-if="row.group?.subscription_type !== 'carpool'"
                 :ref="(el) => setGroupButtonRef(row.id, el)"
                 @click="openGroupSelector(row)"
                 class="-mx-2 -my-1 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-dark-700"
@@ -171,6 +172,19 @@
                   />
                 </svg>
               </button>
+              <div v-else class="-mx-2 -my-1 flex items-center gap-2 px-2 py-1">
+                <GroupBadge
+                  :name="row.group.name"
+                  :platform="row.group.platform"
+                  :subscription-type="row.group.subscription_type"
+                  :rate-multiplier="row.group.rate_multiplier"
+                  :user-rate-multiplier="userGroupRates[row.group.id]"
+                  :peak-rate-enabled="row.group.peak_rate_enabled"
+                  :peak-start="row.group.peak_start"
+                  :peak-end="row.group.peak_end"
+                  :peak-rate-multiplier="row.group.peak_rate_multiplier"
+                />
+              </div>
             </div>
           </template>
 
@@ -466,7 +480,21 @@
 
         <div>
           <label class="input-label">{{ t('keys.groupLabel') }}</label>
+          <div v-if="isEditingCarpoolKey && selectedKey?.group" class="flex min-h-10 items-center rounded-lg border border-gray-200 bg-gray-50 px-3 dark:border-dark-700 dark:bg-dark-800">
+            <GroupBadge
+              :name="selectedKey.group.name"
+              :platform="selectedKey.group.platform"
+              :subscription-type="selectedKey.group.subscription_type"
+              :rate-multiplier="selectedKey.group.rate_multiplier"
+              :user-rate-multiplier="userGroupRates[selectedKey.group.id]"
+              :peak-rate-enabled="selectedKey.group.peak_rate_enabled"
+              :peak-start="selectedKey.group.peak_start"
+              :peak-end="selectedKey.group.peak_end"
+              :peak-rate-multiplier="selectedKey.group.peak_rate_multiplier"
+            />
+          </div>
           <Select
+            v-else
             v-model="formData.group_id"
             :options="groupOptions"
             :placeholder="t('keys.selectGroup')"
@@ -1409,7 +1437,7 @@ const onStatusFilterChange = (value: string | number | boolean | null) => {
 
 // Convert groups to Select options format with rate multiplier and subscription type
 const groupOptions = computed(() =>
-  groups.value.map((group) => ({
+  groups.value.filter((group) => group.subscription_type !== 'carpool').map((group) => ({
     value: group.id,
     label: group.name,
     description: group.description,
@@ -1423,6 +1451,8 @@ const groupOptions = computed(() =>
     platform: group.platform
   }))
 )
+
+const isEditingCarpoolKey = computed(() => showEditModal.value && selectedKey.value?.group?.subscription_type === 'carpool')
 
 // Group dropdown search
 const groupSearchQuery = ref('')

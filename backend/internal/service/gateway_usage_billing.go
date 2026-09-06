@@ -10,6 +10,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/pkg/ctxkey"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/timezone"
+	"github.com/shopspring/decimal"
 )
 
 func (s *GatewayService) getUserGroupRateMultiplier(ctx context.Context, userID, groupID int64, groupDefaultMultiplier float64) float64 {
@@ -72,6 +73,7 @@ type usageLogBestEffortWriter interface {
 
 // postUsageBillingParams 统一扣费所需的参数
 type postUsageBillingParams struct {
+	Context               context.Context
 	Cost                  *CostBreakdown
 	User                  *User
 	APIKey                *APIKey
@@ -79,6 +81,7 @@ type postUsageBillingParams struct {
 	Subscription          *UserSubscription
 	RequestPayloadHash    string
 	IsSubscriptionBill    bool
+	IsCarpoolBill         bool
 	AccountRateMultiplier float64
 	APIKeyService         APIKeyQuotaUpdater
 	Platform              string // 来自 APIKey 关联 Group 的平台标识
@@ -138,7 +141,11 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 
 	cost := p.Cost
 
-	if p.IsSubscriptionBill {
+	if p.IsCarpoolBill {
+		// Carpool cannot use the legacy multi-write fallback. The caller keeps
+		// the durable receipt pending for repository recovery.
+		return
+	} else if p.IsSubscriptionBill {
 		// Subscription usage tracked by ActualCost so group rate multiplier
 		// consumes the quota at the expected speed.
 		if cost.ActualCost > 0 {
@@ -274,6 +281,16 @@ func resolveUsageBillingPayloadFingerprint(ctx context.Context, requestPayloadHa
 	return ""
 }
 
+func requireCarpoolBillingSnapshot(ctx context.Context, apiKey *APIKey) error {
+	if apiKey == nil || apiKey.Group == nil || !apiKey.Group.IsCarpoolType() {
+		return nil
+	}
+	if _, ok := CarpoolBillingSnapshotFromContext(ctx); !ok {
+		return ErrCarpoolAdmissionRequired
+	}
+	return nil
+}
+
 func buildUsageBillingCommand(requestID string, usageLog *UsageLog, p *postUsageBillingParams) *UsageBillingCommand {
 	if p == nil || p.Cost == nil || p.APIKey == nil || p.User == nil || p.Account == nil {
 		return nil
@@ -286,6 +303,11 @@ func buildUsageBillingCommand(requestID string, usageLog *UsageLog, p *postUsage
 		AccountID:          p.Account.ID,
 		AccountType:        p.Account.Type,
 		RequestPayloadHash: strings.TrimSpace(p.RequestPayloadHash),
+	}
+	if snapshot, ok := CarpoolBillingSnapshotFromContext(p.Context); ok {
+		cmd.RequestID = snapshot.RequestID
+		cmd.CarpoolSnapshot = snapshot
+		cmd.CarpoolCost = decimal.NewFromFloat(p.Cost.ActualCost).Round(UsageBillingMonetaryScale)
 	}
 	if usageLog != nil {
 		cmd.Model = usageLog.Model
@@ -310,7 +332,9 @@ func buildUsageBillingCommand(requestID string, usageLog *UsageLog, p *postUsage
 	// user-specific) rate multiplier consumes subscription quota at the expected
 	// speed. TotalCost remains the raw (pre-multiplier) value; downstream guards
 	// on "> 0" still correctly skip free subscriptions (RateMultiplier == 0).
-	if p.IsSubscriptionBill && p.Subscription != nil && p.Cost.TotalCost > 0 {
+	if cmd.CarpoolSnapshot != nil {
+		// Carpool is an independent source even for a known zero-cost receipt.
+	} else if p.IsSubscriptionBill && p.Subscription != nil && p.Cost.TotalCost > 0 {
 		cmd.SubscriptionID = &p.Subscription.ID
 		cmd.SubscriptionCost = p.Cost.ActualCost
 	} else if p.Cost.ActualCost > 0 {
@@ -336,8 +360,30 @@ func applyUsageBilling(ctx context.Context, requestID string, usageLog *UsageLog
 		return false, nil
 	}
 
+	p.Context = ctx
+	_, p.IsCarpoolBill = CarpoolBillingSnapshotFromContext(ctx)
+	if err := requireCarpoolBillingSnapshot(ctx, p.APIKey); err != nil {
+		return false, err
+	}
 	cmd := buildUsageBillingCommand(requestID, usageLog, p)
+	if cmd != nil && cmd.CarpoolSnapshot != nil {
+		if repo == nil || deps.billingCacheService == nil || deps.billingCacheService.CarpoolGatewayBilling() == nil {
+			return false, ErrCarpoolBillingUnavailable
+		}
+		payload, marshalErr := MarshalCarpoolUsageBillingReceipt(cmd)
+		if marshalErr != nil {
+			return false, marshalErr
+		}
+		billingCtx, cancel := detachedBillingContext(ctx)
+		defer cancel()
+		if err := deps.billingCacheService.CarpoolGatewayBilling().PersistKnownUsage(billingCtx, cmd.CarpoolSnapshot, cmd.CarpoolCost, payload); err != nil {
+			return false, err
+		}
+	}
 	if cmd == nil || cmd.RequestID == "" || repo == nil {
+		if p.IsCarpoolBill {
+			return false, ErrCarpoolBillingUnavailable
+		}
 		postUsageBilling(ctx, p, deps)
 		return true, nil
 	}
@@ -370,7 +416,9 @@ func finalizePostUsageBilling(ctx context.Context, p *postUsageBillingParams, de
 		return
 	}
 
-	if p.IsSubscriptionBill {
+	if p.IsCarpoolBill {
+		// Ledger balances are authoritative; there is no ordinary balance cache.
+	} else if p.IsSubscriptionBill {
 		if p.Cost.ActualCost > 0 && p.User != nil && p.APIKey != nil && p.APIKey.GroupID != nil {
 			deps.billingCacheService.QueueUpdateSubscriptionUsage(p.User.ID, *p.APIKey.GroupID, p.Cost.ActualCost)
 		}
@@ -391,7 +439,7 @@ func finalizePostUsageBilling(ctx context.Context, p *postUsageBillingParams, de
 	//     限制在并发 in-flight 请求数量内（旧实现的异步入队会让超支无限累积直到 worker 处理）
 	//   - DB 异步(flusher_enabled=false):在独立 goroutine 中走 detached context,失败用 ALERT log 触发 oncall 对账
 	//   - flusher_enabled=true:不直写 DB,由 flusher 异步批量刷（markDirty 已在 IncrementUserPlatformQuotaUsage 内部完成）
-	if !p.IsSubscriptionBill && p.Platform != "" && p.Cost.ActualCost > 0 && p.User != nil && deps.userPlatformQuotaRepo != nil {
+	if isOrdinaryBalanceBilling(p) && p.Platform != "" && p.Cost.ActualCost > 0 && p.User != nil && deps.userPlatformQuotaRepo != nil {
 		if deps.billingCacheService.HasUserPlatformQuotaLimit(ctx, p.User.ID, p.Platform) {
 			deps.billingCacheService.IncrementUserPlatformQuotaUsage(p.User.ID, p.Platform, p.Cost.ActualCost)
 			if deps.cfg == nil || !deps.cfg.Database.UserPlatformQuotaFlusherEnabled {
@@ -451,7 +499,7 @@ func notifyBalanceLow(p *postUsageBillingParams, deps *billingDeps, result *Usag
 			slog.Error("panic in notifyBalanceLow", "recover", r)
 		}
 	}()
-	if p.IsSubscriptionBill || p.Cost.ActualCost <= 0 || p.User == nil || deps.balanceNotifyService == nil {
+	if !isOrdinaryBalanceBilling(p) || p.Cost.ActualCost <= 0 || p.User == nil || deps.balanceNotifyService == nil {
 		slog.Debug("notifyBalanceLow: skipped",
 			"is_subscription", p.IsSubscriptionBill,
 			"actual_cost", p.Cost.ActualCost,
@@ -471,6 +519,10 @@ func notifyBalanceLow(p *postUsageBillingParams, deps *billingDeps, result *Usag
 		"result_has_new_balance", result != nil && result.NewBalance != nil,
 	)
 	deps.balanceNotifyService.CheckBalanceAfterDeduction(context.Background(), p.User, oldBalance, p.Cost.ActualCost)
+}
+
+func isOrdinaryBalanceBilling(p *postUsageBillingParams) bool {
+	return p != nil && !p.IsSubscriptionBill && !p.IsCarpoolBill
 }
 
 // resolveOldBalance returns the pre-deduction balance.
@@ -719,6 +771,9 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 	user := input.User
 	account := input.Account
 	subscription := input.Subscription
+	if err := requireCarpoolBillingSnapshot(ctx, apiKey); err != nil {
+		return err
+	}
 	ApplyForwardImageBillingResolution(result)
 	logServiceTierBillingDowngrade("service.gateway", account, result.RequestID, ApplyForwardServiceTierBillingResolution(result))
 
@@ -817,6 +872,12 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 	accountRateMultiplier := account.BillingRateMultiplier()
 	usageLog := s.buildRecordUsageLog(ctx, input, result, apiKey, user, account, subscription,
 		requestedModel, multiplier, imageMultiplier, accountRateMultiplier, billingType, cacheTTLOverridden, cost)
+	if snapshot, ok := CarpoolBillingSnapshotFromContext(ctx); ok {
+		usageLog.CarpoolTermID = &snapshot.TermID
+		usageLog.CarpoolCycleID = &snapshot.CycleID
+		admittedAt := snapshot.AdmittedAt
+		usageLog.CarpoolAdmittedAt = &admittedAt
+	}
 
 	// 计算账号统计定价费用（使用最终上游模型匹配自定义规则）
 	if apiKey.GroupID != nil {

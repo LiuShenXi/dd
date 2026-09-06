@@ -1,0 +1,42 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "task_directory": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3",
+  "git_head": "36266f512776d78d4f1645a75ae0e84816f8a0a7",
+  "backend_build": "passed",
+  "frontend_build": "passed",
+  "frontend_typecheck": "passed",
+  "frontend_lint": "passed",
+  "frontend_tests": { "files_passed": 265, "tests_passed": 1901, "exit_code": 0 },
+  "backend_focused_tests": { "repetitions": 3, "packages_passed": 7, "exit_code": 0 },
+  "approved_for_local_start": true,
+  "local_start_only": true,
+  "final_acceptance": false,
+  "source_sha256": "53EAFD417B380B9AB39DFD220E7C28E31FA7DA9267094E153F4EEEB64B2A2421",
+  "embedded_frontend_sha256": "8098E251957CF7D87285196DE2E3570FF09EEC0A90A5A092CB05DDD500EFCF2F",
+  "source_unchanged_during_post_fix_build_and_tests": true,
+  "all_implementation_owners_frozen": true,
+  "evidence": {
+    "backend_build": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-backend-post-ws-build.log",
+    "backend_focused_tests": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-backend-focused-three.log",
+    "frontend_typecheck": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-frontend-typecheck.log",
+    "frontend_lint": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-frontend-lint.log",
+    "frontend_tests": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-frontend-full-tests.log",
+    "frontend_build": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-frontend-build.log",
+    "postgres_intermediate": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-pg18-intermediate.md",
+    "existing_service_baseline": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-baseline-service-review.md"
+  },
+  "included_fixes": [
+    "Unknown WS usage retains zero debit/manual reconciliation and usage_receipt_missing category; actual persistence failures retain their distinct category",
+    "Independent bounded receipt recovery, SKIP LOCKED stale selection and durable known-cost promotion",
+    "Empty admin list arrays, nullable frontend normalization and async modal identity guards",
+    "Same-tier latest-enabled renewal selection and bounded reset scan cancellation"
+  ],
+  "remaining_acceptance": [
+    "Immutable rebuilt image capture and source-owned HTTP/WS reruns with strict assertions",
+    "Synthetic admin reset HTTP and announcement audience/version/list/read/mark-read workflows",
+    "Desktop and narrow-screen real UI interactions and screenshots on rebuilt image",
+    "Independent final evidence review and completed acceptance/task records"
+  ],
+  "known_baseline_limit": "Full service suite is not green: four Windows plugin installer failures and intermittent moderation timeout independently reproduced at baseline HEAD. Focused task regressions pass.",
+  "safety_scope": "Only source coordinator may rebuild/start the sealed local runtime on 127.0.0.1:38088, retaining copied DB/Redis/app volumes and loopback-only/no-egress isolation. No production, provider/card use, external notifications, push or deployment. Unmapped copied users receive no carpool terms."
+}

@@ -2,13 +2,41 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"sync/atomic"
 	"testing"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/service"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/require"
 )
+
+type usageTaskPanicCarpoolBillingStub struct {
+	marked         int
+	markedReason   string
+	markedSnapshot *domain.CarpoolBillingSnapshot
+}
+
+func (*usageTaskPanicCarpoolBillingStub) Admit(context.Context, int64, int64, int64, string, time.Time) (*domain.CarpoolBillingSnapshot, error) {
+	return nil, nil
+}
+
+func (*usageTaskPanicCarpoolBillingStub) PersistKnownUsage(context.Context, *domain.CarpoolBillingSnapshot, decimal.Decimal, json.RawMessage) error {
+	return nil
+}
+
+func (*usageTaskPanicCarpoolBillingStub) RecoverPendingReceipts(context.Context, int) ([]domain.CarpoolKnownUsage, error) {
+	return nil, nil
+}
+
+func (s *usageTaskPanicCarpoolBillingStub) MarkReconcileRequired(_ context.Context, snapshot *domain.CarpoolBillingSnapshot, reason string) error {
+	s.marked++
+	s.markedReason = reason
+	s.markedSnapshot = snapshot
+	return nil
+}
 
 func newUsageRecordTestPool(t *testing.T) *service.UsageRecordWorkerPool {
 	t.Helper()
@@ -22,6 +50,27 @@ func newUsageRecordTestPool(t *testing.T) *service.UsageRecordWorkerPool {
 	})
 	t.Cleanup(pool.Stop)
 	return pool
+}
+
+func TestOpenAIGatewayHandlerSubmitUsageRecordTask_CarpoolPanicIsNotRequeued(t *testing.T) {
+	pool := newUsageRecordTestPool(t)
+	billing := &usageTaskPanicCarpoolBillingStub{}
+	cache := &service.BillingCacheService{}
+	cache.SetCarpoolGatewayBilling(billing)
+	h := &OpenAIGatewayHandler{usageRecordWorkerPool: pool, billingCacheService: cache}
+	snapshot := &domain.CarpoolBillingSnapshot{BillingRequestID: 1, RequestID: "carpool:panic"}
+	ctx := service.ContextWithCarpoolBillingSnapshot(context.Background(), snapshot)
+
+	require.NotPanics(t, func() {
+		h.submitUsageRecordTask(ctx, func(context.Context) {
+			panic("sensitive upstream body must not be logged or retried")
+		})
+	})
+
+	require.Zero(t, pool.Stats().SubmittedTasks, "a synchronously handled carpool panic must not enqueue the task again")
+	require.Equal(t, 1, billing.marked, "a recovered panic must immediately mark the durable intent for reconciliation")
+	require.Equal(t, "usage record task panicked", billing.markedReason)
+	require.Equal(t, snapshot, billing.markedSnapshot)
 }
 
 func TestGatewayHandlerSubmitUsageRecordTask_WithPool(t *testing.T) {

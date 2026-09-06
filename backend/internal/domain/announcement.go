@@ -21,6 +21,7 @@ const (
 const (
 	AnnouncementConditionTypeSubscription = "subscription"
 	AnnouncementConditionTypeBalance      = "balance"
+	AnnouncementConditionTypeCarpoolScope = "carpool_scope"
 )
 
 const (
@@ -58,12 +59,18 @@ type AnnouncementCondition struct {
 
 	// subscription 条件：匹配的订阅套餐（group_id）
 	GroupIDs []int64 `json:"group_ids,omitempty"`
+	// carpool_scope 条件：匹配当前或未来未终止月卡所属范围。
+	ScopeIDs []int64 `json:"scope_ids,omitempty"`
 
 	// balance 条件：比较阈值
 	Value float64 `json:"value,omitempty"`
 }
 
 func (t AnnouncementTargeting) Matches(balance float64, activeSubscriptionGroupIDs map[int64]struct{}) bool {
+	return t.MatchesWithCarpool(balance, activeSubscriptionGroupIDs, nil)
+}
+
+func (t AnnouncementTargeting) MatchesWithCarpool(balance float64, activeSubscriptionGroupIDs, carpoolScopeIDs map[int64]struct{}) bool {
 	// 空规则：展示给所有用户
 	if len(t.AnyOf) == 0 {
 		return true
@@ -76,7 +83,7 @@ func (t AnnouncementTargeting) Matches(balance float64, activeSubscriptionGroupI
 		}
 		allMatched := true
 		for _, cond := range group.AllOf {
-			if !cond.Matches(balance, activeSubscriptionGroupIDs) {
+			if !cond.MatchesWithCarpool(balance, activeSubscriptionGroupIDs, carpoolScopeIDs) {
 				allMatched = false
 				break
 			}
@@ -90,6 +97,10 @@ func (t AnnouncementTargeting) Matches(balance float64, activeSubscriptionGroupI
 }
 
 func (c AnnouncementCondition) Matches(balance float64, activeSubscriptionGroupIDs map[int64]struct{}) bool {
+	return c.MatchesWithCarpool(balance, activeSubscriptionGroupIDs, nil)
+}
+
+func (c AnnouncementCondition) MatchesWithCarpool(balance float64, activeSubscriptionGroupIDs, carpoolScopeIDs map[int64]struct{}) bool {
 	switch c.Type {
 	case AnnouncementConditionTypeSubscription:
 		if c.Operator != AnnouncementOperatorIn {
@@ -123,6 +134,17 @@ func (c AnnouncementCondition) Matches(balance float64, activeSubscriptionGroupI
 		default:
 			return false
 		}
+
+	case AnnouncementConditionTypeCarpoolScope:
+		if c.Operator != AnnouncementOperatorIn || len(c.ScopeIDs) == 0 || len(carpoolScopeIDs) == 0 {
+			return false
+		}
+		for _, scopeID := range c.ScopeIDs {
+			if _, ok := carpoolScopeIDs[scopeID]; ok {
+				return true
+			}
+		}
+		return false
 
 	default:
 		return false
@@ -162,6 +184,12 @@ func (t AnnouncementTargeting) NormalizeAndValidate() (AnnouncementTargeting, er
 				}
 				cond.GroupIDs = append(cond.GroupIDs, gid)
 			}
+			for _, scopeID := range c.ScopeIDs {
+				if scopeID <= 0 {
+					return AnnouncementTargeting{}, ErrAnnouncementInvalidTarget
+				}
+				cond.ScopeIDs = append(cond.ScopeIDs, scopeID)
+			}
 
 			if err := cond.validate(); err != nil {
 				return AnnouncementTargeting{}, err
@@ -194,24 +222,34 @@ func (c AnnouncementCondition) validate() error {
 			return ErrAnnouncementInvalidTarget
 		}
 
+	case AnnouncementConditionTypeCarpoolScope:
+		if c.Operator != AnnouncementOperatorIn || len(c.ScopeIDs) == 0 {
+			return ErrAnnouncementInvalidTarget
+		}
+		return nil
+
 	default:
 		return ErrAnnouncementInvalidTarget
 	}
 }
 
 type Announcement struct {
-	ID         int64
-	Title      string
-	Content    string
-	Status     string
-	NotifyMode string
-	Targeting  AnnouncementTargeting
-	StartsAt   *time.Time
-	EndsAt     *time.Time
-	CreatedBy  *int64
-	UpdatedBy  *int64
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	ID              int64
+	Title           string
+	Content         string
+	Status          string
+	NotifyMode      string
+	Targeting       AnnouncementTargeting
+	StartsAt        *time.Time
+	EndsAt          *time.Time
+	CreatedBy       *int64
+	UpdatedBy       *int64
+	SourceType      *string
+	SourceID        *int64
+	SourceEventKind *string
+	SourceRevision  int
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 func (a *Announcement) IsActiveAt(now time.Time) bool {

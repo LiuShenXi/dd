@@ -34,6 +34,34 @@ type Tx struct {
 	BatchImageItem *BatchImageItemClient
 	// BatchImageJob is the client for interacting with the BatchImageJob builders.
 	BatchImageJob *BatchImageJobClient
+	// CarpoolBillingRequest is the client for interacting with the CarpoolBillingRequest builders.
+	CarpoolBillingRequest *CarpoolBillingRequestClient
+	// CarpoolCycle is the client for interacting with the CarpoolCycle builders.
+	CarpoolCycle *CarpoolCycleClient
+	// CarpoolLedger is the client for interacting with the CarpoolLedger builders.
+	CarpoolLedger *CarpoolLedgerClient
+	// CarpoolOperation is the client for interacting with the CarpoolOperation builders.
+	CarpoolOperation *CarpoolOperationClient
+	// CarpoolPayment is the client for interacting with the CarpoolPayment builders.
+	CarpoolPayment *CarpoolPaymentClient
+	// CarpoolPlan is the client for interacting with the CarpoolPlan builders.
+	CarpoolPlan *CarpoolPlanClient
+	// CarpoolResetAccountState is the client for interacting with the CarpoolResetAccountState builders.
+	CarpoolResetAccountState *CarpoolResetAccountStateClient
+	// CarpoolResetAnnouncementOutbox is the client for interacting with the CarpoolResetAnnouncementOutbox builders.
+	CarpoolResetAnnouncementOutbox *CarpoolResetAnnouncementOutboxClient
+	// CarpoolResetBatch is the client for interacting with the CarpoolResetBatch builders.
+	CarpoolResetBatch *CarpoolResetBatchClient
+	// CarpoolResetCredit is the client for interacting with the CarpoolResetCredit builders.
+	CarpoolResetCredit *CarpoolResetCreditClient
+	// CarpoolResetQualification is the client for interacting with the CarpoolResetQualification builders.
+	CarpoolResetQualification *CarpoolResetQualificationClient
+	// CarpoolResetScopeState is the client for interacting with the CarpoolResetScopeState builders.
+	CarpoolResetScopeState *CarpoolResetScopeStateClient
+	// CarpoolResetTarget is the client for interacting with the CarpoolResetTarget builders.
+	CarpoolResetTarget *CarpoolResetTargetClient
+	// CarpoolTerm is the client for interacting with the CarpoolTerm builders.
+	CarpoolTerm *CarpoolTermClient
 	// ChannelMonitor is the client for interacting with the ChannelMonitor builders.
 	ChannelMonitor *ChannelMonitorClient
 	// ChannelMonitorDailyRollup is the client for interacting with the ChannelMonitorDailyRollup builders.
@@ -233,6 +261,20 @@ func (tx *Tx) init() {
 	tx.BatchImageEvent = NewBatchImageEventClient(tx.config)
 	tx.BatchImageItem = NewBatchImageItemClient(tx.config)
 	tx.BatchImageJob = NewBatchImageJobClient(tx.config)
+	tx.CarpoolBillingRequest = NewCarpoolBillingRequestClient(tx.config)
+	tx.CarpoolCycle = NewCarpoolCycleClient(tx.config)
+	tx.CarpoolLedger = NewCarpoolLedgerClient(tx.config)
+	tx.CarpoolOperation = NewCarpoolOperationClient(tx.config)
+	tx.CarpoolPayment = NewCarpoolPaymentClient(tx.config)
+	tx.CarpoolPlan = NewCarpoolPlanClient(tx.config)
+	tx.CarpoolResetAccountState = NewCarpoolResetAccountStateClient(tx.config)
+	tx.CarpoolResetAnnouncementOutbox = NewCarpoolResetAnnouncementOutboxClient(tx.config)
+	tx.CarpoolResetBatch = NewCarpoolResetBatchClient(tx.config)
+	tx.CarpoolResetCredit = NewCarpoolResetCreditClient(tx.config)
+	tx.CarpoolResetQualification = NewCarpoolResetQualificationClient(tx.config)
+	tx.CarpoolResetScopeState = NewCarpoolResetScopeStateClient(tx.config)
+	tx.CarpoolResetTarget = NewCarpoolResetTargetClient(tx.config)
+	tx.CarpoolTerm = NewCarpoolTermClient(tx.config)
 	tx.ChannelMonitor = NewChannelMonitorClient(tx.config)
 	tx.ChannelMonitorDailyRollup = NewChannelMonitorDailyRollupClient(tx.config)
 	tx.ChannelMonitorHistory = NewChannelMonitorHistoryClient(tx.config)

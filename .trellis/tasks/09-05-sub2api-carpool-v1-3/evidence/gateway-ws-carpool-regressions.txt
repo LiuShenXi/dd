@@ -1,0 +1,14 @@
+Command (cwd=C:/WORK-SPACE/sub2api-carpool-v1.3/backend):
+go test -tags=unit ./internal/handler -run "^(TestOpenAIResponsesWebSocket_CarpoolTwoTurnsUseFreshDurableSnapshots|TestOpenAIResponsesWebSocketV2Passthrough_CarpoolSecondTurnAdmissionFailureDoesNotReachUpstream|TestOpenAIResponsesWebSocketV2Passthrough_CarpoolUpstreamEndsWithoutTerminalUsageMarksReconcile|TestOpenAIResponsesWebSocket_FailoverOnUpstreamUsageLimitEvent)$" -count=10
+
+stdout:
+ok  	github.com/Wei-Shaw/sub2api/internal/handler	1.357s
+
+exit_code: 0
+
+Command (cwd=C:/WORK-SPACE/sub2api-carpool-v1.3):
+git diff --check -- backend/internal/handler/openai_gateway_handler_test.go backend/internal/handler/openai_ws_v2_passthrough_cyber_test.go backend/internal/handler/openai_ws_carpool_test.go backend/internal/handler/carpool_gateway.go backend/internal/handler/openai_gateway_handler.go
+
+stdout: <empty>
+
+exit_code: 0

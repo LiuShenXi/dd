@@ -671,6 +671,12 @@ type UsageLog struct {
 type AdminUsageLog struct {
 	UsageLog
 
+	// Carpool billing correlation is admin-only. User usage DTOs intentionally
+	// omit the frozen term, cycle, and final-admission timestamp.
+	CarpoolTermID     *int64     `json:"carpool_term_id,omitempty"`
+	CarpoolCycleID    *int64     `json:"carpool_cycle_id,omitempty"`
+	CarpoolAdmittedAt *time.Time `json:"carpool_admitted_at,omitempty"`
+
 	// UpstreamModel is the actual model sent to the upstream provider after mapping.
 	// Omitted when no mapping was applied (requested model was used as-is).
 	UpstreamModel *string `json:"upstream_model,omitempty"`

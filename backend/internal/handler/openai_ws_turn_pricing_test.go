@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,6 +22,16 @@ func TestOpenAIWSTurnPricingCurrentOr(t *testing.T) {
 		var p openAIWSTurnPricing
 		require.Equal(t, fallback, p.currentOr(fallback))
 	})
+}
+
+func TestFreezeOpenAIWSTurnPricingForAdmissionUsesCanonicalSnapshotTime(t *testing.T) {
+	fallback := time.Date(2026, 9, 6, 14, 15, 15, 0, time.UTC)
+	canonical := fallback.Add(987654 * time.Microsecond)
+	var pricing openAIWSTurnPricing
+
+	freezeOpenAIWSTurnPricingForAdmission(&pricing, &domain.CarpoolBillingSnapshot{AdmittedAt: canonical}, fallback)
+
+	require.Equal(t, canonical, pricing.currentOr(time.Time{}))
 }
 
 // TestOpenAIWSTurnPricingFreezePerTurn 钉死每个 turn 的 BeforeTurn 都会覆盖

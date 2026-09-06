@@ -1,0 +1,79 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "suite": "reset",
+  "source": "synthetic-local-only",
+  "overall_status": "failed",
+  "code_evidence_sha256": "0C9B6057A4E477649AD8FDF4C45628035CBEFA5EA8A67D16069D5D4A71D871BF",
+  "image_id": "sha256:b2fa0308ba3b60d42377b7e95f6a673d23481e96d69b1b7af8fb9c5862fb1fe8",
+  "config_sha256": "DE0F5E535B4695CE00962D8C7C85A46482D9802ACC637010BE02A0AAEEA53D32",
+  "environment_sha256": "243CE4441380C7E49B7E09BF37EFA839BE86CB6E3F0F1B394C894F6909F40B27",
+  "network_id": "989d8be98f73baa478ff7b5f2be413923f8ea672d7859302f38405f3f3dd846a",
+  "checkout_scope": "immutable-reviewed-image-not-later-source-edits",
+  "driver_source_sha256": "D66ED5E80A8E9126D12F991561328DDCE3E025D2AD4CDB5E1A9DA8EA59A2163F",
+  "driver_test_sha256": "6BA9508837ED7103F286D6FAE3DA643A48991678B022B90726E464CE70B1309B",
+  "driver_binary_sha256": "9670D8E70F0F070D8196F0EEFD67E8FA93904788535F6D63F20C795400E79A5B",
+  "completed_at": "2026-09-05T19:58:40.7268057+00:00",
+  "passed": 8,
+  "failed": 1,
+  "isolation": "passed",
+  "conservation": {
+    "copied-announcements": "passed",
+    "copied-records": "passed"
+  },
+  "assertions": [
+    {
+      "name": "auth.bootstrap_admin",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "reset.scope_preflight",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.fresh_synthetic_users",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.fresh_synthetic_users",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.synthetic_carpool_group",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.current_plan_contract",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.member_terms",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "reset.execution_window_safety",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "reset_http.execution",
+      "status": "fail",
+      "http_status": 0
+    }
+  ],
+  "excluded_checks": [
+    {
+      "name": "reset.actual_due_execution",
+      "coverage": "postgresql_covered",
+      "evidence": "source-runtime-pg-progress.md"
+    }
+  ],
+  "scenario": "first_publication",
+  "copied_user_term_preflight": "zero"
+}

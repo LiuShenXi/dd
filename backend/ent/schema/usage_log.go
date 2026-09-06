@@ -74,6 +74,19 @@ func (UsageLog) Fields() []ent.Field {
 		field.Int64("subscription_id").
 			Optional().
 			Nillable(),
+		field.Int64("carpool_term_id").
+			Optional().
+			Nillable().
+			Comment("Internal carpool billing term snapshot; excluded from member DTOs"),
+		field.Int64("carpool_cycle_id").
+			Optional().
+			Nillable().
+			Comment("Internal carpool billing cycle snapshot; excluded from member DTOs"),
+		field.Time("carpool_admitted_at").
+			Optional().
+			Nillable().
+			SchemaType(map[string]string{dialect.Postgres: "timestamptz"}).
+			Comment("Final upstream admission time for immutable carpool attribution"),
 
 		// Token 计数字段
 		field.Int("input_tokens").
@@ -226,6 +239,8 @@ func (UsageLog) Indexes() []ent.Index {
 		index.Fields("account_id"),
 		index.Fields("group_id"),
 		index.Fields("subscription_id"),
+		index.Fields("carpool_term_id"),
+		index.Fields("carpool_cycle_id"),
 		index.Fields("created_at"),
 		index.Fields("model"),
 		index.Fields("requested_model"),

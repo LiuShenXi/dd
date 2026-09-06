@@ -150,6 +150,10 @@ func (g *Group) IsSubscriptionType() bool {
 	return g.SubscriptionType == SubscriptionTypeSubscription
 }
 
+func (g *Group) IsCarpoolType() bool {
+	return g.SubscriptionType == SubscriptionTypeCarpool
+}
+
 func (g *Group) HasDailyLimit() bool {
 	return g.DailyLimitUSD != nil && *g.DailyLimitUSD > 0
 }

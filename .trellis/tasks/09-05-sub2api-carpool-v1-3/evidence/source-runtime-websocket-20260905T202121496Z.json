@@ -1,0 +1,80 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "suite": "websocket",
+  "source": "synthetic-local-only",
+  "overall_status": "passed",
+  "code_evidence_sha256": "DA84F4CEC19A5664C4D6C64D1CFD219956D53091970EC2EB7AC04A1A33A72CE0",
+  "image_id": "sha256:a59de764355df829d8c58535358767d95da9fb696eb03a5aa1cb8e8564b62955",
+  "config_sha256": "DE0F5E535B4695CE00962D8C7C85A46482D9802ACC637010BE02A0AAEEA53D32",
+  "environment_sha256": "243CE4441380C7E49B7E09BF37EFA839BE86CB6E3F0F1B394C894F6909F40B27",
+  "network_id": "989d8be98f73baa478ff7b5f2be413923f8ea672d7859302f38405f3f3dd846a",
+  "checkout_scope": "immutable-reviewed-image-not-later-source-edits",
+  "driver_source_sha256": "5260FFDA9E76EC265A4D5EE452C64F179DC9CC802CE56887887E36D843407F4A",
+  "driver_test_sha256": "77FDA57BDA08AA9B3E7A34738286BEAA862EDE473F50FFABEBC14818A28FEFE2",
+  "driver_binary_sha256": "710DD7CDA100482E3B9701A2BD70EE48DD4DF2133C1729A96813D5FB98E5B6C9",
+  "completed_at": "2026-09-05T20:21:21.4959873+00:00",
+  "passed": 11,
+  "failed": 0,
+  "isolation": "passed",
+  "conservation": {
+    "copied-records": "passed",
+    "copied-announcements": "passed"
+  },
+  "assertions": [
+    {
+      "name": "setup.validated_bootstrap_admin",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.fresh_synthetic_users",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.synthetic_user_logins",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.synthetic_group",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.two_mock_backed_accounts",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.synthetic_keys",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.fixed_plan",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "websocket.two_turns_independent_receipts_and_debits",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "websocket.later_turn_expiry_denied_before_upstream",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "websocket.same_turn_failover_preserves_admitted_cycle_and_single_debit",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "websocket.missing_usage_creates_visible_exception",
+      "status": "pass",
+      "http_status": 0
+    }
+  ]
+}

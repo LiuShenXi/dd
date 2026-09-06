@@ -116,7 +116,15 @@ func RegisterUserRoutes(
 		announcements := authenticated.Group("/announcements")
 		{
 			announcements.GET("", h.Announcement.List)
+			announcements.GET("/version", h.Announcement.Version)
 			announcements.POST("/:id/read", h.Announcement.MarkRead)
+		}
+
+		carpool := authenticated.Group("/user/carpool")
+		{
+			carpool.GET("/details", h.Carpool.Details)
+			carpool.GET("/boosts", h.Carpool.BoostStatus)
+			carpool.POST("/boosts", h.Carpool.ClaimBoost)
 		}
 
 		// 卡密兑换

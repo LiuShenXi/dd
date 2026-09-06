@@ -448,6 +448,11 @@ func (s *APIKeyService) incrementAPIKeyErrorCount(ctx context.Context, userID in
 // 对于订阅类型分组：检查用户是否有有效订阅
 // 对于标准类型分组：使用原有的 AllowedGroups 和 IsExclusive 逻辑
 func (s *APIKeyService) canUserBindGroup(ctx context.Context, user *User, group *Group) bool {
+	// Carpool keys are assigned only through the administrator endpoint. A
+	// current term controls gateway admission, not self-service group binding.
+	if group.IsCarpoolType() {
+		return false
+	}
 	// 订阅类型分组：需要有效订阅
 	if group.IsSubscriptionType() {
 		_, err := s.userSubRepo.GetActiveByUserIDAndGroupID(ctx, user.ID, group.ID)
@@ -798,23 +803,29 @@ func (s *APIKeyService) Update(ctx context.Context, id int64, userID int64, req 
 	}
 
 	if req.GroupID != nil {
-		// 验证分组权限
-		user, err := s.userRepo.GetByID(ctx, userID)
-		if err != nil {
-			return nil, fmt.Errorf("get user: %w", err)
-		}
+		// The user editor sends the current group_id even when only another
+		// field changed. Retaining that exact assignment is not a self-service
+		// bind and must remain possible for administrator-assigned carpool keys.
+		retainsCurrentGroup := apiKey.GroupID != nil && *apiKey.GroupID == *req.GroupID
+		if !retainsCurrentGroup {
+			// 验证分组权限
+			user, err := s.userRepo.GetByID(ctx, userID)
+			if err != nil {
+				return nil, fmt.Errorf("get user: %w", err)
+			}
 
-		group, err := s.groupRepo.GetByID(ctx, *req.GroupID)
-		if err != nil {
-			return nil, fmt.Errorf("get group: %w", err)
-		}
+			group, err := s.groupRepo.GetByID(ctx, *req.GroupID)
+			if err != nil {
+				return nil, fmt.Errorf("get group: %w", err)
+			}
 
-		if !s.canUserBindGroup(ctx, user, group) {
-			return nil, ErrGroupNotAllowed
-		}
+			if !s.canUserBindGroup(ctx, user, group) {
+				return nil, ErrGroupNotAllowed
+			}
 
-		apiKey.GroupID = req.GroupID
-		fields.GroupID = true
+			apiKey.GroupID = req.GroupID
+			fields.GroupID = true
+		}
 	}
 
 	if req.Status != nil {
@@ -1055,6 +1066,9 @@ func (s *APIKeyService) GetAvailableGroups(ctx context.Context, userID int64) ([
 
 // canUserBindGroupInternal 内部方法，检查用户是否可以绑定分组（使用预加载的订阅数据）
 func (s *APIKeyService) canUserBindGroupInternal(user *User, group *Group, subscribedGroupIDs map[int64]bool) bool {
+	if group.IsCarpoolType() {
+		return false
+	}
 	// 订阅类型分组：需要有效订阅
 	if group.IsSubscriptionType() {
 		return subscribedGroupIDs[group.ID]

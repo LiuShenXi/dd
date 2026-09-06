@@ -37,6 +37,14 @@ type Announcement struct {
 	CreatedBy *int64 `json:"created_by,omitempty"`
 	// 更新人用户ID（管理员）
 	UpdatedBy *int64 `json:"updated_by,omitempty"`
+	// System source type for idempotent publication
+	SourceType *string `json:"source_type,omitempty"`
+	// System source entity id
+	SourceID *int64 `json:"source_id,omitempty"`
+	// System source event kind
+	SourceEventKind *string `json:"source_event_kind,omitempty"`
+	// System source event revision
+	SourceRevision int `json:"source_revision,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -72,9 +80,9 @@ func (*Announcement) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case announcement.FieldTargeting:
 			values[i] = new([]byte)
-		case announcement.FieldID, announcement.FieldCreatedBy, announcement.FieldUpdatedBy:
+		case announcement.FieldID, announcement.FieldCreatedBy, announcement.FieldUpdatedBy, announcement.FieldSourceID, announcement.FieldSourceRevision:
 			values[i] = new(sql.NullInt64)
-		case announcement.FieldTitle, announcement.FieldContent, announcement.FieldStatus, announcement.FieldNotifyMode:
+		case announcement.FieldTitle, announcement.FieldContent, announcement.FieldStatus, announcement.FieldNotifyMode, announcement.FieldSourceType, announcement.FieldSourceEventKind:
 			values[i] = new(sql.NullString)
 		case announcement.FieldStartsAt, announcement.FieldEndsAt, announcement.FieldCreatedAt, announcement.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -158,6 +166,33 @@ func (_m *Announcement) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.UpdatedBy = new(int64)
 				*_m.UpdatedBy = value.Int64
+			}
+		case announcement.FieldSourceType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field source_type", values[i])
+			} else if value.Valid {
+				_m.SourceType = new(string)
+				*_m.SourceType = value.String
+			}
+		case announcement.FieldSourceID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field source_id", values[i])
+			} else if value.Valid {
+				_m.SourceID = new(int64)
+				*_m.SourceID = value.Int64
+			}
+		case announcement.FieldSourceEventKind:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field source_event_kind", values[i])
+			} else if value.Valid {
+				_m.SourceEventKind = new(string)
+				*_m.SourceEventKind = value.String
+			}
+		case announcement.FieldSourceRevision:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field source_revision", values[i])
+			} else if value.Valid {
+				_m.SourceRevision = int(value.Int64)
 			}
 		case announcement.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -246,6 +281,24 @@ func (_m *Announcement) String() string {
 		builder.WriteString("updated_by=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	if v := _m.SourceType; v != nil {
+		builder.WriteString("source_type=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.SourceID; v != nil {
+		builder.WriteString("source_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.SourceEventKind; v != nil {
+		builder.WriteString("source_event_kind=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	builder.WriteString("source_revision=")
+	builder.WriteString(fmt.Sprintf("%v", _m.SourceRevision))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

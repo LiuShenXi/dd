@@ -32,6 +32,14 @@ const (
 	FieldCreatedBy = "created_by"
 	// FieldUpdatedBy holds the string denoting the updated_by field in the database.
 	FieldUpdatedBy = "updated_by"
+	// FieldSourceType holds the string denoting the source_type field in the database.
+	FieldSourceType = "source_type"
+	// FieldSourceID holds the string denoting the source_id field in the database.
+	FieldSourceID = "source_id"
+	// FieldSourceEventKind holds the string denoting the source_event_kind field in the database.
+	FieldSourceEventKind = "source_event_kind"
+	// FieldSourceRevision holds the string denoting the source_revision field in the database.
+	FieldSourceRevision = "source_revision"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -61,6 +69,10 @@ var Columns = []string{
 	FieldEndsAt,
 	FieldCreatedBy,
 	FieldUpdatedBy,
+	FieldSourceType,
+	FieldSourceID,
+	FieldSourceEventKind,
+	FieldSourceRevision,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -88,6 +100,12 @@ var (
 	DefaultNotifyMode string
 	// NotifyModeValidator is a validator for the "notify_mode" field. It is called by the builders before save.
 	NotifyModeValidator func(string) error
+	// SourceTypeValidator is a validator for the "source_type" field. It is called by the builders before save.
+	SourceTypeValidator func(string) error
+	// SourceEventKindValidator is a validator for the "source_event_kind" field. It is called by the builders before save.
+	SourceEventKindValidator func(string) error
+	// DefaultSourceRevision holds the default value on creation for the "source_revision" field.
+	DefaultSourceRevision int
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -142,6 +160,26 @@ func ByCreatedBy(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedBy orders the results by the updated_by field.
 func ByUpdatedBy(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedBy, opts...).ToFunc()
+}
+
+// BySourceType orders the results by the source_type field.
+func BySourceType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSourceType, opts...).ToFunc()
+}
+
+// BySourceID orders the results by the source_id field.
+func BySourceID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSourceID, opts...).ToFunc()
+}
+
+// BySourceEventKind orders the results by the source_event_kind field.
+func BySourceEventKind(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSourceEventKind, opts...).ToFunc()
+}
+
+// BySourceRevision orders the results by the source_revision field.
+func BySourceRevision(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSourceRevision, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

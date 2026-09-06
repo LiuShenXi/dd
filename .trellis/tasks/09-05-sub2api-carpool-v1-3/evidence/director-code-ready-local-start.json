@@ -1,0 +1,31 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "task_directory": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3",
+  "git_head": "36266f512776d78d4f1645a75ae0e84816f8a0a7",
+  "backend_build": "passed",
+  "frontend_build": "passed",
+  "frontend_typecheck": "passed",
+  "approved_for_local_start": true,
+  "local_start_only": true,
+  "final_acceptance": false,
+  "source_sha256": "8496B57ACDDA2D2FFCC1B69B8B80C104E52454CF180A1FC237CAE4F7108C58ED",
+  "embedded_frontend_sha256": "FBA89230EA032A8745E817EB09189061A491CF00587990C6146C49BE3F79ACF4",
+  "source_unchanged_during_builds": true,
+  "evidence": {
+    "backend_build": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-local-start-backend-build.log",
+    "frontend_typecheck": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-local-start-frontend-typecheck.log",
+    "frontend_build": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-local-start-frontend-build.log",
+    "postgres_intermediate": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-pg18-intermediate.md",
+    "existing_service_baseline": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-baseline-service-review.md"
+  },
+  "remaining_acceptance": [
+    "Reset, observer, announcement and scan-operation PostgreSQL transaction regressions",
+    "Adjustment balance invariant rerun with explicit starting balance and per-step diagnostics",
+    "Known-receipt permanent failure recovery and maintenance starvation corrections and regressions",
+    "Latest frontend affected lint, asynchronous financial-modal regressions and full verification",
+    "Actual isolated HTTP and WebSocket acceptance with synthetic fixtures and original-row conservation",
+    "Desktop and narrow-screen real-page screenshots and interactions",
+    "Final checkout must be rebuilt and retested after any later implementation changes"
+  ],
+  "safety_scope": "Only source coordinator may build/start the sealed local runtime on 127.0.0.1:38088. No production, real provider/card use, external notifications, push or deployment. Unmapped copied users receive no carpool terms."
+}

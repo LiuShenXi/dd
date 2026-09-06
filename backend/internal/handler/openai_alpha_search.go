@@ -30,6 +30,7 @@ func (h *OpenAIGatewayHandler) AlphaSearch(c *gin.Context) {
 		h.errorResponse(c, http.StatusUnauthorized, "authentication_error", "Invalid API key")
 		return
 	}
+	defer h.reconcileCarpoolHTTPUsage(c, "alpha search request ended without durable known usage")
 	if apiKey.Group.Platform != service.PlatformOpenAI && apiKey.Group.Platform != service.PlatformComposite {
 		h.errorResponse(c, http.StatusNotFound, "not_found_error", "Codex alpha search is only available for OpenAI and Composite groups")
 		return
@@ -174,6 +175,12 @@ func (h *OpenAIGatewayHandler) AlphaSearch(c *gin.Context) {
 		if slotResult != openAISlotAcquireOK {
 			return
 		}
+		if !h.admitCarpoolForForward(c, apiKey) {
+			if accountRelease != nil {
+				accountRelease()
+			}
+			return
+		}
 		service.SetOpsLatencyMs(c, service.OpsRoutingLatencyMsKey, time.Since(routingStart).Milliseconds())
 		writerSizeBeforeForward := c.Writer.Size()
 		forwardStart := time.Now()
@@ -279,7 +286,7 @@ func (h *OpenAIGatewayHandler) recordAlphaSearchUsage(
 	quotaPlatform := service.QuotaPlatform(c.Request.Context(), apiKey)
 
 	h.submitMandatoryUsageRecordTask(c.Request.Context(), func(ctx context.Context) {
-		if err := h.gatewayService.RecordUsage(ctx, &service.OpenAIRecordUsageInput{
+		err := h.gatewayService.RecordUsage(ctx, &service.OpenAIRecordUsageInput{
 			Result:             result,
 			APIKey:             apiKey,
 			User:               apiKey.User,
@@ -295,7 +302,9 @@ func (h *OpenAIGatewayHandler) recordAlphaSearchUsage(
 			SessionID:          sessionID,
 			ChannelUsageFields: channelMapping.ToUsageFields(requestedModel, result.UpstreamModel),
 			PricingAt:          service.OpenAIPricingAtFromContext(c.Request.Context()),
-		}); err != nil {
+		})
+		h.recordCarpoolHTTPUsageResult(c, ctx, err, "alpha search usage persistence or settlement failed")
+		if err != nil {
 			logger.L().With(
 				zap.String("component", "handler.openai_gateway.alpha_search"),
 				zap.Int64("user_id", userID),

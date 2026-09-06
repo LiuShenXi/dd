@@ -2,13 +2,17 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"math"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/ctxkey"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/require"
 )
 
@@ -45,6 +49,31 @@ type openAIRecordUsageAccountRepoStub struct {
 	calls   int
 }
 
+type openAIRecordUsageCarpoolBillingStub struct {
+	persistedSnapshot *domain.CarpoolBillingSnapshot
+	persistedCost     decimal.Decimal
+	persistedPayload  json.RawMessage
+}
+
+func (*openAIRecordUsageCarpoolBillingStub) Admit(context.Context, int64, int64, int64, string, time.Time) (*domain.CarpoolBillingSnapshot, error) {
+	return nil, errors.New("unexpected admission")
+}
+
+func (s *openAIRecordUsageCarpoolBillingStub) PersistKnownUsage(_ context.Context, snapshot *domain.CarpoolBillingSnapshot, cost decimal.Decimal, payload json.RawMessage) error {
+	s.persistedSnapshot = snapshot
+	s.persistedCost = cost
+	s.persistedPayload = append(json.RawMessage(nil), payload...)
+	return nil
+}
+
+func (*openAIRecordUsageCarpoolBillingStub) RecoverPendingReceipts(context.Context, int) ([]domain.CarpoolKnownUsage, error) {
+	return nil, nil
+}
+
+func (*openAIRecordUsageCarpoolBillingStub) MarkReconcileRequired(context.Context, *domain.CarpoolBillingSnapshot, string) error {
+	return nil
+}
+
 func (s *openAIRecordUsageAccountRepoStub) GetByID(_ context.Context, _ int64) (*Account, error) {
 	s.calls++
 	return s.account, nil
@@ -67,6 +96,233 @@ func TestOpenAIGatewayServiceRecordUsage_RejectsNilInput(t *testing.T) {
 	svc := &OpenAIGatewayService{}
 	require.Error(t, svc.RecordUsage(context.Background(), nil))
 	require.Error(t, svc.RecordUsage(context.Background(), &OpenAIRecordUsageInput{}))
+}
+
+func TestOpenAIGatewayServiceRecordUsage_CarpoolWithoutAdmissionFailsClosed(t *testing.T) {
+	usageRepo := &openAIRecordUsageLogRepoStub{inserted: true}
+	billingRepo := &openAIRecordUsageBillingRepoStub{}
+	userRepo := &openAIRecordUsageUserRepoStub{}
+	svc := newOpenAIRecordUsageServiceWithBillingRepoForTest(usageRepo, billingRepo, userRepo, &openAIRecordUsageSubRepoStub{}, nil)
+
+	err := svc.RecordUsage(context.Background(), &OpenAIRecordUsageInput{
+		Result: &OpenAIForwardResult{RequestID: "missing-admission", Model: "gpt-5.1", Usage: OpenAIUsage{InputTokens: 10}},
+		APIKey: &APIKey{ID: 2, UserID: 1, User: &User{ID: 1}, Group: &Group{
+			ID: 3, Platform: PlatformOpenAI, SubscriptionType: SubscriptionTypeCarpool, RateMultiplier: 1,
+		}},
+		User:    &User{ID: 1},
+		Account: &Account{ID: 4, Type: AccountTypeAPIKey},
+	})
+
+	require.ErrorIs(t, err, ErrCarpoolAdmissionRequired)
+	require.Zero(t, usageRepo.calls, "missing admission must fail before writing a misleading usage row")
+	require.Zero(t, billingRepo.calls, "missing admission must not reach ordinary billing apply")
+	require.Zero(t, userRepo.deductCalls, "missing admission must never fall back to balance billing")
+}
+
+func TestOpenAIGatewayServiceRecordUsage_CarpoolAmbiguousZeroUsageFailsClosed(t *testing.T) {
+	usageRepo := &openAIRecordUsageLogRepoStub{inserted: true}
+	billingRepo := &openAIRecordUsageBillingRepoStub{}
+	userRepo := &openAIRecordUsageUserRepoStub{}
+	svc := newOpenAIRecordUsageServiceWithBillingRepoForTest(usageRepo, billingRepo, userRepo, &openAIRecordUsageSubRepoStub{}, nil)
+	carpoolBilling := &openAIRecordUsageCarpoolBillingStub{}
+	svc.billingCacheService.SetCarpoolGatewayBilling(carpoolBilling)
+	snapshot := &domain.CarpoolBillingSnapshot{
+		BillingRequestID: 11, RequestID: "carpool:ambiguous", UserID: 1, APIKeyID: 2,
+		GroupID: 3, TermID: 4, CycleID: 5, AdmittedAt: time.Now().UTC(),
+	}
+	groupID := snapshot.GroupID
+
+	err := svc.RecordUsage(ContextWithCarpoolBillingSnapshot(context.Background(), snapshot), &OpenAIRecordUsageInput{
+		Result: &OpenAIForwardResult{RequestID: "upstream-zero", Model: "gpt-5.1"},
+		APIKey: &APIKey{ID: snapshot.APIKeyID, UserID: snapshot.UserID, GroupID: &groupID, Group: &Group{
+			ID: groupID, Platform: PlatformOpenAI, SubscriptionType: SubscriptionTypeCarpool, RateMultiplier: 1,
+		}},
+		User:    &User{ID: snapshot.UserID},
+		Account: &Account{ID: 6, Type: AccountTypeAPIKey},
+	})
+
+	require.ErrorIs(t, err, ErrCarpoolUsageUnknown)
+	require.Nil(t, carpoolBilling.persistedSnapshot)
+	require.Zero(t, billingRepo.calls)
+	require.Zero(t, usageRepo.calls)
+	require.Zero(t, userRepo.deductCalls)
+}
+
+func TestOpenAIForwardResultHasKnownBillableUsageRejectsMalformedUnits(t *testing.T) {
+	tests := []struct {
+		name   string
+		result *OpenAIForwardResult
+		known  bool
+	}{
+		{name: "nil", result: nil},
+		{name: "zero", result: &OpenAIForwardResult{}},
+		{name: "negative tokens", result: &OpenAIForwardResult{Usage: OpenAIUsage{InputTokens: -1}}},
+		{name: "negative tokens with positive output", result: &OpenAIForwardResult{Usage: OpenAIUsage{InputTokens: -1, OutputTokens: 1}}},
+		{name: "negative media count with positive tokens", result: &OpenAIForwardResult{Usage: OpenAIUsage{InputTokens: 1}, ImageCount: -1}},
+		{name: "zero audio units", result: &OpenAIForwardResult{AudioUsage: &AudioUsage{Mode: "tts"}}},
+		{name: "negative audio units", result: &OpenAIForwardResult{AudioUsage: &AudioUsage{Mode: "stt", DurationOrUnits: -1}}},
+		{name: "nan audio units", result: &OpenAIForwardResult{AudioUsage: &AudioUsage{Mode: "tts", DurationOrUnits: math.NaN()}}},
+		{name: "infinite audio units", result: &OpenAIForwardResult{AudioUsage: &AudioUsage{Mode: "tts", DurationOrUnits: math.Inf(1)}}},
+		{name: "positive tokens", result: &OpenAIForwardResult{Usage: OpenAIUsage{OutputTokens: 1}}, known: true},
+		{name: "positive media count", result: &OpenAIForwardResult{ImageCount: 1}, known: true},
+		{name: "positive audio units", result: &OpenAIForwardResult{AudioUsage: &AudioUsage{Mode: "realtime", DurationOrUnits: 0.25}}, known: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.known, openAIForwardResultHasKnownBillableUsage(tt.result))
+		})
+	}
+}
+
+func TestOpenAIGatewayServiceRecordUsage_CarpoolMissingPricingDoesNotPersistZeroReceipt(t *testing.T) {
+	usageRepo := &openAIRecordUsageLogRepoStub{inserted: true}
+	billingRepo := &openAIRecordUsageBillingRepoStub{}
+	userRepo := &openAIRecordUsageUserRepoStub{}
+	svc := newOpenAIRecordUsageServiceWithBillingRepoForTest(usageRepo, billingRepo, userRepo, &openAIRecordUsageSubRepoStub{}, nil)
+	carpoolBilling := &openAIRecordUsageCarpoolBillingStub{}
+	svc.billingCacheService.SetCarpoolGatewayBilling(carpoolBilling)
+	snapshot := &domain.CarpoolBillingSnapshot{
+		BillingRequestID: 12, RequestID: "carpool:missing-pricing", UserID: 1, APIKeyID: 2,
+		GroupID: 3, TermID: 4, CycleID: 5, AdmittedAt: time.Now().UTC(),
+	}
+	groupID := snapshot.GroupID
+
+	err := svc.RecordUsage(ContextWithCarpoolBillingSnapshot(context.Background(), snapshot), &OpenAIRecordUsageInput{
+		Result: &OpenAIForwardResult{
+			RequestID: "upstream-missing-pricing", Model: "pricing-missing-carpool-model",
+			Usage: OpenAIUsage{InputTokens: 100},
+		},
+		APIKey: &APIKey{ID: snapshot.APIKeyID, UserID: snapshot.UserID, GroupID: &groupID, Group: &Group{
+			ID: groupID, Platform: PlatformOpenAI, SubscriptionType: SubscriptionTypeCarpool, RateMultiplier: 1,
+		}},
+		User:    &User{ID: snapshot.UserID},
+		Account: &Account{ID: 6, Type: AccountTypeAPIKey},
+	})
+
+	require.ErrorIs(t, err, ErrModelPricingUnavailable)
+	require.Nil(t, carpoolBilling.persistedSnapshot)
+	require.True(t, carpoolBilling.persistedCost.IsZero())
+	require.Empty(t, carpoolBilling.persistedPayload)
+	require.Zero(t, billingRepo.calls)
+	require.Zero(t, usageRepo.calls)
+	require.Zero(t, userRepo.deductCalls)
+}
+
+func TestOpenAIGatewayServiceRecordUsage_CarpoolUsesCanonicalPricingTimeAndRequestID(t *testing.T) {
+	groupID := int64(31)
+	canonical := time.Date(2024, time.January, 2, 2, 0, 0, 123456000, time.UTC) // Shanghai 10:00
+	conflicting := time.Date(2024, time.January, 2, 0, 0, 0, 0, time.UTC)       // Shanghai 08:00
+	usageRepo := &openAIRecordUsageLogRepoStub{inserted: true}
+	billingRepo := &openAIRecordUsageBillingRepoStub{}
+	userRepo := &openAIRecordUsageUserRepoStub{}
+	svc := newOpenAIRecordUsageServiceWithBillingRepoForTest(usageRepo, billingRepo, userRepo, &openAIRecordUsageSubRepoStub{}, nil)
+	svc.resolver = newOpenAITokenImageChannelPricingResolverWithTimeForTest(t, groupID, "gpt-5.1", &ChannelTimePricing{
+		Timezone: "Asia/Shanghai",
+		Periods:  []ChannelTimePricingPeriod{{StartTime: "09:00", EndTime: "12:00", Multiplier: 2}},
+	})
+	carpoolBilling := &openAIRecordUsageCarpoolBillingStub{}
+	svc.billingCacheService.SetCarpoolGatewayBilling(carpoolBilling)
+	snapshot := &domain.CarpoolBillingSnapshot{
+		BillingRequestID: 13, RequestID: "carpool:canonical", UserID: 1, APIKeyID: 2,
+		GroupID: groupID, TermID: 4, CycleID: 5, AdmittedAt: canonical,
+	}
+
+	err := svc.RecordUsage(ContextWithCarpoolBillingSnapshot(context.Background(), snapshot), &OpenAIRecordUsageInput{
+		Result: &OpenAIForwardResult{
+			RequestID: "client-reused-ws-id", Model: "gpt-5.1", OpenAIWSMode: true,
+			Usage: OpenAIUsage{InputTokens: 1000, OutputTokens: 500},
+		},
+		APIKey: &APIKey{ID: snapshot.APIKeyID, UserID: snapshot.UserID, GroupID: &groupID, Group: &Group{
+			ID: groupID, Platform: PlatformOpenAI, SubscriptionType: SubscriptionTypeCarpool, RateMultiplier: 0.8,
+		}},
+		User:      &User{ID: snapshot.UserID},
+		Account:   &Account{ID: 6, Type: AccountTypeAPIKey},
+		PricingAt: conflicting,
+	})
+
+	require.NoError(t, err)
+	baseCost := 1000*3e-6 + 500*15e-6
+	require.Equal(t, snapshot, carpoolBilling.persistedSnapshot)
+	require.True(t, decimal.NewFromFloat(baseCost*2*0.8).Round(UsageBillingMonetaryScale).Equal(carpoolBilling.persistedCost))
+	require.Equal(t, snapshot.RequestID, billingRepo.lastCmd.RequestID)
+	require.Equal(t, snapshot.RequestID, usageRepo.lastLog.RequestID)
+	require.InDelta(t, baseCost*2, usageRepo.lastLog.TotalCost, 1e-12)
+	require.InDelta(t, baseCost*2*0.8, usageRepo.lastLog.ActualCost, 1e-12)
+	require.Equal(t, canonical, *usageRepo.lastLog.CarpoolAdmittedAt)
+}
+
+func TestOpenAIGatewayServiceRecordUsage_CarpoolKnownUsageCanSettleAtZeroMultiplier(t *testing.T) {
+	groupID := int64(32)
+	zeroRate := 0.0
+	usageRepo := &openAIRecordUsageLogRepoStub{inserted: true}
+	billingRepo := &openAIRecordUsageBillingRepoStub{}
+	userRepo := &openAIRecordUsageUserRepoStub{}
+	rateRepo := &openAIUserGroupRateRepoStub{rate: &zeroRate}
+	svc := newOpenAIRecordUsageServiceWithBillingRepoForTest(usageRepo, billingRepo, userRepo, &openAIRecordUsageSubRepoStub{}, rateRepo)
+	carpoolBilling := &openAIRecordUsageCarpoolBillingStub{}
+	svc.billingCacheService.SetCarpoolGatewayBilling(carpoolBilling)
+	snapshot := &domain.CarpoolBillingSnapshot{
+		BillingRequestID: 14, RequestID: "carpool:free", UserID: 1, APIKeyID: 2,
+		GroupID: groupID, TermID: 4, CycleID: 5, AdmittedAt: time.Now().UTC(),
+	}
+
+	err := svc.RecordUsage(ContextWithCarpoolBillingSnapshot(context.Background(), snapshot), &OpenAIRecordUsageInput{
+		Result: &OpenAIForwardResult{
+			RequestID: "upstream-free", Model: "gpt-5.1", Usage: OpenAIUsage{InputTokens: 100},
+		},
+		APIKey: &APIKey{ID: snapshot.APIKeyID, UserID: snapshot.UserID, GroupID: &groupID, Group: &Group{
+			ID: groupID, Platform: PlatformOpenAI, SubscriptionType: SubscriptionTypeCarpool, RateMultiplier: 1,
+		}},
+		User:    &User{ID: snapshot.UserID},
+		Account: &Account{ID: 6, Type: AccountTypeAPIKey},
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, 1, rateRepo.calls)
+	require.Equal(t, snapshot, carpoolBilling.persistedSnapshot)
+	require.True(t, carpoolBilling.persistedCost.IsZero())
+	require.NotEmpty(t, carpoolBilling.persistedPayload)
+	require.Equal(t, 1, billingRepo.calls)
+	require.True(t, billingRepo.lastCmd.CarpoolCost.IsZero())
+	require.Equal(t, 1, usageRepo.calls)
+	require.Zero(t, usageRepo.lastLog.ActualCost)
+	require.Zero(t, userRepo.deductCalls)
+}
+
+func TestRecordCyberPolicyUsageLog_CarpoolUsesCanonicalSnapshot(t *testing.T) {
+	usageRepo := &openAIRecordUsageLogRepoStub{inserted: true}
+	billingRepo := &openAIRecordUsageBillingRepoStub{}
+	userRepo := &openAIRecordUsageUserRepoStub{}
+	svc := newOpenAIRecordUsageServiceWithBillingRepoForTest(usageRepo, billingRepo, userRepo, &openAIRecordUsageSubRepoStub{}, nil)
+	carpoolBilling := &openAIRecordUsageCarpoolBillingStub{}
+	svc.billingCacheService.SetCarpoolGatewayBilling(carpoolBilling)
+	canonical := time.Date(2026, 9, 6, 14, 15, 16, 987654000, time.UTC)
+	snapshot := &domain.CarpoolBillingSnapshot{
+		BillingRequestID: 10, RequestID: "carpool:cyber-turn", UserID: 1, APIKeyID: 2,
+		GroupID: 3, TermID: 4, CycleID: 5, AdmittedAt: canonical,
+	}
+	groupID := int64(3)
+	apiKey := &APIKey{ID: 2, UserID: 1, GroupID: &groupID, User: &User{ID: 1}, Group: &Group{
+		ID: 3, Platform: PlatformOpenAI, SubscriptionType: SubscriptionTypeCarpool, RateMultiplier: 1,
+	}}
+	ctx := ContextWithCarpoolBillingSnapshot(context.Background(), snapshot)
+
+	err := svc.RecordCyberPolicyUsageLog(ctx, CyberPolicyUsageInput{
+		APIKey: apiKey, Account: &Account{ID: 6, Type: AccountTypeAPIKey}, RequestID: "connection-request",
+		Model: "gpt-5.1", InputTokens: 10, OutputTokens: 2, PricingAt: canonical,
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, snapshot, carpoolBilling.persistedSnapshot)
+	require.False(t, carpoolBilling.persistedCost.IsNegative())
+	require.NotEmpty(t, carpoolBilling.persistedPayload)
+	require.Equal(t, "carpool:cyber-turn", billingRepo.lastCmd.RequestID)
+	require.Equal(t, canonical, billingRepo.lastCmd.CarpoolSnapshot.AdmittedAt)
+	require.Zero(t, userRepo.deductCalls)
+	require.Equal(t, int64(4), *usageRepo.lastLog.CarpoolTermID)
+	require.Equal(t, int64(5), *usageRepo.lastLog.CarpoolCycleID)
+	require.Equal(t, canonical, *usageRepo.lastLog.CarpoolAdmittedAt)
 }
 
 func TestRecordCyberPolicyUsageLog_BillsRealUpstreamTokens(t *testing.T) {

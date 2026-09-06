@@ -130,6 +130,21 @@ func SubscriptionID(v int64) predicate.UsageLog {
 	return predicate.UsageLog(sql.FieldEQ(FieldSubscriptionID, v))
 }
 
+// CarpoolTermID applies equality check predicate on the "carpool_term_id" field. It's identical to CarpoolTermIDEQ.
+func CarpoolTermID(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldEQ(FieldCarpoolTermID, v))
+}
+
+// CarpoolCycleID applies equality check predicate on the "carpool_cycle_id" field. It's identical to CarpoolCycleIDEQ.
+func CarpoolCycleID(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldEQ(FieldCarpoolCycleID, v))
+}
+
+// CarpoolAdmittedAt applies equality check predicate on the "carpool_admitted_at" field. It's identical to CarpoolAdmittedAtEQ.
+func CarpoolAdmittedAt(v time.Time) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldEQ(FieldCarpoolAdmittedAt, v))
+}
+
 // InputTokens applies equality check predicate on the "input_tokens" field. It's identical to InputTokensEQ.
 func InputTokens(v int) predicate.UsageLog {
 	return predicate.UsageLog(sql.FieldEQ(FieldInputTokens, v))
@@ -1053,6 +1068,156 @@ func SubscriptionIDIsNil() predicate.UsageLog {
 // SubscriptionIDNotNil applies the NotNil predicate on the "subscription_id" field.
 func SubscriptionIDNotNil() predicate.UsageLog {
 	return predicate.UsageLog(sql.FieldNotNull(FieldSubscriptionID))
+}
+
+// CarpoolTermIDEQ applies the EQ predicate on the "carpool_term_id" field.
+func CarpoolTermIDEQ(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldEQ(FieldCarpoolTermID, v))
+}
+
+// CarpoolTermIDNEQ applies the NEQ predicate on the "carpool_term_id" field.
+func CarpoolTermIDNEQ(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNEQ(FieldCarpoolTermID, v))
+}
+
+// CarpoolTermIDIn applies the In predicate on the "carpool_term_id" field.
+func CarpoolTermIDIn(vs ...int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldIn(FieldCarpoolTermID, vs...))
+}
+
+// CarpoolTermIDNotIn applies the NotIn predicate on the "carpool_term_id" field.
+func CarpoolTermIDNotIn(vs ...int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNotIn(FieldCarpoolTermID, vs...))
+}
+
+// CarpoolTermIDGT applies the GT predicate on the "carpool_term_id" field.
+func CarpoolTermIDGT(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldGT(FieldCarpoolTermID, v))
+}
+
+// CarpoolTermIDGTE applies the GTE predicate on the "carpool_term_id" field.
+func CarpoolTermIDGTE(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldGTE(FieldCarpoolTermID, v))
+}
+
+// CarpoolTermIDLT applies the LT predicate on the "carpool_term_id" field.
+func CarpoolTermIDLT(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldLT(FieldCarpoolTermID, v))
+}
+
+// CarpoolTermIDLTE applies the LTE predicate on the "carpool_term_id" field.
+func CarpoolTermIDLTE(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldLTE(FieldCarpoolTermID, v))
+}
+
+// CarpoolTermIDIsNil applies the IsNil predicate on the "carpool_term_id" field.
+func CarpoolTermIDIsNil() predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldIsNull(FieldCarpoolTermID))
+}
+
+// CarpoolTermIDNotNil applies the NotNil predicate on the "carpool_term_id" field.
+func CarpoolTermIDNotNil() predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNotNull(FieldCarpoolTermID))
+}
+
+// CarpoolCycleIDEQ applies the EQ predicate on the "carpool_cycle_id" field.
+func CarpoolCycleIDEQ(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldEQ(FieldCarpoolCycleID, v))
+}
+
+// CarpoolCycleIDNEQ applies the NEQ predicate on the "carpool_cycle_id" field.
+func CarpoolCycleIDNEQ(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNEQ(FieldCarpoolCycleID, v))
+}
+
+// CarpoolCycleIDIn applies the In predicate on the "carpool_cycle_id" field.
+func CarpoolCycleIDIn(vs ...int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldIn(FieldCarpoolCycleID, vs...))
+}
+
+// CarpoolCycleIDNotIn applies the NotIn predicate on the "carpool_cycle_id" field.
+func CarpoolCycleIDNotIn(vs ...int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNotIn(FieldCarpoolCycleID, vs...))
+}
+
+// CarpoolCycleIDGT applies the GT predicate on the "carpool_cycle_id" field.
+func CarpoolCycleIDGT(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldGT(FieldCarpoolCycleID, v))
+}
+
+// CarpoolCycleIDGTE applies the GTE predicate on the "carpool_cycle_id" field.
+func CarpoolCycleIDGTE(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldGTE(FieldCarpoolCycleID, v))
+}
+
+// CarpoolCycleIDLT applies the LT predicate on the "carpool_cycle_id" field.
+func CarpoolCycleIDLT(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldLT(FieldCarpoolCycleID, v))
+}
+
+// CarpoolCycleIDLTE applies the LTE predicate on the "carpool_cycle_id" field.
+func CarpoolCycleIDLTE(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldLTE(FieldCarpoolCycleID, v))
+}
+
+// CarpoolCycleIDIsNil applies the IsNil predicate on the "carpool_cycle_id" field.
+func CarpoolCycleIDIsNil() predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldIsNull(FieldCarpoolCycleID))
+}
+
+// CarpoolCycleIDNotNil applies the NotNil predicate on the "carpool_cycle_id" field.
+func CarpoolCycleIDNotNil() predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNotNull(FieldCarpoolCycleID))
+}
+
+// CarpoolAdmittedAtEQ applies the EQ predicate on the "carpool_admitted_at" field.
+func CarpoolAdmittedAtEQ(v time.Time) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldEQ(FieldCarpoolAdmittedAt, v))
+}
+
+// CarpoolAdmittedAtNEQ applies the NEQ predicate on the "carpool_admitted_at" field.
+func CarpoolAdmittedAtNEQ(v time.Time) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNEQ(FieldCarpoolAdmittedAt, v))
+}
+
+// CarpoolAdmittedAtIn applies the In predicate on the "carpool_admitted_at" field.
+func CarpoolAdmittedAtIn(vs ...time.Time) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldIn(FieldCarpoolAdmittedAt, vs...))
+}
+
+// CarpoolAdmittedAtNotIn applies the NotIn predicate on the "carpool_admitted_at" field.
+func CarpoolAdmittedAtNotIn(vs ...time.Time) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNotIn(FieldCarpoolAdmittedAt, vs...))
+}
+
+// CarpoolAdmittedAtGT applies the GT predicate on the "carpool_admitted_at" field.
+func CarpoolAdmittedAtGT(v time.Time) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldGT(FieldCarpoolAdmittedAt, v))
+}
+
+// CarpoolAdmittedAtGTE applies the GTE predicate on the "carpool_admitted_at" field.
+func CarpoolAdmittedAtGTE(v time.Time) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldGTE(FieldCarpoolAdmittedAt, v))
+}
+
+// CarpoolAdmittedAtLT applies the LT predicate on the "carpool_admitted_at" field.
+func CarpoolAdmittedAtLT(v time.Time) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldLT(FieldCarpoolAdmittedAt, v))
+}
+
+// CarpoolAdmittedAtLTE applies the LTE predicate on the "carpool_admitted_at" field.
+func CarpoolAdmittedAtLTE(v time.Time) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldLTE(FieldCarpoolAdmittedAt, v))
+}
+
+// CarpoolAdmittedAtIsNil applies the IsNil predicate on the "carpool_admitted_at" field.
+func CarpoolAdmittedAtIsNil() predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldIsNull(FieldCarpoolAdmittedAt))
+}
+
+// CarpoolAdmittedAtNotNil applies the NotNil predicate on the "carpool_admitted_at" field.
+func CarpoolAdmittedAtNotNil() predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNotNull(FieldCarpoolAdmittedAt))
 }
 
 // InputTokensEQ applies the EQ predicate on the "input_tokens" field.

@@ -90,6 +90,7 @@ func RegisterAdminRoutes(
 
 		// 订阅管理
 		registerSubscriptionRoutes(admin, h)
+		registerCarpoolRoutes(admin, h)
 
 		// 使用记录管理
 		registerUsageRoutes(admin, h)
@@ -131,6 +132,32 @@ func RegisterAdminRoutes(
 		// 操作审计日志
 		registerAuditLogRoutes(admin, h, stepUpAuth)
 	}
+}
+
+func registerCarpoolRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	carpool := admin.Group("/carpool")
+	{
+		carpool.GET("/plans", h.Admin.Carpool.Plans)
+		carpool.POST("/plans/:id/versions", h.Admin.Carpool.CreatePlanVersion)
+		carpool.GET("/terms", h.Admin.Carpool.Terms)
+		carpool.POST("/terms/:id/renew", h.Admin.Carpool.Renew)
+		carpool.POST("/terms/:id/terminate", h.Admin.Carpool.Terminate)
+		carpool.GET("/terms/:id/payments", h.Admin.Carpool.Payments)
+		carpool.POST("/terms/:id/payments", h.Admin.Carpool.AddPayment)
+		carpool.GET("/cycles", h.Admin.Carpool.Cycles)
+		carpool.POST("/cycles/:id/adjustments", h.Admin.Carpool.Adjust)
+		carpool.GET("/ledger", h.Admin.Carpool.Ledger)
+		carpool.GET("/billing-exceptions", h.Admin.Carpool.BillingExceptions)
+		carpool.POST("/billing-exceptions/:id/reconcile", h.Admin.Carpool.ReconcileBillingException)
+		carpool.GET("/reset-batches", h.Admin.CarpoolReset.Batches)
+		carpool.POST("/reset-batches", h.Admin.CarpoolReset.Register)
+		carpool.POST("/reset-batches/:id/schedule", h.Admin.CarpoolReset.Schedule)
+		carpool.POST("/reset-batches/:id/execute", h.Admin.CarpoolReset.Execute)
+		carpool.GET("/reset-observations", h.Admin.CarpoolReset.Observations)
+		carpool.POST("/reset-observations/scan", h.Admin.CarpoolReset.ScanObservations)
+	}
+	admin.POST("/users/:id/carpool/preview", h.Admin.Carpool.Preview)
+	admin.POST("/users/:id/carpool/terms", h.Admin.Carpool.Open)
 }
 
 func registerPromptAuditRoutes(admin *gin.RouterGroup, h *handler.Handlers) {

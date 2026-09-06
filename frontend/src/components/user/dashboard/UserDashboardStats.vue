@@ -10,10 +10,47 @@
           </svg>
         </div>
         <div>
-          <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('dashboard.balance') }}</p>
-          <p class="text-xl font-bold text-emerald-600 dark:text-emerald-400">${{ formatBalance(balance) }}</p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('common.available') }}</p>
+          <p data-testid="dashboard-funding-label" class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ fundingLabel }}</p>
+          <p data-testid="dashboard-funding-amount" class="text-xl font-bold text-emerald-600 dark:text-emerald-400">${{ formatBalance(displayedAvailableAmount) }}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">{{ fundingHint }}</p>
         </div>
+      </div>
+      <div class="mt-4 border-t border-gray-100 pt-3 dark:border-dark-700">
+        <div data-testid="carpool-boost-layout" class="flex flex-wrap items-center justify-between gap-2">
+          <div data-testid="carpool-boost-copy" class="min-w-[7rem] flex-1">
+            <div class="flex items-center gap-1">
+              <p class="text-xs font-medium text-gray-700 dark:text-gray-200">{{ t('carpool.boost.title') }}</p>
+              <HelpTooltip v-if="carpoolStore.boosts" :content="boostHelpText" trigger="both" width-class="w-72 max-w-[calc(100vw-1rem)]">
+                <template #trigger>
+                  <button type="button" class="rounded p-0.5 text-gray-400 hover:text-primary-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" :aria-label="t('carpool.boost.title')">
+                    <Icon name="questionCircle" size="xs" />
+                  </button>
+                </template>
+              </HelpTooltip>
+            </div>
+            <p v-if="carpoolStore.boosts" class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+              {{ t('carpool.boost.remaining', { remaining: carpoolStore.boosts.remaining, total: carpoolStore.boosts.total }) }}
+              <span class="whitespace-nowrap">· {{ t('carpool.boost.amount', { amount: formatCarpoolAmount(carpoolStore.boosts.amount_usd) }) }}</span>
+            </p>
+            <button v-else-if="boostLoadError" type="button" class="mt-1 text-xs font-medium text-red-600 hover:underline dark:text-red-400" @click="loadBoosts">
+              {{ t('carpool.boost.retry') }}
+            </button>
+            <p v-else class="mt-0.5 text-xs text-gray-400">{{ t('carpool.boost.loading') }}</p>
+          </div>
+          <button
+            type="button"
+            data-testid="carpool-boost-action"
+            class="btn btn-primary ml-auto min-h-9 shrink-0 px-3 py-1.5 text-xs"
+            :disabled="!carpoolStore.boosts?.eligible || carpoolStore.claiming"
+            @click="handleClaimBoost"
+          >
+            <Icon name="fire" size="xs" />
+            {{ carpoolStore.claiming ? t('carpool.boost.claiming') : t('carpool.boost.action') }}
+          </button>
+        </div>
+        <p v-if="carpoolStore.boosts && !carpoolStore.boosts.eligible" class="mt-2 text-xs text-amber-700 dark:text-amber-300">
+          {{ localizedUnavailableReason }}
+        </p>
       </div>
     </div>
 
@@ -223,9 +260,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
+import HelpTooltip from '@/components/common/HelpTooltip.vue'
+import { useAppStore } from '@/stores/app'
+import { useCarpoolStore } from '@/stores/carpool'
+import { formatCarpoolAmount, parseCarpoolAmount } from '@/utils/carpool'
 import type { UserDashboardStats as UserStatsType } from '@/api/usage'
 import type { PlatformQuotaItem } from '@/types'
 
@@ -246,6 +287,70 @@ const props = defineProps<{
   platformQuotas?: PlatformQuotaItem[] | null
 }>()
 const { t } = useI18n()
+const appStore = useAppStore()
+const carpoolStore = useCarpoolStore()
+const emit = defineEmits<{ (event: 'boostClaimed'): void }>()
+const boostLoadError = ref(false)
+let boostRefreshTimer: ReturnType<typeof setInterval> | null = null
+
+const boostHelpText = computed(() => t('carpool.boost.help', {
+  total: carpoolStore.boosts?.total ?? 0,
+  amount: formatCarpoolAmount(carpoolStore.boosts?.amount_usd),
+}))
+const usingCarpoolQuota = computed(() => carpoolStore.availableQuotaUsd !== null)
+const displayedAvailableAmount = computed(() => usingCarpoolQuota.value ? parseCarpoolAmount(carpoolStore.availableQuotaUsd) : props.balance)
+const fundingLabel = computed(() => usingCarpoolQuota.value ? t('carpool.availableQuota') : t('dashboard.balance'))
+const fundingHint = computed(() => {
+  if (!usingCarpoolQuota.value) return t('common.available')
+  return carpoolStore.detailsError ? t('carpool.quotaStale') : t('carpool.quotaIndependent')
+})
+
+const localizedUnavailableReason = computed(() => {
+  const reason = carpoolStore.boosts?.unavailable_reason
+  const reasonKeys: Record<string, string> = {
+    no_term: 'noTerm',
+    term_not_started: 'termPending',
+    term_expired: 'termExpired',
+    term_terminated: 'termTerminated',
+    boosts_exhausted: 'exhausted',
+    no_active_cycle: 'noActiveCycle',
+  }
+  return t(`carpool.boost.reasons.${reasonKeys[reason ?? ''] ?? 'unavailable'}`)
+})
+
+async function loadBoosts() {
+  try {
+    await carpoolStore.fetchBoosts()
+    boostLoadError.value = false
+  } catch (error) {
+    boostLoadError.value = true
+    console.error('Failed to load carpool boosts:', error)
+  }
+}
+
+async function handleClaimBoost() {
+  try {
+    await carpoolStore.claimBoost()
+    await Promise.allSettled([carpoolStore.fetchBoosts(), carpoolStore.fetchDetails()])
+    emit('boostClaimed')
+    appStore.showSuccess(t('carpool.boost.claimed'))
+  } catch (error) {
+    if (error instanceof Error && error.message === 'CARPOOL_BOOST_IN_PROGRESS') return
+    const message = typeof error === 'object' && error !== null && 'message' in error ? String(error.message) : t('carpool.boost.failed')
+    appStore.showError(message)
+  }
+}
+
+onMounted(() => {
+  void loadBoosts()
+  boostRefreshTimer = setInterval(() => {
+    if (document.visibilityState === 'visible') void loadBoosts()
+  }, 45_000)
+})
+
+onBeforeUnmount(() => {
+  if (boostRefreshTimer) clearInterval(boostRefreshTimer)
+})
 
 const PLATFORM_LABELS: Record<string, string> = {
   anthropic: 'Claude',

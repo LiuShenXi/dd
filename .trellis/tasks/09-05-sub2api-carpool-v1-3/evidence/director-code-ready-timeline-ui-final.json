@@ -1,0 +1,30 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "git_head": "36266f512776d78d4f1645a75ae0e84816f8a0a7",
+  "backend_build": "passed",
+  "frontend_build": "passed",
+  "frontend_typecheck": "passed",
+  "frontend_lint": "passed-full-before-followups-and-final-scoped",
+  "frontend_tests": { "files_passed": 267, "tests_passed": 1934, "exit_code": 0 },
+  "focused_tests": { "tests_passed": 13, "exit_code": 0 },
+  "independent_review": "rules28_check: dense height and skewed desktop edge packing resolved; no remaining blocker; surrounding page and business behavior unchanged",
+  "source_sha256": "4B79950D81E1EECCBFA5A95E2A607B322D4F97CEA9C120BCB4A52588AE5ADA01",
+  "embedded_frontend_sha256": "C2DC29D8E9D97DD72770180F355916B23CC820884F32473538C3307609F3734F",
+  "approved_for_local_start": true,
+  "local_start_only": true,
+  "final_acceptance": false,
+  "all_product_writers_frozen": true,
+  "revision": "Timeline-only final correction: right-to-left label constraint packing prevents sparse early labels leaving the left edge when later events cluster near term end. Standard two-event visual output unchanged. No surrounding page, business, locale, store, API or database changes.",
+  "component_sha256": "60B35F8BC22199E0287A401B1112797E70478BC8F0D2D579B229E07D923F2F90",
+  "focused_spec_sha256": "96C5E793963E2D68D72578293B4C175CA33C4D1DD4DF1DEA7CB61C213EF75B4A",
+  "verification": {
+    "frontend_full_test_session": "68115: 267 files / 1934 tests, 49.19s, exit 0",
+    "frontend_build_session": "19382: vue-tsc -b and Vite build, exit 0",
+    "backend_private_log": "runtime/timeline-ui-backend-build.stdout.log and stderr.log; backend source unchanged by visual followups",
+    "diff_check": "passed; existing CRLF notices only"
+  },
+  "previous_visual_gate": "director-code-ready-timeline-ui.json",
+  "previous_visual_image": "sha256:94c1851b5960fbba96ad6ca2eff3cea5e5e1d4bdd242741c4d67d18a781bcc17",
+  "preserve": "Original copied and synthetic baselines and marker fixture remain immutable. Rebuild isolated app/mock only with existing DB/Redis/volumes/config/network. No imports, boosts, clock changes, remote actions, commit, push or deployment.",
+  "remaining_acceptance": ["Final exact-image screenshots and conservation recheck"]
+}

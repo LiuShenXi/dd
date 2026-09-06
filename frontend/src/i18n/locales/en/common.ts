@@ -190,6 +190,8 @@ export default {
     logout: 'Logout',
     github: 'GitHub',
     mySubscriptions: 'My Subscriptions',
+    carpoolDetails: 'Carpool Details',
+    carpoolManagement: 'Carpool Management',
     buySubscription: 'Recharge / Subscription',
     docs: 'Docs',
     myOrders: 'My Orders',

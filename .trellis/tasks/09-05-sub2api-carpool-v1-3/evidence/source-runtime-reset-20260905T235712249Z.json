@@ -1,0 +1,144 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "suite": "reset",
+  "source": "synthetic-local-only",
+  "overall_status": "passed",
+  "code_evidence_sha256": "2F8841CEB2659B384ABAF5642F56A725B26B35986AD556115ACFD4290FC8A422",
+  "image_id": "sha256:6d569031eb1b5017fe7c3a7f5f14ed6a863442d9f49d7b2dc372d586b3c7adfd",
+  "config_sha256": "DE0F5E535B4695CE00962D8C7C85A46482D9802ACC637010BE02A0AAEEA53D32",
+  "environment_sha256": "243CE4441380C7E49B7E09BF37EFA839BE86CB6E3F0F1B394C894F6909F40B27",
+  "network_id": "989d8be98f73baa478ff7b5f2be413923f8ea672d7859302f38405f3f3dd846a",
+  "checkout_scope": "immutable-reviewed-image-not-later-source-edits",
+  "driver_source_sha256": "1CBB6D7ABB28F43AEA6E05CF887C23ACE3F7A119778952D74C24385C1D0698C6",
+  "driver_test_sha256": "340927AE7984ADB9C3D4639FF716701F9782B124F9A8BA928FF9A350F0FF0062",
+  "driver_binary_sha256": "3AD6BAFD792CE45CD89E785E2C50956963CAF0DA0D296A749A281F8D1077C1D8",
+  "completed_at": "2026-09-05T23:57:12.2482079+00:00",
+  "passed": 22,
+  "failed": 0,
+  "isolation": "passed",
+  "conservation": {
+    "copied-announcements": "passed",
+    "copied-records": "passed"
+  },
+  "assertions": [
+    {
+      "name": "auth.bootstrap_admin",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "reset.scope_preflight",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.fresh_synthetic_users",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.fresh_synthetic_users",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.synthetic_carpool_group",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.current_plan_contract",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.member_terms",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "reset.execution_window_safety",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "reset.admin_authorization",
+      "status": "pass",
+      "http_status": 403
+    },
+    {
+      "name": "reset.register_missing_idempotency_key",
+      "status": "pass",
+      "http_status": 400
+    },
+    {
+      "name": "reset.register_confirmed_qualification",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "reset.register_replay_original_response",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "reset.register_conflicting_payload",
+      "status": "pass",
+      "http_status": 409
+    },
+    {
+      "name": "reset.next_shanghai_2200_schedule",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "reset.schedule_success",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "reset.schedule_replay_original_response",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "reset.schedule_conflicting_payload",
+      "status": "pass",
+      "http_status": 409
+    },
+    {
+      "name": "reset.execute_out_of_window_refused",
+      "status": "pass",
+      "http_status": 409
+    },
+    {
+      "name": "reset.execute_refusal_preserves_batch",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "announcement.merge_no_duplicate",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "announcement.merge_existing_audience",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "announcement.mark_read_audience",
+      "status": "pass",
+      "http_status": 200
+    }
+  ],
+  "excluded_checks": [
+    {
+      "name": "reset.actual_due_execution",
+      "coverage": "postgresql_covered",
+      "evidence": "source-runtime-pg-progress.md"
+    }
+  ],
+  "scenario": "pending_merge",
+  "copied_user_term_preflight": "zero"
+}

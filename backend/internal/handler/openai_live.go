@@ -38,6 +38,10 @@ func (h *OpenAIGatewayHandler) Live(c *gin.Context) {
 		h.errorResponse(c, http.StatusForbidden, "permission_error", "Live is not enabled for this group")
 		return
 	}
+	if apiKey.Group.IsCarpoolType() {
+		h.errorResponse(c, http.StatusForbidden, "CARPOOL_LIVE_UNSUPPORTED", "Live is not supported for carpool billing")
+		return
+	}
 	request, err := parseLiveCallRequest(c)
 	if err != nil {
 		h.errorResponse(c, http.StatusBadRequest, "invalid_request_error", err.Error())

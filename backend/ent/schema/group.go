@@ -2,6 +2,7 @@ package schema
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/Wei-Shaw/sub2api/ent/schema/mixins"
 	"github.com/Wei-Shaw/sub2api/internal/domain"
@@ -81,6 +82,14 @@ func (Group) Fields() []ent.Field {
 			Default(domain.PlatformAnthropic),
 		field.String("subscription_type").
 			MaxLen(20).
+			Validate(func(v string) error {
+				switch v {
+				case domain.SubscriptionTypeStandard, domain.SubscriptionTypeSubscription, domain.SubscriptionTypeCarpool:
+					return nil
+				default:
+					return fmt.Errorf("unsupported subscription_type %q", v)
+				}
+			}).
 			Default(domain.SubscriptionTypeStandard),
 		field.Float("daily_limit_usd").
 			Optional().

@@ -1,0 +1,5 @@
+
+> sub2api-frontend@1.0.0 typecheck C:\WORK-SPACE\sub2api-carpool-v1.3\frontend
+> vue-tsc --noEmit
+
+EXIT_CODE=0

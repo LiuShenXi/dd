@@ -1,0 +1,38 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "task_directory": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3",
+  "git_head": "36266f512776d78d4f1645a75ae0e84816f8a0a7",
+  "backend_build": "passed",
+  "frontend_build": "passed",
+  "frontend_typecheck": "passed",
+  "frontend_lint": "passed",
+  "frontend_tests": { "files_passed": 265, "tests_passed": 1903, "exit_code": 0 },
+  "approved_for_local_start": true,
+  "local_start_only": true,
+  "final_acceptance": false,
+  "source_sha256": "E27EC3B41A1DDC3FE78520B33E93CA811821C9F5D8DCEA72D81E2F8F1B2812D4",
+  "embedded_frontend_sha256": "2B88660EFE8991B65B380713D96DDBFCC9E67BE523080393BB27563EFCED9508",
+  "source_unchanged_during_build_and_tests": true,
+  "frontend_unchanged_since_full_verification": true,
+  "all_implementation_owners_frozen": true,
+  "evidence": {
+    "backend_build": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-v4-backend-build.log",
+    "unchanged_backend_focused_three": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-v3-backend-focused-three.log",
+    "unchanged_backend_vet": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-v3-vet.log",
+    "frontend_typecheck": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-v4-frontend-typecheck.log",
+    "frontend_lint": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-v4-frontend-lint.log",
+    "frontend_tests": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-v4-frontend-full-tests.log",
+    "frontend_build": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-final-image-v4-frontend-build.log",
+    "mobile_defect_before_fix": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-v3-user-dashboard-390.png",
+    "existing_service_baseline": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3/evidence/director-baseline-service-review.md"
+  },
+  "change_since_v3": "Only UserDashboardStats.vue boost flex wrapping, readable text minimum and action alignment, plus focused layout regression. No backend, API, accounting, scheduling or announcement changes.",
+  "remaining_acceptance": [
+    "Source-owned preservation-safe immutable rebuild and strict HTTP/WS/pending-merge reset API reruns on this exact image",
+    "Recheck mobile boost layout and final-image desktop/narrow screenshots",
+    "Admin synthetic live workflows, final evidence review and actual acceptance records"
+  ],
+  "first_publication_evidence_boundary": "V3 first-publication run retained 20 passes and 1 version-audience failure under a driver that read version and list separately. Its original baseline was not retained, so the exact runtime mismatch is not reconstructed. Batch1 and announcement10 remain. Stable read-only audience checks and a coherent pending-merge run are separate evidence; never delete/reset scope or rewrite the failed artifact as passing.",
+  "known_baseline_limit": "Full service suite is not green: four Windows plugin installer failures and intermittent moderation timeout independently reproduced at baseline HEAD. Task-focused tests pass; compile-only is not full test execution.",
+  "safety_scope": "Only source coordinator may preservation-safe rebuild/start sealed 127.0.0.1:38088 runtime and shared PG harness. Retain copied DB/Redis/app volumes and no-egress/loopback isolation. No production, provider/card use, external notifications, push or deployment. No guessed copied-user terms."
+}

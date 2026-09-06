@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -10,6 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )
+
+func TestShouldRecordCyberUsageForErrorSkipsIntermediateFailover(t *testing.T) {
+	require.False(t, shouldRecordCyberUsageForError(nil))
+	require.False(t, shouldRecordCyberUsageForError(&service.UpstreamFailoverError{}))
+	require.True(t, shouldRecordCyberUsageForError(errors.New("terminal upstream failure")))
+}
 
 // newTestGinContext builds a bare gin.Context backed by an httptest recorder.
 func newTestGinContext() *gin.Context {

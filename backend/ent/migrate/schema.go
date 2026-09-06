@@ -271,6 +271,10 @@ var (
 		{Name: "ends_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
 		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
 		{Name: "updated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "source_type", Type: field.TypeString, Nullable: true, Size: 32},
+		{Name: "source_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "source_event_kind", Type: field.TypeString, Nullable: true, Size: 32},
+		{Name: "source_revision", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
 	}
@@ -288,7 +292,7 @@ var (
 			{
 				Name:    "announcement_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{AnnouncementsColumns[10]},
+				Columns: []*schema.Column{AnnouncementsColumns[14]},
 			},
 			{
 				Name:    "announcement_starts_at",
@@ -299,6 +303,11 @@ var (
 				Name:    "announcement_ends_at",
 				Unique:  false,
 				Columns: []*schema.Column{AnnouncementsColumns[7]},
+			},
+			{
+				Name:    "announcement_source_type_source_id_source_event_kind_source_revision",
+				Unique:  true,
+				Columns: []*schema.Column{AnnouncementsColumns[10], AnnouncementsColumns[11], AnnouncementsColumns[12], AnnouncementsColumns[13]},
 			},
 		},
 	}
@@ -614,6 +623,535 @@ var (
 				Name:    "batchimagejob_user_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{BatchImageJobsColumns[32]},
+			},
+		},
+	}
+	// CarpoolBillingRequestsColumns holds the columns for the "carpool_billing_requests" table.
+	CarpoolBillingRequestsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "request_id", Type: field.TypeString, Size: 128},
+		{Name: "api_key_id", Type: field.TypeInt64},
+		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "group_id", Type: field.TypeInt64},
+		{Name: "term_id", Type: field.TypeInt64},
+		{Name: "cycle_id", Type: field.TypeInt64},
+		{Name: "admitted_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "status", Type: field.TypeString, Size: 32},
+		{Name: "request_fingerprint", Type: field.TypeString, Size: 64},
+		{Name: "billing_payload", Type: field.TypeJSON, Nullable: true, SchemaType: map[string]string{"postgres": "jsonb"}},
+		{Name: "actual_cost_usd", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "numeric(20,8)"}},
+		{Name: "retry_count", Type: field.TypeInt, Default: 0},
+		{Name: "last_error", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "receipt_recorded_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "settled_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "resolution", Type: field.TypeString, Nullable: true, Size: 32},
+		{Name: "resolved_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "resolved_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "resolution_reason", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolBillingRequestsTable holds the schema information for the "carpool_billing_requests" table.
+	CarpoolBillingRequestsTable = &schema.Table{
+		Name:       "carpool_billing_requests",
+		Columns:    CarpoolBillingRequestsColumns,
+		PrimaryKey: []*schema.Column{CarpoolBillingRequestsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolbillingrequest_request_id_api_key_id",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolBillingRequestsColumns[1], CarpoolBillingRequestsColumns[2]},
+			},
+			{
+				Name:    "carpoolbillingrequest_status_updated_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolBillingRequestsColumns[8], CarpoolBillingRequestsColumns[21]},
+			},
+			{
+				Name:    "carpoolbillingrequest_cycle_id_status",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolBillingRequestsColumns[6], CarpoolBillingRequestsColumns[8]},
+			},
+		},
+	}
+	// CarpoolCyclesColumns holds the columns for the "carpool_cycles" table.
+	CarpoolCyclesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "term_id", Type: field.TypeInt64},
+		{Name: "cycle_no", Type: field.TypeInt},
+		{Name: "starts_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "ends_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "base_quota_usd", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(20,8)"}},
+		{Name: "base_balance_usd", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"postgres": "numeric(20,8)"}},
+		{Name: "boost_balance_usd", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"postgres": "numeric(20,8)"}},
+		{Name: "manual_balance_usd", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"postgres": "numeric(20,8)"}},
+		{Name: "state", Type: field.TypeString, Size: 24, Default: "scheduled"},
+		{Name: "revision", Type: field.TypeInt64, Default: 0},
+		{Name: "activated_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "closed_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolCyclesTable holds the schema information for the "carpool_cycles" table.
+	CarpoolCyclesTable = &schema.Table{
+		Name:       "carpool_cycles",
+		Columns:    CarpoolCyclesColumns,
+		PrimaryKey: []*schema.Column{CarpoolCyclesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolcycle_term_id_cycle_no",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolCyclesColumns[1], CarpoolCyclesColumns[2]},
+			},
+			{
+				Name:    "carpoolcycle_state_starts_at_ends_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolCyclesColumns[9], CarpoolCyclesColumns[3], CarpoolCyclesColumns[4]},
+			},
+		},
+	}
+	// CarpoolLedgerColumns holds the columns for the "carpool_ledger" table.
+	CarpoolLedgerColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "term_id", Type: field.TypeInt64},
+		{Name: "cycle_id", Type: field.TypeInt64},
+		{Name: "event_type", Type: field.TypeString, Size: 32},
+		{Name: "bucket", Type: field.TypeString, Size: 16},
+		{Name: "delta_usd", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(20,8)"}},
+		{Name: "event_key", Type: field.TypeString, Size: 180},
+		{Name: "request_id", Type: field.TypeString, Nullable: true, Size: 128},
+		{Name: "api_key_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "reset_batch_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "boost_slot", Type: field.TypeInt, Nullable: true},
+		{Name: "actor_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "reverses_ledger_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "reason", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "effective_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "recorded_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolLedgerTable holds the schema information for the "carpool_ledger" table.
+	CarpoolLedgerTable = &schema.Table{
+		Name:       "carpool_ledger",
+		Columns:    CarpoolLedgerColumns,
+		PrimaryKey: []*schema.Column{CarpoolLedgerColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolledger_event_key",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolLedgerColumns[7]},
+			},
+			{
+				Name:    "carpoolledger_term_id_boost_slot",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolLedgerColumns[2], CarpoolLedgerColumns[11]},
+				Annotation: &entsql.IndexAnnotation{
+					Where: "boost_slot IS NOT NULL",
+				},
+			},
+			{
+				Name:    "carpoolledger_reverses_ledger_id",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolLedgerColumns[13]},
+				Annotation: &entsql.IndexAnnotation{
+					Where: "reverses_ledger_id IS NOT NULL",
+				},
+			},
+			{
+				Name:    "carpoolledger_user_id_recorded_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolLedgerColumns[1], CarpoolLedgerColumns[16]},
+			},
+			{
+				Name:    "carpoolledger_term_id_cycle_id_recorded_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolLedgerColumns[2], CarpoolLedgerColumns[3], CarpoolLedgerColumns[16]},
+			},
+			{
+				Name:    "carpoolledger_request_id_api_key_id",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolLedgerColumns[8], CarpoolLedgerColumns[9]},
+			},
+		},
+	}
+	// CarpoolOperationsColumns holds the columns for the "carpool_operations" table.
+	CarpoolOperationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "kind", Type: field.TypeString, Size: 32},
+		{Name: "actor_id", Type: field.TypeInt64},
+		{Name: "key_hash", Type: field.TypeString, Size: 64},
+		{Name: "request_fingerprint", Type: field.TypeString, Size: 64},
+		{Name: "resource_type", Type: field.TypeString, Size: 32},
+		{Name: "resource_id", Type: field.TypeInt64},
+		{Name: "response", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolOperationsTable holds the schema information for the "carpool_operations" table.
+	CarpoolOperationsTable = &schema.Table{
+		Name:       "carpool_operations",
+		Columns:    CarpoolOperationsColumns,
+		PrimaryKey: []*schema.Column{CarpoolOperationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpooloperation_kind_actor_id_key_hash",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolOperationsColumns[1], CarpoolOperationsColumns[2], CarpoolOperationsColumns[3]},
+			},
+			{
+				Name:    "carpooloperation_resource_type_resource_id",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolOperationsColumns[5], CarpoolOperationsColumns[6]},
+			},
+		},
+	}
+	// CarpoolPaymentsColumns holds the columns for the "carpool_payments" table.
+	CarpoolPaymentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "term_id", Type: field.TypeInt64},
+		{Name: "amount_cny", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(20,2)"}},
+		{Name: "payment_kind", Type: field.TypeString, Size: 16},
+		{Name: "paid_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "channel", Type: field.TypeString, Size: 64},
+		{Name: "external_order_no", Type: field.TypeString, Nullable: true, Size: 128},
+		{Name: "request_id", Type: field.TypeString, Size: 128},
+		{Name: "request_fingerprint", Type: field.TypeString, Size: 64},
+		{Name: "recorded_by", Type: field.TypeInt64},
+		{Name: "notes", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "recorded_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolPaymentsTable holds the schema information for the "carpool_payments" table.
+	CarpoolPaymentsTable = &schema.Table{
+		Name:       "carpool_payments",
+		Columns:    CarpoolPaymentsColumns,
+		PrimaryKey: []*schema.Column{CarpoolPaymentsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolpayment_term_id_request_id",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolPaymentsColumns[1], CarpoolPaymentsColumns[7]},
+			},
+			{
+				Name:    "carpoolpayment_term_id_paid_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolPaymentsColumns[1], CarpoolPaymentsColumns[4]},
+			},
+			{
+				Name:    "carpoolpayment_external_order_no",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolPaymentsColumns[6]},
+			},
+		},
+	}
+	// CarpoolPlansColumns holds the columns for the "carpool_plans" table.
+	CarpoolPlansColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "code", Type: field.TypeString, Size: 32},
+		{Name: "name", Type: field.TypeString, Size: 100},
+		{Name: "list_price_cny", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(20,2)"}},
+		{Name: "weekly_quota_usd", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "numeric(20,8)"}},
+		{Name: "duration_days", Type: field.TypeInt, Default: 28},
+		{Name: "cycle_days", Type: field.TypeInt, Default: 7},
+		{Name: "boost_ratio", Type: field.TypeFloat64, Default: 0.1, SchemaType: map[string]string{"postgres": "numeric(10,8)"}},
+		{Name: "boost_count", Type: field.TypeInt, Default: 3},
+		{Name: "enabled", Type: field.TypeBool, Default: true},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolPlansTable holds the schema information for the "carpool_plans" table.
+	CarpoolPlansTable = &schema.Table{
+		Name:       "carpool_plans",
+		Columns:    CarpoolPlansColumns,
+		PrimaryKey: []*schema.Column{CarpoolPlansColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolplan_code_version",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolPlansColumns[1], CarpoolPlansColumns[10]},
+			},
+			{
+				Name:    "carpoolplan_enabled",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolPlansColumns[9]},
+			},
+		},
+	}
+	// CarpoolResetAccountStatesColumns holds the columns for the "carpool_reset_account_states" table.
+	CarpoolResetAccountStatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "upstream_identity_hash", Type: field.TypeString, Unique: true, Size: 64},
+		{Name: "representative_account_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "baseline_complete", Type: field.TypeBool, Default: false},
+		{Name: "last_observed_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "last_complete_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "health_status", Type: field.TypeString, Size: 24, Default: "unknown"},
+		{Name: "known_credit_count", Type: field.TypeInt, Default: 0},
+		{Name: "incomplete_reason", Type: field.TypeString, Nullable: true, Size: 64},
+		{Name: "revision", Type: field.TypeInt64, Default: 0},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolResetAccountStatesTable holds the schema information for the "carpool_reset_account_states" table.
+	CarpoolResetAccountStatesTable = &schema.Table{
+		Name:       "carpool_reset_account_states",
+		Columns:    CarpoolResetAccountStatesColumns,
+		PrimaryKey: []*schema.Column{CarpoolResetAccountStatesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolresetaccountstate_health_status_last_observed_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolResetAccountStatesColumns[6], CarpoolResetAccountStatesColumns[4]},
+			},
+		},
+	}
+	// CarpoolResetAnnouncementOutboxColumns holds the columns for the "carpool_reset_announcement_outbox" table.
+	CarpoolResetAnnouncementOutboxColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "batch_id", Type: field.TypeInt64},
+		{Name: "scope_id", Type: field.TypeInt64},
+		{Name: "event_kind", Type: field.TypeString, Size: 24},
+		{Name: "schedule_revision", Type: field.TypeInt},
+		{Name: "status", Type: field.TypeString, Size: 24, Default: "pending"},
+		{Name: "announcement_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "original_announcement_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "title", Type: field.TypeString, Size: 200},
+		{Name: "content", Type: field.TypeString, SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "attempts", Type: field.TypeInt, Default: 0},
+		{Name: "next_attempt_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "last_error", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "published_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolResetAnnouncementOutboxTable holds the schema information for the "carpool_reset_announcement_outbox" table.
+	CarpoolResetAnnouncementOutboxTable = &schema.Table{
+		Name:       "carpool_reset_announcement_outbox",
+		Columns:    CarpoolResetAnnouncementOutboxColumns,
+		PrimaryKey: []*schema.Column{CarpoolResetAnnouncementOutboxColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolresetannouncementoutbox_batch_id_event_kind_schedule_revision",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolResetAnnouncementOutboxColumns[1], CarpoolResetAnnouncementOutboxColumns[3], CarpoolResetAnnouncementOutboxColumns[4]},
+			},
+			{
+				Name:    "carpoolresetannouncementoutbox_status_next_attempt_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolResetAnnouncementOutboxColumns[5], CarpoolResetAnnouncementOutboxColumns[11]},
+			},
+		},
+	}
+	// CarpoolResetBatchesColumns holds the columns for the "carpool_reset_batches" table.
+	CarpoolResetBatchesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "scope_id", Type: field.TypeInt64},
+		{Name: "status", Type: field.TypeString, Size: 24},
+		{Name: "detected_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "qualified_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "slot_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "scheduled_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "schedule_revision", Type: field.TypeInt, Default: 0},
+		{Name: "effective_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "completed_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "delay_reason", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "evidence", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
+		{Name: "announcement_state", Type: field.TypeString, Size: 24, Default: "pending"},
+		{Name: "qualification_source", Type: field.TypeString, Size: 24},
+		{Name: "source_event_key_hash", Type: field.TypeString, Size: 64},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolResetBatchesTable holds the schema information for the "carpool_reset_batches" table.
+	CarpoolResetBatchesTable = &schema.Table{
+		Name:       "carpool_reset_batches",
+		Columns:    CarpoolResetBatchesColumns,
+		PrimaryKey: []*schema.Column{CarpoolResetBatchesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolresetbatch_scope_id_source_event_key_hash",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolResetBatchesColumns[1], CarpoolResetBatchesColumns[14]},
+			},
+			{
+				Name:    "carpoolresetbatch_status_scheduled_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolResetBatchesColumns[2], CarpoolResetBatchesColumns[6]},
+			},
+		},
+	}
+	// CarpoolResetCreditsColumns holds the columns for the "carpool_reset_credits" table.
+	CarpoolResetCreditsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "account_state_id", Type: field.TypeInt64},
+		{Name: "upstream_identity_hash", Type: field.TypeString, Size: 64},
+		{Name: "credit_hash", Type: field.TypeString, Size: 64},
+		{Name: "first_seen_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "last_seen_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "expires_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "initial_stock", Type: field.TypeBool, Default: false},
+		{Name: "assignment_status", Type: field.TypeString, Size: 24, Default: "pending"},
+		{Name: "reset_batch_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolResetCreditsTable holds the schema information for the "carpool_reset_credits" table.
+	CarpoolResetCreditsTable = &schema.Table{
+		Name:       "carpool_reset_credits",
+		Columns:    CarpoolResetCreditsColumns,
+		PrimaryKey: []*schema.Column{CarpoolResetCreditsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolresetcredit_upstream_identity_hash_credit_hash",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolResetCreditsColumns[2], CarpoolResetCreditsColumns[3]},
+			},
+			{
+				Name:    "carpoolresetcredit_assignment_status_first_seen_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolResetCreditsColumns[8], CarpoolResetCreditsColumns[4]},
+			},
+			{
+				Name:    "carpoolresetcredit_reset_batch_id",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolResetCreditsColumns[9]},
+			},
+		},
+	}
+	// CarpoolResetQualificationsColumns holds the columns for the "carpool_reset_qualifications" table.
+	CarpoolResetQualificationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "scope_id", Type: field.TypeInt64},
+		{Name: "batch_id", Type: field.TypeInt64},
+		{Name: "source", Type: field.TypeString, Size: 24},
+		{Name: "source_event_key_hash", Type: field.TypeString, Size: 64},
+		{Name: "reason", Type: field.TypeString, SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "confirmed_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolResetQualificationsTable holds the schema information for the "carpool_reset_qualifications" table.
+	CarpoolResetQualificationsTable = &schema.Table{
+		Name:       "carpool_reset_qualifications",
+		Columns:    CarpoolResetQualificationsColumns,
+		PrimaryKey: []*schema.Column{CarpoolResetQualificationsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolresetqualification_scope_id_source_event_key_hash",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolResetQualificationsColumns[1], CarpoolResetQualificationsColumns[4]},
+			},
+			{
+				Name:    "carpoolresetqualification_batch_id",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolResetQualificationsColumns[2]},
+			},
+		},
+	}
+	// CarpoolResetScopeStatesColumns holds the columns for the "carpool_reset_scope_states" table.
+	CarpoolResetScopeStatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "scope_id", Type: field.TypeInt64, Unique: true},
+		{Name: "timezone", Type: field.TypeString, Size: 64, Default: "Asia/Shanghai"},
+		{Name: "last_successful_reset_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "pending_batch_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "revision", Type: field.TypeInt64, Default: 0},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolResetScopeStatesTable holds the schema information for the "carpool_reset_scope_states" table.
+	CarpoolResetScopeStatesTable = &schema.Table{
+		Name:       "carpool_reset_scope_states",
+		Columns:    CarpoolResetScopeStatesColumns,
+		PrimaryKey: []*schema.Column{CarpoolResetScopeStatesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolresetscopestate_scope_id",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolResetScopeStatesColumns[1]},
+			},
+		},
+	}
+	// CarpoolResetTargetsColumns holds the columns for the "carpool_reset_targets" table.
+	CarpoolResetTargetsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "batch_id", Type: field.TypeInt64},
+		{Name: "term_id", Type: field.TypeInt64},
+		{Name: "cycle_id", Type: field.TypeInt64},
+		{Name: "status", Type: field.TypeString, Size: 24},
+		{Name: "granted_usd", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"postgres": "numeric(20,8)"}},
+		{Name: "executed_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolResetTargetsTable holds the schema information for the "carpool_reset_targets" table.
+	CarpoolResetTargetsTable = &schema.Table{
+		Name:       "carpool_reset_targets",
+		Columns:    CarpoolResetTargetsColumns,
+		PrimaryKey: []*schema.Column{CarpoolResetTargetsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolresettarget_batch_id_term_id",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolResetTargetsColumns[1], CarpoolResetTargetsColumns[2]},
+			},
+			{
+				Name:    "carpoolresettarget_batch_id_cycle_id",
+				Unique:  true,
+				Columns: []*schema.Column{CarpoolResetTargetsColumns[1], CarpoolResetTargetsColumns[3]},
+			},
+			{
+				Name:    "carpoolresettarget_term_id_executed_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolResetTargetsColumns[2], CarpoolResetTargetsColumns[6]},
+			},
+		},
+	}
+	// CarpoolTermsColumns holds the columns for the "carpool_terms" table.
+	CarpoolTermsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "scope_id", Type: field.TypeInt64},
+		{Name: "group_id", Type: field.TypeInt64},
+		{Name: "plan_id", Type: field.TypeInt64},
+		{Name: "plan_snapshot", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
+		{Name: "starts_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "expires_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "status", Type: field.TypeString, Size: 24},
+		{Name: "boost_used", Type: field.TypeInt, Default: 0},
+		{Name: "source_mode", Type: field.TypeString, Size: 24, Default: "new"},
+		{Name: "history_complete", Type: field.TypeBool, Default: true},
+		{Name: "statistics_since", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "created_by", Type: field.TypeInt64},
+		{Name: "notes", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "terminated_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "terminated_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "termination_reason", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// CarpoolTermsTable holds the schema information for the "carpool_terms" table.
+	CarpoolTermsTable = &schema.Table{
+		Name:       "carpool_terms",
+		Columns:    CarpoolTermsColumns,
+		PrimaryKey: []*schema.Column{CarpoolTermsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "carpoolterm_user_id_scope_id_starts_at_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolTermsColumns[1], CarpoolTermsColumns[2], CarpoolTermsColumns[6], CarpoolTermsColumns[7]},
+			},
+			{
+				Name:    "carpoolterm_scope_id_status_starts_at_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolTermsColumns[2], CarpoolTermsColumns[8], CarpoolTermsColumns[6], CarpoolTermsColumns[7]},
+			},
+			{
+				Name:    "carpoolterm_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolTermsColumns[3]},
+			},
+			{
+				Name:    "carpoolterm_plan_id",
+				Unique:  false,
+				Columns: []*schema.Column{CarpoolTermsColumns[4]},
 			},
 		},
 	}
@@ -1646,6 +2184,9 @@ var (
 		{Name: "model_mapping_chain", Type: field.TypeString, Nullable: true, Size: 500},
 		{Name: "billing_tier", Type: field.TypeString, Nullable: true, Size: 50},
 		{Name: "billing_mode", Type: field.TypeString, Nullable: true, Size: 20},
+		{Name: "carpool_term_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "carpool_cycle_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "carpool_admitted_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "timestamptz"}},
 		{Name: "input_tokens", Type: field.TypeInt, Default: 0},
 		{Name: "output_tokens", Type: field.TypeInt, Default: 0},
 		{Name: "cache_creation_tokens", Type: field.TypeInt, Default: 0},
@@ -1692,31 +2233,31 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "usage_logs_api_keys_usage_logs",
-				Columns:    []*schema.Column{UsageLogsColumns[43]},
+				Columns:    []*schema.Column{UsageLogsColumns[46]},
 				RefColumns: []*schema.Column{APIKeysColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "usage_logs_accounts_usage_logs",
-				Columns:    []*schema.Column{UsageLogsColumns[44]},
+				Columns:    []*schema.Column{UsageLogsColumns[47]},
 				RefColumns: []*schema.Column{AccountsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "usage_logs_groups_usage_logs",
-				Columns:    []*schema.Column{UsageLogsColumns[45]},
+				Columns:    []*schema.Column{UsageLogsColumns[48]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "usage_logs_users_usage_logs",
-				Columns:    []*schema.Column{UsageLogsColumns[46]},
+				Columns:    []*schema.Column{UsageLogsColumns[49]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "usage_logs_user_subscriptions_usage_logs",
-				Columns:    []*schema.Column{UsageLogsColumns[47]},
+				Columns:    []*schema.Column{UsageLogsColumns[50]},
 				RefColumns: []*schema.Column{UserSubscriptionsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1725,32 +2266,42 @@ var (
 			{
 				Name:    "usagelog_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{UsageLogsColumns[46]},
+				Columns: []*schema.Column{UsageLogsColumns[49]},
 			},
 			{
 				Name:    "usagelog_api_key_id",
 				Unique:  false,
-				Columns: []*schema.Column{UsageLogsColumns[43]},
+				Columns: []*schema.Column{UsageLogsColumns[46]},
 			},
 			{
 				Name:    "usagelog_account_id",
 				Unique:  false,
-				Columns: []*schema.Column{UsageLogsColumns[44]},
+				Columns: []*schema.Column{UsageLogsColumns[47]},
 			},
 			{
 				Name:    "usagelog_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{UsageLogsColumns[45]},
+				Columns: []*schema.Column{UsageLogsColumns[48]},
 			},
 			{
 				Name:    "usagelog_subscription_id",
 				Unique:  false,
-				Columns: []*schema.Column{UsageLogsColumns[47]},
+				Columns: []*schema.Column{UsageLogsColumns[50]},
+			},
+			{
+				Name:    "usagelog_carpool_term_id",
+				Unique:  false,
+				Columns: []*schema.Column{UsageLogsColumns[11]},
+			},
+			{
+				Name:    "usagelog_carpool_cycle_id",
+				Unique:  false,
+				Columns: []*schema.Column{UsageLogsColumns[12]},
 			},
 			{
 				Name:    "usagelog_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{UsageLogsColumns[42]},
+				Columns: []*schema.Column{UsageLogsColumns[45]},
 			},
 			{
 				Name:    "usagelog_model",
@@ -1770,17 +2321,17 @@ var (
 			{
 				Name:    "usagelog_user_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{UsageLogsColumns[46], UsageLogsColumns[42]},
+				Columns: []*schema.Column{UsageLogsColumns[49], UsageLogsColumns[45]},
 			},
 			{
 				Name:    "usagelog_api_key_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{UsageLogsColumns[43], UsageLogsColumns[42]},
+				Columns: []*schema.Column{UsageLogsColumns[46], UsageLogsColumns[45]},
 			},
 			{
 				Name:    "usagelog_group_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{UsageLogsColumns[45], UsageLogsColumns[42]},
+				Columns: []*schema.Column{UsageLogsColumns[48], UsageLogsColumns[45]},
 			},
 		},
 	}
@@ -2098,6 +2649,20 @@ var (
 		BatchImageEventsTable,
 		BatchImageItemsTable,
 		BatchImageJobsTable,
+		CarpoolBillingRequestsTable,
+		CarpoolCyclesTable,
+		CarpoolLedgerTable,
+		CarpoolOperationsTable,
+		CarpoolPaymentsTable,
+		CarpoolPlansTable,
+		CarpoolResetAccountStatesTable,
+		CarpoolResetAnnouncementOutboxTable,
+		CarpoolResetBatchesTable,
+		CarpoolResetCreditsTable,
+		CarpoolResetQualificationsTable,
+		CarpoolResetScopeStatesTable,
+		CarpoolResetTargetsTable,
+		CarpoolTermsTable,
 		ChannelMonitorsTable,
 		ChannelMonitorDailyRollupsTable,
 		ChannelMonitorHistoriesTable,
@@ -2170,6 +2735,48 @@ func init() {
 	}
 	BatchImageJobsTable.Annotation = &entsql.Annotation{
 		Table: "batch_image_jobs",
+	}
+	CarpoolBillingRequestsTable.Annotation = &entsql.Annotation{
+		Table: "carpool_billing_requests",
+	}
+	CarpoolCyclesTable.Annotation = &entsql.Annotation{
+		Table: "carpool_cycles",
+	}
+	CarpoolLedgerTable.Annotation = &entsql.Annotation{
+		Table: "carpool_ledger",
+	}
+	CarpoolOperationsTable.Annotation = &entsql.Annotation{
+		Table: "carpool_operations",
+	}
+	CarpoolPaymentsTable.Annotation = &entsql.Annotation{
+		Table: "carpool_payments",
+	}
+	CarpoolPlansTable.Annotation = &entsql.Annotation{
+		Table: "carpool_plans",
+	}
+	CarpoolResetAccountStatesTable.Annotation = &entsql.Annotation{
+		Table: "carpool_reset_account_states",
+	}
+	CarpoolResetAnnouncementOutboxTable.Annotation = &entsql.Annotation{
+		Table: "carpool_reset_announcement_outbox",
+	}
+	CarpoolResetBatchesTable.Annotation = &entsql.Annotation{
+		Table: "carpool_reset_batches",
+	}
+	CarpoolResetCreditsTable.Annotation = &entsql.Annotation{
+		Table: "carpool_reset_credits",
+	}
+	CarpoolResetQualificationsTable.Annotation = &entsql.Annotation{
+		Table: "carpool_reset_qualifications",
+	}
+	CarpoolResetScopeStatesTable.Annotation = &entsql.Annotation{
+		Table: "carpool_reset_scope_states",
+	}
+	CarpoolResetTargetsTable.Annotation = &entsql.Annotation{
+		Table: "carpool_reset_targets",
+	}
+	CarpoolTermsTable.Annotation = &entsql.Annotation{
+		Table: "carpool_terms",
 	}
 	ChannelMonitorsTable.ForeignKeys[0].RefTable = ChannelMonitorRequestTemplatesTable
 	ChannelMonitorsTable.Annotation = &entsql.Annotation{

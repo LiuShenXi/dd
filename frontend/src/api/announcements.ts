@@ -5,6 +5,11 @@
 import { apiClient } from './client'
 import type { UserAnnouncement } from '@/types'
 
+export interface AnnouncementVersion {
+  version: string
+  unread_count: number
+}
+
 export async function list(unreadOnly: boolean = false): Promise<UserAnnouncement[]> {
   const { data } = await apiClient.get<UserAnnouncement[]>('/announcements', {
     params: unreadOnly ? { unread_only: 1 } : {}
@@ -17,10 +22,15 @@ export async function markRead(id: number): Promise<{ message: string }> {
   return data
 }
 
+export async function getVersion(): Promise<AnnouncementVersion> {
+  const { data } = await apiClient.get<AnnouncementVersion>('/announcements/version')
+  return data
+}
+
 const announcementsAPI = {
   list,
-  markRead
+  markRead,
+  getVersion,
 }
 
 export default announcementsAPI
-

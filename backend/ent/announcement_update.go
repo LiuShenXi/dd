@@ -200,6 +200,94 @@ func (_u *AnnouncementUpdate) ClearUpdatedBy() *AnnouncementUpdate {
 	return _u
 }
 
+// SetSourceType sets the "source_type" field.
+func (_u *AnnouncementUpdate) SetSourceType(v string) *AnnouncementUpdate {
+	_u.mutation.SetSourceType(v)
+	return _u
+}
+
+// SetNillableSourceType sets the "source_type" field if the given value is not nil.
+func (_u *AnnouncementUpdate) SetNillableSourceType(v *string) *AnnouncementUpdate {
+	if v != nil {
+		_u.SetSourceType(*v)
+	}
+	return _u
+}
+
+// ClearSourceType clears the value of the "source_type" field.
+func (_u *AnnouncementUpdate) ClearSourceType() *AnnouncementUpdate {
+	_u.mutation.ClearSourceType()
+	return _u
+}
+
+// SetSourceID sets the "source_id" field.
+func (_u *AnnouncementUpdate) SetSourceID(v int64) *AnnouncementUpdate {
+	_u.mutation.ResetSourceID()
+	_u.mutation.SetSourceID(v)
+	return _u
+}
+
+// SetNillableSourceID sets the "source_id" field if the given value is not nil.
+func (_u *AnnouncementUpdate) SetNillableSourceID(v *int64) *AnnouncementUpdate {
+	if v != nil {
+		_u.SetSourceID(*v)
+	}
+	return _u
+}
+
+// AddSourceID adds value to the "source_id" field.
+func (_u *AnnouncementUpdate) AddSourceID(v int64) *AnnouncementUpdate {
+	_u.mutation.AddSourceID(v)
+	return _u
+}
+
+// ClearSourceID clears the value of the "source_id" field.
+func (_u *AnnouncementUpdate) ClearSourceID() *AnnouncementUpdate {
+	_u.mutation.ClearSourceID()
+	return _u
+}
+
+// SetSourceEventKind sets the "source_event_kind" field.
+func (_u *AnnouncementUpdate) SetSourceEventKind(v string) *AnnouncementUpdate {
+	_u.mutation.SetSourceEventKind(v)
+	return _u
+}
+
+// SetNillableSourceEventKind sets the "source_event_kind" field if the given value is not nil.
+func (_u *AnnouncementUpdate) SetNillableSourceEventKind(v *string) *AnnouncementUpdate {
+	if v != nil {
+		_u.SetSourceEventKind(*v)
+	}
+	return _u
+}
+
+// ClearSourceEventKind clears the value of the "source_event_kind" field.
+func (_u *AnnouncementUpdate) ClearSourceEventKind() *AnnouncementUpdate {
+	_u.mutation.ClearSourceEventKind()
+	return _u
+}
+
+// SetSourceRevision sets the "source_revision" field.
+func (_u *AnnouncementUpdate) SetSourceRevision(v int) *AnnouncementUpdate {
+	_u.mutation.ResetSourceRevision()
+	_u.mutation.SetSourceRevision(v)
+	return _u
+}
+
+// SetNillableSourceRevision sets the "source_revision" field if the given value is not nil.
+func (_u *AnnouncementUpdate) SetNillableSourceRevision(v *int) *AnnouncementUpdate {
+	if v != nil {
+		_u.SetSourceRevision(*v)
+	}
+	return _u
+}
+
+// AddSourceRevision adds value to the "source_revision" field.
+func (_u *AnnouncementUpdate) AddSourceRevision(v int) *AnnouncementUpdate {
+	_u.mutation.AddSourceRevision(v)
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *AnnouncementUpdate) SetUpdatedAt(v time.Time) *AnnouncementUpdate {
 	_u.mutation.SetUpdatedAt(v)
@@ -305,6 +393,16 @@ func (_u *AnnouncementUpdate) check() error {
 			return &ValidationError{Name: "notify_mode", err: fmt.Errorf(`ent: validator failed for field "Announcement.notify_mode": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.SourceType(); ok {
+		if err := announcement.SourceTypeValidator(v); err != nil {
+			return &ValidationError{Name: "source_type", err: fmt.Errorf(`ent: validator failed for field "Announcement.source_type": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.SourceEventKind(); ok {
+		if err := announcement.SourceEventKindValidator(v); err != nil {
+			return &ValidationError{Name: "source_event_kind", err: fmt.Errorf(`ent: validator failed for field "Announcement.source_event_kind": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -367,6 +465,33 @@ func (_u *AnnouncementUpdate) sqlSave(ctx context.Context) (_node int, err error
 	}
 	if _u.mutation.UpdatedByCleared() {
 		_spec.ClearField(announcement.FieldUpdatedBy, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.SourceType(); ok {
+		_spec.SetField(announcement.FieldSourceType, field.TypeString, value)
+	}
+	if _u.mutation.SourceTypeCleared() {
+		_spec.ClearField(announcement.FieldSourceType, field.TypeString)
+	}
+	if value, ok := _u.mutation.SourceID(); ok {
+		_spec.SetField(announcement.FieldSourceID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedSourceID(); ok {
+		_spec.AddField(announcement.FieldSourceID, field.TypeInt64, value)
+	}
+	if _u.mutation.SourceIDCleared() {
+		_spec.ClearField(announcement.FieldSourceID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.SourceEventKind(); ok {
+		_spec.SetField(announcement.FieldSourceEventKind, field.TypeString, value)
+	}
+	if _u.mutation.SourceEventKindCleared() {
+		_spec.ClearField(announcement.FieldSourceEventKind, field.TypeString)
+	}
+	if value, ok := _u.mutation.SourceRevision(); ok {
+		_spec.SetField(announcement.FieldSourceRevision, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedSourceRevision(); ok {
+		_spec.AddField(announcement.FieldSourceRevision, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(announcement.FieldUpdatedAt, field.TypeTime, value)
@@ -606,6 +731,94 @@ func (_u *AnnouncementUpdateOne) ClearUpdatedBy() *AnnouncementUpdateOne {
 	return _u
 }
 
+// SetSourceType sets the "source_type" field.
+func (_u *AnnouncementUpdateOne) SetSourceType(v string) *AnnouncementUpdateOne {
+	_u.mutation.SetSourceType(v)
+	return _u
+}
+
+// SetNillableSourceType sets the "source_type" field if the given value is not nil.
+func (_u *AnnouncementUpdateOne) SetNillableSourceType(v *string) *AnnouncementUpdateOne {
+	if v != nil {
+		_u.SetSourceType(*v)
+	}
+	return _u
+}
+
+// ClearSourceType clears the value of the "source_type" field.
+func (_u *AnnouncementUpdateOne) ClearSourceType() *AnnouncementUpdateOne {
+	_u.mutation.ClearSourceType()
+	return _u
+}
+
+// SetSourceID sets the "source_id" field.
+func (_u *AnnouncementUpdateOne) SetSourceID(v int64) *AnnouncementUpdateOne {
+	_u.mutation.ResetSourceID()
+	_u.mutation.SetSourceID(v)
+	return _u
+}
+
+// SetNillableSourceID sets the "source_id" field if the given value is not nil.
+func (_u *AnnouncementUpdateOne) SetNillableSourceID(v *int64) *AnnouncementUpdateOne {
+	if v != nil {
+		_u.SetSourceID(*v)
+	}
+	return _u
+}
+
+// AddSourceID adds value to the "source_id" field.
+func (_u *AnnouncementUpdateOne) AddSourceID(v int64) *AnnouncementUpdateOne {
+	_u.mutation.AddSourceID(v)
+	return _u
+}
+
+// ClearSourceID clears the value of the "source_id" field.
+func (_u *AnnouncementUpdateOne) ClearSourceID() *AnnouncementUpdateOne {
+	_u.mutation.ClearSourceID()
+	return _u
+}
+
+// SetSourceEventKind sets the "source_event_kind" field.
+func (_u *AnnouncementUpdateOne) SetSourceEventKind(v string) *AnnouncementUpdateOne {
+	_u.mutation.SetSourceEventKind(v)
+	return _u
+}
+
+// SetNillableSourceEventKind sets the "source_event_kind" field if the given value is not nil.
+func (_u *AnnouncementUpdateOne) SetNillableSourceEventKind(v *string) *AnnouncementUpdateOne {
+	if v != nil {
+		_u.SetSourceEventKind(*v)
+	}
+	return _u
+}
+
+// ClearSourceEventKind clears the value of the "source_event_kind" field.
+func (_u *AnnouncementUpdateOne) ClearSourceEventKind() *AnnouncementUpdateOne {
+	_u.mutation.ClearSourceEventKind()
+	return _u
+}
+
+// SetSourceRevision sets the "source_revision" field.
+func (_u *AnnouncementUpdateOne) SetSourceRevision(v int) *AnnouncementUpdateOne {
+	_u.mutation.ResetSourceRevision()
+	_u.mutation.SetSourceRevision(v)
+	return _u
+}
+
+// SetNillableSourceRevision sets the "source_revision" field if the given value is not nil.
+func (_u *AnnouncementUpdateOne) SetNillableSourceRevision(v *int) *AnnouncementUpdateOne {
+	if v != nil {
+		_u.SetSourceRevision(*v)
+	}
+	return _u
+}
+
+// AddSourceRevision adds value to the "source_revision" field.
+func (_u *AnnouncementUpdateOne) AddSourceRevision(v int) *AnnouncementUpdateOne {
+	_u.mutation.AddSourceRevision(v)
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *AnnouncementUpdateOne) SetUpdatedAt(v time.Time) *AnnouncementUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
@@ -724,6 +937,16 @@ func (_u *AnnouncementUpdateOne) check() error {
 			return &ValidationError{Name: "notify_mode", err: fmt.Errorf(`ent: validator failed for field "Announcement.notify_mode": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.SourceType(); ok {
+		if err := announcement.SourceTypeValidator(v); err != nil {
+			return &ValidationError{Name: "source_type", err: fmt.Errorf(`ent: validator failed for field "Announcement.source_type": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.SourceEventKind(); ok {
+		if err := announcement.SourceEventKindValidator(v); err != nil {
+			return &ValidationError{Name: "source_event_kind", err: fmt.Errorf(`ent: validator failed for field "Announcement.source_event_kind": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -803,6 +1026,33 @@ func (_u *AnnouncementUpdateOne) sqlSave(ctx context.Context) (_node *Announceme
 	}
 	if _u.mutation.UpdatedByCleared() {
 		_spec.ClearField(announcement.FieldUpdatedBy, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.SourceType(); ok {
+		_spec.SetField(announcement.FieldSourceType, field.TypeString, value)
+	}
+	if _u.mutation.SourceTypeCleared() {
+		_spec.ClearField(announcement.FieldSourceType, field.TypeString)
+	}
+	if value, ok := _u.mutation.SourceID(); ok {
+		_spec.SetField(announcement.FieldSourceID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedSourceID(); ok {
+		_spec.AddField(announcement.FieldSourceID, field.TypeInt64, value)
+	}
+	if _u.mutation.SourceIDCleared() {
+		_spec.ClearField(announcement.FieldSourceID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.SourceEventKind(); ok {
+		_spec.SetField(announcement.FieldSourceEventKind, field.TypeString, value)
+	}
+	if _u.mutation.SourceEventKindCleared() {
+		_spec.ClearField(announcement.FieldSourceEventKind, field.TypeString)
+	}
+	if value, ok := _u.mutation.SourceRevision(); ok {
+		_spec.SetField(announcement.FieldSourceRevision, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedSourceRevision(); ok {
+		_spec.AddField(announcement.FieldSourceRevision, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(announcement.FieldUpdatedAt, field.TypeTime, value)

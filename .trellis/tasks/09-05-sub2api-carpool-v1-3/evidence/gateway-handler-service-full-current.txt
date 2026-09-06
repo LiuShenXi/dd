@@ -1,0 +1,16 @@
+Command (cwd=C:/WORK-SPACE/sub2api-carpool-v1.3/backend):
+go test -tags=unit ./internal/handler ./internal/service -count=1
+
+stdout (package results and extracted failures):
+ok  	github.com/Wei-Shaw/sub2api/internal/handler	38.214s
+--- FAIL: TestContentModerationRuntimeSnapshotRefreshFailureKeepsStaleConfig (1.00s)
+--- FAIL: TestPluginPackageInstallerInstallUnsignedDevelopmentPackage (0.02s)
+--- FAIL: TestPluginPackageInstallerAllowsRepeatedIdenticalUpload (0.02s)
+--- FAIL: TestPluginPackageInstallerVerifiesTrustedSignature (0.02s)
+--- FAIL: TestPluginPackageInstallerKeepsHostVersionMismatchDisabled (0.02s)
+FAIL	github.com/Wei-Shaw/sub2api/internal/service	173.604s
+FAIL
+
+exit_code: 1
+
+The service failure names were confirmed by a second `go test -json -tags=unit ./internal/service -count=1` run filtered to failure events. That run exited 1 after 171.625s with the same content-moderation failure and four plugin-package failures. Before a separate focused rerun could execute, an in-progress shared reset edit temporarily made the service package fail to compile at `internal/service/carpool_reset_service.go:151`; no gateway code was changed in response.

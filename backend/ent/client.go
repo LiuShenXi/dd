@@ -25,6 +25,20 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/batchimageevent"
 	"github.com/Wei-Shaw/sub2api/ent/batchimageitem"
 	"github.com/Wei-Shaw/sub2api/ent/batchimagejob"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolbillingrequest"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolcycle"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolledger"
+	"github.com/Wei-Shaw/sub2api/ent/carpooloperation"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolpayment"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolplan"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetaccountstate"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetannouncementoutbox"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetbatch"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetcredit"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetqualification"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetscopestate"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresettarget"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolterm"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitor"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitordailyrollup"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
@@ -83,6 +97,34 @@ type Client struct {
 	BatchImageItem *BatchImageItemClient
 	// BatchImageJob is the client for interacting with the BatchImageJob builders.
 	BatchImageJob *BatchImageJobClient
+	// CarpoolBillingRequest is the client for interacting with the CarpoolBillingRequest builders.
+	CarpoolBillingRequest *CarpoolBillingRequestClient
+	// CarpoolCycle is the client for interacting with the CarpoolCycle builders.
+	CarpoolCycle *CarpoolCycleClient
+	// CarpoolLedger is the client for interacting with the CarpoolLedger builders.
+	CarpoolLedger *CarpoolLedgerClient
+	// CarpoolOperation is the client for interacting with the CarpoolOperation builders.
+	CarpoolOperation *CarpoolOperationClient
+	// CarpoolPayment is the client for interacting with the CarpoolPayment builders.
+	CarpoolPayment *CarpoolPaymentClient
+	// CarpoolPlan is the client for interacting with the CarpoolPlan builders.
+	CarpoolPlan *CarpoolPlanClient
+	// CarpoolResetAccountState is the client for interacting with the CarpoolResetAccountState builders.
+	CarpoolResetAccountState *CarpoolResetAccountStateClient
+	// CarpoolResetAnnouncementOutbox is the client for interacting with the CarpoolResetAnnouncementOutbox builders.
+	CarpoolResetAnnouncementOutbox *CarpoolResetAnnouncementOutboxClient
+	// CarpoolResetBatch is the client for interacting with the CarpoolResetBatch builders.
+	CarpoolResetBatch *CarpoolResetBatchClient
+	// CarpoolResetCredit is the client for interacting with the CarpoolResetCredit builders.
+	CarpoolResetCredit *CarpoolResetCreditClient
+	// CarpoolResetQualification is the client for interacting with the CarpoolResetQualification builders.
+	CarpoolResetQualification *CarpoolResetQualificationClient
+	// CarpoolResetScopeState is the client for interacting with the CarpoolResetScopeState builders.
+	CarpoolResetScopeState *CarpoolResetScopeStateClient
+	// CarpoolResetTarget is the client for interacting with the CarpoolResetTarget builders.
+	CarpoolResetTarget *CarpoolResetTargetClient
+	// CarpoolTerm is the client for interacting with the CarpoolTerm builders.
+	CarpoolTerm *CarpoolTermClient
 	// ChannelMonitor is the client for interacting with the ChannelMonitor builders.
 	ChannelMonitor *ChannelMonitorClient
 	// ChannelMonitorDailyRollup is the client for interacting with the ChannelMonitorDailyRollup builders.
@@ -162,6 +204,20 @@ func (c *Client) init() {
 	c.BatchImageEvent = NewBatchImageEventClient(c.config)
 	c.BatchImageItem = NewBatchImageItemClient(c.config)
 	c.BatchImageJob = NewBatchImageJobClient(c.config)
+	c.CarpoolBillingRequest = NewCarpoolBillingRequestClient(c.config)
+	c.CarpoolCycle = NewCarpoolCycleClient(c.config)
+	c.CarpoolLedger = NewCarpoolLedgerClient(c.config)
+	c.CarpoolOperation = NewCarpoolOperationClient(c.config)
+	c.CarpoolPayment = NewCarpoolPaymentClient(c.config)
+	c.CarpoolPlan = NewCarpoolPlanClient(c.config)
+	c.CarpoolResetAccountState = NewCarpoolResetAccountStateClient(c.config)
+	c.CarpoolResetAnnouncementOutbox = NewCarpoolResetAnnouncementOutboxClient(c.config)
+	c.CarpoolResetBatch = NewCarpoolResetBatchClient(c.config)
+	c.CarpoolResetCredit = NewCarpoolResetCreditClient(c.config)
+	c.CarpoolResetQualification = NewCarpoolResetQualificationClient(c.config)
+	c.CarpoolResetScopeState = NewCarpoolResetScopeStateClient(c.config)
+	c.CarpoolResetTarget = NewCarpoolResetTargetClient(c.config)
+	c.CarpoolTerm = NewCarpoolTermClient(c.config)
 	c.ChannelMonitor = NewChannelMonitorClient(c.config)
 	c.ChannelMonitorDailyRollup = NewChannelMonitorDailyRollupClient(c.config)
 	c.ChannelMonitorHistory = NewChannelMonitorHistoryClient(c.config)
@@ -281,47 +337,61 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                           ctx,
-		config:                        cfg,
-		APIKey:                        NewAPIKeyClient(cfg),
-		Account:                       NewAccountClient(cfg),
-		AccountGroup:                  NewAccountGroupClient(cfg),
-		Announcement:                  NewAnnouncementClient(cfg),
-		AnnouncementRead:              NewAnnouncementReadClient(cfg),
-		AuthIdentity:                  NewAuthIdentityClient(cfg),
-		AuthIdentityChannel:           NewAuthIdentityChannelClient(cfg),
-		BatchImageEvent:               NewBatchImageEventClient(cfg),
-		BatchImageItem:                NewBatchImageItemClient(cfg),
-		BatchImageJob:                 NewBatchImageJobClient(cfg),
-		ChannelMonitor:                NewChannelMonitorClient(cfg),
-		ChannelMonitorDailyRollup:     NewChannelMonitorDailyRollupClient(cfg),
-		ChannelMonitorHistory:         NewChannelMonitorHistoryClient(cfg),
-		ChannelMonitorRequestTemplate: NewChannelMonitorRequestTemplateClient(cfg),
-		CompositeModelRoute:           NewCompositeModelRouteClient(cfg),
-		ErrorPassthroughRule:          NewErrorPassthroughRuleClient(cfg),
-		Group:                         NewGroupClient(cfg),
-		IdempotencyRecord:             NewIdempotencyRecordClient(cfg),
-		IdentityAdoptionDecision:      NewIdentityAdoptionDecisionClient(cfg),
-		PaymentAuditLog:               NewPaymentAuditLogClient(cfg),
-		PaymentOrder:                  NewPaymentOrderClient(cfg),
-		PaymentProviderInstance:       NewPaymentProviderInstanceClient(cfg),
-		PendingAuthSession:            NewPendingAuthSessionClient(cfg),
-		PromoCode:                     NewPromoCodeClient(cfg),
-		PromoCodeUsage:                NewPromoCodeUsageClient(cfg),
-		Proxy:                         NewProxyClient(cfg),
-		RedeemCode:                    NewRedeemCodeClient(cfg),
-		SecuritySecret:                NewSecuritySecretClient(cfg),
-		Setting:                       NewSettingClient(cfg),
-		SubscriptionPlan:              NewSubscriptionPlanClient(cfg),
-		TLSFingerprintProfile:         NewTLSFingerprintProfileClient(cfg),
-		UsageCleanupTask:              NewUsageCleanupTaskClient(cfg),
-		UsageLog:                      NewUsageLogClient(cfg),
-		User:                          NewUserClient(cfg),
-		UserAllowedGroup:              NewUserAllowedGroupClient(cfg),
-		UserAttributeDefinition:       NewUserAttributeDefinitionClient(cfg),
-		UserAttributeValue:            NewUserAttributeValueClient(cfg),
-		UserPlatformQuota:             NewUserPlatformQuotaClient(cfg),
-		UserSubscription:              NewUserSubscriptionClient(cfg),
+		ctx:                            ctx,
+		config:                         cfg,
+		APIKey:                         NewAPIKeyClient(cfg),
+		Account:                        NewAccountClient(cfg),
+		AccountGroup:                   NewAccountGroupClient(cfg),
+		Announcement:                   NewAnnouncementClient(cfg),
+		AnnouncementRead:               NewAnnouncementReadClient(cfg),
+		AuthIdentity:                   NewAuthIdentityClient(cfg),
+		AuthIdentityChannel:            NewAuthIdentityChannelClient(cfg),
+		BatchImageEvent:                NewBatchImageEventClient(cfg),
+		BatchImageItem:                 NewBatchImageItemClient(cfg),
+		BatchImageJob:                  NewBatchImageJobClient(cfg),
+		CarpoolBillingRequest:          NewCarpoolBillingRequestClient(cfg),
+		CarpoolCycle:                   NewCarpoolCycleClient(cfg),
+		CarpoolLedger:                  NewCarpoolLedgerClient(cfg),
+		CarpoolOperation:               NewCarpoolOperationClient(cfg),
+		CarpoolPayment:                 NewCarpoolPaymentClient(cfg),
+		CarpoolPlan:                    NewCarpoolPlanClient(cfg),
+		CarpoolResetAccountState:       NewCarpoolResetAccountStateClient(cfg),
+		CarpoolResetAnnouncementOutbox: NewCarpoolResetAnnouncementOutboxClient(cfg),
+		CarpoolResetBatch:              NewCarpoolResetBatchClient(cfg),
+		CarpoolResetCredit:             NewCarpoolResetCreditClient(cfg),
+		CarpoolResetQualification:      NewCarpoolResetQualificationClient(cfg),
+		CarpoolResetScopeState:         NewCarpoolResetScopeStateClient(cfg),
+		CarpoolResetTarget:             NewCarpoolResetTargetClient(cfg),
+		CarpoolTerm:                    NewCarpoolTermClient(cfg),
+		ChannelMonitor:                 NewChannelMonitorClient(cfg),
+		ChannelMonitorDailyRollup:      NewChannelMonitorDailyRollupClient(cfg),
+		ChannelMonitorHistory:          NewChannelMonitorHistoryClient(cfg),
+		ChannelMonitorRequestTemplate:  NewChannelMonitorRequestTemplateClient(cfg),
+		CompositeModelRoute:            NewCompositeModelRouteClient(cfg),
+		ErrorPassthroughRule:           NewErrorPassthroughRuleClient(cfg),
+		Group:                          NewGroupClient(cfg),
+		IdempotencyRecord:              NewIdempotencyRecordClient(cfg),
+		IdentityAdoptionDecision:       NewIdentityAdoptionDecisionClient(cfg),
+		PaymentAuditLog:                NewPaymentAuditLogClient(cfg),
+		PaymentOrder:                   NewPaymentOrderClient(cfg),
+		PaymentProviderInstance:        NewPaymentProviderInstanceClient(cfg),
+		PendingAuthSession:             NewPendingAuthSessionClient(cfg),
+		PromoCode:                      NewPromoCodeClient(cfg),
+		PromoCodeUsage:                 NewPromoCodeUsageClient(cfg),
+		Proxy:                          NewProxyClient(cfg),
+		RedeemCode:                     NewRedeemCodeClient(cfg),
+		SecuritySecret:                 NewSecuritySecretClient(cfg),
+		Setting:                        NewSettingClient(cfg),
+		SubscriptionPlan:               NewSubscriptionPlanClient(cfg),
+		TLSFingerprintProfile:          NewTLSFingerprintProfileClient(cfg),
+		UsageCleanupTask:               NewUsageCleanupTaskClient(cfg),
+		UsageLog:                       NewUsageLogClient(cfg),
+		User:                           NewUserClient(cfg),
+		UserAllowedGroup:               NewUserAllowedGroupClient(cfg),
+		UserAttributeDefinition:        NewUserAttributeDefinitionClient(cfg),
+		UserAttributeValue:             NewUserAttributeValueClient(cfg),
+		UserPlatformQuota:              NewUserPlatformQuotaClient(cfg),
+		UserSubscription:               NewUserSubscriptionClient(cfg),
 	}, nil
 }
 
@@ -339,47 +409,61 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                           ctx,
-		config:                        cfg,
-		APIKey:                        NewAPIKeyClient(cfg),
-		Account:                       NewAccountClient(cfg),
-		AccountGroup:                  NewAccountGroupClient(cfg),
-		Announcement:                  NewAnnouncementClient(cfg),
-		AnnouncementRead:              NewAnnouncementReadClient(cfg),
-		AuthIdentity:                  NewAuthIdentityClient(cfg),
-		AuthIdentityChannel:           NewAuthIdentityChannelClient(cfg),
-		BatchImageEvent:               NewBatchImageEventClient(cfg),
-		BatchImageItem:                NewBatchImageItemClient(cfg),
-		BatchImageJob:                 NewBatchImageJobClient(cfg),
-		ChannelMonitor:                NewChannelMonitorClient(cfg),
-		ChannelMonitorDailyRollup:     NewChannelMonitorDailyRollupClient(cfg),
-		ChannelMonitorHistory:         NewChannelMonitorHistoryClient(cfg),
-		ChannelMonitorRequestTemplate: NewChannelMonitorRequestTemplateClient(cfg),
-		CompositeModelRoute:           NewCompositeModelRouteClient(cfg),
-		ErrorPassthroughRule:          NewErrorPassthroughRuleClient(cfg),
-		Group:                         NewGroupClient(cfg),
-		IdempotencyRecord:             NewIdempotencyRecordClient(cfg),
-		IdentityAdoptionDecision:      NewIdentityAdoptionDecisionClient(cfg),
-		PaymentAuditLog:               NewPaymentAuditLogClient(cfg),
-		PaymentOrder:                  NewPaymentOrderClient(cfg),
-		PaymentProviderInstance:       NewPaymentProviderInstanceClient(cfg),
-		PendingAuthSession:            NewPendingAuthSessionClient(cfg),
-		PromoCode:                     NewPromoCodeClient(cfg),
-		PromoCodeUsage:                NewPromoCodeUsageClient(cfg),
-		Proxy:                         NewProxyClient(cfg),
-		RedeemCode:                    NewRedeemCodeClient(cfg),
-		SecuritySecret:                NewSecuritySecretClient(cfg),
-		Setting:                       NewSettingClient(cfg),
-		SubscriptionPlan:              NewSubscriptionPlanClient(cfg),
-		TLSFingerprintProfile:         NewTLSFingerprintProfileClient(cfg),
-		UsageCleanupTask:              NewUsageCleanupTaskClient(cfg),
-		UsageLog:                      NewUsageLogClient(cfg),
-		User:                          NewUserClient(cfg),
-		UserAllowedGroup:              NewUserAllowedGroupClient(cfg),
-		UserAttributeDefinition:       NewUserAttributeDefinitionClient(cfg),
-		UserAttributeValue:            NewUserAttributeValueClient(cfg),
-		UserPlatformQuota:             NewUserPlatformQuotaClient(cfg),
-		UserSubscription:              NewUserSubscriptionClient(cfg),
+		ctx:                            ctx,
+		config:                         cfg,
+		APIKey:                         NewAPIKeyClient(cfg),
+		Account:                        NewAccountClient(cfg),
+		AccountGroup:                   NewAccountGroupClient(cfg),
+		Announcement:                   NewAnnouncementClient(cfg),
+		AnnouncementRead:               NewAnnouncementReadClient(cfg),
+		AuthIdentity:                   NewAuthIdentityClient(cfg),
+		AuthIdentityChannel:            NewAuthIdentityChannelClient(cfg),
+		BatchImageEvent:                NewBatchImageEventClient(cfg),
+		BatchImageItem:                 NewBatchImageItemClient(cfg),
+		BatchImageJob:                  NewBatchImageJobClient(cfg),
+		CarpoolBillingRequest:          NewCarpoolBillingRequestClient(cfg),
+		CarpoolCycle:                   NewCarpoolCycleClient(cfg),
+		CarpoolLedger:                  NewCarpoolLedgerClient(cfg),
+		CarpoolOperation:               NewCarpoolOperationClient(cfg),
+		CarpoolPayment:                 NewCarpoolPaymentClient(cfg),
+		CarpoolPlan:                    NewCarpoolPlanClient(cfg),
+		CarpoolResetAccountState:       NewCarpoolResetAccountStateClient(cfg),
+		CarpoolResetAnnouncementOutbox: NewCarpoolResetAnnouncementOutboxClient(cfg),
+		CarpoolResetBatch:              NewCarpoolResetBatchClient(cfg),
+		CarpoolResetCredit:             NewCarpoolResetCreditClient(cfg),
+		CarpoolResetQualification:      NewCarpoolResetQualificationClient(cfg),
+		CarpoolResetScopeState:         NewCarpoolResetScopeStateClient(cfg),
+		CarpoolResetTarget:             NewCarpoolResetTargetClient(cfg),
+		CarpoolTerm:                    NewCarpoolTermClient(cfg),
+		ChannelMonitor:                 NewChannelMonitorClient(cfg),
+		ChannelMonitorDailyRollup:      NewChannelMonitorDailyRollupClient(cfg),
+		ChannelMonitorHistory:          NewChannelMonitorHistoryClient(cfg),
+		ChannelMonitorRequestTemplate:  NewChannelMonitorRequestTemplateClient(cfg),
+		CompositeModelRoute:            NewCompositeModelRouteClient(cfg),
+		ErrorPassthroughRule:           NewErrorPassthroughRuleClient(cfg),
+		Group:                          NewGroupClient(cfg),
+		IdempotencyRecord:              NewIdempotencyRecordClient(cfg),
+		IdentityAdoptionDecision:       NewIdentityAdoptionDecisionClient(cfg),
+		PaymentAuditLog:                NewPaymentAuditLogClient(cfg),
+		PaymentOrder:                   NewPaymentOrderClient(cfg),
+		PaymentProviderInstance:        NewPaymentProviderInstanceClient(cfg),
+		PendingAuthSession:             NewPendingAuthSessionClient(cfg),
+		PromoCode:                      NewPromoCodeClient(cfg),
+		PromoCodeUsage:                 NewPromoCodeUsageClient(cfg),
+		Proxy:                          NewProxyClient(cfg),
+		RedeemCode:                     NewRedeemCodeClient(cfg),
+		SecuritySecret:                 NewSecuritySecretClient(cfg),
+		Setting:                        NewSettingClient(cfg),
+		SubscriptionPlan:               NewSubscriptionPlanClient(cfg),
+		TLSFingerprintProfile:          NewTLSFingerprintProfileClient(cfg),
+		UsageCleanupTask:               NewUsageCleanupTaskClient(cfg),
+		UsageLog:                       NewUsageLogClient(cfg),
+		User:                           NewUserClient(cfg),
+		UserAllowedGroup:               NewUserAllowedGroupClient(cfg),
+		UserAttributeDefinition:        NewUserAttributeDefinitionClient(cfg),
+		UserAttributeValue:             NewUserAttributeValueClient(cfg),
+		UserPlatformQuota:              NewUserPlatformQuotaClient(cfg),
+		UserSubscription:               NewUserSubscriptionClient(cfg),
 	}, nil
 }
 
@@ -411,14 +495,18 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.APIKey, c.Account, c.AccountGroup, c.Announcement, c.AnnouncementRead,
 		c.AuthIdentity, c.AuthIdentityChannel, c.BatchImageEvent, c.BatchImageItem,
-		c.BatchImageJob, c.ChannelMonitor, c.ChannelMonitorDailyRollup,
-		c.ChannelMonitorHistory, c.ChannelMonitorRequestTemplate,
-		c.CompositeModelRoute, c.ErrorPassthroughRule, c.Group, c.IdempotencyRecord,
-		c.IdentityAdoptionDecision, c.PaymentAuditLog, c.PaymentOrder,
-		c.PaymentProviderInstance, c.PendingAuthSession, c.PromoCode, c.PromoCodeUsage,
-		c.Proxy, c.RedeemCode, c.SecuritySecret, c.Setting, c.SubscriptionPlan,
-		c.TLSFingerprintProfile, c.UsageCleanupTask, c.UsageLog, c.User,
-		c.UserAllowedGroup, c.UserAttributeDefinition, c.UserAttributeValue,
+		c.BatchImageJob, c.CarpoolBillingRequest, c.CarpoolCycle, c.CarpoolLedger,
+		c.CarpoolOperation, c.CarpoolPayment, c.CarpoolPlan,
+		c.CarpoolResetAccountState, c.CarpoolResetAnnouncementOutbox,
+		c.CarpoolResetBatch, c.CarpoolResetCredit, c.CarpoolResetQualification,
+		c.CarpoolResetScopeState, c.CarpoolResetTarget, c.CarpoolTerm,
+		c.ChannelMonitor, c.ChannelMonitorDailyRollup, c.ChannelMonitorHistory,
+		c.ChannelMonitorRequestTemplate, c.CompositeModelRoute, c.ErrorPassthroughRule,
+		c.Group, c.IdempotencyRecord, c.IdentityAdoptionDecision, c.PaymentAuditLog,
+		c.PaymentOrder, c.PaymentProviderInstance, c.PendingAuthSession, c.PromoCode,
+		c.PromoCodeUsage, c.Proxy, c.RedeemCode, c.SecuritySecret, c.Setting,
+		c.SubscriptionPlan, c.TLSFingerprintProfile, c.UsageCleanupTask, c.UsageLog,
+		c.User, c.UserAllowedGroup, c.UserAttributeDefinition, c.UserAttributeValue,
 		c.UserPlatformQuota, c.UserSubscription,
 	} {
 		n.Use(hooks...)
@@ -431,14 +519,18 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.APIKey, c.Account, c.AccountGroup, c.Announcement, c.AnnouncementRead,
 		c.AuthIdentity, c.AuthIdentityChannel, c.BatchImageEvent, c.BatchImageItem,
-		c.BatchImageJob, c.ChannelMonitor, c.ChannelMonitorDailyRollup,
-		c.ChannelMonitorHistory, c.ChannelMonitorRequestTemplate,
-		c.CompositeModelRoute, c.ErrorPassthroughRule, c.Group, c.IdempotencyRecord,
-		c.IdentityAdoptionDecision, c.PaymentAuditLog, c.PaymentOrder,
-		c.PaymentProviderInstance, c.PendingAuthSession, c.PromoCode, c.PromoCodeUsage,
-		c.Proxy, c.RedeemCode, c.SecuritySecret, c.Setting, c.SubscriptionPlan,
-		c.TLSFingerprintProfile, c.UsageCleanupTask, c.UsageLog, c.User,
-		c.UserAllowedGroup, c.UserAttributeDefinition, c.UserAttributeValue,
+		c.BatchImageJob, c.CarpoolBillingRequest, c.CarpoolCycle, c.CarpoolLedger,
+		c.CarpoolOperation, c.CarpoolPayment, c.CarpoolPlan,
+		c.CarpoolResetAccountState, c.CarpoolResetAnnouncementOutbox,
+		c.CarpoolResetBatch, c.CarpoolResetCredit, c.CarpoolResetQualification,
+		c.CarpoolResetScopeState, c.CarpoolResetTarget, c.CarpoolTerm,
+		c.ChannelMonitor, c.ChannelMonitorDailyRollup, c.ChannelMonitorHistory,
+		c.ChannelMonitorRequestTemplate, c.CompositeModelRoute, c.ErrorPassthroughRule,
+		c.Group, c.IdempotencyRecord, c.IdentityAdoptionDecision, c.PaymentAuditLog,
+		c.PaymentOrder, c.PaymentProviderInstance, c.PendingAuthSession, c.PromoCode,
+		c.PromoCodeUsage, c.Proxy, c.RedeemCode, c.SecuritySecret, c.Setting,
+		c.SubscriptionPlan, c.TLSFingerprintProfile, c.UsageCleanupTask, c.UsageLog,
+		c.User, c.UserAllowedGroup, c.UserAttributeDefinition, c.UserAttributeValue,
 		c.UserPlatformQuota, c.UserSubscription,
 	} {
 		n.Intercept(interceptors...)
@@ -468,6 +560,34 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.BatchImageItem.mutate(ctx, m)
 	case *BatchImageJobMutation:
 		return c.BatchImageJob.mutate(ctx, m)
+	case *CarpoolBillingRequestMutation:
+		return c.CarpoolBillingRequest.mutate(ctx, m)
+	case *CarpoolCycleMutation:
+		return c.CarpoolCycle.mutate(ctx, m)
+	case *CarpoolLedgerMutation:
+		return c.CarpoolLedger.mutate(ctx, m)
+	case *CarpoolOperationMutation:
+		return c.CarpoolOperation.mutate(ctx, m)
+	case *CarpoolPaymentMutation:
+		return c.CarpoolPayment.mutate(ctx, m)
+	case *CarpoolPlanMutation:
+		return c.CarpoolPlan.mutate(ctx, m)
+	case *CarpoolResetAccountStateMutation:
+		return c.CarpoolResetAccountState.mutate(ctx, m)
+	case *CarpoolResetAnnouncementOutboxMutation:
+		return c.CarpoolResetAnnouncementOutbox.mutate(ctx, m)
+	case *CarpoolResetBatchMutation:
+		return c.CarpoolResetBatch.mutate(ctx, m)
+	case *CarpoolResetCreditMutation:
+		return c.CarpoolResetCredit.mutate(ctx, m)
+	case *CarpoolResetQualificationMutation:
+		return c.CarpoolResetQualification.mutate(ctx, m)
+	case *CarpoolResetScopeStateMutation:
+		return c.CarpoolResetScopeState.mutate(ctx, m)
+	case *CarpoolResetTargetMutation:
+		return c.CarpoolResetTarget.mutate(ctx, m)
+	case *CarpoolTermMutation:
+		return c.CarpoolTerm.mutate(ctx, m)
 	case *ChannelMonitorMutation:
 		return c.ChannelMonitor.mutate(ctx, m)
 	case *ChannelMonitorDailyRollupMutation:
@@ -2101,6 +2221,1868 @@ func (c *BatchImageJobClient) mutate(ctx context.Context, m *BatchImageJobMutati
 		return (&BatchImageJobDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown BatchImageJob mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolBillingRequestClient is a client for the CarpoolBillingRequest schema.
+type CarpoolBillingRequestClient struct {
+	config
+}
+
+// NewCarpoolBillingRequestClient returns a client for the CarpoolBillingRequest from the given config.
+func NewCarpoolBillingRequestClient(c config) *CarpoolBillingRequestClient {
+	return &CarpoolBillingRequestClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolbillingrequest.Hooks(f(g(h())))`.
+func (c *CarpoolBillingRequestClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolBillingRequest = append(c.hooks.CarpoolBillingRequest, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolbillingrequest.Intercept(f(g(h())))`.
+func (c *CarpoolBillingRequestClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolBillingRequest = append(c.inters.CarpoolBillingRequest, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolBillingRequest entity.
+func (c *CarpoolBillingRequestClient) Create() *CarpoolBillingRequestCreate {
+	mutation := newCarpoolBillingRequestMutation(c.config, OpCreate)
+	return &CarpoolBillingRequestCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolBillingRequest entities.
+func (c *CarpoolBillingRequestClient) CreateBulk(builders ...*CarpoolBillingRequestCreate) *CarpoolBillingRequestCreateBulk {
+	return &CarpoolBillingRequestCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolBillingRequestClient) MapCreateBulk(slice any, setFunc func(*CarpoolBillingRequestCreate, int)) *CarpoolBillingRequestCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolBillingRequestCreateBulk{err: fmt.Errorf("calling to CarpoolBillingRequestClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolBillingRequestCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolBillingRequestCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolBillingRequest.
+func (c *CarpoolBillingRequestClient) Update() *CarpoolBillingRequestUpdate {
+	mutation := newCarpoolBillingRequestMutation(c.config, OpUpdate)
+	return &CarpoolBillingRequestUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolBillingRequestClient) UpdateOne(_m *CarpoolBillingRequest) *CarpoolBillingRequestUpdateOne {
+	mutation := newCarpoolBillingRequestMutation(c.config, OpUpdateOne, withCarpoolBillingRequest(_m))
+	return &CarpoolBillingRequestUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolBillingRequestClient) UpdateOneID(id int64) *CarpoolBillingRequestUpdateOne {
+	mutation := newCarpoolBillingRequestMutation(c.config, OpUpdateOne, withCarpoolBillingRequestID(id))
+	return &CarpoolBillingRequestUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolBillingRequest.
+func (c *CarpoolBillingRequestClient) Delete() *CarpoolBillingRequestDelete {
+	mutation := newCarpoolBillingRequestMutation(c.config, OpDelete)
+	return &CarpoolBillingRequestDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolBillingRequestClient) DeleteOne(_m *CarpoolBillingRequest) *CarpoolBillingRequestDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolBillingRequestClient) DeleteOneID(id int64) *CarpoolBillingRequestDeleteOne {
+	builder := c.Delete().Where(carpoolbillingrequest.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolBillingRequestDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolBillingRequest.
+func (c *CarpoolBillingRequestClient) Query() *CarpoolBillingRequestQuery {
+	return &CarpoolBillingRequestQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolBillingRequest},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolBillingRequest entity by its id.
+func (c *CarpoolBillingRequestClient) Get(ctx context.Context, id int64) (*CarpoolBillingRequest, error) {
+	return c.Query().Where(carpoolbillingrequest.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolBillingRequestClient) GetX(ctx context.Context, id int64) *CarpoolBillingRequest {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolBillingRequestClient) Hooks() []Hook {
+	return c.hooks.CarpoolBillingRequest
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolBillingRequestClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolBillingRequest
+}
+
+func (c *CarpoolBillingRequestClient) mutate(ctx context.Context, m *CarpoolBillingRequestMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolBillingRequestCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolBillingRequestUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolBillingRequestUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolBillingRequestDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolBillingRequest mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolCycleClient is a client for the CarpoolCycle schema.
+type CarpoolCycleClient struct {
+	config
+}
+
+// NewCarpoolCycleClient returns a client for the CarpoolCycle from the given config.
+func NewCarpoolCycleClient(c config) *CarpoolCycleClient {
+	return &CarpoolCycleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolcycle.Hooks(f(g(h())))`.
+func (c *CarpoolCycleClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolCycle = append(c.hooks.CarpoolCycle, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolcycle.Intercept(f(g(h())))`.
+func (c *CarpoolCycleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolCycle = append(c.inters.CarpoolCycle, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolCycle entity.
+func (c *CarpoolCycleClient) Create() *CarpoolCycleCreate {
+	mutation := newCarpoolCycleMutation(c.config, OpCreate)
+	return &CarpoolCycleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolCycle entities.
+func (c *CarpoolCycleClient) CreateBulk(builders ...*CarpoolCycleCreate) *CarpoolCycleCreateBulk {
+	return &CarpoolCycleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolCycleClient) MapCreateBulk(slice any, setFunc func(*CarpoolCycleCreate, int)) *CarpoolCycleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolCycleCreateBulk{err: fmt.Errorf("calling to CarpoolCycleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolCycleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolCycleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolCycle.
+func (c *CarpoolCycleClient) Update() *CarpoolCycleUpdate {
+	mutation := newCarpoolCycleMutation(c.config, OpUpdate)
+	return &CarpoolCycleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolCycleClient) UpdateOne(_m *CarpoolCycle) *CarpoolCycleUpdateOne {
+	mutation := newCarpoolCycleMutation(c.config, OpUpdateOne, withCarpoolCycle(_m))
+	return &CarpoolCycleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolCycleClient) UpdateOneID(id int64) *CarpoolCycleUpdateOne {
+	mutation := newCarpoolCycleMutation(c.config, OpUpdateOne, withCarpoolCycleID(id))
+	return &CarpoolCycleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolCycle.
+func (c *CarpoolCycleClient) Delete() *CarpoolCycleDelete {
+	mutation := newCarpoolCycleMutation(c.config, OpDelete)
+	return &CarpoolCycleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolCycleClient) DeleteOne(_m *CarpoolCycle) *CarpoolCycleDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolCycleClient) DeleteOneID(id int64) *CarpoolCycleDeleteOne {
+	builder := c.Delete().Where(carpoolcycle.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolCycleDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolCycle.
+func (c *CarpoolCycleClient) Query() *CarpoolCycleQuery {
+	return &CarpoolCycleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolCycle},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolCycle entity by its id.
+func (c *CarpoolCycleClient) Get(ctx context.Context, id int64) (*CarpoolCycle, error) {
+	return c.Query().Where(carpoolcycle.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolCycleClient) GetX(ctx context.Context, id int64) *CarpoolCycle {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolCycleClient) Hooks() []Hook {
+	return c.hooks.CarpoolCycle
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolCycleClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolCycle
+}
+
+func (c *CarpoolCycleClient) mutate(ctx context.Context, m *CarpoolCycleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolCycleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolCycleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolCycleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolCycleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolCycle mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolLedgerClient is a client for the CarpoolLedger schema.
+type CarpoolLedgerClient struct {
+	config
+}
+
+// NewCarpoolLedgerClient returns a client for the CarpoolLedger from the given config.
+func NewCarpoolLedgerClient(c config) *CarpoolLedgerClient {
+	return &CarpoolLedgerClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolledger.Hooks(f(g(h())))`.
+func (c *CarpoolLedgerClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolLedger = append(c.hooks.CarpoolLedger, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolledger.Intercept(f(g(h())))`.
+func (c *CarpoolLedgerClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolLedger = append(c.inters.CarpoolLedger, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolLedger entity.
+func (c *CarpoolLedgerClient) Create() *CarpoolLedgerCreate {
+	mutation := newCarpoolLedgerMutation(c.config, OpCreate)
+	return &CarpoolLedgerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolLedger entities.
+func (c *CarpoolLedgerClient) CreateBulk(builders ...*CarpoolLedgerCreate) *CarpoolLedgerCreateBulk {
+	return &CarpoolLedgerCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolLedgerClient) MapCreateBulk(slice any, setFunc func(*CarpoolLedgerCreate, int)) *CarpoolLedgerCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolLedgerCreateBulk{err: fmt.Errorf("calling to CarpoolLedgerClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolLedgerCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolLedgerCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolLedger.
+func (c *CarpoolLedgerClient) Update() *CarpoolLedgerUpdate {
+	mutation := newCarpoolLedgerMutation(c.config, OpUpdate)
+	return &CarpoolLedgerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolLedgerClient) UpdateOne(_m *CarpoolLedger) *CarpoolLedgerUpdateOne {
+	mutation := newCarpoolLedgerMutation(c.config, OpUpdateOne, withCarpoolLedger(_m))
+	return &CarpoolLedgerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolLedgerClient) UpdateOneID(id int64) *CarpoolLedgerUpdateOne {
+	mutation := newCarpoolLedgerMutation(c.config, OpUpdateOne, withCarpoolLedgerID(id))
+	return &CarpoolLedgerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolLedger.
+func (c *CarpoolLedgerClient) Delete() *CarpoolLedgerDelete {
+	mutation := newCarpoolLedgerMutation(c.config, OpDelete)
+	return &CarpoolLedgerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolLedgerClient) DeleteOne(_m *CarpoolLedger) *CarpoolLedgerDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolLedgerClient) DeleteOneID(id int64) *CarpoolLedgerDeleteOne {
+	builder := c.Delete().Where(carpoolledger.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolLedgerDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolLedger.
+func (c *CarpoolLedgerClient) Query() *CarpoolLedgerQuery {
+	return &CarpoolLedgerQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolLedger},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolLedger entity by its id.
+func (c *CarpoolLedgerClient) Get(ctx context.Context, id int64) (*CarpoolLedger, error) {
+	return c.Query().Where(carpoolledger.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolLedgerClient) GetX(ctx context.Context, id int64) *CarpoolLedger {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolLedgerClient) Hooks() []Hook {
+	return c.hooks.CarpoolLedger
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolLedgerClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolLedger
+}
+
+func (c *CarpoolLedgerClient) mutate(ctx context.Context, m *CarpoolLedgerMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolLedgerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolLedgerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolLedgerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolLedgerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolLedger mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolOperationClient is a client for the CarpoolOperation schema.
+type CarpoolOperationClient struct {
+	config
+}
+
+// NewCarpoolOperationClient returns a client for the CarpoolOperation from the given config.
+func NewCarpoolOperationClient(c config) *CarpoolOperationClient {
+	return &CarpoolOperationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpooloperation.Hooks(f(g(h())))`.
+func (c *CarpoolOperationClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolOperation = append(c.hooks.CarpoolOperation, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpooloperation.Intercept(f(g(h())))`.
+func (c *CarpoolOperationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolOperation = append(c.inters.CarpoolOperation, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolOperation entity.
+func (c *CarpoolOperationClient) Create() *CarpoolOperationCreate {
+	mutation := newCarpoolOperationMutation(c.config, OpCreate)
+	return &CarpoolOperationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolOperation entities.
+func (c *CarpoolOperationClient) CreateBulk(builders ...*CarpoolOperationCreate) *CarpoolOperationCreateBulk {
+	return &CarpoolOperationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolOperationClient) MapCreateBulk(slice any, setFunc func(*CarpoolOperationCreate, int)) *CarpoolOperationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolOperationCreateBulk{err: fmt.Errorf("calling to CarpoolOperationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolOperationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolOperationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolOperation.
+func (c *CarpoolOperationClient) Update() *CarpoolOperationUpdate {
+	mutation := newCarpoolOperationMutation(c.config, OpUpdate)
+	return &CarpoolOperationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolOperationClient) UpdateOne(_m *CarpoolOperation) *CarpoolOperationUpdateOne {
+	mutation := newCarpoolOperationMutation(c.config, OpUpdateOne, withCarpoolOperation(_m))
+	return &CarpoolOperationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolOperationClient) UpdateOneID(id int64) *CarpoolOperationUpdateOne {
+	mutation := newCarpoolOperationMutation(c.config, OpUpdateOne, withCarpoolOperationID(id))
+	return &CarpoolOperationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolOperation.
+func (c *CarpoolOperationClient) Delete() *CarpoolOperationDelete {
+	mutation := newCarpoolOperationMutation(c.config, OpDelete)
+	return &CarpoolOperationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolOperationClient) DeleteOne(_m *CarpoolOperation) *CarpoolOperationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolOperationClient) DeleteOneID(id int64) *CarpoolOperationDeleteOne {
+	builder := c.Delete().Where(carpooloperation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolOperationDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolOperation.
+func (c *CarpoolOperationClient) Query() *CarpoolOperationQuery {
+	return &CarpoolOperationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolOperation},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolOperation entity by its id.
+func (c *CarpoolOperationClient) Get(ctx context.Context, id int64) (*CarpoolOperation, error) {
+	return c.Query().Where(carpooloperation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolOperationClient) GetX(ctx context.Context, id int64) *CarpoolOperation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolOperationClient) Hooks() []Hook {
+	return c.hooks.CarpoolOperation
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolOperationClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolOperation
+}
+
+func (c *CarpoolOperationClient) mutate(ctx context.Context, m *CarpoolOperationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolOperationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolOperationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolOperationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolOperationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolOperation mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolPaymentClient is a client for the CarpoolPayment schema.
+type CarpoolPaymentClient struct {
+	config
+}
+
+// NewCarpoolPaymentClient returns a client for the CarpoolPayment from the given config.
+func NewCarpoolPaymentClient(c config) *CarpoolPaymentClient {
+	return &CarpoolPaymentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolpayment.Hooks(f(g(h())))`.
+func (c *CarpoolPaymentClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolPayment = append(c.hooks.CarpoolPayment, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolpayment.Intercept(f(g(h())))`.
+func (c *CarpoolPaymentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolPayment = append(c.inters.CarpoolPayment, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolPayment entity.
+func (c *CarpoolPaymentClient) Create() *CarpoolPaymentCreate {
+	mutation := newCarpoolPaymentMutation(c.config, OpCreate)
+	return &CarpoolPaymentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolPayment entities.
+func (c *CarpoolPaymentClient) CreateBulk(builders ...*CarpoolPaymentCreate) *CarpoolPaymentCreateBulk {
+	return &CarpoolPaymentCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolPaymentClient) MapCreateBulk(slice any, setFunc func(*CarpoolPaymentCreate, int)) *CarpoolPaymentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolPaymentCreateBulk{err: fmt.Errorf("calling to CarpoolPaymentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolPaymentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolPaymentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolPayment.
+func (c *CarpoolPaymentClient) Update() *CarpoolPaymentUpdate {
+	mutation := newCarpoolPaymentMutation(c.config, OpUpdate)
+	return &CarpoolPaymentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolPaymentClient) UpdateOne(_m *CarpoolPayment) *CarpoolPaymentUpdateOne {
+	mutation := newCarpoolPaymentMutation(c.config, OpUpdateOne, withCarpoolPayment(_m))
+	return &CarpoolPaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolPaymentClient) UpdateOneID(id int64) *CarpoolPaymentUpdateOne {
+	mutation := newCarpoolPaymentMutation(c.config, OpUpdateOne, withCarpoolPaymentID(id))
+	return &CarpoolPaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolPayment.
+func (c *CarpoolPaymentClient) Delete() *CarpoolPaymentDelete {
+	mutation := newCarpoolPaymentMutation(c.config, OpDelete)
+	return &CarpoolPaymentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolPaymentClient) DeleteOne(_m *CarpoolPayment) *CarpoolPaymentDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolPaymentClient) DeleteOneID(id int64) *CarpoolPaymentDeleteOne {
+	builder := c.Delete().Where(carpoolpayment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolPaymentDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolPayment.
+func (c *CarpoolPaymentClient) Query() *CarpoolPaymentQuery {
+	return &CarpoolPaymentQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolPayment},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolPayment entity by its id.
+func (c *CarpoolPaymentClient) Get(ctx context.Context, id int64) (*CarpoolPayment, error) {
+	return c.Query().Where(carpoolpayment.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolPaymentClient) GetX(ctx context.Context, id int64) *CarpoolPayment {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolPaymentClient) Hooks() []Hook {
+	return c.hooks.CarpoolPayment
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolPaymentClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolPayment
+}
+
+func (c *CarpoolPaymentClient) mutate(ctx context.Context, m *CarpoolPaymentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolPaymentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolPaymentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolPaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolPaymentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolPayment mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolPlanClient is a client for the CarpoolPlan schema.
+type CarpoolPlanClient struct {
+	config
+}
+
+// NewCarpoolPlanClient returns a client for the CarpoolPlan from the given config.
+func NewCarpoolPlanClient(c config) *CarpoolPlanClient {
+	return &CarpoolPlanClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolplan.Hooks(f(g(h())))`.
+func (c *CarpoolPlanClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolPlan = append(c.hooks.CarpoolPlan, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolplan.Intercept(f(g(h())))`.
+func (c *CarpoolPlanClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolPlan = append(c.inters.CarpoolPlan, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolPlan entity.
+func (c *CarpoolPlanClient) Create() *CarpoolPlanCreate {
+	mutation := newCarpoolPlanMutation(c.config, OpCreate)
+	return &CarpoolPlanCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolPlan entities.
+func (c *CarpoolPlanClient) CreateBulk(builders ...*CarpoolPlanCreate) *CarpoolPlanCreateBulk {
+	return &CarpoolPlanCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolPlanClient) MapCreateBulk(slice any, setFunc func(*CarpoolPlanCreate, int)) *CarpoolPlanCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolPlanCreateBulk{err: fmt.Errorf("calling to CarpoolPlanClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolPlanCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolPlanCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolPlan.
+func (c *CarpoolPlanClient) Update() *CarpoolPlanUpdate {
+	mutation := newCarpoolPlanMutation(c.config, OpUpdate)
+	return &CarpoolPlanUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolPlanClient) UpdateOne(_m *CarpoolPlan) *CarpoolPlanUpdateOne {
+	mutation := newCarpoolPlanMutation(c.config, OpUpdateOne, withCarpoolPlan(_m))
+	return &CarpoolPlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolPlanClient) UpdateOneID(id int64) *CarpoolPlanUpdateOne {
+	mutation := newCarpoolPlanMutation(c.config, OpUpdateOne, withCarpoolPlanID(id))
+	return &CarpoolPlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolPlan.
+func (c *CarpoolPlanClient) Delete() *CarpoolPlanDelete {
+	mutation := newCarpoolPlanMutation(c.config, OpDelete)
+	return &CarpoolPlanDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolPlanClient) DeleteOne(_m *CarpoolPlan) *CarpoolPlanDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolPlanClient) DeleteOneID(id int64) *CarpoolPlanDeleteOne {
+	builder := c.Delete().Where(carpoolplan.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolPlanDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolPlan.
+func (c *CarpoolPlanClient) Query() *CarpoolPlanQuery {
+	return &CarpoolPlanQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolPlan},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolPlan entity by its id.
+func (c *CarpoolPlanClient) Get(ctx context.Context, id int64) (*CarpoolPlan, error) {
+	return c.Query().Where(carpoolplan.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolPlanClient) GetX(ctx context.Context, id int64) *CarpoolPlan {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolPlanClient) Hooks() []Hook {
+	return c.hooks.CarpoolPlan
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolPlanClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolPlan
+}
+
+func (c *CarpoolPlanClient) mutate(ctx context.Context, m *CarpoolPlanMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolPlanCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolPlanUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolPlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolPlanDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolPlan mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolResetAccountStateClient is a client for the CarpoolResetAccountState schema.
+type CarpoolResetAccountStateClient struct {
+	config
+}
+
+// NewCarpoolResetAccountStateClient returns a client for the CarpoolResetAccountState from the given config.
+func NewCarpoolResetAccountStateClient(c config) *CarpoolResetAccountStateClient {
+	return &CarpoolResetAccountStateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolresetaccountstate.Hooks(f(g(h())))`.
+func (c *CarpoolResetAccountStateClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolResetAccountState = append(c.hooks.CarpoolResetAccountState, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolresetaccountstate.Intercept(f(g(h())))`.
+func (c *CarpoolResetAccountStateClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolResetAccountState = append(c.inters.CarpoolResetAccountState, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolResetAccountState entity.
+func (c *CarpoolResetAccountStateClient) Create() *CarpoolResetAccountStateCreate {
+	mutation := newCarpoolResetAccountStateMutation(c.config, OpCreate)
+	return &CarpoolResetAccountStateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolResetAccountState entities.
+func (c *CarpoolResetAccountStateClient) CreateBulk(builders ...*CarpoolResetAccountStateCreate) *CarpoolResetAccountStateCreateBulk {
+	return &CarpoolResetAccountStateCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolResetAccountStateClient) MapCreateBulk(slice any, setFunc func(*CarpoolResetAccountStateCreate, int)) *CarpoolResetAccountStateCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolResetAccountStateCreateBulk{err: fmt.Errorf("calling to CarpoolResetAccountStateClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolResetAccountStateCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolResetAccountStateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolResetAccountState.
+func (c *CarpoolResetAccountStateClient) Update() *CarpoolResetAccountStateUpdate {
+	mutation := newCarpoolResetAccountStateMutation(c.config, OpUpdate)
+	return &CarpoolResetAccountStateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolResetAccountStateClient) UpdateOne(_m *CarpoolResetAccountState) *CarpoolResetAccountStateUpdateOne {
+	mutation := newCarpoolResetAccountStateMutation(c.config, OpUpdateOne, withCarpoolResetAccountState(_m))
+	return &CarpoolResetAccountStateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolResetAccountStateClient) UpdateOneID(id int64) *CarpoolResetAccountStateUpdateOne {
+	mutation := newCarpoolResetAccountStateMutation(c.config, OpUpdateOne, withCarpoolResetAccountStateID(id))
+	return &CarpoolResetAccountStateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolResetAccountState.
+func (c *CarpoolResetAccountStateClient) Delete() *CarpoolResetAccountStateDelete {
+	mutation := newCarpoolResetAccountStateMutation(c.config, OpDelete)
+	return &CarpoolResetAccountStateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolResetAccountStateClient) DeleteOne(_m *CarpoolResetAccountState) *CarpoolResetAccountStateDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolResetAccountStateClient) DeleteOneID(id int64) *CarpoolResetAccountStateDeleteOne {
+	builder := c.Delete().Where(carpoolresetaccountstate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolResetAccountStateDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolResetAccountState.
+func (c *CarpoolResetAccountStateClient) Query() *CarpoolResetAccountStateQuery {
+	return &CarpoolResetAccountStateQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolResetAccountState},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolResetAccountState entity by its id.
+func (c *CarpoolResetAccountStateClient) Get(ctx context.Context, id int64) (*CarpoolResetAccountState, error) {
+	return c.Query().Where(carpoolresetaccountstate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolResetAccountStateClient) GetX(ctx context.Context, id int64) *CarpoolResetAccountState {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolResetAccountStateClient) Hooks() []Hook {
+	return c.hooks.CarpoolResetAccountState
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolResetAccountStateClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolResetAccountState
+}
+
+func (c *CarpoolResetAccountStateClient) mutate(ctx context.Context, m *CarpoolResetAccountStateMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolResetAccountStateCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolResetAccountStateUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolResetAccountStateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolResetAccountStateDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolResetAccountState mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolResetAnnouncementOutboxClient is a client for the CarpoolResetAnnouncementOutbox schema.
+type CarpoolResetAnnouncementOutboxClient struct {
+	config
+}
+
+// NewCarpoolResetAnnouncementOutboxClient returns a client for the CarpoolResetAnnouncementOutbox from the given config.
+func NewCarpoolResetAnnouncementOutboxClient(c config) *CarpoolResetAnnouncementOutboxClient {
+	return &CarpoolResetAnnouncementOutboxClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolresetannouncementoutbox.Hooks(f(g(h())))`.
+func (c *CarpoolResetAnnouncementOutboxClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolResetAnnouncementOutbox = append(c.hooks.CarpoolResetAnnouncementOutbox, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolresetannouncementoutbox.Intercept(f(g(h())))`.
+func (c *CarpoolResetAnnouncementOutboxClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolResetAnnouncementOutbox = append(c.inters.CarpoolResetAnnouncementOutbox, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolResetAnnouncementOutbox entity.
+func (c *CarpoolResetAnnouncementOutboxClient) Create() *CarpoolResetAnnouncementOutboxCreate {
+	mutation := newCarpoolResetAnnouncementOutboxMutation(c.config, OpCreate)
+	return &CarpoolResetAnnouncementOutboxCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolResetAnnouncementOutbox entities.
+func (c *CarpoolResetAnnouncementOutboxClient) CreateBulk(builders ...*CarpoolResetAnnouncementOutboxCreate) *CarpoolResetAnnouncementOutboxCreateBulk {
+	return &CarpoolResetAnnouncementOutboxCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolResetAnnouncementOutboxClient) MapCreateBulk(slice any, setFunc func(*CarpoolResetAnnouncementOutboxCreate, int)) *CarpoolResetAnnouncementOutboxCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolResetAnnouncementOutboxCreateBulk{err: fmt.Errorf("calling to CarpoolResetAnnouncementOutboxClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolResetAnnouncementOutboxCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolResetAnnouncementOutboxCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolResetAnnouncementOutbox.
+func (c *CarpoolResetAnnouncementOutboxClient) Update() *CarpoolResetAnnouncementOutboxUpdate {
+	mutation := newCarpoolResetAnnouncementOutboxMutation(c.config, OpUpdate)
+	return &CarpoolResetAnnouncementOutboxUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolResetAnnouncementOutboxClient) UpdateOne(_m *CarpoolResetAnnouncementOutbox) *CarpoolResetAnnouncementOutboxUpdateOne {
+	mutation := newCarpoolResetAnnouncementOutboxMutation(c.config, OpUpdateOne, withCarpoolResetAnnouncementOutbox(_m))
+	return &CarpoolResetAnnouncementOutboxUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolResetAnnouncementOutboxClient) UpdateOneID(id int64) *CarpoolResetAnnouncementOutboxUpdateOne {
+	mutation := newCarpoolResetAnnouncementOutboxMutation(c.config, OpUpdateOne, withCarpoolResetAnnouncementOutboxID(id))
+	return &CarpoolResetAnnouncementOutboxUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolResetAnnouncementOutbox.
+func (c *CarpoolResetAnnouncementOutboxClient) Delete() *CarpoolResetAnnouncementOutboxDelete {
+	mutation := newCarpoolResetAnnouncementOutboxMutation(c.config, OpDelete)
+	return &CarpoolResetAnnouncementOutboxDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolResetAnnouncementOutboxClient) DeleteOne(_m *CarpoolResetAnnouncementOutbox) *CarpoolResetAnnouncementOutboxDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolResetAnnouncementOutboxClient) DeleteOneID(id int64) *CarpoolResetAnnouncementOutboxDeleteOne {
+	builder := c.Delete().Where(carpoolresetannouncementoutbox.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolResetAnnouncementOutboxDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolResetAnnouncementOutbox.
+func (c *CarpoolResetAnnouncementOutboxClient) Query() *CarpoolResetAnnouncementOutboxQuery {
+	return &CarpoolResetAnnouncementOutboxQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolResetAnnouncementOutbox},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolResetAnnouncementOutbox entity by its id.
+func (c *CarpoolResetAnnouncementOutboxClient) Get(ctx context.Context, id int64) (*CarpoolResetAnnouncementOutbox, error) {
+	return c.Query().Where(carpoolresetannouncementoutbox.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolResetAnnouncementOutboxClient) GetX(ctx context.Context, id int64) *CarpoolResetAnnouncementOutbox {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolResetAnnouncementOutboxClient) Hooks() []Hook {
+	return c.hooks.CarpoolResetAnnouncementOutbox
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolResetAnnouncementOutboxClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolResetAnnouncementOutbox
+}
+
+func (c *CarpoolResetAnnouncementOutboxClient) mutate(ctx context.Context, m *CarpoolResetAnnouncementOutboxMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolResetAnnouncementOutboxCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolResetAnnouncementOutboxUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolResetAnnouncementOutboxUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolResetAnnouncementOutboxDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolResetAnnouncementOutbox mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolResetBatchClient is a client for the CarpoolResetBatch schema.
+type CarpoolResetBatchClient struct {
+	config
+}
+
+// NewCarpoolResetBatchClient returns a client for the CarpoolResetBatch from the given config.
+func NewCarpoolResetBatchClient(c config) *CarpoolResetBatchClient {
+	return &CarpoolResetBatchClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolresetbatch.Hooks(f(g(h())))`.
+func (c *CarpoolResetBatchClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolResetBatch = append(c.hooks.CarpoolResetBatch, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolresetbatch.Intercept(f(g(h())))`.
+func (c *CarpoolResetBatchClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolResetBatch = append(c.inters.CarpoolResetBatch, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolResetBatch entity.
+func (c *CarpoolResetBatchClient) Create() *CarpoolResetBatchCreate {
+	mutation := newCarpoolResetBatchMutation(c.config, OpCreate)
+	return &CarpoolResetBatchCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolResetBatch entities.
+func (c *CarpoolResetBatchClient) CreateBulk(builders ...*CarpoolResetBatchCreate) *CarpoolResetBatchCreateBulk {
+	return &CarpoolResetBatchCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolResetBatchClient) MapCreateBulk(slice any, setFunc func(*CarpoolResetBatchCreate, int)) *CarpoolResetBatchCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolResetBatchCreateBulk{err: fmt.Errorf("calling to CarpoolResetBatchClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolResetBatchCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolResetBatchCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolResetBatch.
+func (c *CarpoolResetBatchClient) Update() *CarpoolResetBatchUpdate {
+	mutation := newCarpoolResetBatchMutation(c.config, OpUpdate)
+	return &CarpoolResetBatchUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolResetBatchClient) UpdateOne(_m *CarpoolResetBatch) *CarpoolResetBatchUpdateOne {
+	mutation := newCarpoolResetBatchMutation(c.config, OpUpdateOne, withCarpoolResetBatch(_m))
+	return &CarpoolResetBatchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolResetBatchClient) UpdateOneID(id int64) *CarpoolResetBatchUpdateOne {
+	mutation := newCarpoolResetBatchMutation(c.config, OpUpdateOne, withCarpoolResetBatchID(id))
+	return &CarpoolResetBatchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolResetBatch.
+func (c *CarpoolResetBatchClient) Delete() *CarpoolResetBatchDelete {
+	mutation := newCarpoolResetBatchMutation(c.config, OpDelete)
+	return &CarpoolResetBatchDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolResetBatchClient) DeleteOne(_m *CarpoolResetBatch) *CarpoolResetBatchDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolResetBatchClient) DeleteOneID(id int64) *CarpoolResetBatchDeleteOne {
+	builder := c.Delete().Where(carpoolresetbatch.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolResetBatchDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolResetBatch.
+func (c *CarpoolResetBatchClient) Query() *CarpoolResetBatchQuery {
+	return &CarpoolResetBatchQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolResetBatch},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolResetBatch entity by its id.
+func (c *CarpoolResetBatchClient) Get(ctx context.Context, id int64) (*CarpoolResetBatch, error) {
+	return c.Query().Where(carpoolresetbatch.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolResetBatchClient) GetX(ctx context.Context, id int64) *CarpoolResetBatch {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolResetBatchClient) Hooks() []Hook {
+	return c.hooks.CarpoolResetBatch
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolResetBatchClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolResetBatch
+}
+
+func (c *CarpoolResetBatchClient) mutate(ctx context.Context, m *CarpoolResetBatchMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolResetBatchCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolResetBatchUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolResetBatchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolResetBatchDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolResetBatch mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolResetCreditClient is a client for the CarpoolResetCredit schema.
+type CarpoolResetCreditClient struct {
+	config
+}
+
+// NewCarpoolResetCreditClient returns a client for the CarpoolResetCredit from the given config.
+func NewCarpoolResetCreditClient(c config) *CarpoolResetCreditClient {
+	return &CarpoolResetCreditClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolresetcredit.Hooks(f(g(h())))`.
+func (c *CarpoolResetCreditClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolResetCredit = append(c.hooks.CarpoolResetCredit, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolresetcredit.Intercept(f(g(h())))`.
+func (c *CarpoolResetCreditClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolResetCredit = append(c.inters.CarpoolResetCredit, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolResetCredit entity.
+func (c *CarpoolResetCreditClient) Create() *CarpoolResetCreditCreate {
+	mutation := newCarpoolResetCreditMutation(c.config, OpCreate)
+	return &CarpoolResetCreditCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolResetCredit entities.
+func (c *CarpoolResetCreditClient) CreateBulk(builders ...*CarpoolResetCreditCreate) *CarpoolResetCreditCreateBulk {
+	return &CarpoolResetCreditCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolResetCreditClient) MapCreateBulk(slice any, setFunc func(*CarpoolResetCreditCreate, int)) *CarpoolResetCreditCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolResetCreditCreateBulk{err: fmt.Errorf("calling to CarpoolResetCreditClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolResetCreditCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolResetCreditCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolResetCredit.
+func (c *CarpoolResetCreditClient) Update() *CarpoolResetCreditUpdate {
+	mutation := newCarpoolResetCreditMutation(c.config, OpUpdate)
+	return &CarpoolResetCreditUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolResetCreditClient) UpdateOne(_m *CarpoolResetCredit) *CarpoolResetCreditUpdateOne {
+	mutation := newCarpoolResetCreditMutation(c.config, OpUpdateOne, withCarpoolResetCredit(_m))
+	return &CarpoolResetCreditUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolResetCreditClient) UpdateOneID(id int64) *CarpoolResetCreditUpdateOne {
+	mutation := newCarpoolResetCreditMutation(c.config, OpUpdateOne, withCarpoolResetCreditID(id))
+	return &CarpoolResetCreditUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolResetCredit.
+func (c *CarpoolResetCreditClient) Delete() *CarpoolResetCreditDelete {
+	mutation := newCarpoolResetCreditMutation(c.config, OpDelete)
+	return &CarpoolResetCreditDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolResetCreditClient) DeleteOne(_m *CarpoolResetCredit) *CarpoolResetCreditDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolResetCreditClient) DeleteOneID(id int64) *CarpoolResetCreditDeleteOne {
+	builder := c.Delete().Where(carpoolresetcredit.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolResetCreditDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolResetCredit.
+func (c *CarpoolResetCreditClient) Query() *CarpoolResetCreditQuery {
+	return &CarpoolResetCreditQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolResetCredit},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolResetCredit entity by its id.
+func (c *CarpoolResetCreditClient) Get(ctx context.Context, id int64) (*CarpoolResetCredit, error) {
+	return c.Query().Where(carpoolresetcredit.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolResetCreditClient) GetX(ctx context.Context, id int64) *CarpoolResetCredit {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolResetCreditClient) Hooks() []Hook {
+	return c.hooks.CarpoolResetCredit
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolResetCreditClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolResetCredit
+}
+
+func (c *CarpoolResetCreditClient) mutate(ctx context.Context, m *CarpoolResetCreditMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolResetCreditCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolResetCreditUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolResetCreditUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolResetCreditDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolResetCredit mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolResetQualificationClient is a client for the CarpoolResetQualification schema.
+type CarpoolResetQualificationClient struct {
+	config
+}
+
+// NewCarpoolResetQualificationClient returns a client for the CarpoolResetQualification from the given config.
+func NewCarpoolResetQualificationClient(c config) *CarpoolResetQualificationClient {
+	return &CarpoolResetQualificationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolresetqualification.Hooks(f(g(h())))`.
+func (c *CarpoolResetQualificationClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolResetQualification = append(c.hooks.CarpoolResetQualification, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolresetqualification.Intercept(f(g(h())))`.
+func (c *CarpoolResetQualificationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolResetQualification = append(c.inters.CarpoolResetQualification, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolResetQualification entity.
+func (c *CarpoolResetQualificationClient) Create() *CarpoolResetQualificationCreate {
+	mutation := newCarpoolResetQualificationMutation(c.config, OpCreate)
+	return &CarpoolResetQualificationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolResetQualification entities.
+func (c *CarpoolResetQualificationClient) CreateBulk(builders ...*CarpoolResetQualificationCreate) *CarpoolResetQualificationCreateBulk {
+	return &CarpoolResetQualificationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolResetQualificationClient) MapCreateBulk(slice any, setFunc func(*CarpoolResetQualificationCreate, int)) *CarpoolResetQualificationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolResetQualificationCreateBulk{err: fmt.Errorf("calling to CarpoolResetQualificationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolResetQualificationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolResetQualificationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolResetQualification.
+func (c *CarpoolResetQualificationClient) Update() *CarpoolResetQualificationUpdate {
+	mutation := newCarpoolResetQualificationMutation(c.config, OpUpdate)
+	return &CarpoolResetQualificationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolResetQualificationClient) UpdateOne(_m *CarpoolResetQualification) *CarpoolResetQualificationUpdateOne {
+	mutation := newCarpoolResetQualificationMutation(c.config, OpUpdateOne, withCarpoolResetQualification(_m))
+	return &CarpoolResetQualificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolResetQualificationClient) UpdateOneID(id int64) *CarpoolResetQualificationUpdateOne {
+	mutation := newCarpoolResetQualificationMutation(c.config, OpUpdateOne, withCarpoolResetQualificationID(id))
+	return &CarpoolResetQualificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolResetQualification.
+func (c *CarpoolResetQualificationClient) Delete() *CarpoolResetQualificationDelete {
+	mutation := newCarpoolResetQualificationMutation(c.config, OpDelete)
+	return &CarpoolResetQualificationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolResetQualificationClient) DeleteOne(_m *CarpoolResetQualification) *CarpoolResetQualificationDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolResetQualificationClient) DeleteOneID(id int64) *CarpoolResetQualificationDeleteOne {
+	builder := c.Delete().Where(carpoolresetqualification.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolResetQualificationDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolResetQualification.
+func (c *CarpoolResetQualificationClient) Query() *CarpoolResetQualificationQuery {
+	return &CarpoolResetQualificationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolResetQualification},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolResetQualification entity by its id.
+func (c *CarpoolResetQualificationClient) Get(ctx context.Context, id int64) (*CarpoolResetQualification, error) {
+	return c.Query().Where(carpoolresetqualification.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolResetQualificationClient) GetX(ctx context.Context, id int64) *CarpoolResetQualification {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolResetQualificationClient) Hooks() []Hook {
+	return c.hooks.CarpoolResetQualification
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolResetQualificationClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolResetQualification
+}
+
+func (c *CarpoolResetQualificationClient) mutate(ctx context.Context, m *CarpoolResetQualificationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolResetQualificationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolResetQualificationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolResetQualificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolResetQualificationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolResetQualification mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolResetScopeStateClient is a client for the CarpoolResetScopeState schema.
+type CarpoolResetScopeStateClient struct {
+	config
+}
+
+// NewCarpoolResetScopeStateClient returns a client for the CarpoolResetScopeState from the given config.
+func NewCarpoolResetScopeStateClient(c config) *CarpoolResetScopeStateClient {
+	return &CarpoolResetScopeStateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolresetscopestate.Hooks(f(g(h())))`.
+func (c *CarpoolResetScopeStateClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolResetScopeState = append(c.hooks.CarpoolResetScopeState, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolresetscopestate.Intercept(f(g(h())))`.
+func (c *CarpoolResetScopeStateClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolResetScopeState = append(c.inters.CarpoolResetScopeState, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolResetScopeState entity.
+func (c *CarpoolResetScopeStateClient) Create() *CarpoolResetScopeStateCreate {
+	mutation := newCarpoolResetScopeStateMutation(c.config, OpCreate)
+	return &CarpoolResetScopeStateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolResetScopeState entities.
+func (c *CarpoolResetScopeStateClient) CreateBulk(builders ...*CarpoolResetScopeStateCreate) *CarpoolResetScopeStateCreateBulk {
+	return &CarpoolResetScopeStateCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolResetScopeStateClient) MapCreateBulk(slice any, setFunc func(*CarpoolResetScopeStateCreate, int)) *CarpoolResetScopeStateCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolResetScopeStateCreateBulk{err: fmt.Errorf("calling to CarpoolResetScopeStateClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolResetScopeStateCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolResetScopeStateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolResetScopeState.
+func (c *CarpoolResetScopeStateClient) Update() *CarpoolResetScopeStateUpdate {
+	mutation := newCarpoolResetScopeStateMutation(c.config, OpUpdate)
+	return &CarpoolResetScopeStateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolResetScopeStateClient) UpdateOne(_m *CarpoolResetScopeState) *CarpoolResetScopeStateUpdateOne {
+	mutation := newCarpoolResetScopeStateMutation(c.config, OpUpdateOne, withCarpoolResetScopeState(_m))
+	return &CarpoolResetScopeStateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolResetScopeStateClient) UpdateOneID(id int64) *CarpoolResetScopeStateUpdateOne {
+	mutation := newCarpoolResetScopeStateMutation(c.config, OpUpdateOne, withCarpoolResetScopeStateID(id))
+	return &CarpoolResetScopeStateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolResetScopeState.
+func (c *CarpoolResetScopeStateClient) Delete() *CarpoolResetScopeStateDelete {
+	mutation := newCarpoolResetScopeStateMutation(c.config, OpDelete)
+	return &CarpoolResetScopeStateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolResetScopeStateClient) DeleteOne(_m *CarpoolResetScopeState) *CarpoolResetScopeStateDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolResetScopeStateClient) DeleteOneID(id int64) *CarpoolResetScopeStateDeleteOne {
+	builder := c.Delete().Where(carpoolresetscopestate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolResetScopeStateDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolResetScopeState.
+func (c *CarpoolResetScopeStateClient) Query() *CarpoolResetScopeStateQuery {
+	return &CarpoolResetScopeStateQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolResetScopeState},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolResetScopeState entity by its id.
+func (c *CarpoolResetScopeStateClient) Get(ctx context.Context, id int64) (*CarpoolResetScopeState, error) {
+	return c.Query().Where(carpoolresetscopestate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolResetScopeStateClient) GetX(ctx context.Context, id int64) *CarpoolResetScopeState {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolResetScopeStateClient) Hooks() []Hook {
+	return c.hooks.CarpoolResetScopeState
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolResetScopeStateClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolResetScopeState
+}
+
+func (c *CarpoolResetScopeStateClient) mutate(ctx context.Context, m *CarpoolResetScopeStateMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolResetScopeStateCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolResetScopeStateUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolResetScopeStateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolResetScopeStateDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolResetScopeState mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolResetTargetClient is a client for the CarpoolResetTarget schema.
+type CarpoolResetTargetClient struct {
+	config
+}
+
+// NewCarpoolResetTargetClient returns a client for the CarpoolResetTarget from the given config.
+func NewCarpoolResetTargetClient(c config) *CarpoolResetTargetClient {
+	return &CarpoolResetTargetClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolresettarget.Hooks(f(g(h())))`.
+func (c *CarpoolResetTargetClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolResetTarget = append(c.hooks.CarpoolResetTarget, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolresettarget.Intercept(f(g(h())))`.
+func (c *CarpoolResetTargetClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolResetTarget = append(c.inters.CarpoolResetTarget, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolResetTarget entity.
+func (c *CarpoolResetTargetClient) Create() *CarpoolResetTargetCreate {
+	mutation := newCarpoolResetTargetMutation(c.config, OpCreate)
+	return &CarpoolResetTargetCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolResetTarget entities.
+func (c *CarpoolResetTargetClient) CreateBulk(builders ...*CarpoolResetTargetCreate) *CarpoolResetTargetCreateBulk {
+	return &CarpoolResetTargetCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolResetTargetClient) MapCreateBulk(slice any, setFunc func(*CarpoolResetTargetCreate, int)) *CarpoolResetTargetCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolResetTargetCreateBulk{err: fmt.Errorf("calling to CarpoolResetTargetClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolResetTargetCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolResetTargetCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolResetTarget.
+func (c *CarpoolResetTargetClient) Update() *CarpoolResetTargetUpdate {
+	mutation := newCarpoolResetTargetMutation(c.config, OpUpdate)
+	return &CarpoolResetTargetUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolResetTargetClient) UpdateOne(_m *CarpoolResetTarget) *CarpoolResetTargetUpdateOne {
+	mutation := newCarpoolResetTargetMutation(c.config, OpUpdateOne, withCarpoolResetTarget(_m))
+	return &CarpoolResetTargetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolResetTargetClient) UpdateOneID(id int64) *CarpoolResetTargetUpdateOne {
+	mutation := newCarpoolResetTargetMutation(c.config, OpUpdateOne, withCarpoolResetTargetID(id))
+	return &CarpoolResetTargetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolResetTarget.
+func (c *CarpoolResetTargetClient) Delete() *CarpoolResetTargetDelete {
+	mutation := newCarpoolResetTargetMutation(c.config, OpDelete)
+	return &CarpoolResetTargetDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolResetTargetClient) DeleteOne(_m *CarpoolResetTarget) *CarpoolResetTargetDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolResetTargetClient) DeleteOneID(id int64) *CarpoolResetTargetDeleteOne {
+	builder := c.Delete().Where(carpoolresettarget.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolResetTargetDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolResetTarget.
+func (c *CarpoolResetTargetClient) Query() *CarpoolResetTargetQuery {
+	return &CarpoolResetTargetQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolResetTarget},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolResetTarget entity by its id.
+func (c *CarpoolResetTargetClient) Get(ctx context.Context, id int64) (*CarpoolResetTarget, error) {
+	return c.Query().Where(carpoolresettarget.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolResetTargetClient) GetX(ctx context.Context, id int64) *CarpoolResetTarget {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolResetTargetClient) Hooks() []Hook {
+	return c.hooks.CarpoolResetTarget
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolResetTargetClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolResetTarget
+}
+
+func (c *CarpoolResetTargetClient) mutate(ctx context.Context, m *CarpoolResetTargetMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolResetTargetCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolResetTargetUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolResetTargetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolResetTargetDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolResetTarget mutation op: %q", m.Op())
+	}
+}
+
+// CarpoolTermClient is a client for the CarpoolTerm schema.
+type CarpoolTermClient struct {
+	config
+}
+
+// NewCarpoolTermClient returns a client for the CarpoolTerm from the given config.
+func NewCarpoolTermClient(c config) *CarpoolTermClient {
+	return &CarpoolTermClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `carpoolterm.Hooks(f(g(h())))`.
+func (c *CarpoolTermClient) Use(hooks ...Hook) {
+	c.hooks.CarpoolTerm = append(c.hooks.CarpoolTerm, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `carpoolterm.Intercept(f(g(h())))`.
+func (c *CarpoolTermClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CarpoolTerm = append(c.inters.CarpoolTerm, interceptors...)
+}
+
+// Create returns a builder for creating a CarpoolTerm entity.
+func (c *CarpoolTermClient) Create() *CarpoolTermCreate {
+	mutation := newCarpoolTermMutation(c.config, OpCreate)
+	return &CarpoolTermCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CarpoolTerm entities.
+func (c *CarpoolTermClient) CreateBulk(builders ...*CarpoolTermCreate) *CarpoolTermCreateBulk {
+	return &CarpoolTermCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CarpoolTermClient) MapCreateBulk(slice any, setFunc func(*CarpoolTermCreate, int)) *CarpoolTermCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CarpoolTermCreateBulk{err: fmt.Errorf("calling to CarpoolTermClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CarpoolTermCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CarpoolTermCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CarpoolTerm.
+func (c *CarpoolTermClient) Update() *CarpoolTermUpdate {
+	mutation := newCarpoolTermMutation(c.config, OpUpdate)
+	return &CarpoolTermUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CarpoolTermClient) UpdateOne(_m *CarpoolTerm) *CarpoolTermUpdateOne {
+	mutation := newCarpoolTermMutation(c.config, OpUpdateOne, withCarpoolTerm(_m))
+	return &CarpoolTermUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CarpoolTermClient) UpdateOneID(id int64) *CarpoolTermUpdateOne {
+	mutation := newCarpoolTermMutation(c.config, OpUpdateOne, withCarpoolTermID(id))
+	return &CarpoolTermUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CarpoolTerm.
+func (c *CarpoolTermClient) Delete() *CarpoolTermDelete {
+	mutation := newCarpoolTermMutation(c.config, OpDelete)
+	return &CarpoolTermDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CarpoolTermClient) DeleteOne(_m *CarpoolTerm) *CarpoolTermDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CarpoolTermClient) DeleteOneID(id int64) *CarpoolTermDeleteOne {
+	builder := c.Delete().Where(carpoolterm.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CarpoolTermDeleteOne{builder}
+}
+
+// Query returns a query builder for CarpoolTerm.
+func (c *CarpoolTermClient) Query() *CarpoolTermQuery {
+	return &CarpoolTermQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCarpoolTerm},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CarpoolTerm entity by its id.
+func (c *CarpoolTermClient) Get(ctx context.Context, id int64) (*CarpoolTerm, error) {
+	return c.Query().Where(carpoolterm.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CarpoolTermClient) GetX(ctx context.Context, id int64) *CarpoolTerm {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CarpoolTermClient) Hooks() []Hook {
+	return c.hooks.CarpoolTerm
+}
+
+// Interceptors returns the client interceptors.
+func (c *CarpoolTermClient) Interceptors() []Interceptor {
+	return c.inters.CarpoolTerm
+}
+
+func (c *CarpoolTermClient) mutate(ctx context.Context, m *CarpoolTermMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CarpoolTermCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CarpoolTermUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CarpoolTermUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CarpoolTermDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CarpoolTerm mutation op: %q", m.Op())
 	}
 }
 
@@ -6827,7 +8809,11 @@ type (
 	hooks struct {
 		APIKey, Account, AccountGroup, Announcement, AnnouncementRead, AuthIdentity,
 		AuthIdentityChannel, BatchImageEvent, BatchImageItem, BatchImageJob,
-		ChannelMonitor, ChannelMonitorDailyRollup, ChannelMonitorHistory,
+		CarpoolBillingRequest, CarpoolCycle, CarpoolLedger, CarpoolOperation,
+		CarpoolPayment, CarpoolPlan, CarpoolResetAccountState,
+		CarpoolResetAnnouncementOutbox, CarpoolResetBatch, CarpoolResetCredit,
+		CarpoolResetQualification, CarpoolResetScopeState, CarpoolResetTarget,
+		CarpoolTerm, ChannelMonitor, ChannelMonitorDailyRollup, ChannelMonitorHistory,
 		ChannelMonitorRequestTemplate, CompositeModelRoute, ErrorPassthroughRule,
 		Group, IdempotencyRecord, IdentityAdoptionDecision, PaymentAuditLog,
 		PaymentOrder, PaymentProviderInstance, PendingAuthSession, PromoCode,
@@ -6839,7 +8825,11 @@ type (
 	inters struct {
 		APIKey, Account, AccountGroup, Announcement, AnnouncementRead, AuthIdentity,
 		AuthIdentityChannel, BatchImageEvent, BatchImageItem, BatchImageJob,
-		ChannelMonitor, ChannelMonitorDailyRollup, ChannelMonitorHistory,
+		CarpoolBillingRequest, CarpoolCycle, CarpoolLedger, CarpoolOperation,
+		CarpoolPayment, CarpoolPlan, CarpoolResetAccountState,
+		CarpoolResetAnnouncementOutbox, CarpoolResetBatch, CarpoolResetCredit,
+		CarpoolResetQualification, CarpoolResetScopeState, CarpoolResetTarget,
+		CarpoolTerm, ChannelMonitor, ChannelMonitorDailyRollup, ChannelMonitorHistory,
 		ChannelMonitorRequestTemplate, CompositeModelRoute, ErrorPassthroughRule,
 		Group, IdempotencyRecord, IdentityAdoptionDecision, PaymentAuditLog,
 		PaymentOrder, PaymentProviderInstance, PendingAuthSession, PromoCode,

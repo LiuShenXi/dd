@@ -24,6 +24,10 @@ func (h *OpenAIGatewayHandler) ResponsesInputTokens(c *gin.Context) {
 		h.errorResponse(c, http.StatusUnauthorized, "authentication_error", "Invalid API key")
 		return
 	}
+	if apiKey.Group != nil && apiKey.Group.IsCarpoolType() {
+		h.errorResponse(c, http.StatusForbidden, "CARPOOL_TOKEN_COUNT_UNSUPPORTED", "Token counting is not supported for carpool billing")
+		return
+	}
 	subject, ok := middleware2.GetAuthSubjectFromContext(c)
 	if !ok {
 		h.errorResponse(c, http.StatusInternalServerError, "api_error", "User context not found")
@@ -177,6 +181,10 @@ func (h *OpenAIGatewayHandler) CountTokens(c *gin.Context) {
 	apiKey, ok := middleware2.GetAPIKeyFromContext(c)
 	if !ok {
 		h.anthropicErrorResponse(c, http.StatusUnauthorized, "authentication_error", "Invalid API key")
+		return
+	}
+	if apiKey.Group != nil && apiKey.Group.IsCarpoolType() {
+		h.anthropicErrorResponse(c, http.StatusForbidden, "CARPOOL_TOKEN_COUNT_UNSUPPORTED", "Token counting is not supported for carpool billing")
 		return
 	}
 

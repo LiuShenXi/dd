@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -306,6 +307,80 @@ func (_u *UsageLogUpdate) SetNillableSubscriptionID(v *int64) *UsageLogUpdate {
 // ClearSubscriptionID clears the value of the "subscription_id" field.
 func (_u *UsageLogUpdate) ClearSubscriptionID() *UsageLogUpdate {
 	_u.mutation.ClearSubscriptionID()
+	return _u
+}
+
+// SetCarpoolTermID sets the "carpool_term_id" field.
+func (_u *UsageLogUpdate) SetCarpoolTermID(v int64) *UsageLogUpdate {
+	_u.mutation.ResetCarpoolTermID()
+	_u.mutation.SetCarpoolTermID(v)
+	return _u
+}
+
+// SetNillableCarpoolTermID sets the "carpool_term_id" field if the given value is not nil.
+func (_u *UsageLogUpdate) SetNillableCarpoolTermID(v *int64) *UsageLogUpdate {
+	if v != nil {
+		_u.SetCarpoolTermID(*v)
+	}
+	return _u
+}
+
+// AddCarpoolTermID adds value to the "carpool_term_id" field.
+func (_u *UsageLogUpdate) AddCarpoolTermID(v int64) *UsageLogUpdate {
+	_u.mutation.AddCarpoolTermID(v)
+	return _u
+}
+
+// ClearCarpoolTermID clears the value of the "carpool_term_id" field.
+func (_u *UsageLogUpdate) ClearCarpoolTermID() *UsageLogUpdate {
+	_u.mutation.ClearCarpoolTermID()
+	return _u
+}
+
+// SetCarpoolCycleID sets the "carpool_cycle_id" field.
+func (_u *UsageLogUpdate) SetCarpoolCycleID(v int64) *UsageLogUpdate {
+	_u.mutation.ResetCarpoolCycleID()
+	_u.mutation.SetCarpoolCycleID(v)
+	return _u
+}
+
+// SetNillableCarpoolCycleID sets the "carpool_cycle_id" field if the given value is not nil.
+func (_u *UsageLogUpdate) SetNillableCarpoolCycleID(v *int64) *UsageLogUpdate {
+	if v != nil {
+		_u.SetCarpoolCycleID(*v)
+	}
+	return _u
+}
+
+// AddCarpoolCycleID adds value to the "carpool_cycle_id" field.
+func (_u *UsageLogUpdate) AddCarpoolCycleID(v int64) *UsageLogUpdate {
+	_u.mutation.AddCarpoolCycleID(v)
+	return _u
+}
+
+// ClearCarpoolCycleID clears the value of the "carpool_cycle_id" field.
+func (_u *UsageLogUpdate) ClearCarpoolCycleID() *UsageLogUpdate {
+	_u.mutation.ClearCarpoolCycleID()
+	return _u
+}
+
+// SetCarpoolAdmittedAt sets the "carpool_admitted_at" field.
+func (_u *UsageLogUpdate) SetCarpoolAdmittedAt(v time.Time) *UsageLogUpdate {
+	_u.mutation.SetCarpoolAdmittedAt(v)
+	return _u
+}
+
+// SetNillableCarpoolAdmittedAt sets the "carpool_admitted_at" field if the given value is not nil.
+func (_u *UsageLogUpdate) SetNillableCarpoolAdmittedAt(v *time.Time) *UsageLogUpdate {
+	if v != nil {
+		_u.SetCarpoolAdmittedAt(*v)
+	}
+	return _u
+}
+
+// ClearCarpoolAdmittedAt clears the value of the "carpool_admitted_at" field.
+func (_u *UsageLogUpdate) ClearCarpoolAdmittedAt() *UsageLogUpdate {
+	_u.mutation.ClearCarpoolAdmittedAt()
 	return _u
 }
 
@@ -1192,6 +1267,30 @@ func (_u *UsageLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.BillingModeCleared() {
 		_spec.ClearField(usagelog.FieldBillingMode, field.TypeString)
 	}
+	if value, ok := _u.mutation.CarpoolTermID(); ok {
+		_spec.SetField(usagelog.FieldCarpoolTermID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedCarpoolTermID(); ok {
+		_spec.AddField(usagelog.FieldCarpoolTermID, field.TypeInt64, value)
+	}
+	if _u.mutation.CarpoolTermIDCleared() {
+		_spec.ClearField(usagelog.FieldCarpoolTermID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.CarpoolCycleID(); ok {
+		_spec.SetField(usagelog.FieldCarpoolCycleID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedCarpoolCycleID(); ok {
+		_spec.AddField(usagelog.FieldCarpoolCycleID, field.TypeInt64, value)
+	}
+	if _u.mutation.CarpoolCycleIDCleared() {
+		_spec.ClearField(usagelog.FieldCarpoolCycleID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.CarpoolAdmittedAt(); ok {
+		_spec.SetField(usagelog.FieldCarpoolAdmittedAt, field.TypeTime, value)
+	}
+	if _u.mutation.CarpoolAdmittedAtCleared() {
+		_spec.ClearField(usagelog.FieldCarpoolAdmittedAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.InputTokens(); ok {
 		_spec.SetField(usagelog.FieldInputTokens, field.TypeInt, value)
 	}
@@ -1820,6 +1919,80 @@ func (_u *UsageLogUpdateOne) SetNillableSubscriptionID(v *int64) *UsageLogUpdate
 // ClearSubscriptionID clears the value of the "subscription_id" field.
 func (_u *UsageLogUpdateOne) ClearSubscriptionID() *UsageLogUpdateOne {
 	_u.mutation.ClearSubscriptionID()
+	return _u
+}
+
+// SetCarpoolTermID sets the "carpool_term_id" field.
+func (_u *UsageLogUpdateOne) SetCarpoolTermID(v int64) *UsageLogUpdateOne {
+	_u.mutation.ResetCarpoolTermID()
+	_u.mutation.SetCarpoolTermID(v)
+	return _u
+}
+
+// SetNillableCarpoolTermID sets the "carpool_term_id" field if the given value is not nil.
+func (_u *UsageLogUpdateOne) SetNillableCarpoolTermID(v *int64) *UsageLogUpdateOne {
+	if v != nil {
+		_u.SetCarpoolTermID(*v)
+	}
+	return _u
+}
+
+// AddCarpoolTermID adds value to the "carpool_term_id" field.
+func (_u *UsageLogUpdateOne) AddCarpoolTermID(v int64) *UsageLogUpdateOne {
+	_u.mutation.AddCarpoolTermID(v)
+	return _u
+}
+
+// ClearCarpoolTermID clears the value of the "carpool_term_id" field.
+func (_u *UsageLogUpdateOne) ClearCarpoolTermID() *UsageLogUpdateOne {
+	_u.mutation.ClearCarpoolTermID()
+	return _u
+}
+
+// SetCarpoolCycleID sets the "carpool_cycle_id" field.
+func (_u *UsageLogUpdateOne) SetCarpoolCycleID(v int64) *UsageLogUpdateOne {
+	_u.mutation.ResetCarpoolCycleID()
+	_u.mutation.SetCarpoolCycleID(v)
+	return _u
+}
+
+// SetNillableCarpoolCycleID sets the "carpool_cycle_id" field if the given value is not nil.
+func (_u *UsageLogUpdateOne) SetNillableCarpoolCycleID(v *int64) *UsageLogUpdateOne {
+	if v != nil {
+		_u.SetCarpoolCycleID(*v)
+	}
+	return _u
+}
+
+// AddCarpoolCycleID adds value to the "carpool_cycle_id" field.
+func (_u *UsageLogUpdateOne) AddCarpoolCycleID(v int64) *UsageLogUpdateOne {
+	_u.mutation.AddCarpoolCycleID(v)
+	return _u
+}
+
+// ClearCarpoolCycleID clears the value of the "carpool_cycle_id" field.
+func (_u *UsageLogUpdateOne) ClearCarpoolCycleID() *UsageLogUpdateOne {
+	_u.mutation.ClearCarpoolCycleID()
+	return _u
+}
+
+// SetCarpoolAdmittedAt sets the "carpool_admitted_at" field.
+func (_u *UsageLogUpdateOne) SetCarpoolAdmittedAt(v time.Time) *UsageLogUpdateOne {
+	_u.mutation.SetCarpoolAdmittedAt(v)
+	return _u
+}
+
+// SetNillableCarpoolAdmittedAt sets the "carpool_admitted_at" field if the given value is not nil.
+func (_u *UsageLogUpdateOne) SetNillableCarpoolAdmittedAt(v *time.Time) *UsageLogUpdateOne {
+	if v != nil {
+		_u.SetCarpoolAdmittedAt(*v)
+	}
+	return _u
+}
+
+// ClearCarpoolAdmittedAt clears the value of the "carpool_admitted_at" field.
+func (_u *UsageLogUpdateOne) ClearCarpoolAdmittedAt() *UsageLogUpdateOne {
+	_u.mutation.ClearCarpoolAdmittedAt()
 	return _u
 }
 
@@ -2735,6 +2908,30 @@ func (_u *UsageLogUpdateOne) sqlSave(ctx context.Context) (_node *UsageLog, err 
 	}
 	if _u.mutation.BillingModeCleared() {
 		_spec.ClearField(usagelog.FieldBillingMode, field.TypeString)
+	}
+	if value, ok := _u.mutation.CarpoolTermID(); ok {
+		_spec.SetField(usagelog.FieldCarpoolTermID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedCarpoolTermID(); ok {
+		_spec.AddField(usagelog.FieldCarpoolTermID, field.TypeInt64, value)
+	}
+	if _u.mutation.CarpoolTermIDCleared() {
+		_spec.ClearField(usagelog.FieldCarpoolTermID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.CarpoolCycleID(); ok {
+		_spec.SetField(usagelog.FieldCarpoolCycleID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedCarpoolCycleID(); ok {
+		_spec.AddField(usagelog.FieldCarpoolCycleID, field.TypeInt64, value)
+	}
+	if _u.mutation.CarpoolCycleIDCleared() {
+		_spec.ClearField(usagelog.FieldCarpoolCycleID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.CarpoolAdmittedAt(); ok {
+		_spec.SetField(usagelog.FieldCarpoolAdmittedAt, field.TypeTime, value)
+	}
+	if _u.mutation.CarpoolAdmittedAtCleared() {
+		_spec.ClearField(usagelog.FieldCarpoolAdmittedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.InputTokens(); ok {
 		_spec.SetField(usagelog.FieldInputTokens, field.TypeInt, value)

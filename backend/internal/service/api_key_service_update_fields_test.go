@@ -120,6 +120,48 @@ func TestAPIKeyUpdate_DeclaresStatusWhenReactivated(t *testing.T) {
 	require.Equal(t, []APIKeyUpdateFields{{Quota: true, Status: true}}, repo.updateFields)
 }
 
+func TestAPIKeyUpdate_AllowsUnchangedAdminAssignedCarpoolGroup(t *testing.T) {
+	groupID := int64(41)
+	name := "renamed-carpool-key"
+	svc, repo := newUpdateFieldsAPIKeyService(&APIKey{
+		ID: 1, UserID: 7, Key: "sk-test", Name: "before", Status: StatusActive, GroupID: &groupID,
+	})
+
+	updated, err := svc.Update(context.Background(), 1, 7, UpdateAPIKeyRequest{Name: &name, GroupID: &groupID})
+	require.NoError(t, err)
+	require.Equal(t, name, updated.Name)
+	require.Equal(t, groupID, *updated.GroupID)
+	require.Equal(t, []APIKeyUpdateFields{{Name: true}}, repo.updateFields,
+		"an unchanged group is a no-op, not a new self-service bind")
+}
+
+type apiKeyCarpoolGroupRepoStub struct {
+	stubGroupRepoForAvailable
+	group *Group
+}
+
+func (s *apiKeyCarpoolGroupRepoStub) GetByID(context.Context, int64) (*Group, error) {
+	return s.group, nil
+}
+
+func TestAPIKeyUpdate_DeniesNewCarpoolGroupAssignment(t *testing.T) {
+	repo := &updateFieldsAPIKeyRepoStub{key: &APIKey{
+		ID: 1, UserID: 7, Key: "sk-test", Name: "before", Status: StatusActive,
+	}}
+	groupID := int64(41)
+	svc := &APIKeyService{
+		apiKeyRepo: repo,
+		userRepo:   &mockUserRepo{getByIDUser: &User{ID: 7}},
+		groupRepo: &apiKeyCarpoolGroupRepoStub{group: &Group{
+			ID: groupID, Platform: PlatformOpenAI, SubscriptionType: SubscriptionTypeCarpool,
+		}},
+	}
+
+	_, err := svc.Update(context.Background(), 1, 7, UpdateAPIKeyRequest{GroupID: &groupID})
+	require.ErrorIs(t, err, ErrGroupNotAllowed)
+	require.Empty(t, repo.updateFields)
+}
+
 // 计费热路径把 Key 标记为配额耗尽时只写 status，
 // 否则会把刚原子递增的 quota_used 按快照覆盖掉。
 func TestUpdateQuotaUsed_ExhaustedMarkOnlyDeclaresStatus(t *testing.T) {

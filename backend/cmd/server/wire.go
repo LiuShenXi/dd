@@ -128,6 +128,8 @@ func provideCleanup(
 	openAIAutoReset *service.OpenAIQuotaAutoResetService,
 	promptAudit *securityaudit.PromptService,
 	pluginManager *service.PluginManager,
+	carpool *service.CarpoolService,
+	carpoolReset *service.CarpoolResetService,
 ) func() {
 	return func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -140,6 +142,18 @@ func provideCleanup(
 
 		// 应用层清理步骤可并行执行，基础设施资源（Redis/Ent）最后按顺序关闭。
 		parallelSteps := []cleanupStep{
+			{"CarpoolResetService", func() error {
+				if carpoolReset != nil {
+					carpoolReset.Stop()
+				}
+				return nil
+			}},
+			{"CarpoolService", func() error {
+				if carpool != nil {
+					carpool.Stop()
+				}
+				return nil
+			}},
 			{"PluginManager", func() error {
 				if pluginManager != nil {
 					pluginManager.Stop()

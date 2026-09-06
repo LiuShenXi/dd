@@ -1,0 +1,62 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "suite": "websocket",
+  "source": "synthetic-local-only",
+  "overall_status": "failed",
+  "code_evidence_sha256": "F3583FB6D1BACF5E7A85DA9849D20E98A2BA15AEEFB0EFE041D5E2BE3AD85C07",
+  "image_id": "sha256:3b7be8b1d4efac300e933a4b53008b8b4f482344ba343d054d9432b2b17846a4",
+  "checkout_scope": "immutable-reviewed-image-not-later-source-edits",
+  "driver_source_sha256": "DD6C96B04677B3F16AA5D7F8377A6951F101C719BA23E91A440DC36CCE60F276",
+  "driver_test_sha256": "190DA0EE9D0D607C9A33909855A271AD05900CA94A25E1EA7C50706B894187AE",
+  "driver_binary_sha256": "BB5827247B6A35BFBB8BCD1F5CA2A82B723B95638EAEF5574DE707587CCC8D35",
+  "completed_at": "2026-09-05T19:03:02.5286092+00:00",
+  "passed": 7,
+  "failed": 1,
+  "isolation": "passed",
+  "conservation": {
+    "copied-records": "passed",
+    "copied-announcements": "passed"
+  },
+  "assertions": [
+    {
+      "name": "setup.validated_bootstrap_admin",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.fresh_synthetic_users",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.synthetic_user_logins",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.synthetic_group",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.two_mock_backed_accounts",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.synthetic_keys",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "setup.fixed_plan",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "websocket.two_turns_independent_receipts_and_debits",
+      "status": "fail",
+      "http_status": 0
+    }
+  ]
+}

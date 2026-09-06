@@ -1,0 +1,53 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "phase": "v4-post-ui-not-final-acceptance",
+  "checked_at": "2026-09-05T21:14:21.9647317+00:00",
+  "code_evidence_sha256": "6CA4C8B23F69CD87A32B9AFE667A1D8F1DDAC80247D69C240DC5183E5258D490",
+  "image_id": "sha256:0ad4aa72ab397139643253a22f8b1643f7593edc8fef9624a0db6ac9a3408ef8",
+  "checkout_scope": "immutable-reviewed-image-not-later-frontend-edits",
+  "isolation": "passed",
+  "health": 200,
+  "config_sha256": "DE0F5E535B4695CE00962D8C7C85A46482D9802ACC637010BE02A0AAEEA53D32",
+  "environment_sha256": "243CE4441380C7E49B7E09BF37EFA839BE86CB6E3F0F1B394C894F6909F40B27",
+  "copied_record_conservation": "passed",
+  "copied_announcement_conservation": "passed",
+  "copied_user_term_count": 0,
+  "synthetic_opening": {
+    "key_row_hash_before": "15c8d3b5b03c17a5f5e90ee9c1cca47c",
+    "net_grant_usd": 550,
+    "ordinary_balance_after": 100,
+    "ordinary_balance_before": 100,
+    "key_id": 64,
+    "ledger_rows": 1,
+    "payment_rows": 0,
+    "key_row_hash_after": "15c8d3b5b03c17a5f5e90ee9c1cca47c",
+    "group_id": 17,
+    "plan_id": 8,
+    "fifth_cycle_target_usd": 157,
+    "term_id": 94,
+    "user_id": 127
+  },
+  "reset_projection": {
+    "status": "scheduled",
+    "batch_id": 1,
+    "completed_at": null,
+    "effective_at": null,
+    "scheduled_at": "2026-09-06T22:00:00+08:00",
+    "target_count": 0,
+    "schedule_revision": 0,
+    "reset_ledger_count": 0,
+    "qualification_count": 2,
+    "qualification_rows_hash": "59f83135491c98b8ae0af5731cb349af"
+  },
+  "announcement_projection": {
+    "status": "active",
+    "source_id": 1,
+    "event_kind": "qualification",
+    "source_type": "carpool_reset",
+    "announcement_id": 10,
+    "source_revision": 0,
+    "announcement_row_hash": "27b5704aa81c78082531f4dc45aeeaea"
+  },
+  "ui_load_boundary": "POST persisted once with 201 in 12ms; follow-up loading error recovered by read-only retry; precise failed client dependency unconfirmed",
+  "remaining": "Frontend enum localization and V5 reviewed-image verification; no final acceptance claimed"
+}

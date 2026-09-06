@@ -16,6 +16,7 @@ const {
   copyToClipboard,
   isCurrentStep,
   nextStep,
+  updateKey,
 } = vi.hoisted(() => ({
   listKeys: vi.fn(),
   getPublicSettings: vi.fn(),
@@ -27,6 +28,7 @@ const {
   copyToClipboard: vi.fn(),
   isCurrentStep: vi.fn(),
   nextStep: vi.fn(),
+  updateKey: vi.fn(),
 }))
 
 const messages: Record<string, string> = {
@@ -59,7 +61,7 @@ vi.mock('@/api', () => ({
   keysAPI: {
     list: listKeys,
     create: vi.fn(),
-    update: vi.fn(),
+    update: updateKey,
     delete: vi.fn(),
     toggleStatus: vi.fn(),
   },
@@ -105,7 +107,7 @@ vi.mock('vue-i18n', async () => {
   }
 })
 
-const createApiKey = (): ApiKey => ({
+const createApiKey = (overrides: Partial<ApiKey> = {}): ApiKey => ({
   id: 1,
   user_id: 1,
   key: 'sk-test-key',
@@ -134,6 +136,7 @@ const createApiKey = (): ApiKey => ({
   reset_5h_at: null,
   reset_1d_at: null,
   reset_7d_at: null,
+  ...overrides,
 })
 
 const AppLayoutStub = {
@@ -170,9 +173,11 @@ const DataTableStub = {
           <slot name="cell-id" :value="row.id" :row="row" />
         </div>
         <slot name="cell-name" :value="row.name" :row="row" />
+        <slot name="cell-group" :value="row.group_id" :row="row" />
         <div data-test="current-concurrency">
           <slot name="cell-current_concurrency" :value="row.current_concurrency" :row="row" />
         </div>
+        <slot name="cell-actions" :value="row.id" :row="row" />
         <div
           v-if="columns.some((col) => col.key === 'last_used_ip')"
           data-test="last-used-ip"
@@ -189,7 +194,7 @@ const SelectStub = {
   name: 'Select',
   props: ['modelValue', 'options'],
   emits: ['update:modelValue'],
-  template: '<select :value="modelValue" @change="$emit(\'update:modelValue\', $event.target.value)"></select>',
+  template: '<select :value="modelValue" @change="$emit(\'update:modelValue\', $event.target.value)"><option v-for="option in options" :key="option.value" :value="option.value">{{ option.label }}</option></select>',
 }
 
 const SearchInputStub = {
@@ -223,7 +228,7 @@ const mountView = async () => {
         TablePageLayout: TablePageLayoutStub,
         DataTable: DataTableStub,
         Pagination: PaginationStub,
-        BaseDialog: true,
+        BaseDialog: { props: ['show'], template: '<div v-if="show" data-test="base-dialog"><slot /></div>' },
         ConfirmDialog: true,
         EmptyState: true,
         Select: SelectStub,
@@ -231,7 +236,7 @@ const mountView = async () => {
         Icon: IconStub,
         UseKeyModal: true,
         EndpointPopover: true,
-        GroupBadge: true,
+        GroupBadge: { props: ['name'], template: '<span data-test="group-badge">{{ name }}</span>' },
         GroupOptionItem: true,
         Teleport: true,
       },
@@ -270,6 +275,7 @@ describe('user KeysView column settings', () => {
     copyToClipboard.mockReset()
     isCurrentStep.mockReset()
     nextStep.mockReset()
+    updateKey.mockReset()
 
     listKeys.mockResolvedValue({
       items: [createApiKey()],
@@ -283,6 +289,7 @@ describe('user KeysView column settings', () => {
     getAvailableGroups.mockResolvedValue([])
     getUserGroupRates.mockResolvedValue({})
     isCurrentStep.mockReturnValue(false)
+    updateKey.mockResolvedValue(createApiKey())
   })
 
   it('uses the default API key columns with low-frequency columns hidden', async () => {
@@ -437,5 +444,34 @@ describe('user KeysView column settings', () => {
       },
       expect.objectContaining({ signal: expect.any(AbortSignal) })
     )
+  })
+
+  it('keeps an admin-assigned carpool group read-only while editing other key fields', async () => {
+    const carpoolGroup = { id: 77, name: 'Assigned carpool', subscription_type: 'carpool', platform: 'openai', rate_multiplier: 1 } as ApiKey['group']
+    listKeys.mockResolvedValue({ items: [createApiKey({ group_id: 77, group: carpoolGroup })], total: 1, page: 1, page_size: 20, pages: 1 })
+    getAvailableGroups.mockResolvedValue([
+      carpoolGroup,
+      { id: 42, name: 'Selectable standard', subscription_type: 'standard', platform: 'openai', rate_multiplier: 1 },
+    ])
+    const wrapper = await mountView()
+
+    expect(wrapper.get('[data-test="group-badge"]').text()).toBe('Assigned carpool')
+    await getButtonByText(wrapper, 'common.edit').trigger('click')
+    await nextTick()
+
+    const dialog = wrapper.get('[data-test="base-dialog"]')
+    expect(dialog.text()).toContain('Assigned carpool')
+    expect(dialog.find('[data-tour="key-form-group"]').exists()).toBe(false)
+    await dialog.get('input[type="text"]').setValue('renamed-key')
+    await dialog.get('form').trigger('submit')
+    await flushPromises()
+
+    expect(updateKey).toHaveBeenCalledWith(1, expect.objectContaining({ name: 'renamed-key', group_id: 77 }))
+
+    await getButtonByText(wrapper, 'Create API Key').trigger('click')
+    await nextTick()
+    const createGroupSelect = wrapper.get('[data-tour="key-form-group"]')
+    expect(createGroupSelect.text()).toContain('Selectable standard')
+    expect(createGroupSelect.text()).not.toContain('Assigned carpool')
   })
 })

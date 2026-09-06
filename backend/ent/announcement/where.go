@@ -95,6 +95,26 @@ func UpdatedBy(v int64) predicate.Announcement {
 	return predicate.Announcement(sql.FieldEQ(FieldUpdatedBy, v))
 }
 
+// SourceType applies equality check predicate on the "source_type" field. It's identical to SourceTypeEQ.
+func SourceType(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldEQ(FieldSourceType, v))
+}
+
+// SourceID applies equality check predicate on the "source_id" field. It's identical to SourceIDEQ.
+func SourceID(v int64) predicate.Announcement {
+	return predicate.Announcement(sql.FieldEQ(FieldSourceID, v))
+}
+
+// SourceEventKind applies equality check predicate on the "source_event_kind" field. It's identical to SourceEventKindEQ.
+func SourceEventKind(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldEQ(FieldSourceEventKind, v))
+}
+
+// SourceRevision applies equality check predicate on the "source_revision" field. It's identical to SourceRevisionEQ.
+func SourceRevision(v int) predicate.Announcement {
+	return predicate.Announcement(sql.FieldEQ(FieldSourceRevision, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Announcement {
 	return predicate.Announcement(sql.FieldEQ(FieldCreatedAt, v))
@@ -573,6 +593,246 @@ func UpdatedByIsNil() predicate.Announcement {
 // UpdatedByNotNil applies the NotNil predicate on the "updated_by" field.
 func UpdatedByNotNil() predicate.Announcement {
 	return predicate.Announcement(sql.FieldNotNull(FieldUpdatedBy))
+}
+
+// SourceTypeEQ applies the EQ predicate on the "source_type" field.
+func SourceTypeEQ(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldEQ(FieldSourceType, v))
+}
+
+// SourceTypeNEQ applies the NEQ predicate on the "source_type" field.
+func SourceTypeNEQ(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldNEQ(FieldSourceType, v))
+}
+
+// SourceTypeIn applies the In predicate on the "source_type" field.
+func SourceTypeIn(vs ...string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldIn(FieldSourceType, vs...))
+}
+
+// SourceTypeNotIn applies the NotIn predicate on the "source_type" field.
+func SourceTypeNotIn(vs ...string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldNotIn(FieldSourceType, vs...))
+}
+
+// SourceTypeGT applies the GT predicate on the "source_type" field.
+func SourceTypeGT(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldGT(FieldSourceType, v))
+}
+
+// SourceTypeGTE applies the GTE predicate on the "source_type" field.
+func SourceTypeGTE(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldGTE(FieldSourceType, v))
+}
+
+// SourceTypeLT applies the LT predicate on the "source_type" field.
+func SourceTypeLT(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldLT(FieldSourceType, v))
+}
+
+// SourceTypeLTE applies the LTE predicate on the "source_type" field.
+func SourceTypeLTE(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldLTE(FieldSourceType, v))
+}
+
+// SourceTypeContains applies the Contains predicate on the "source_type" field.
+func SourceTypeContains(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldContains(FieldSourceType, v))
+}
+
+// SourceTypeHasPrefix applies the HasPrefix predicate on the "source_type" field.
+func SourceTypeHasPrefix(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldHasPrefix(FieldSourceType, v))
+}
+
+// SourceTypeHasSuffix applies the HasSuffix predicate on the "source_type" field.
+func SourceTypeHasSuffix(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldHasSuffix(FieldSourceType, v))
+}
+
+// SourceTypeIsNil applies the IsNil predicate on the "source_type" field.
+func SourceTypeIsNil() predicate.Announcement {
+	return predicate.Announcement(sql.FieldIsNull(FieldSourceType))
+}
+
+// SourceTypeNotNil applies the NotNil predicate on the "source_type" field.
+func SourceTypeNotNil() predicate.Announcement {
+	return predicate.Announcement(sql.FieldNotNull(FieldSourceType))
+}
+
+// SourceTypeEqualFold applies the EqualFold predicate on the "source_type" field.
+func SourceTypeEqualFold(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldEqualFold(FieldSourceType, v))
+}
+
+// SourceTypeContainsFold applies the ContainsFold predicate on the "source_type" field.
+func SourceTypeContainsFold(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldContainsFold(FieldSourceType, v))
+}
+
+// SourceIDEQ applies the EQ predicate on the "source_id" field.
+func SourceIDEQ(v int64) predicate.Announcement {
+	return predicate.Announcement(sql.FieldEQ(FieldSourceID, v))
+}
+
+// SourceIDNEQ applies the NEQ predicate on the "source_id" field.
+func SourceIDNEQ(v int64) predicate.Announcement {
+	return predicate.Announcement(sql.FieldNEQ(FieldSourceID, v))
+}
+
+// SourceIDIn applies the In predicate on the "source_id" field.
+func SourceIDIn(vs ...int64) predicate.Announcement {
+	return predicate.Announcement(sql.FieldIn(FieldSourceID, vs...))
+}
+
+// SourceIDNotIn applies the NotIn predicate on the "source_id" field.
+func SourceIDNotIn(vs ...int64) predicate.Announcement {
+	return predicate.Announcement(sql.FieldNotIn(FieldSourceID, vs...))
+}
+
+// SourceIDGT applies the GT predicate on the "source_id" field.
+func SourceIDGT(v int64) predicate.Announcement {
+	return predicate.Announcement(sql.FieldGT(FieldSourceID, v))
+}
+
+// SourceIDGTE applies the GTE predicate on the "source_id" field.
+func SourceIDGTE(v int64) predicate.Announcement {
+	return predicate.Announcement(sql.FieldGTE(FieldSourceID, v))
+}
+
+// SourceIDLT applies the LT predicate on the "source_id" field.
+func SourceIDLT(v int64) predicate.Announcement {
+	return predicate.Announcement(sql.FieldLT(FieldSourceID, v))
+}
+
+// SourceIDLTE applies the LTE predicate on the "source_id" field.
+func SourceIDLTE(v int64) predicate.Announcement {
+	return predicate.Announcement(sql.FieldLTE(FieldSourceID, v))
+}
+
+// SourceIDIsNil applies the IsNil predicate on the "source_id" field.
+func SourceIDIsNil() predicate.Announcement {
+	return predicate.Announcement(sql.FieldIsNull(FieldSourceID))
+}
+
+// SourceIDNotNil applies the NotNil predicate on the "source_id" field.
+func SourceIDNotNil() predicate.Announcement {
+	return predicate.Announcement(sql.FieldNotNull(FieldSourceID))
+}
+
+// SourceEventKindEQ applies the EQ predicate on the "source_event_kind" field.
+func SourceEventKindEQ(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldEQ(FieldSourceEventKind, v))
+}
+
+// SourceEventKindNEQ applies the NEQ predicate on the "source_event_kind" field.
+func SourceEventKindNEQ(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldNEQ(FieldSourceEventKind, v))
+}
+
+// SourceEventKindIn applies the In predicate on the "source_event_kind" field.
+func SourceEventKindIn(vs ...string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldIn(FieldSourceEventKind, vs...))
+}
+
+// SourceEventKindNotIn applies the NotIn predicate on the "source_event_kind" field.
+func SourceEventKindNotIn(vs ...string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldNotIn(FieldSourceEventKind, vs...))
+}
+
+// SourceEventKindGT applies the GT predicate on the "source_event_kind" field.
+func SourceEventKindGT(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldGT(FieldSourceEventKind, v))
+}
+
+// SourceEventKindGTE applies the GTE predicate on the "source_event_kind" field.
+func SourceEventKindGTE(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldGTE(FieldSourceEventKind, v))
+}
+
+// SourceEventKindLT applies the LT predicate on the "source_event_kind" field.
+func SourceEventKindLT(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldLT(FieldSourceEventKind, v))
+}
+
+// SourceEventKindLTE applies the LTE predicate on the "source_event_kind" field.
+func SourceEventKindLTE(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldLTE(FieldSourceEventKind, v))
+}
+
+// SourceEventKindContains applies the Contains predicate on the "source_event_kind" field.
+func SourceEventKindContains(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldContains(FieldSourceEventKind, v))
+}
+
+// SourceEventKindHasPrefix applies the HasPrefix predicate on the "source_event_kind" field.
+func SourceEventKindHasPrefix(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldHasPrefix(FieldSourceEventKind, v))
+}
+
+// SourceEventKindHasSuffix applies the HasSuffix predicate on the "source_event_kind" field.
+func SourceEventKindHasSuffix(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldHasSuffix(FieldSourceEventKind, v))
+}
+
+// SourceEventKindIsNil applies the IsNil predicate on the "source_event_kind" field.
+func SourceEventKindIsNil() predicate.Announcement {
+	return predicate.Announcement(sql.FieldIsNull(FieldSourceEventKind))
+}
+
+// SourceEventKindNotNil applies the NotNil predicate on the "source_event_kind" field.
+func SourceEventKindNotNil() predicate.Announcement {
+	return predicate.Announcement(sql.FieldNotNull(FieldSourceEventKind))
+}
+
+// SourceEventKindEqualFold applies the EqualFold predicate on the "source_event_kind" field.
+func SourceEventKindEqualFold(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldEqualFold(FieldSourceEventKind, v))
+}
+
+// SourceEventKindContainsFold applies the ContainsFold predicate on the "source_event_kind" field.
+func SourceEventKindContainsFold(v string) predicate.Announcement {
+	return predicate.Announcement(sql.FieldContainsFold(FieldSourceEventKind, v))
+}
+
+// SourceRevisionEQ applies the EQ predicate on the "source_revision" field.
+func SourceRevisionEQ(v int) predicate.Announcement {
+	return predicate.Announcement(sql.FieldEQ(FieldSourceRevision, v))
+}
+
+// SourceRevisionNEQ applies the NEQ predicate on the "source_revision" field.
+func SourceRevisionNEQ(v int) predicate.Announcement {
+	return predicate.Announcement(sql.FieldNEQ(FieldSourceRevision, v))
+}
+
+// SourceRevisionIn applies the In predicate on the "source_revision" field.
+func SourceRevisionIn(vs ...int) predicate.Announcement {
+	return predicate.Announcement(sql.FieldIn(FieldSourceRevision, vs...))
+}
+
+// SourceRevisionNotIn applies the NotIn predicate on the "source_revision" field.
+func SourceRevisionNotIn(vs ...int) predicate.Announcement {
+	return predicate.Announcement(sql.FieldNotIn(FieldSourceRevision, vs...))
+}
+
+// SourceRevisionGT applies the GT predicate on the "source_revision" field.
+func SourceRevisionGT(v int) predicate.Announcement {
+	return predicate.Announcement(sql.FieldGT(FieldSourceRevision, v))
+}
+
+// SourceRevisionGTE applies the GTE predicate on the "source_revision" field.
+func SourceRevisionGTE(v int) predicate.Announcement {
+	return predicate.Announcement(sql.FieldGTE(FieldSourceRevision, v))
+}
+
+// SourceRevisionLT applies the LT predicate on the "source_revision" field.
+func SourceRevisionLT(v int) predicate.Announcement {
+	return predicate.Announcement(sql.FieldLT(FieldSourceRevision, v))
+}
+
+// SourceRevisionLTE applies the LTE predicate on the "source_revision" field.
+func SourceRevisionLTE(v int) predicate.Announcement {
+	return predicate.Announcement(sql.FieldLTE(FieldSourceRevision, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

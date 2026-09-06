@@ -786,6 +786,29 @@ func ProvideSettingService(settingRepo SettingRepository, groupRepo GroupReposit
 }
 
 // ProvideBillingCacheService wires BillingCacheService with its RPM dependencies.
+func ProvideCarpoolService(repo CarpoolRepositoryAPI, billingApplier UsageBillingRepository) *CarpoolService {
+	svc := NewCarpoolService(repo)
+	svc.SetUsageBillingApplier(billingApplier)
+	svc.Start(context.Background())
+	return svc
+}
+
+func ProvideCarpoolResetService(
+	repo CarpoolResetRepositoryAPI,
+	accountRepo AccountRepository,
+	quota *OpenAIQuotaService,
+	announcements *AnnouncementService,
+	carpool *CarpoolService,
+) *CarpoolResetService {
+	svc := NewCarpoolResetService(repo)
+	svc.SetObservationScanner(accountRepo, quota)
+	quota.SetResetObservationHook(svc)
+	announcements.SetCarpoolAudienceReader(svc)
+	carpool.SetResetWindowReader(svc)
+	svc.Start(context.Background())
+	return svc
+}
+
 func ProvideBillingCacheService(
 	cache BillingCache,
 	userRepo UserRepository,
@@ -795,8 +818,11 @@ func ProvideBillingCacheService(
 	rateRepo UserGroupRateRepository,
 	cfg *config.Config,
 	userPlatformQuotaRepo UserPlatformQuotaRepository,
+	carpoolService *CarpoolService,
 ) *BillingCacheService {
-	return NewBillingCacheService(cache, userRepo, subRepo, apiKeyRepo, rpmCache, rateRepo, cfg, userPlatformQuotaRepo)
+	svc := NewBillingCacheService(cache, userRepo, subRepo, apiKeyRepo, rpmCache, rateRepo, cfg, userPlatformQuotaRepo)
+	svc.SetCarpoolGatewayBilling(carpoolService)
+	return svc
 }
 
 // ProvideAPIKeyService wires APIKeyService and connects rate-limit cache invalidation.
@@ -836,6 +862,8 @@ var ProviderSet = wire.NewSet(
 	NewDashboardService,
 	ProvidePricingService,
 	NewBillingService,
+	ProvideCarpoolService,
+	ProvideCarpoolResetService,
 	ProvideBillingCacheService,
 	NewAnnouncementService,
 	NewAdminService,

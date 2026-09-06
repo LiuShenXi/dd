@@ -4,16 +4,20 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
 	"strings"
 
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/shopspring/decimal"
 )
 
 var ErrUsageBillingRequestIDRequired = errors.New("usage billing request_id is required")
 var ErrUsageBillingRequestConflict = errors.New("usage billing request fingerprint conflict")
+var ErrUsageBillingSourceConflict = errors.New("usage billing sources must be mutually exclusive")
+var ErrUsageBillingCarpoolSnapshotInvalid = errors.New("usage billing carpool snapshot is invalid")
 
 // UsageBillingCommand describes one billable request that must be applied at most once.
 type UsageBillingCommand struct {
@@ -39,9 +43,138 @@ type UsageBillingCommand struct {
 
 	BalanceCost         float64
 	SubscriptionCost    float64
+	CarpoolCost         decimal.Decimal
+	CarpoolSnapshot     *domain.CarpoolBillingSnapshot
 	APIKeyQuotaCost     float64
 	APIKeyRateLimitCost float64
 	AccountQuotaCost    float64
+}
+
+const CarpoolUsageBillingReceiptVersion = 1
+
+// carpoolUsageBillingReceiptV1 is the durable, prompt-free settlement input.
+// Recovery must replay these frozen values and must not reprice against current
+// group, account, or API-key state.
+type carpoolUsageBillingReceiptV1 struct {
+	Version int `json:"version"`
+	Command struct {
+		RequestID          string `json:"request_id"`
+		APIKeyID           int64  `json:"api_key_id"`
+		RequestFingerprint string `json:"request_fingerprint"`
+		RequestPayloadHash string `json:"request_payload_hash"`
+
+		UserID              int64  `json:"user_id"`
+		AccountID           int64  `json:"account_id"`
+		SubscriptionID      *int64 `json:"subscription_id"`
+		AccountType         string `json:"account_type"`
+		Model               string `json:"model"`
+		ServiceTier         string `json:"service_tier"`
+		ReasoningEffort     string `json:"reasoning_effort"`
+		BillingType         int8   `json:"billing_type"`
+		InputTokens         int    `json:"input_tokens"`
+		OutputTokens        int    `json:"output_tokens"`
+		CacheCreationTokens int    `json:"cache_creation_tokens"`
+		CacheReadTokens     int    `json:"cache_read_tokens"`
+		ImageCount          int    `json:"image_count"`
+		MediaType           string `json:"media_type"`
+
+		BalanceCost         float64                        `json:"balance_cost"`
+		SubscriptionCost    float64                        `json:"subscription_cost"`
+		CarpoolCost         string                         `json:"carpool_cost"`
+		CarpoolSnapshot     *domain.CarpoolBillingSnapshot `json:"carpool_snapshot"`
+		APIKeyQuotaCost     float64                        `json:"api_key_quota_cost"`
+		APIKeyRateLimitCost float64                        `json:"api_key_rate_limit_cost"`
+		AccountQuotaCost    float64                        `json:"account_quota_cost"`
+	} `json:"command"`
+}
+
+func MarshalCarpoolUsageBillingReceipt(cmd *UsageBillingCommand) (json.RawMessage, error) {
+	if cmd == nil || cmd.CarpoolSnapshot == nil {
+		return nil, ErrUsageBillingCarpoolSnapshotInvalid
+	}
+	copyCmd := *cmd
+	copySnapshot := *cmd.CarpoolSnapshot
+	copyCmd.CarpoolSnapshot = &copySnapshot
+	copyCmd.Normalize()
+	if err := copyCmd.Validate(); err != nil {
+		return nil, err
+	}
+
+	receipt := carpoolUsageBillingReceiptV1{Version: CarpoolUsageBillingReceiptVersion}
+	receipt.Command.RequestID = copyCmd.RequestID
+	receipt.Command.APIKeyID = copyCmd.APIKeyID
+	receipt.Command.RequestFingerprint = copyCmd.RequestFingerprint
+	receipt.Command.RequestPayloadHash = copyCmd.RequestPayloadHash
+	receipt.Command.UserID = copyCmd.UserID
+	receipt.Command.AccountID = copyCmd.AccountID
+	receipt.Command.SubscriptionID = copyCmd.SubscriptionID
+	receipt.Command.AccountType = copyCmd.AccountType
+	receipt.Command.Model = copyCmd.Model
+	receipt.Command.ServiceTier = copyCmd.ServiceTier
+	receipt.Command.ReasoningEffort = copyCmd.ReasoningEffort
+	receipt.Command.BillingType = copyCmd.BillingType
+	receipt.Command.InputTokens = copyCmd.InputTokens
+	receipt.Command.OutputTokens = copyCmd.OutputTokens
+	receipt.Command.CacheCreationTokens = copyCmd.CacheCreationTokens
+	receipt.Command.CacheReadTokens = copyCmd.CacheReadTokens
+	receipt.Command.ImageCount = copyCmd.ImageCount
+	receipt.Command.MediaType = copyCmd.MediaType
+	receipt.Command.BalanceCost = copyCmd.BalanceCost
+	receipt.Command.SubscriptionCost = copyCmd.SubscriptionCost
+	receipt.Command.CarpoolCost = copyCmd.CarpoolCost.StringFixed(UsageBillingMonetaryScale)
+	receipt.Command.CarpoolSnapshot = copyCmd.CarpoolSnapshot
+	receipt.Command.APIKeyQuotaCost = copyCmd.APIKeyQuotaCost
+	receipt.Command.APIKeyRateLimitCost = copyCmd.APIKeyRateLimitCost
+	receipt.Command.AccountQuotaCost = copyCmd.AccountQuotaCost
+
+	payload, err := json.Marshal(receipt)
+	return json.RawMessage(payload), err
+}
+
+func DecodeCarpoolUsageBillingReceipt(payload json.RawMessage) (*UsageBillingCommand, error) {
+	var receipt carpoolUsageBillingReceiptV1
+	if len(payload) == 0 || json.Unmarshal(payload, &receipt) != nil || receipt.Version != CarpoolUsageBillingReceiptVersion {
+		return nil, ErrUsageBillingCarpoolSnapshotInvalid
+	}
+	cost, err := decimal.NewFromString(receipt.Command.CarpoolCost)
+	if err != nil {
+		return nil, ErrUsageBillingCarpoolSnapshotInvalid
+	}
+	cmd := &UsageBillingCommand{
+		RequestID:           receipt.Command.RequestID,
+		APIKeyID:            receipt.Command.APIKeyID,
+		RequestFingerprint:  receipt.Command.RequestFingerprint,
+		RequestPayloadHash:  receipt.Command.RequestPayloadHash,
+		UserID:              receipt.Command.UserID,
+		AccountID:           receipt.Command.AccountID,
+		SubscriptionID:      receipt.Command.SubscriptionID,
+		AccountType:         receipt.Command.AccountType,
+		Model:               receipt.Command.Model,
+		ServiceTier:         receipt.Command.ServiceTier,
+		ReasoningEffort:     receipt.Command.ReasoningEffort,
+		BillingType:         receipt.Command.BillingType,
+		InputTokens:         receipt.Command.InputTokens,
+		OutputTokens:        receipt.Command.OutputTokens,
+		CacheCreationTokens: receipt.Command.CacheCreationTokens,
+		CacheReadTokens:     receipt.Command.CacheReadTokens,
+		ImageCount:          receipt.Command.ImageCount,
+		MediaType:           receipt.Command.MediaType,
+		BalanceCost:         receipt.Command.BalanceCost,
+		SubscriptionCost:    receipt.Command.SubscriptionCost,
+		CarpoolCost:         cost,
+		CarpoolSnapshot:     receipt.Command.CarpoolSnapshot,
+		APIKeyQuotaCost:     receipt.Command.APIKeyQuotaCost,
+		APIKeyRateLimitCost: receipt.Command.APIKeyRateLimitCost,
+		AccountQuotaCost:    receipt.Command.AccountQuotaCost,
+	}
+	cmd.Normalize()
+	if err := cmd.Validate(); err != nil {
+		return nil, err
+	}
+	if strings.TrimSpace(cmd.RequestFingerprint) == "" {
+		return nil, ErrUsageBillingCarpoolSnapshotInvalid
+	}
+	return cmd, nil
 }
 
 func (c *UsageBillingCommand) Normalize() {
@@ -83,9 +216,42 @@ const UsageBillingMonetaryScale = 8
 func (c *UsageBillingCommand) quantizeMonetaryFields() {
 	c.BalanceCost = QuantizeUsageBillingAmount(c.BalanceCost)
 	c.SubscriptionCost = QuantizeUsageBillingAmount(c.SubscriptionCost)
+	c.CarpoolCost = c.CarpoolCost.Round(UsageBillingMonetaryScale)
 	c.APIKeyQuotaCost = QuantizeUsageBillingAmount(c.APIKeyQuotaCost)
 	c.APIKeyRateLimitCost = QuantizeUsageBillingAmount(c.APIKeyRateLimitCost)
 	c.AccountQuotaCost = QuantizeUsageBillingAmount(c.AccountQuotaCost)
+}
+
+func (c *UsageBillingCommand) Validate() error {
+	if c == nil {
+		return nil
+	}
+	sources := 0
+	if c.BalanceCost > 0 {
+		sources++
+	}
+	if c.SubscriptionCost > 0 {
+		sources++
+	}
+	if c.CarpoolSnapshot != nil {
+		sources++
+	}
+	if sources > 1 {
+		return ErrUsageBillingSourceConflict
+	}
+	if c.CarpoolSnapshot == nil {
+		if !c.CarpoolCost.IsZero() {
+			return ErrUsageBillingCarpoolSnapshotInvalid
+		}
+		return nil
+	}
+	snapshot := c.CarpoolSnapshot
+	if snapshot.BillingRequestID <= 0 || snapshot.TermID <= 0 || snapshot.CycleID <= 0 ||
+		snapshot.UserID != c.UserID || snapshot.APIKeyID != c.APIKeyID || snapshot.RequestID != c.RequestID ||
+		snapshot.AdmittedAt.IsZero() || c.CarpoolCost.IsNegative() {
+		return ErrUsageBillingCarpoolSnapshotInvalid
+	}
+	return nil
 }
 
 // QuantizeUsageBillingAmount 把金额舍入到 UsageBillingMonetaryScale 位小数，
@@ -131,6 +297,20 @@ func buildUsageBillingFingerprint(c *UsageBillingCommand) string {
 	)
 	if payloadHash := strings.TrimSpace(c.RequestPayloadHash); payloadHash != "" {
 		raw += "|" + payloadHash
+	}
+	if c.CarpoolSnapshot != nil {
+		snapshot := c.CarpoolSnapshot
+		raw = fmt.Sprintf(
+			"v2|%s|%d|%d|%d|%d|%d|%s|%s",
+			raw,
+			snapshot.BillingRequestID,
+			snapshot.GroupID,
+			snapshot.TermID,
+			snapshot.CycleID,
+			snapshot.AdmittedAt.UTC().UnixNano(),
+			snapshot.RequestID,
+			c.CarpoolCost.Round(UsageBillingMonetaryScale).StringFixed(UsageBillingMonetaryScale),
+		)
 	}
 	sum := sha256.Sum256([]byte(raw))
 	return hex.EncodeToString(sum[:])

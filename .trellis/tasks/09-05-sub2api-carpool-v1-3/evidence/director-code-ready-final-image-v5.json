@@ -1,0 +1,44 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "task_directory": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3",
+  "git_head": "36266f512776d78d4f1645a75ae0e84816f8a0a7",
+  "backend_build": "passed",
+  "frontend_build": "passed",
+  "frontend_typecheck": "passed",
+  "frontend_lint": "passed",
+  "frontend_tests": { "files_passed": 265, "tests_passed": 1907, "exit_code": 0 },
+  "approved_for_local_start": true,
+  "local_start_only": true,
+  "final_acceptance": false,
+  "source_sha256": "B696574939DB9A389525041B17FF5B466EAFF3BB87346938D1026BF20A292117",
+  "embedded_frontend_sha256": "F8466F2E1B567CEE6A27ACCFA1EAD6087D131C9138CB69693152FDC9897D50AC",
+  "source_unchanged_during_build_and_tests": true,
+  "frontend_unchanged_since_full_verification": true,
+  "all_implementation_owners_frozen": true,
+  "evidence": {
+    "backend_build": "evidence/director-final-image-v5-backend-build.log",
+    "unchanged_backend_focused_three": "evidence/director-final-image-v3-backend-focused-three.log",
+    "unchanged_backend_vet": "evidence/director-final-image-v3-vet.log",
+    "frontend_typecheck": "evidence/director-final-image-v5-frontend-typecheck.log",
+    "frontend_lint": "evidence/director-final-image-v5-frontend-lint.log",
+    "frontend_tests": "evidence/director-final-image-v5-frontend-full-tests.log",
+    "frontend_build": "evidence/director-final-image-v5-frontend-build.log",
+    "ui_review": "evidence/director-ui-acceptance.md",
+    "v4_post_ui_conservation": "evidence/source-runtime-v4-post-ui-20260905T211421967Z.json",
+    "existing_service_baseline": "evidence/director-baseline-service-review.md"
+  },
+  "change_since_v4": "Six frontend files only: fixed ledger event/bucket and preview action localization in two components and zh/en dictionaries, plus two component test files. Tests render both actual locales and retain unknown values/free-form audit data. No backend, payload, accounting, scheduler or announcement mutation.",
+  "preserve": "Retain copied DB/Redis/app volumes, original conservation baselines, batch1/announcement10/qualification rows and UI-created synthetic term94/user127/group17/plan8. Ordinary100USD and key64 full-row hash remain unchanged. No reset, deletion, takeover, payment or rebaseline.",
+  "remaining_acceptance": [
+    "Source-owned preservation-safe immutable rebuild and strict HTTP/WS/pending-merge reset API reruns on this exact image",
+    "Final-image desktop/390px populated ledger and modal preview localization screenshots plus user smoke checks",
+    "Final read-only identity/isolation/copied-data conservation and actual acceptance records"
+  ],
+  "first_publication_evidence_boundary": "Composed evidence only: original V3 twenty passing assertions plus one failed version-audience assertion, separate stable audience checks, deterministic driver race regression, coherent pending-merge and real-PG publication tests. The original failed report stays failed; its unretained baseline is unknown. Actual due reset is tested in real PG, not claimed at current runtime wall clock.",
+  "known_limits": [
+    "Full backend service suite remains non-green: exact-base Windows plugin rename failures and intermittent moderation timeout; compile-only is not assertion execution.",
+    "One V4 post-open refresh timed out then recovered on read-only retry. Creation201/12ms and exactly-one grant are proven; specific client/bridge/dependency cause was not established. No speculative fix.",
+    "No verified copied-user tier mapping, so copied-user terms remain zero. Synthetic fixtures cover carpool behavior."
+  ],
+  "safety_scope": "Only SOURCE may rebuild/start sealed127.0.0.1:38088 runtime/shared PG harness. Retain no-egress and loopback isolation. No production writes, real provider/card use, external notification, commit, push, archive or deployment."
+}

@@ -1,0 +1,18 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "git_head": "36266f512776d78d4f1645a75ae0e84816f8a0a7",
+  "backend_build": "passed",
+  "frontend_build": "passed",
+  "frontend_typecheck": "passed",
+  "frontend_scoped_lint": "passed",
+  "frontend_focused_tests": "10 passed: CarpoolView.async.spec.ts",
+  "postgresql_selected_tests": "5 passed: 20260906T135357Z-56aa38eb; migration replay/custom-state preservation, two-boost concurrency/exhaustion/replay, existing-three entitlement, preview and renewal",
+  "source_sha256": "2DCD7150000777A6801DC48F7B8C32B45577C1CC3310E46C178B90EF393D777F",
+  "embedded_frontend_sha256": "F205F8C3D1E53F00CFDBD3EBAC210D199656910AB177B84BF37C3CEEFBD20AEE",
+  "approved_for_local_start": true,
+  "local_start_only": true,
+  "final_acceptance": false,
+  "all_product_writers_frozen": true,
+  "revision": "Default2 boosts via appended migration240; existing boost_count admin parameter accepts2 or3. Preserve all issued term snapshots and claims, duration28days, four cycles and10% amounts. Direct local implementation requested by user; no workers.",
+  "preserve": "No old migration rewrites, existing term changes, balance edits, fixture imports, remote operations or push. Existing user testing may continue; controlled local app/mock rebuild only."
+}

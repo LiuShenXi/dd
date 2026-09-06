@@ -1,0 +1,18 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "type": "final-additive-test-product-equivalence",
+  "checked_at": "2026-09-06T00:18:44.5718430+00:00",
+  "v5_code_evidence_sha256": "2F8841CEB2659B384ABAF5642F56A725B26B35986AD556115ACFD4290FC8A422",
+  "v5_image_id": "sha256:6d569031eb1b5017fe7c3a7f5f14ed6a863442d9f49d7b2dc372d586b3c7adfd",
+  "v5_source_sha256": "B696574939DB9A389525041B17FF5B466EAFF3BB87346938D1026BF20A292117",
+  "additive_source_sha256": "05378BFC865B2E4AD5DF9ADC7DAEB369FFF9D66250247473CA6FE8FE72B65C53",
+  "embedded_frontend_sha256": "F8466F2E1B567CEE6A27ACCFA1EAD6087D131C9138CB69693152FDC9897D50AC",
+  "lifecycle_test_sha256": "0F8F63C6E45DFAE8A8B2105CD0E556BA65CDA1D236D068A337BB02E70570109F",
+  "preserved_binary_sha256": "30BA65BC7633884C71C77F9DEDDAC7CCEF6E86C859759A3AACA4FD81A7946170",
+  "additive_binary_sha256": "30BA65BC7633884C71C77F9DEDDAC7CCEF6E86C859759A3AACA4FD81A7946170",
+  "binary_identical": true,
+  "source_stable_during_build": true,
+  "runtime_mutated": false,
+  "new_private_binary": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\sub2api-carpool-v1.3-20260905\\runtime\\additive-tests-final-a95e7e65f28140b1806bb57294a32b16\\sub2api",
+  "boundary": "Final test-only sources change checkout aggregate, not compiled product; original V5 approval/source hash remains unchanged."
+}

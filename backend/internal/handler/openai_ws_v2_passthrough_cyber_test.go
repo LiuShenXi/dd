@@ -27,6 +27,15 @@ type openAIWSPassthroughHandlerHarness struct {
 }
 
 func newOpenAIWSPassthroughHandlerHarness(t *testing.T, upstreamURL string) *openAIWSPassthroughHandlerHarness {
+	return newOpenAIWSPassthroughHandlerHarnessWithBilling(t, upstreamURL, nil, nil)
+}
+
+func newOpenAIWSPassthroughHandlerHarnessWithBilling(
+	t *testing.T,
+	upstreamURL string,
+	carpoolBilling service.CarpoolGatewayBilling,
+	usageBillingRepo service.UsageBillingRepository,
+) *openAIWSPassthroughHandlerHarness {
 	t.Helper()
 	gatewayCache := testutil.NewRedisGatewayCache(t)
 
@@ -56,6 +65,9 @@ func newOpenAIWSPassthroughHandlerHarness(t *testing.T, upstreamURL string) *ope
 	}
 	cfg := &config.Config{}
 	cfg.RunMode = config.RunModeSimple
+	if carpoolBilling != nil {
+		cfg.RunMode = config.RunModeStandard
+	}
 	cfg.Default.RateMultiplier = 1
 	cfg.Security.URLAllowlist.Enabled = false
 	cfg.Security.URLAllowlist.AllowInsecureHTTP = true
@@ -71,8 +83,11 @@ func newOpenAIWSPassthroughHandlerHarness(t *testing.T, upstreamURL string) *ope
 	accountRepo := &openAIWSUsageHandlerAccountRepoStub{account: account}
 	usageRepo := &openAIWSUsageHandlerUsageLogRepoStub{created: make(chan *service.UsageLog, 2)}
 	billingCacheSvc := service.NewBillingCacheService(nil, nil, nil, nil, nil, nil, cfg, nil)
+	if carpoolBilling != nil {
+		billingCacheSvc.SetCarpoolGatewayBilling(carpoolBilling)
+	}
 	gatewaySvc := service.NewOpenAIGatewayService(
-		accountRepo, usageRepo, nil, nil, nil, nil, gatewayCache, cfg, nil, nil,
+		accountRepo, usageRepo, usageBillingRepo, nil, nil, nil, gatewayCache, cfg, nil, nil,
 		service.NewBillingService(cfg, nil), nil, billingCacheSvc, nil, &service.DeferredService{},
 		nil, nil, nil, nil, nil, settingSvc, nil,
 	)
@@ -90,10 +105,20 @@ func newOpenAIWSPassthroughHandlerHarness(t *testing.T, upstreamURL string) *ope
 
 	apiKey := &service.APIKey{
 		ID:      1851,
+		UserID:  1751,
 		Name:    "ws-cyber-key",
 		Key:     "sk-handler-cyber-test",
 		GroupID: &groupID,
 		User:    &service.User{ID: 1751, Status: service.StatusActive},
+	}
+	if carpoolBilling != nil {
+		apiKey.Group = &service.Group{
+			ID:               groupID,
+			Platform:         service.PlatformOpenAI,
+			Status:           service.StatusActive,
+			SubscriptionType: service.SubscriptionTypeCarpool,
+			RateMultiplier:   1,
+		}
 	}
 	handlerDone := make(chan struct{})
 	router := gin.New()

@@ -143,3 +143,31 @@ func TestPrepareUsageLogInsert_UpstreamRequestIDArgWiring(t *testing.T) {
 
 	require.Contains(t, usageLogSelectColumns, "upstream_request_id")
 }
+
+func TestPrepareUsageLogInsert_CarpoolSnapshotArgWiring(t *testing.T) {
+	termID := int64(41)
+	cycleID := int64(42)
+	admittedAt := time.Date(2026, 9, 6, 13, 14, 15, 987654321, time.UTC)
+	prepared := prepareUsageLogInsert(&service.UsageLog{
+		UserID:            1,
+		APIKeyID:          2,
+		AccountID:         3,
+		RequestID:         "carpool:usage-log-wiring",
+		Model:             "gpt-5",
+		CarpoolTermID:     &termID,
+		CarpoolCycleID:    &cycleID,
+		CarpoolAdmittedAt: &admittedAt,
+		CreatedAt:         admittedAt.Add(time.Second),
+	})
+
+	require.Len(t, prepared.args, len(usageLogInsertArgTypes))
+	require.Equal(t, sql.NullInt64{Int64: termID, Valid: true}, prepared.args[11])
+	require.Equal(t, sql.NullInt64{Int64: cycleID, Valid: true}, prepared.args[12])
+	require.Equal(t, &admittedAt, prepared.args[13])
+	require.Equal(t, "bigint", usageLogInsertArgTypes[11])
+	require.Equal(t, "bigint", usageLogInsertArgTypes[12])
+	require.Equal(t, "timestamptz", usageLogInsertArgTypes[13])
+	require.Contains(t, usageLogSelectColumns, "carpool_term_id")
+	require.Contains(t, usageLogSelectColumns, "carpool_cycle_id")
+	require.Contains(t, usageLogSelectColumns, "carpool_admitted_at")
+}

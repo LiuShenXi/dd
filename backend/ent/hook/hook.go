@@ -129,6 +129,174 @@ func (f BatchImageJobFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BatchImageJobMutation", m)
 }
 
+// The CarpoolBillingRequestFunc type is an adapter to allow the use of ordinary
+// function as CarpoolBillingRequest mutator.
+type CarpoolBillingRequestFunc func(context.Context, *ent.CarpoolBillingRequestMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolBillingRequestFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolBillingRequestMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolBillingRequestMutation", m)
+}
+
+// The CarpoolCycleFunc type is an adapter to allow the use of ordinary
+// function as CarpoolCycle mutator.
+type CarpoolCycleFunc func(context.Context, *ent.CarpoolCycleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolCycleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolCycleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolCycleMutation", m)
+}
+
+// The CarpoolLedgerFunc type is an adapter to allow the use of ordinary
+// function as CarpoolLedger mutator.
+type CarpoolLedgerFunc func(context.Context, *ent.CarpoolLedgerMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolLedgerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolLedgerMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolLedgerMutation", m)
+}
+
+// The CarpoolOperationFunc type is an adapter to allow the use of ordinary
+// function as CarpoolOperation mutator.
+type CarpoolOperationFunc func(context.Context, *ent.CarpoolOperationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolOperationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolOperationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolOperationMutation", m)
+}
+
+// The CarpoolPaymentFunc type is an adapter to allow the use of ordinary
+// function as CarpoolPayment mutator.
+type CarpoolPaymentFunc func(context.Context, *ent.CarpoolPaymentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolPaymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolPaymentMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolPaymentMutation", m)
+}
+
+// The CarpoolPlanFunc type is an adapter to allow the use of ordinary
+// function as CarpoolPlan mutator.
+type CarpoolPlanFunc func(context.Context, *ent.CarpoolPlanMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolPlanFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolPlanMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolPlanMutation", m)
+}
+
+// The CarpoolResetAccountStateFunc type is an adapter to allow the use of ordinary
+// function as CarpoolResetAccountState mutator.
+type CarpoolResetAccountStateFunc func(context.Context, *ent.CarpoolResetAccountStateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolResetAccountStateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolResetAccountStateMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolResetAccountStateMutation", m)
+}
+
+// The CarpoolResetAnnouncementOutboxFunc type is an adapter to allow the use of ordinary
+// function as CarpoolResetAnnouncementOutbox mutator.
+type CarpoolResetAnnouncementOutboxFunc func(context.Context, *ent.CarpoolResetAnnouncementOutboxMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolResetAnnouncementOutboxFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolResetAnnouncementOutboxMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolResetAnnouncementOutboxMutation", m)
+}
+
+// The CarpoolResetBatchFunc type is an adapter to allow the use of ordinary
+// function as CarpoolResetBatch mutator.
+type CarpoolResetBatchFunc func(context.Context, *ent.CarpoolResetBatchMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolResetBatchFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolResetBatchMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolResetBatchMutation", m)
+}
+
+// The CarpoolResetCreditFunc type is an adapter to allow the use of ordinary
+// function as CarpoolResetCredit mutator.
+type CarpoolResetCreditFunc func(context.Context, *ent.CarpoolResetCreditMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolResetCreditFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolResetCreditMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolResetCreditMutation", m)
+}
+
+// The CarpoolResetQualificationFunc type is an adapter to allow the use of ordinary
+// function as CarpoolResetQualification mutator.
+type CarpoolResetQualificationFunc func(context.Context, *ent.CarpoolResetQualificationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolResetQualificationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolResetQualificationMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolResetQualificationMutation", m)
+}
+
+// The CarpoolResetScopeStateFunc type is an adapter to allow the use of ordinary
+// function as CarpoolResetScopeState mutator.
+type CarpoolResetScopeStateFunc func(context.Context, *ent.CarpoolResetScopeStateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolResetScopeStateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolResetScopeStateMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolResetScopeStateMutation", m)
+}
+
+// The CarpoolResetTargetFunc type is an adapter to allow the use of ordinary
+// function as CarpoolResetTarget mutator.
+type CarpoolResetTargetFunc func(context.Context, *ent.CarpoolResetTargetMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolResetTargetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolResetTargetMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolResetTargetMutation", m)
+}
+
+// The CarpoolTermFunc type is an adapter to allow the use of ordinary
+// function as CarpoolTerm mutator.
+type CarpoolTermFunc func(context.Context, *ent.CarpoolTermMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CarpoolTermFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CarpoolTermMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CarpoolTermMutation", m)
+}
+
 // The ChannelMonitorFunc type is an adapter to allow the use of ordinary
 // function as ChannelMonitor mutator.
 type ChannelMonitorFunc func(context.Context, *ent.ChannelMonitorMutation) (ent.Value, error)

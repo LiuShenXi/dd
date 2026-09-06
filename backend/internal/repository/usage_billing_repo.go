@@ -7,16 +7,18 @@ import (
 	"strings"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 )
 
 type usageBillingRepository struct {
-	db *sql.DB
+	db          *sql.DB
+	carpoolRepo *CarpoolRepository
 }
 
-func NewUsageBillingRepository(_ *dbent.Client, sqlDB *sql.DB) service.UsageBillingRepository {
-	return &usageBillingRepository{db: sqlDB}
+func NewUsageBillingRepository(_ *dbent.Client, sqlDB *sql.DB, carpoolRepo *CarpoolRepository) service.UsageBillingRepository {
+	return &usageBillingRepository{db: sqlDB, carpoolRepo: carpoolRepo}
 }
 
 func (r *usageBillingRepository) Apply(ctx context.Context, cmd *service.UsageBillingCommand) (_ *service.UsageBillingApplyResult, err error) {
@@ -30,6 +32,9 @@ func (r *usageBillingRepository) Apply(ctx context.Context, cmd *service.UsageBi
 	cmd.Normalize()
 	if cmd.RequestID == "" {
 		return nil, service.ErrUsageBillingRequestIDRequired
+	}
+	if err := cmd.Validate(); err != nil {
+		return nil, err
 	}
 
 	tx, err := r.db.BeginTx(ctx, nil)
@@ -47,6 +52,21 @@ func (r *usageBillingRepository) Apply(ctx context.Context, cmd *service.UsageBi
 		return nil, err
 	}
 	if !applied {
+		if cmd.CarpoolSnapshot != nil {
+			if r.carpoolRepo == nil {
+				return nil, service.ErrCarpoolBillingUnavailable
+			}
+			// A prior Apply may have committed the dedup/debit while a stale
+			// receipt still remained usage_known. Converge that receipt without
+			// applying ledger or key/account effects a second time.
+			if err := r.carpoolRepo.MarkBillingSettledTx(ctx, tx, cmd.CarpoolSnapshot.BillingRequestID, cmd.CarpoolCost); err != nil {
+				return nil, err
+			}
+			if err := tx.Commit(); err != nil {
+				return nil, err
+			}
+			tx = nil
+		}
 		return &service.UsageBillingApplyResult{Applied: false}, nil
 	}
 
@@ -172,6 +192,22 @@ func (r *usageBillingRepository) applyBatchImageBalanceHold(
 }
 
 func (r *usageBillingRepository) applyUsageBillingEffects(ctx context.Context, tx *sql.Tx, cmd *service.UsageBillingCommand, result *service.UsageBillingApplyResult) error {
+	if cmd.CarpoolSnapshot != nil {
+		if r.carpoolRepo == nil {
+			return service.ErrCarpoolBillingUnavailable
+		}
+		debit := &domain.CarpoolUsageDebit{
+			Snapshot:      *cmd.CarpoolSnapshot,
+			ActualCostUSD: cmd.CarpoolCost,
+			EventKey:      "usage:" + cmd.RequestID,
+		}
+		if _, err := r.carpoolRepo.ApplyUsageDebitTx(ctx, tx, debit); err != nil {
+			return err
+		}
+		if err := r.carpoolRepo.MarkBillingSettledTx(ctx, tx, cmd.CarpoolSnapshot.BillingRequestID, cmd.CarpoolCost); err != nil {
+			return err
+		}
+	}
 	if cmd.SubscriptionCost > 0 && cmd.SubscriptionID != nil {
 		if err := incrementUsageBillingSubscription(ctx, tx, *cmd.SubscriptionID, cmd.SubscriptionCost); err != nil {
 			return err

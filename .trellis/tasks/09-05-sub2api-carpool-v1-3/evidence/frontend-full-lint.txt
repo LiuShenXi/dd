@@ -1,0 +1,5 @@
+
+> sub2api-frontend@1.0.0 lint:check C:\WORK-SPACE\sub2api-carpool-v1.3\frontend
+> eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts
+
+EXIT_CODE=0

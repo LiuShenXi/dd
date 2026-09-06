@@ -48,6 +48,19 @@ func (h *AnnouncementHandler) List(c *gin.Context) {
 	response.Success(c, out)
 }
 
+func (h *AnnouncementHandler) Version(c *gin.Context) {
+	subject, ok := middleware2.GetAuthSubjectFromContext(c)
+	if !ok {
+		response.Unauthorized(c, "User not found in context")
+		return
+	}
+	version, err := h.announcementService.VersionForUser(c.Request.Context(), subject.UserID)
+	if response.ErrorFrom(c, err) {
+		return
+	}
+	response.Success(c, version)
+}
+
 // MarkRead marks an announcement as read for current user
 // POST /api/v1/announcements/:id/read
 func (h *AnnouncementHandler) MarkRead(c *gin.Context) {

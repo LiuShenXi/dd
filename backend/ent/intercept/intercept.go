@@ -18,6 +18,20 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/batchimageevent"
 	"github.com/Wei-Shaw/sub2api/ent/batchimageitem"
 	"github.com/Wei-Shaw/sub2api/ent/batchimagejob"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolbillingrequest"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolcycle"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolledger"
+	"github.com/Wei-Shaw/sub2api/ent/carpooloperation"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolpayment"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolplan"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetaccountstate"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetannouncementoutbox"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetbatch"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetcredit"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetqualification"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetscopestate"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresettarget"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolterm"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitor"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitordailyrollup"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
@@ -374,6 +388,384 @@ func (f TraverseBatchImageJob) Traverse(ctx context.Context, q ent.Query) error 
 		return f(ctx, q)
 	}
 	return fmt.Errorf("unexpected query type %T. expect *ent.BatchImageJobQuery", q)
+}
+
+// The CarpoolBillingRequestFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolBillingRequestFunc func(context.Context, *ent.CarpoolBillingRequestQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolBillingRequestFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolBillingRequestQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolBillingRequestQuery", q)
+}
+
+// The TraverseCarpoolBillingRequest type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolBillingRequest func(context.Context, *ent.CarpoolBillingRequestQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolBillingRequest) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolBillingRequest) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolBillingRequestQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolBillingRequestQuery", q)
+}
+
+// The CarpoolCycleFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolCycleFunc func(context.Context, *ent.CarpoolCycleQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolCycleFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolCycleQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolCycleQuery", q)
+}
+
+// The TraverseCarpoolCycle type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolCycle func(context.Context, *ent.CarpoolCycleQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolCycle) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolCycle) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolCycleQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolCycleQuery", q)
+}
+
+// The CarpoolLedgerFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolLedgerFunc func(context.Context, *ent.CarpoolLedgerQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolLedgerFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolLedgerQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolLedgerQuery", q)
+}
+
+// The TraverseCarpoolLedger type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolLedger func(context.Context, *ent.CarpoolLedgerQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolLedger) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolLedger) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolLedgerQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolLedgerQuery", q)
+}
+
+// The CarpoolOperationFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolOperationFunc func(context.Context, *ent.CarpoolOperationQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolOperationFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolOperationQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolOperationQuery", q)
+}
+
+// The TraverseCarpoolOperation type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolOperation func(context.Context, *ent.CarpoolOperationQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolOperation) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolOperation) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolOperationQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolOperationQuery", q)
+}
+
+// The CarpoolPaymentFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolPaymentFunc func(context.Context, *ent.CarpoolPaymentQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolPaymentFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolPaymentQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolPaymentQuery", q)
+}
+
+// The TraverseCarpoolPayment type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolPayment func(context.Context, *ent.CarpoolPaymentQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolPayment) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolPayment) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolPaymentQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolPaymentQuery", q)
+}
+
+// The CarpoolPlanFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolPlanFunc func(context.Context, *ent.CarpoolPlanQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolPlanFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolPlanQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolPlanQuery", q)
+}
+
+// The TraverseCarpoolPlan type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolPlan func(context.Context, *ent.CarpoolPlanQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolPlan) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolPlan) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolPlanQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolPlanQuery", q)
+}
+
+// The CarpoolResetAccountStateFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolResetAccountStateFunc func(context.Context, *ent.CarpoolResetAccountStateQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolResetAccountStateFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolResetAccountStateQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetAccountStateQuery", q)
+}
+
+// The TraverseCarpoolResetAccountState type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolResetAccountState func(context.Context, *ent.CarpoolResetAccountStateQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolResetAccountState) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolResetAccountState) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolResetAccountStateQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetAccountStateQuery", q)
+}
+
+// The CarpoolResetAnnouncementOutboxFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolResetAnnouncementOutboxFunc func(context.Context, *ent.CarpoolResetAnnouncementOutboxQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolResetAnnouncementOutboxFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolResetAnnouncementOutboxQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetAnnouncementOutboxQuery", q)
+}
+
+// The TraverseCarpoolResetAnnouncementOutbox type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolResetAnnouncementOutbox func(context.Context, *ent.CarpoolResetAnnouncementOutboxQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolResetAnnouncementOutbox) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolResetAnnouncementOutbox) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolResetAnnouncementOutboxQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetAnnouncementOutboxQuery", q)
+}
+
+// The CarpoolResetBatchFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolResetBatchFunc func(context.Context, *ent.CarpoolResetBatchQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolResetBatchFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolResetBatchQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetBatchQuery", q)
+}
+
+// The TraverseCarpoolResetBatch type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolResetBatch func(context.Context, *ent.CarpoolResetBatchQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolResetBatch) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolResetBatch) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolResetBatchQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetBatchQuery", q)
+}
+
+// The CarpoolResetCreditFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolResetCreditFunc func(context.Context, *ent.CarpoolResetCreditQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolResetCreditFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolResetCreditQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetCreditQuery", q)
+}
+
+// The TraverseCarpoolResetCredit type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolResetCredit func(context.Context, *ent.CarpoolResetCreditQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolResetCredit) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolResetCredit) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolResetCreditQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetCreditQuery", q)
+}
+
+// The CarpoolResetQualificationFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolResetQualificationFunc func(context.Context, *ent.CarpoolResetQualificationQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolResetQualificationFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolResetQualificationQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetQualificationQuery", q)
+}
+
+// The TraverseCarpoolResetQualification type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolResetQualification func(context.Context, *ent.CarpoolResetQualificationQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolResetQualification) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolResetQualification) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolResetQualificationQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetQualificationQuery", q)
+}
+
+// The CarpoolResetScopeStateFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolResetScopeStateFunc func(context.Context, *ent.CarpoolResetScopeStateQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolResetScopeStateFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolResetScopeStateQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetScopeStateQuery", q)
+}
+
+// The TraverseCarpoolResetScopeState type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolResetScopeState func(context.Context, *ent.CarpoolResetScopeStateQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolResetScopeState) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolResetScopeState) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolResetScopeStateQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetScopeStateQuery", q)
+}
+
+// The CarpoolResetTargetFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolResetTargetFunc func(context.Context, *ent.CarpoolResetTargetQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolResetTargetFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolResetTargetQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetTargetQuery", q)
+}
+
+// The TraverseCarpoolResetTarget type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolResetTarget func(context.Context, *ent.CarpoolResetTargetQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolResetTarget) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolResetTarget) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolResetTargetQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolResetTargetQuery", q)
+}
+
+// The CarpoolTermFunc type is an adapter to allow the use of ordinary function as a Querier.
+type CarpoolTermFunc func(context.Context, *ent.CarpoolTermQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f CarpoolTermFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.CarpoolTermQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.CarpoolTermQuery", q)
+}
+
+// The TraverseCarpoolTerm type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseCarpoolTerm func(context.Context, *ent.CarpoolTermQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseCarpoolTerm) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseCarpoolTerm) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.CarpoolTermQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.CarpoolTermQuery", q)
 }
 
 // The ChannelMonitorFunc type is an adapter to allow the use of ordinary function as a Querier.
@@ -1182,6 +1574,34 @@ func NewQuery(q ent.Query) (Query, error) {
 		return &query[*ent.BatchImageItemQuery, predicate.BatchImageItem, batchimageitem.OrderOption]{typ: ent.TypeBatchImageItem, tq: q}, nil
 	case *ent.BatchImageJobQuery:
 		return &query[*ent.BatchImageJobQuery, predicate.BatchImageJob, batchimagejob.OrderOption]{typ: ent.TypeBatchImageJob, tq: q}, nil
+	case *ent.CarpoolBillingRequestQuery:
+		return &query[*ent.CarpoolBillingRequestQuery, predicate.CarpoolBillingRequest, carpoolbillingrequest.OrderOption]{typ: ent.TypeCarpoolBillingRequest, tq: q}, nil
+	case *ent.CarpoolCycleQuery:
+		return &query[*ent.CarpoolCycleQuery, predicate.CarpoolCycle, carpoolcycle.OrderOption]{typ: ent.TypeCarpoolCycle, tq: q}, nil
+	case *ent.CarpoolLedgerQuery:
+		return &query[*ent.CarpoolLedgerQuery, predicate.CarpoolLedger, carpoolledger.OrderOption]{typ: ent.TypeCarpoolLedger, tq: q}, nil
+	case *ent.CarpoolOperationQuery:
+		return &query[*ent.CarpoolOperationQuery, predicate.CarpoolOperation, carpooloperation.OrderOption]{typ: ent.TypeCarpoolOperation, tq: q}, nil
+	case *ent.CarpoolPaymentQuery:
+		return &query[*ent.CarpoolPaymentQuery, predicate.CarpoolPayment, carpoolpayment.OrderOption]{typ: ent.TypeCarpoolPayment, tq: q}, nil
+	case *ent.CarpoolPlanQuery:
+		return &query[*ent.CarpoolPlanQuery, predicate.CarpoolPlan, carpoolplan.OrderOption]{typ: ent.TypeCarpoolPlan, tq: q}, nil
+	case *ent.CarpoolResetAccountStateQuery:
+		return &query[*ent.CarpoolResetAccountStateQuery, predicate.CarpoolResetAccountState, carpoolresetaccountstate.OrderOption]{typ: ent.TypeCarpoolResetAccountState, tq: q}, nil
+	case *ent.CarpoolResetAnnouncementOutboxQuery:
+		return &query[*ent.CarpoolResetAnnouncementOutboxQuery, predicate.CarpoolResetAnnouncementOutbox, carpoolresetannouncementoutbox.OrderOption]{typ: ent.TypeCarpoolResetAnnouncementOutbox, tq: q}, nil
+	case *ent.CarpoolResetBatchQuery:
+		return &query[*ent.CarpoolResetBatchQuery, predicate.CarpoolResetBatch, carpoolresetbatch.OrderOption]{typ: ent.TypeCarpoolResetBatch, tq: q}, nil
+	case *ent.CarpoolResetCreditQuery:
+		return &query[*ent.CarpoolResetCreditQuery, predicate.CarpoolResetCredit, carpoolresetcredit.OrderOption]{typ: ent.TypeCarpoolResetCredit, tq: q}, nil
+	case *ent.CarpoolResetQualificationQuery:
+		return &query[*ent.CarpoolResetQualificationQuery, predicate.CarpoolResetQualification, carpoolresetqualification.OrderOption]{typ: ent.TypeCarpoolResetQualification, tq: q}, nil
+	case *ent.CarpoolResetScopeStateQuery:
+		return &query[*ent.CarpoolResetScopeStateQuery, predicate.CarpoolResetScopeState, carpoolresetscopestate.OrderOption]{typ: ent.TypeCarpoolResetScopeState, tq: q}, nil
+	case *ent.CarpoolResetTargetQuery:
+		return &query[*ent.CarpoolResetTargetQuery, predicate.CarpoolResetTarget, carpoolresettarget.OrderOption]{typ: ent.TypeCarpoolResetTarget, tq: q}, nil
+	case *ent.CarpoolTermQuery:
+		return &query[*ent.CarpoolTermQuery, predicate.CarpoolTerm, carpoolterm.OrderOption]{typ: ent.TypeCarpoolTerm, tq: q}, nil
 	case *ent.ChannelMonitorQuery:
 		return &query[*ent.ChannelMonitorQuery, predicate.ChannelMonitor, channelmonitor.OrderOption]{typ: ent.TypeChannelMonitor, tq: q}, nil
 	case *ent.ChannelMonitorDailyRollupQuery:

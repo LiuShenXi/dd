@@ -23,6 +23,7 @@ const (
 const (
 	AnnouncementConditionTypeSubscription = domain.AnnouncementConditionTypeSubscription
 	AnnouncementConditionTypeBalance      = domain.AnnouncementConditionTypeBalance
+	AnnouncementConditionTypeCarpoolScope = domain.AnnouncementConditionTypeCarpoolScope
 )
 
 const (
@@ -82,4 +83,8 @@ type AnnouncementReadRepository interface {
 	GetReadMapByUser(ctx context.Context, userID int64, announcementIDs []int64) (map[int64]time.Time, error)
 	GetReadMapByUsers(ctx context.Context, announcementID int64, userIDs []int64) (map[int64]time.Time, error)
 	CountByAnnouncementID(ctx context.Context, announcementID int64) (int64, error)
+}
+
+type AnnouncementCarpoolAudienceReader interface {
+	ListAnnouncementCarpoolScopes(ctx context.Context, userID int64, now time.Time) (map[int64]struct{}, error)
 }

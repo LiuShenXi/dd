@@ -1,0 +1,139 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "suite": "reset",
+  "source": "synthetic-local-only",
+  "overall_status": "failed",
+  "code_evidence_sha256": "DA84F4CEC19A5664C4D6C64D1CFD219956D53091970EC2EB7AC04A1A33A72CE0",
+  "image_id": "sha256:a59de764355df829d8c58535358767d95da9fb696eb03a5aa1cb8e8564b62955",
+  "config_sha256": "DE0F5E535B4695CE00962D8C7C85A46482D9802ACC637010BE02A0AAEEA53D32",
+  "environment_sha256": "243CE4441380C7E49B7E09BF37EFA839BE86CB6E3F0F1B394C894F6909F40B27",
+  "network_id": "989d8be98f73baa478ff7b5f2be413923f8ea672d7859302f38405f3f3dd846a",
+  "checkout_scope": "immutable-reviewed-image-not-later-source-edits",
+  "driver_source_sha256": "73AA64B3DBC3BEFCB87E28E1522E6637C468FE2AFCDBD574F5716F2FDDB7EFAA",
+  "driver_test_sha256": "C4D8A8E6751C1536A609AC29B07FFCE1B1AFAB867436C9709B669670435BBFF5",
+  "driver_binary_sha256": "DA5F81DA159ED6D2435612C4810FF919870D95633BB71517073B405FD9923723",
+  "completed_at": "2026-09-05T20:27:23.3323531+00:00",
+  "passed": 20,
+  "failed": 1,
+  "isolation": "passed",
+  "conservation": {
+    "copied-records": "passed",
+    "copied-announcements": "passed"
+  },
+  "assertions": [
+    {
+      "name": "auth.bootstrap_admin",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "reset.scope_preflight",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.fresh_synthetic_users",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.fresh_synthetic_users",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.synthetic_carpool_group",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.current_plan_contract",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.member_terms",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "reset.execution_window_safety",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "reset.admin_authorization",
+      "status": "pass",
+      "http_status": 403
+    },
+    {
+      "name": "reset.register_missing_idempotency_key",
+      "status": "pass",
+      "http_status": 400
+    },
+    {
+      "name": "reset.register_confirmed_qualification",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "reset.register_replay_original_response",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "reset.register_conflicting_payload",
+      "status": "pass",
+      "http_status": 409
+    },
+    {
+      "name": "reset.next_shanghai_2200_schedule",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "reset.schedule_success",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "reset.schedule_replay_original_response",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "reset.schedule_conflicting_payload",
+      "status": "pass",
+      "http_status": 409
+    },
+    {
+      "name": "reset.execute_out_of_window_refused",
+      "status": "pass",
+      "http_status": 409
+    },
+    {
+      "name": "reset.execute_refusal_preserves_batch",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "announcement.publish_within_20_seconds",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "announcement.version_audience",
+      "status": "fail",
+      "http_status": 200
+    }
+  ],
+  "excluded_checks": [
+    {
+      "name": "reset.actual_due_execution",
+      "coverage": "postgresql_covered",
+      "evidence": "source-runtime-pg-progress.md"
+    }
+  ],
+  "scenario": "first_publication",
+  "copied_user_term_preflight": "zero"
+}

@@ -1,0 +1,32 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "suite": "http",
+  "source": "synthetic-local-only",
+  "overall_status": "failed",
+  "code_evidence_sha256": "F3583FB6D1BACF5E7A85DA9849D20E98A2BA15AEEFB0EFE041D5E2BE3AD85C07",
+  "image_id": "sha256:3b7be8b1d4efac300e933a4b53008b8b4f482344ba343d054d9432b2b17846a4",
+  "checkout_scope": "immutable-reviewed-image-not-later-source-edits",
+  "driver_source_sha256": "8EB90FB54535FF273BA758BEEAC8C1EEFDDB5F2E3A8E050A078CDA0B40B5DF2D",
+  "driver_test_sha256": "D73514C4826085CA0ECFCDE317F8BEEB0C41A6D9FAF7FD92838D5F1B4DDA9962",
+  "driver_binary_sha256": "DBE2402D64B159026AB5B35D74411BAEAE4B414AE9993337740572066C23609F",
+  "completed_at": "2026-09-05T18:48:04.6985585+00:00",
+  "passed": 1,
+  "failed": 1,
+  "isolation": "passed",
+  "conservation": {
+    "copied-records": "passed",
+    "copied-announcements": "passed"
+  },
+  "assertions": [
+    {
+      "name": "auth.login.admin",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.fresh_synthetic_user_batch",
+      "status": "fail",
+      "http_status": 423
+    }
+  ]
+}

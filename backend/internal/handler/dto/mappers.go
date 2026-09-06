@@ -759,6 +759,9 @@ func UsageLogFromServiceAdmin(l *service.UsageLog) *AdminUsageLog {
 	usageLog.UpstreamEndpoint = l.UpstreamEndpoint
 	return &AdminUsageLog{
 		UsageLog:                usageLog,
+		CarpoolTermID:           l.CarpoolTermID,
+		CarpoolCycleID:          l.CarpoolCycleID,
+		CarpoolAdmittedAt:       l.CarpoolAdmittedAt,
 		UpstreamModel:           l.UpstreamModel,
 		UpstreamReasoningEffort: adminUpstreamReasoningEffort(l),
 		UpstreamResponseModel:   l.UpstreamResponseModel,

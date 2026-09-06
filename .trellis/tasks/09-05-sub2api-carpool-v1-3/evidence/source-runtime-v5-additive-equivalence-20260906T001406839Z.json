@@ -1,0 +1,17 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "type": "additive-test-product-equivalence",
+  "checked_at": "2026-09-06T00:14:06.8364316+00:00",
+  "v5_code_evidence_sha256": "2F8841CEB2659B384ABAF5642F56A725B26B35986AD556115ACFD4290FC8A422",
+  "v5_image_id": "sha256:6d569031eb1b5017fe7c3a7f5f14ed6a863442d9f49d7b2dc372d586b3c7adfd",
+  "v5_source_sha256": "B696574939DB9A389525041B17FF5B466EAFF3BB87346938D1026BF20A292117",
+  "additive_source_sha256": "4CEA0933088B7AA3064E920EF741CDE29A1814E1E9DBA8B258F42199EC6495DD",
+  "embedded_frontend_sha256": "F8466F2E1B567CEE6A27ACCFA1EAD6087D131C9138CB69693152FDC9897D50AC",
+  "preserved_binary_sha256": "30BA65BC7633884C71C77F9DEDDAC7CCEF6E86C859759A3AACA4FD81A7946170",
+  "additive_binary_sha256": "30BA65BC7633884C71C77F9DEDDAC7CCEF6E86C859759A3AACA4FD81A7946170",
+  "binary_identical": true,
+  "source_stable_during_build": true,
+  "runtime_mutated": false,
+  "new_private_binary": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\sub2api-carpool-v1.3-20260905\\runtime\\additive-tests-ff6200092b584850bb1fc6f356de11a7\\sub2api",
+  "boundary": "Additional test sources change the checkout aggregate but not the compiled product; original V5 gate remains unchanged."
+}

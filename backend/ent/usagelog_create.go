@@ -197,6 +197,48 @@ func (_c *UsageLogCreate) SetNillableSubscriptionID(v *int64) *UsageLogCreate {
 	return _c
 }
 
+// SetCarpoolTermID sets the "carpool_term_id" field.
+func (_c *UsageLogCreate) SetCarpoolTermID(v int64) *UsageLogCreate {
+	_c.mutation.SetCarpoolTermID(v)
+	return _c
+}
+
+// SetNillableCarpoolTermID sets the "carpool_term_id" field if the given value is not nil.
+func (_c *UsageLogCreate) SetNillableCarpoolTermID(v *int64) *UsageLogCreate {
+	if v != nil {
+		_c.SetCarpoolTermID(*v)
+	}
+	return _c
+}
+
+// SetCarpoolCycleID sets the "carpool_cycle_id" field.
+func (_c *UsageLogCreate) SetCarpoolCycleID(v int64) *UsageLogCreate {
+	_c.mutation.SetCarpoolCycleID(v)
+	return _c
+}
+
+// SetNillableCarpoolCycleID sets the "carpool_cycle_id" field if the given value is not nil.
+func (_c *UsageLogCreate) SetNillableCarpoolCycleID(v *int64) *UsageLogCreate {
+	if v != nil {
+		_c.SetCarpoolCycleID(*v)
+	}
+	return _c
+}
+
+// SetCarpoolAdmittedAt sets the "carpool_admitted_at" field.
+func (_c *UsageLogCreate) SetCarpoolAdmittedAt(v time.Time) *UsageLogCreate {
+	_c.mutation.SetCarpoolAdmittedAt(v)
+	return _c
+}
+
+// SetNillableCarpoolAdmittedAt sets the "carpool_admitted_at" field if the given value is not nil.
+func (_c *UsageLogCreate) SetNillableCarpoolAdmittedAt(v *time.Time) *UsageLogCreate {
+	if v != nil {
+		_c.SetCarpoolAdmittedAt(*v)
+	}
+	return _c
+}
+
 // SetInputTokens sets the "input_tokens" field.
 func (_c *UsageLogCreate) SetInputTokens(v int) *UsageLogCreate {
 	_c.mutation.SetInputTokens(v)
@@ -1007,6 +1049,18 @@ func (_c *UsageLogCreate) createSpec() (*UsageLog, *sqlgraph.CreateSpec) {
 		_spec.SetField(usagelog.FieldBillingMode, field.TypeString, value)
 		_node.BillingMode = &value
 	}
+	if value, ok := _c.mutation.CarpoolTermID(); ok {
+		_spec.SetField(usagelog.FieldCarpoolTermID, field.TypeInt64, value)
+		_node.CarpoolTermID = &value
+	}
+	if value, ok := _c.mutation.CarpoolCycleID(); ok {
+		_spec.SetField(usagelog.FieldCarpoolCycleID, field.TypeInt64, value)
+		_node.CarpoolCycleID = &value
+	}
+	if value, ok := _c.mutation.CarpoolAdmittedAt(); ok {
+		_spec.SetField(usagelog.FieldCarpoolAdmittedAt, field.TypeTime, value)
+		_node.CarpoolAdmittedAt = &value
+	}
 	if value, ok := _c.mutation.InputTokens(); ok {
 		_spec.SetField(usagelog.FieldInputTokens, field.TypeInt, value)
 		_node.InputTokens = value
@@ -1515,6 +1569,72 @@ func (u *UsageLogUpsert) UpdateSubscriptionID() *UsageLogUpsert {
 // ClearSubscriptionID clears the value of the "subscription_id" field.
 func (u *UsageLogUpsert) ClearSubscriptionID() *UsageLogUpsert {
 	u.SetNull(usagelog.FieldSubscriptionID)
+	return u
+}
+
+// SetCarpoolTermID sets the "carpool_term_id" field.
+func (u *UsageLogUpsert) SetCarpoolTermID(v int64) *UsageLogUpsert {
+	u.Set(usagelog.FieldCarpoolTermID, v)
+	return u
+}
+
+// UpdateCarpoolTermID sets the "carpool_term_id" field to the value that was provided on create.
+func (u *UsageLogUpsert) UpdateCarpoolTermID() *UsageLogUpsert {
+	u.SetExcluded(usagelog.FieldCarpoolTermID)
+	return u
+}
+
+// AddCarpoolTermID adds v to the "carpool_term_id" field.
+func (u *UsageLogUpsert) AddCarpoolTermID(v int64) *UsageLogUpsert {
+	u.Add(usagelog.FieldCarpoolTermID, v)
+	return u
+}
+
+// ClearCarpoolTermID clears the value of the "carpool_term_id" field.
+func (u *UsageLogUpsert) ClearCarpoolTermID() *UsageLogUpsert {
+	u.SetNull(usagelog.FieldCarpoolTermID)
+	return u
+}
+
+// SetCarpoolCycleID sets the "carpool_cycle_id" field.
+func (u *UsageLogUpsert) SetCarpoolCycleID(v int64) *UsageLogUpsert {
+	u.Set(usagelog.FieldCarpoolCycleID, v)
+	return u
+}
+
+// UpdateCarpoolCycleID sets the "carpool_cycle_id" field to the value that was provided on create.
+func (u *UsageLogUpsert) UpdateCarpoolCycleID() *UsageLogUpsert {
+	u.SetExcluded(usagelog.FieldCarpoolCycleID)
+	return u
+}
+
+// AddCarpoolCycleID adds v to the "carpool_cycle_id" field.
+func (u *UsageLogUpsert) AddCarpoolCycleID(v int64) *UsageLogUpsert {
+	u.Add(usagelog.FieldCarpoolCycleID, v)
+	return u
+}
+
+// ClearCarpoolCycleID clears the value of the "carpool_cycle_id" field.
+func (u *UsageLogUpsert) ClearCarpoolCycleID() *UsageLogUpsert {
+	u.SetNull(usagelog.FieldCarpoolCycleID)
+	return u
+}
+
+// SetCarpoolAdmittedAt sets the "carpool_admitted_at" field.
+func (u *UsageLogUpsert) SetCarpoolAdmittedAt(v time.Time) *UsageLogUpsert {
+	u.Set(usagelog.FieldCarpoolAdmittedAt, v)
+	return u
+}
+
+// UpdateCarpoolAdmittedAt sets the "carpool_admitted_at" field to the value that was provided on create.
+func (u *UsageLogUpsert) UpdateCarpoolAdmittedAt() *UsageLogUpsert {
+	u.SetExcluded(usagelog.FieldCarpoolAdmittedAt)
+	return u
+}
+
+// ClearCarpoolAdmittedAt clears the value of the "carpool_admitted_at" field.
+func (u *UsageLogUpsert) ClearCarpoolAdmittedAt() *UsageLogUpsert {
+	u.SetNull(usagelog.FieldCarpoolAdmittedAt)
 	return u
 }
 
@@ -2411,6 +2531,83 @@ func (u *UsageLogUpsertOne) UpdateSubscriptionID() *UsageLogUpsertOne {
 func (u *UsageLogUpsertOne) ClearSubscriptionID() *UsageLogUpsertOne {
 	return u.Update(func(s *UsageLogUpsert) {
 		s.ClearSubscriptionID()
+	})
+}
+
+// SetCarpoolTermID sets the "carpool_term_id" field.
+func (u *UsageLogUpsertOne) SetCarpoolTermID(v int64) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetCarpoolTermID(v)
+	})
+}
+
+// AddCarpoolTermID adds v to the "carpool_term_id" field.
+func (u *UsageLogUpsertOne) AddCarpoolTermID(v int64) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.AddCarpoolTermID(v)
+	})
+}
+
+// UpdateCarpoolTermID sets the "carpool_term_id" field to the value that was provided on create.
+func (u *UsageLogUpsertOne) UpdateCarpoolTermID() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateCarpoolTermID()
+	})
+}
+
+// ClearCarpoolTermID clears the value of the "carpool_term_id" field.
+func (u *UsageLogUpsertOne) ClearCarpoolTermID() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearCarpoolTermID()
+	})
+}
+
+// SetCarpoolCycleID sets the "carpool_cycle_id" field.
+func (u *UsageLogUpsertOne) SetCarpoolCycleID(v int64) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetCarpoolCycleID(v)
+	})
+}
+
+// AddCarpoolCycleID adds v to the "carpool_cycle_id" field.
+func (u *UsageLogUpsertOne) AddCarpoolCycleID(v int64) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.AddCarpoolCycleID(v)
+	})
+}
+
+// UpdateCarpoolCycleID sets the "carpool_cycle_id" field to the value that was provided on create.
+func (u *UsageLogUpsertOne) UpdateCarpoolCycleID() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateCarpoolCycleID()
+	})
+}
+
+// ClearCarpoolCycleID clears the value of the "carpool_cycle_id" field.
+func (u *UsageLogUpsertOne) ClearCarpoolCycleID() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearCarpoolCycleID()
+	})
+}
+
+// SetCarpoolAdmittedAt sets the "carpool_admitted_at" field.
+func (u *UsageLogUpsertOne) SetCarpoolAdmittedAt(v time.Time) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetCarpoolAdmittedAt(v)
+	})
+}
+
+// UpdateCarpoolAdmittedAt sets the "carpool_admitted_at" field to the value that was provided on create.
+func (u *UsageLogUpsertOne) UpdateCarpoolAdmittedAt() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateCarpoolAdmittedAt()
+	})
+}
+
+// ClearCarpoolAdmittedAt clears the value of the "carpool_admitted_at" field.
+func (u *UsageLogUpsertOne) ClearCarpoolAdmittedAt() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearCarpoolAdmittedAt()
 	})
 }
 
@@ -3567,6 +3764,83 @@ func (u *UsageLogUpsertBulk) UpdateSubscriptionID() *UsageLogUpsertBulk {
 func (u *UsageLogUpsertBulk) ClearSubscriptionID() *UsageLogUpsertBulk {
 	return u.Update(func(s *UsageLogUpsert) {
 		s.ClearSubscriptionID()
+	})
+}
+
+// SetCarpoolTermID sets the "carpool_term_id" field.
+func (u *UsageLogUpsertBulk) SetCarpoolTermID(v int64) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetCarpoolTermID(v)
+	})
+}
+
+// AddCarpoolTermID adds v to the "carpool_term_id" field.
+func (u *UsageLogUpsertBulk) AddCarpoolTermID(v int64) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.AddCarpoolTermID(v)
+	})
+}
+
+// UpdateCarpoolTermID sets the "carpool_term_id" field to the value that was provided on create.
+func (u *UsageLogUpsertBulk) UpdateCarpoolTermID() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateCarpoolTermID()
+	})
+}
+
+// ClearCarpoolTermID clears the value of the "carpool_term_id" field.
+func (u *UsageLogUpsertBulk) ClearCarpoolTermID() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearCarpoolTermID()
+	})
+}
+
+// SetCarpoolCycleID sets the "carpool_cycle_id" field.
+func (u *UsageLogUpsertBulk) SetCarpoolCycleID(v int64) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetCarpoolCycleID(v)
+	})
+}
+
+// AddCarpoolCycleID adds v to the "carpool_cycle_id" field.
+func (u *UsageLogUpsertBulk) AddCarpoolCycleID(v int64) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.AddCarpoolCycleID(v)
+	})
+}
+
+// UpdateCarpoolCycleID sets the "carpool_cycle_id" field to the value that was provided on create.
+func (u *UsageLogUpsertBulk) UpdateCarpoolCycleID() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateCarpoolCycleID()
+	})
+}
+
+// ClearCarpoolCycleID clears the value of the "carpool_cycle_id" field.
+func (u *UsageLogUpsertBulk) ClearCarpoolCycleID() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearCarpoolCycleID()
+	})
+}
+
+// SetCarpoolAdmittedAt sets the "carpool_admitted_at" field.
+func (u *UsageLogUpsertBulk) SetCarpoolAdmittedAt(v time.Time) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetCarpoolAdmittedAt(v)
+	})
+}
+
+// UpdateCarpoolAdmittedAt sets the "carpool_admitted_at" field to the value that was provided on create.
+func (u *UsageLogUpsertBulk) UpdateCarpoolAdmittedAt() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateCarpoolAdmittedAt()
+	})
+}
+
+// ClearCarpoolAdmittedAt clears the value of the "carpool_admitted_at" field.
+func (u *UsageLogUpsertBulk) ClearCarpoolAdmittedAt() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearCarpoolAdmittedAt()
 	})
 }
 

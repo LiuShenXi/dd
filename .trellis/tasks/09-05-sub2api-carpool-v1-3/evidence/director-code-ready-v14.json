@@ -1,0 +1,48 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "task_directory": "C:/WORK-SPACE/sub2api-carpool-v1.3/.trellis/tasks/09-05-sub2api-carpool-v1-3",
+  "git_head": "36266f512776d78d4f1645a75ae0e84816f8a0a7",
+  "backend_build": "passed",
+  "backend_vet": "passed",
+  "backend_focused_unit": "passed",
+  "router_server_middleware_unit": "passed",
+  "frontend_build": "passed",
+  "frontend_typecheck": "passed",
+  "frontend_lint": "passed",
+  "frontend_tests": { "files_passed": 267, "tests_passed": 1930, "exit_code": 0 },
+  "postgresql_selected_tests": 11,
+  "postgresql_selected_status": "passed-composed-runs",
+  "postgresql_runs": [
+    "20260906T030646Z-d35444b9: five passes; one decimal-representation assertion failed and remains recorded",
+    "20260906T030823Z-f99f8c99: five passes",
+    "20260906T031418Z-b3748017: corrected explicit tier-upgrade renewal test passed"
+  ],
+  "source_sha256": "03C390BE535CDDA2F0967CC63DBA88126ED1C211B7FCE4A5908AD1A89E9BFAF6",
+  "embedded_frontend_sha256": "CB46406A6786FCF952D3D5E84E29167CCE91F547ECAC059C752CC40CBBD783E5",
+  "approved_for_local_start": true,
+  "local_start_only": true,
+  "final_acceptance": false,
+  "all_product_writers_frozen": true,
+  "evidence": {
+    "independent_check": "rules28-independent-check.md",
+    "frontend_typecheck": "rules28-frontend-typecheck.log",
+    "frontend_lint": "rules28-frontend-lint.log",
+    "frontend_tests": "rules28-frontend-tests.log",
+    "frontend_build": "rules28-frontend-build.log",
+    "backend_private_logs": "PrivateTests/sub2api-carpool-v1.3-20260905/runtime/rules28-ready-backend-build.*, rules28-ready-backend-focused.*, rules28-final-backend-vet.*, rules28-director-router-server-middleware.*",
+    "postgresql_private_logs": "PrivateTests/sub2api-carpool-v1.3-20260905/repository-tests/runs/"
+  },
+  "revision": "New28-day/four-cycle/three10%-boost terms; immutable legacy contracts; authoritative quota and successful reset-time projection. Exact48h/22:00 reset semantics and explicit administrator tier upgrades remain supported.",
+  "preserve": "Existing copied records; users122/127 ordinary money; terms78/94, cycles, ledger and key64; pending batch1/announcement10 and three qualifications. No clock changes, reset-suite mutation, real provider/card use, production operation, commit, push or deployment.",
+  "remaining_acceptance": [
+    "Recoverable local image replacement and isolation/conservation checks",
+    "Fresh synthetic HTTP and strict WS acceptance on the exact image",
+    "Browser quota before/after boost and reload, ordinary-user and legacy displays",
+    "Desktop/mobile successful reset annotations using clearly labeled historical synthetic fixture"
+  ],
+  "known_limits": [
+    "Full backend service suite has previously reproduced unrelated Windows plugin/moderation baseline failures; this is not a full-suite-green claim.",
+    "Actual due reset execution is tested in fresh PostgreSQL; imported historical markers are UI fixture evidence only.",
+    "Copied users lack verified tier mapping and receive no invented membership; registration+28days applies only to newly mapped test terms."
+  ]
+}

@@ -36,6 +36,48 @@ type BatchImageItem func(*sql.Selector)
 // BatchImageJob is the predicate function for batchimagejob builders.
 type BatchImageJob func(*sql.Selector)
 
+// CarpoolBillingRequest is the predicate function for carpoolbillingrequest builders.
+type CarpoolBillingRequest func(*sql.Selector)
+
+// CarpoolCycle is the predicate function for carpoolcycle builders.
+type CarpoolCycle func(*sql.Selector)
+
+// CarpoolLedger is the predicate function for carpoolledger builders.
+type CarpoolLedger func(*sql.Selector)
+
+// CarpoolOperation is the predicate function for carpooloperation builders.
+type CarpoolOperation func(*sql.Selector)
+
+// CarpoolPayment is the predicate function for carpoolpayment builders.
+type CarpoolPayment func(*sql.Selector)
+
+// CarpoolPlan is the predicate function for carpoolplan builders.
+type CarpoolPlan func(*sql.Selector)
+
+// CarpoolResetAccountState is the predicate function for carpoolresetaccountstate builders.
+type CarpoolResetAccountState func(*sql.Selector)
+
+// CarpoolResetAnnouncementOutbox is the predicate function for carpoolresetannouncementoutbox builders.
+type CarpoolResetAnnouncementOutbox func(*sql.Selector)
+
+// CarpoolResetBatch is the predicate function for carpoolresetbatch builders.
+type CarpoolResetBatch func(*sql.Selector)
+
+// CarpoolResetCredit is the predicate function for carpoolresetcredit builders.
+type CarpoolResetCredit func(*sql.Selector)
+
+// CarpoolResetQualification is the predicate function for carpoolresetqualification builders.
+type CarpoolResetQualification func(*sql.Selector)
+
+// CarpoolResetScopeState is the predicate function for carpoolresetscopestate builders.
+type CarpoolResetScopeState func(*sql.Selector)
+
+// CarpoolResetTarget is the predicate function for carpoolresettarget builders.
+type CarpoolResetTarget func(*sql.Selector)
+
+// CarpoolTerm is the predicate function for carpoolterm builders.
+type CarpoolTerm func(*sql.Selector)
+
 // ChannelMonitor is the predicate function for channelmonitor builders.
 type ChannelMonitor func(*sql.Selector)
 

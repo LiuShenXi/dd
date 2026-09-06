@@ -690,6 +690,14 @@
                 {{ t('admin.users.groups') }}
               </button>
 
+              <button
+                @click="handleCarpoolTerm(user); closeActionMenu()"
+                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
+              >
+                <Icon name="users" size="sm" class="text-primary-500" :stroke-width="2" />
+                {{ t('admin.carpool.userDialog.menuItem') }}
+              </button>
+
               <div class="my-1 border-t border-gray-100 dark:border-dark-700"></div>
 
               <!-- Deposit -->
@@ -768,6 +776,7 @@
     <UserBalanceHistoryModal :show="showBalanceHistoryModal" :user="balanceHistoryUser" @close="closeBalanceHistoryModal" @deposit="handleDepositFromHistory" @withdraw="handleWithdrawFromHistory" />
     <GroupReplaceModal :show="showGroupReplaceModal" :user="groupReplaceUser" :old-group="groupReplaceOldGroup" :all-groups="allGroups" @close="closeGroupReplaceModal" @success="loadUsers" />
     <UserAttributesConfigModal :show="showAttributesModal" @close="handleAttributesModalClose" />
+    <CarpoolTermModal :show="showCarpoolTermModal" :user="carpoolTermUser" @close="closeCarpoolTermModal" @success="loadUsers" />
   </AppLayout>
 </template>
 
@@ -810,6 +819,7 @@ import UserAllowedGroupsModal from '@/components/admin/user/UserAllowedGroupsMod
 import UserBalanceModal from '@/components/admin/user/UserBalanceModal.vue'
 import UserBalanceHistoryModal from '@/components/admin/user/UserBalanceHistoryModal.vue'
 import GroupReplaceModal from '@/components/admin/user/GroupReplaceModal.vue'
+import CarpoolTermModal from '@/components/admin/user/CarpoolTermModal.vue'
 
 const appStore = useAppStore()
 
@@ -1535,6 +1545,19 @@ const balanceOperation = ref<'add' | 'subtract'>('add')
 // Balance History modal state
 const showBalanceHistoryModal = ref(false)
 const balanceHistoryUser = ref<AdminUser | null>(null)
+
+const showCarpoolTermModal = ref(false)
+const carpoolTermUser = ref<AdminUser | null>(null)
+
+const handleCarpoolTerm = (user: AdminUser) => {
+  carpoolTermUser.value = user
+  showCarpoolTermModal.value = true
+}
+
+const closeCarpoolTermModal = () => {
+  showCarpoolTermModal.value = false
+  carpoolTermUser.value = null
+}
 
 // 计算剩余天数
 const getDaysRemaining = (expiresAt: string): number => {

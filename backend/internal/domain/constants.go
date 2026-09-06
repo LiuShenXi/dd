@@ -81,6 +81,7 @@ const (
 const (
 	SubscriptionTypeStandard     = "standard"     // 标准计费模式（按余额扣费）
 	SubscriptionTypeSubscription = "subscription" // 订阅模式（按限额控制）
+	SubscriptionTypeCarpool      = "carpool"      // 拼车月卡模式（独立额度账本）
 )
 
 // Subscription status constants

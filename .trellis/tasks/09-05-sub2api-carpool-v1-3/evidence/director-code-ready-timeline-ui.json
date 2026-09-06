@@ -1,0 +1,33 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "git_head": "36266f512776d78d4f1645a75ae0e84816f8a0a7",
+  "backend_build": "passed",
+  "frontend_build": "passed",
+  "frontend_typecheck": "passed",
+  "frontend_lint": "passed-full-before-dense-followup-and-final-scoped",
+  "frontend_tests": { "files_passed": 267, "tests_passed": 1933, "exit_code": 0 },
+  "focused_tests": { "tests_passed": 12, "exit_code": 0 },
+  "independent_review": "rules28_check: dense-height finding resolved; no remaining blocker; surrounding page and business behavior unchanged",
+  "source_sha256": "90E6FEFE6B896CA604DAD4D1146F1E1B3043B4D68DD8ABD2CF246ED7C7B41F26",
+  "embedded_frontend_sha256": "779E30E87DDF7130BF945F454009FEF595DA1FCBE35DAA7324A1881FE928A148",
+  "approved_for_local_start": true,
+  "local_start_only": true,
+  "final_acceptance": false,
+  "all_product_writers_frozen": true,
+  "revision": "Timeline widget only: slim duration-proportional rail, quiet exact reset nodes, paired Shanghai timestamps and full-target annotations above, bounded dense-history disclosure. No surrounding page, locale, store, API, database or business changes.",
+  "component_sha256": "14738A8FF059403DDFF1997E0E038C100FF8DC0AD315455D5FF19573AB15AAC8",
+  "focused_spec_sha256": "86583D91E9550A43C5A86E5AFA8D6E41FA8BECD56B22346B72B47044C42C9BAD",
+  "verification": {
+    "frontend_full_test_session": "30160: 267 files / 1933 tests, 60.57s, exit 0",
+    "frontend_build_session": "39852: vue-tsc -b and Vite build, exit 0",
+    "full_lint_session": "5929: exit 0 before dense follow-up; final scoped eslint exit 0",
+    "backend_private_log": "runtime/timeline-ui-backend-build.stdout.log and stderr.log",
+    "diff_check": "passed; existing CRLF notices only"
+  },
+  "preserve": "Copied records and announcements; original hash-only synthetic baseline; marker fixture term127 and all related records. Rebuild existing isolated app/mock only, retaining database, Redis, volumes, network and fixtures. No imports, boosts, clock changes, remote operations, commit, push or deployment.",
+  "remaining_acceptance": [
+    "Controlled local image refresh and source/image identity verification",
+    "Real two-reset synthetic fixture screenshots at desktop and390px, Chinese/English and light/dark",
+    "Copied-record, announcement, original synthetic baseline and marker-fixture conservation"
+  ]
+}

@@ -1,0 +1,360 @@
+{
+  "task": "09-05-sub2api-carpool-v1-3",
+  "suite": "http",
+  "source": "synthetic-local-only",
+  "overall_status": "passed",
+  "code_evidence_sha256": "2F8841CEB2659B384ABAF5642F56A725B26B35986AD556115ACFD4290FC8A422",
+  "image_id": "sha256:6d569031eb1b5017fe7c3a7f5f14ed6a863442d9f49d7b2dc372d586b3c7adfd",
+  "config_sha256": "DE0F5E535B4695CE00962D8C7C85A46482D9802ACC637010BE02A0AAEEA53D32",
+  "environment_sha256": "243CE4441380C7E49B7E09BF37EFA839BE86CB6E3F0F1B394C894F6909F40B27",
+  "network_id": "989d8be98f73baa478ff7b5f2be413923f8ea672d7859302f38405f3f3dd846a",
+  "checkout_scope": "immutable-reviewed-image-not-later-source-edits",
+  "driver_source_sha256": "6212AD9F1CBA9FC31B84770A8B1EF2874E4390AE9F7AF94613C54D18DF9A78F4",
+  "driver_test_sha256": "FB5D424CD2D349AC191D79AA9CD8EE7FD047EE53CEE23348A52C4F0CFDAE06C4",
+  "driver_binary_sha256": "52CC8FAC9BCA355BC2242217D66ACD6F1F13FB7B7D91C9CADFD3B07B57D95319",
+  "completed_at": "2026-09-05T23:54:49.8136249+00:00",
+  "passed": 67,
+  "failed": 0,
+  "isolation": "passed",
+  "conservation": {
+    "copied-records": "passed",
+    "copied-announcements": "passed"
+  },
+  "assertions": [
+    {
+      "name": "auth.login.admin",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.fresh_synthetic_user_batch",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.four",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.three",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.two",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.fifth_four",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.fifth_three",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.fifth_two",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.ordinary",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.expired",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.renewal",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.termination",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "auth.login.takeover",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.synthetic_carpool_group",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.synthetic_upstream_account",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.synthetic_mock_cases",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.synthetic_key_create.three",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.admin_bind_carpool_key.three",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.synthetic_key_create.ordinary",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.admin_bind_carpool_key.ordinary",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.synthetic_key_create.expired",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.admin_bind_carpool_key.expired",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.synthetic_key_create.termination",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "setup.admin_bind_carpool_key.termination",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "plans.three_fixed_tiers",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "preview.rejects.invalid_user_id",
+      "status": "pass",
+      "http_status": 400
+    },
+    {
+      "name": "preview.rejects.unknown_user",
+      "status": "pass",
+      "http_status": 404
+    },
+    {
+      "name": "preview.rejects.invalid_plan_id",
+      "status": "pass",
+      "http_status": 400
+    },
+    {
+      "name": "preview.four.exact_contract",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "preview.three.exact_contract",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "preview.two.exact_contract",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "idempotency.open_missing_key_rejected_without_mutation",
+      "status": "pass",
+      "http_status": 400
+    },
+    {
+      "name": "open.current_term_with_five_cycles",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "idempotency.open_same_key_same_payload",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "idempotency.open_same_key_conflict",
+      "status": "pass",
+      "http_status": 409
+    },
+    {
+      "name": "open.synthetic.three",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "open.synthetic.two",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "open.synthetic.renewal",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "open.synthetic.termination",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "open.fifth_cycle.four",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "open.fifth_cycle.three",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "open.fifth_cycle.two",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "open.expired_historical_term",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "boost.get_exact_whitelist",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "boost.fifth_cycle_amount.fifth_four",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "boost.fifth_cycle_amount.fifth_three",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "boost.fifth_cycle_amount.fifth_two",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "boost.three_concurrent_claims_max_two",
+      "status": "pass",
+      "http_status": 0
+    },
+    {
+      "name": "boost.successful_replay_is_stable",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "boost.exhausted_exact_state",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "permissions.user_details_exact_whitelist",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "permissions.user_query_cannot_switch_identity",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "permissions.ordinary_user_admin_route_forbidden",
+      "status": "pass",
+      "http_status": 403
+    },
+    {
+      "name": "permissions.unauthenticated_admin_route_unauthorized",
+      "status": "pass",
+      "http_status": 401
+    },
+    {
+      "name": "gateway.carpool_key_never_falls_back_to_ordinary_balance",
+      "status": "pass",
+      "http_status": 403
+    },
+    {
+      "name": "gateway.real_http_forward",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "gateway.http_debit_exactly_once",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "gateway.real_sse_forward",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "gateway.sse_debit_exactly_once",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "gateway.expired_term_blocks_before_forward",
+      "status": "pass",
+      "http_status": 403
+    },
+    {
+      "name": "admin.synthetic_termination",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "gateway.terminated_term_blocks_before_forward",
+      "status": "pass",
+      "http_status": 403
+    },
+    {
+      "name": "renewal.future_term_has_no_early_grant",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "accounting.payment_and_refund_are_separate_records",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "accounting.adjustment_and_reversal_net_zero",
+      "status": "pass",
+      "http_status": 200
+    },
+    {
+      "name": "accounting.takeover_explicit_ordinary_transfer_once",
+      "status": "pass",
+      "http_status": 201
+    },
+    {
+      "name": "plans.new_version_preserves_existing_term",
+      "status": "pass",
+      "http_status": 201
+    }
+  ]
+}

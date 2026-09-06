@@ -134,6 +134,62 @@ func (_c *AnnouncementCreate) SetNillableUpdatedBy(v *int64) *AnnouncementCreate
 	return _c
 }
 
+// SetSourceType sets the "source_type" field.
+func (_c *AnnouncementCreate) SetSourceType(v string) *AnnouncementCreate {
+	_c.mutation.SetSourceType(v)
+	return _c
+}
+
+// SetNillableSourceType sets the "source_type" field if the given value is not nil.
+func (_c *AnnouncementCreate) SetNillableSourceType(v *string) *AnnouncementCreate {
+	if v != nil {
+		_c.SetSourceType(*v)
+	}
+	return _c
+}
+
+// SetSourceID sets the "source_id" field.
+func (_c *AnnouncementCreate) SetSourceID(v int64) *AnnouncementCreate {
+	_c.mutation.SetSourceID(v)
+	return _c
+}
+
+// SetNillableSourceID sets the "source_id" field if the given value is not nil.
+func (_c *AnnouncementCreate) SetNillableSourceID(v *int64) *AnnouncementCreate {
+	if v != nil {
+		_c.SetSourceID(*v)
+	}
+	return _c
+}
+
+// SetSourceEventKind sets the "source_event_kind" field.
+func (_c *AnnouncementCreate) SetSourceEventKind(v string) *AnnouncementCreate {
+	_c.mutation.SetSourceEventKind(v)
+	return _c
+}
+
+// SetNillableSourceEventKind sets the "source_event_kind" field if the given value is not nil.
+func (_c *AnnouncementCreate) SetNillableSourceEventKind(v *string) *AnnouncementCreate {
+	if v != nil {
+		_c.SetSourceEventKind(*v)
+	}
+	return _c
+}
+
+// SetSourceRevision sets the "source_revision" field.
+func (_c *AnnouncementCreate) SetSourceRevision(v int) *AnnouncementCreate {
+	_c.mutation.SetSourceRevision(v)
+	return _c
+}
+
+// SetNillableSourceRevision sets the "source_revision" field if the given value is not nil.
+func (_c *AnnouncementCreate) SetNillableSourceRevision(v *int) *AnnouncementCreate {
+	if v != nil {
+		_c.SetSourceRevision(*v)
+	}
+	return _c
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_c *AnnouncementCreate) SetCreatedAt(v time.Time) *AnnouncementCreate {
 	_c.mutation.SetCreatedAt(v)
@@ -220,6 +276,10 @@ func (_c *AnnouncementCreate) defaults() {
 		v := announcement.DefaultNotifyMode
 		_c.mutation.SetNotifyMode(v)
 	}
+	if _, ok := _c.mutation.SourceRevision(); !ok {
+		v := announcement.DefaultSourceRevision
+		_c.mutation.SetSourceRevision(v)
+	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := announcement.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
@@ -263,6 +323,19 @@ func (_c *AnnouncementCreate) check() error {
 		if err := announcement.NotifyModeValidator(v); err != nil {
 			return &ValidationError{Name: "notify_mode", err: fmt.Errorf(`ent: validator failed for field "Announcement.notify_mode": %w`, err)}
 		}
+	}
+	if v, ok := _c.mutation.SourceType(); ok {
+		if err := announcement.SourceTypeValidator(v); err != nil {
+			return &ValidationError{Name: "source_type", err: fmt.Errorf(`ent: validator failed for field "Announcement.source_type": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.SourceEventKind(); ok {
+		if err := announcement.SourceEventKindValidator(v); err != nil {
+			return &ValidationError{Name: "source_event_kind", err: fmt.Errorf(`ent: validator failed for field "Announcement.source_event_kind": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.SourceRevision(); !ok {
+		return &ValidationError{Name: "source_revision", err: errors.New(`ent: missing required field "Announcement.source_revision"`)}
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Announcement.created_at"`)}
@@ -332,6 +405,22 @@ func (_c *AnnouncementCreate) createSpec() (*Announcement, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.UpdatedBy(); ok {
 		_spec.SetField(announcement.FieldUpdatedBy, field.TypeInt64, value)
 		_node.UpdatedBy = &value
+	}
+	if value, ok := _c.mutation.SourceType(); ok {
+		_spec.SetField(announcement.FieldSourceType, field.TypeString, value)
+		_node.SourceType = &value
+	}
+	if value, ok := _c.mutation.SourceID(); ok {
+		_spec.SetField(announcement.FieldSourceID, field.TypeInt64, value)
+		_node.SourceID = &value
+	}
+	if value, ok := _c.mutation.SourceEventKind(); ok {
+		_spec.SetField(announcement.FieldSourceEventKind, field.TypeString, value)
+		_node.SourceEventKind = &value
+	}
+	if value, ok := _c.mutation.SourceRevision(); ok {
+		_spec.SetField(announcement.FieldSourceRevision, field.TypeInt, value)
+		_node.SourceRevision = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(announcement.FieldCreatedAt, field.TypeTime, value)
@@ -556,6 +645,84 @@ func (u *AnnouncementUpsert) AddUpdatedBy(v int64) *AnnouncementUpsert {
 // ClearUpdatedBy clears the value of the "updated_by" field.
 func (u *AnnouncementUpsert) ClearUpdatedBy() *AnnouncementUpsert {
 	u.SetNull(announcement.FieldUpdatedBy)
+	return u
+}
+
+// SetSourceType sets the "source_type" field.
+func (u *AnnouncementUpsert) SetSourceType(v string) *AnnouncementUpsert {
+	u.Set(announcement.FieldSourceType, v)
+	return u
+}
+
+// UpdateSourceType sets the "source_type" field to the value that was provided on create.
+func (u *AnnouncementUpsert) UpdateSourceType() *AnnouncementUpsert {
+	u.SetExcluded(announcement.FieldSourceType)
+	return u
+}
+
+// ClearSourceType clears the value of the "source_type" field.
+func (u *AnnouncementUpsert) ClearSourceType() *AnnouncementUpsert {
+	u.SetNull(announcement.FieldSourceType)
+	return u
+}
+
+// SetSourceID sets the "source_id" field.
+func (u *AnnouncementUpsert) SetSourceID(v int64) *AnnouncementUpsert {
+	u.Set(announcement.FieldSourceID, v)
+	return u
+}
+
+// UpdateSourceID sets the "source_id" field to the value that was provided on create.
+func (u *AnnouncementUpsert) UpdateSourceID() *AnnouncementUpsert {
+	u.SetExcluded(announcement.FieldSourceID)
+	return u
+}
+
+// AddSourceID adds v to the "source_id" field.
+func (u *AnnouncementUpsert) AddSourceID(v int64) *AnnouncementUpsert {
+	u.Add(announcement.FieldSourceID, v)
+	return u
+}
+
+// ClearSourceID clears the value of the "source_id" field.
+func (u *AnnouncementUpsert) ClearSourceID() *AnnouncementUpsert {
+	u.SetNull(announcement.FieldSourceID)
+	return u
+}
+
+// SetSourceEventKind sets the "source_event_kind" field.
+func (u *AnnouncementUpsert) SetSourceEventKind(v string) *AnnouncementUpsert {
+	u.Set(announcement.FieldSourceEventKind, v)
+	return u
+}
+
+// UpdateSourceEventKind sets the "source_event_kind" field to the value that was provided on create.
+func (u *AnnouncementUpsert) UpdateSourceEventKind() *AnnouncementUpsert {
+	u.SetExcluded(announcement.FieldSourceEventKind)
+	return u
+}
+
+// ClearSourceEventKind clears the value of the "source_event_kind" field.
+func (u *AnnouncementUpsert) ClearSourceEventKind() *AnnouncementUpsert {
+	u.SetNull(announcement.FieldSourceEventKind)
+	return u
+}
+
+// SetSourceRevision sets the "source_revision" field.
+func (u *AnnouncementUpsert) SetSourceRevision(v int) *AnnouncementUpsert {
+	u.Set(announcement.FieldSourceRevision, v)
+	return u
+}
+
+// UpdateSourceRevision sets the "source_revision" field to the value that was provided on create.
+func (u *AnnouncementUpsert) UpdateSourceRevision() *AnnouncementUpsert {
+	u.SetExcluded(announcement.FieldSourceRevision)
+	return u
+}
+
+// AddSourceRevision adds v to the "source_revision" field.
+func (u *AnnouncementUpsert) AddSourceRevision(v int) *AnnouncementUpsert {
+	u.Add(announcement.FieldSourceRevision, v)
 	return u
 }
 
@@ -788,6 +955,97 @@ func (u *AnnouncementUpsertOne) UpdateUpdatedBy() *AnnouncementUpsertOne {
 func (u *AnnouncementUpsertOne) ClearUpdatedBy() *AnnouncementUpsertOne {
 	return u.Update(func(s *AnnouncementUpsert) {
 		s.ClearUpdatedBy()
+	})
+}
+
+// SetSourceType sets the "source_type" field.
+func (u *AnnouncementUpsertOne) SetSourceType(v string) *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.SetSourceType(v)
+	})
+}
+
+// UpdateSourceType sets the "source_type" field to the value that was provided on create.
+func (u *AnnouncementUpsertOne) UpdateSourceType() *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.UpdateSourceType()
+	})
+}
+
+// ClearSourceType clears the value of the "source_type" field.
+func (u *AnnouncementUpsertOne) ClearSourceType() *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.ClearSourceType()
+	})
+}
+
+// SetSourceID sets the "source_id" field.
+func (u *AnnouncementUpsertOne) SetSourceID(v int64) *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.SetSourceID(v)
+	})
+}
+
+// AddSourceID adds v to the "source_id" field.
+func (u *AnnouncementUpsertOne) AddSourceID(v int64) *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.AddSourceID(v)
+	})
+}
+
+// UpdateSourceID sets the "source_id" field to the value that was provided on create.
+func (u *AnnouncementUpsertOne) UpdateSourceID() *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.UpdateSourceID()
+	})
+}
+
+// ClearSourceID clears the value of the "source_id" field.
+func (u *AnnouncementUpsertOne) ClearSourceID() *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.ClearSourceID()
+	})
+}
+
+// SetSourceEventKind sets the "source_event_kind" field.
+func (u *AnnouncementUpsertOne) SetSourceEventKind(v string) *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.SetSourceEventKind(v)
+	})
+}
+
+// UpdateSourceEventKind sets the "source_event_kind" field to the value that was provided on create.
+func (u *AnnouncementUpsertOne) UpdateSourceEventKind() *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.UpdateSourceEventKind()
+	})
+}
+
+// ClearSourceEventKind clears the value of the "source_event_kind" field.
+func (u *AnnouncementUpsertOne) ClearSourceEventKind() *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.ClearSourceEventKind()
+	})
+}
+
+// SetSourceRevision sets the "source_revision" field.
+func (u *AnnouncementUpsertOne) SetSourceRevision(v int) *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.SetSourceRevision(v)
+	})
+}
+
+// AddSourceRevision adds v to the "source_revision" field.
+func (u *AnnouncementUpsertOne) AddSourceRevision(v int) *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.AddSourceRevision(v)
+	})
+}
+
+// UpdateSourceRevision sets the "source_revision" field to the value that was provided on create.
+func (u *AnnouncementUpsertOne) UpdateSourceRevision() *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.UpdateSourceRevision()
 	})
 }
 
@@ -1188,6 +1446,97 @@ func (u *AnnouncementUpsertBulk) UpdateUpdatedBy() *AnnouncementUpsertBulk {
 func (u *AnnouncementUpsertBulk) ClearUpdatedBy() *AnnouncementUpsertBulk {
 	return u.Update(func(s *AnnouncementUpsert) {
 		s.ClearUpdatedBy()
+	})
+}
+
+// SetSourceType sets the "source_type" field.
+func (u *AnnouncementUpsertBulk) SetSourceType(v string) *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.SetSourceType(v)
+	})
+}
+
+// UpdateSourceType sets the "source_type" field to the value that was provided on create.
+func (u *AnnouncementUpsertBulk) UpdateSourceType() *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.UpdateSourceType()
+	})
+}
+
+// ClearSourceType clears the value of the "source_type" field.
+func (u *AnnouncementUpsertBulk) ClearSourceType() *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.ClearSourceType()
+	})
+}
+
+// SetSourceID sets the "source_id" field.
+func (u *AnnouncementUpsertBulk) SetSourceID(v int64) *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.SetSourceID(v)
+	})
+}
+
+// AddSourceID adds v to the "source_id" field.
+func (u *AnnouncementUpsertBulk) AddSourceID(v int64) *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.AddSourceID(v)
+	})
+}
+
+// UpdateSourceID sets the "source_id" field to the value that was provided on create.
+func (u *AnnouncementUpsertBulk) UpdateSourceID() *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.UpdateSourceID()
+	})
+}
+
+// ClearSourceID clears the value of the "source_id" field.
+func (u *AnnouncementUpsertBulk) ClearSourceID() *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.ClearSourceID()
+	})
+}
+
+// SetSourceEventKind sets the "source_event_kind" field.
+func (u *AnnouncementUpsertBulk) SetSourceEventKind(v string) *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.SetSourceEventKind(v)
+	})
+}
+
+// UpdateSourceEventKind sets the "source_event_kind" field to the value that was provided on create.
+func (u *AnnouncementUpsertBulk) UpdateSourceEventKind() *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.UpdateSourceEventKind()
+	})
+}
+
+// ClearSourceEventKind clears the value of the "source_event_kind" field.
+func (u *AnnouncementUpsertBulk) ClearSourceEventKind() *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.ClearSourceEventKind()
+	})
+}
+
+// SetSourceRevision sets the "source_revision" field.
+func (u *AnnouncementUpsertBulk) SetSourceRevision(v int) *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.SetSourceRevision(v)
+	})
+}
+
+// AddSourceRevision adds v to the "source_revision" field.
+func (u *AnnouncementUpsertBulk) AddSourceRevision(v int) *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.AddSourceRevision(v)
+	})
+}
+
+// UpdateSourceRevision sets the "source_revision" field to the value that was provided on create.
+func (u *AnnouncementUpsertBulk) UpdateSourceRevision() *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.UpdateSourceRevision()
 	})
 }
 

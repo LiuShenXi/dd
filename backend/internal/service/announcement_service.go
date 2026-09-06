@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"sort"
 	"strings"
@@ -16,6 +18,11 @@ type AnnouncementService struct {
 	readRepo         AnnouncementReadRepository
 	userRepo         UserRepository
 	userSubRepo      UserSubscriptionRepository
+	carpoolAudience  AnnouncementCarpoolAudienceReader
+}
+
+func (s *AnnouncementService) SetCarpoolAudienceReader(reader AnnouncementCarpoolAudienceReader) {
+	s.carpoolAudience = reader
 }
 
 func NewAnnouncementService(
@@ -66,6 +73,44 @@ type AnnouncementUserReadStatus struct {
 	Balance  float64    `json:"balance"`
 	Eligible bool       `json:"eligible"`
 	ReadAt   *time.Time `json:"read_at,omitempty"`
+}
+
+type AnnouncementVersion struct {
+	Version     string `json:"version"`
+	UnreadCount int    `json:"unread_count"`
+}
+
+type announcementAudience struct {
+	balance       float64
+	subscriptions map[int64]struct{}
+	carpoolScopes map[int64]struct{}
+}
+
+func (s *AnnouncementService) audienceForUser(ctx context.Context, userID int64, now time.Time) (announcementAudience, error) {
+	user, err := s.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return announcementAudience{}, fmt.Errorf("get user: %w", err)
+	}
+	activeSubs, err := s.userSubRepo.ListActiveByUserID(ctx, userID)
+	if err != nil {
+		return announcementAudience{}, fmt.Errorf("list active subscriptions: %w", err)
+	}
+	groups := make(map[int64]struct{}, len(activeSubs))
+	for i := range activeSubs {
+		groups[activeSubs[i].GroupID] = struct{}{}
+	}
+	scopes := map[int64]struct{}{}
+	if s.carpoolAudience != nil {
+		scopes, err = s.carpoolAudience.ListAnnouncementCarpoolScopes(ctx, userID, now)
+		if err != nil {
+			return announcementAudience{}, fmt.Errorf("list carpool audience scopes: %w", err)
+		}
+	}
+	return announcementAudience{balance: user.Balance, subscriptions: groups, carpoolScopes: scopes}, nil
+}
+
+func (a announcementAudience) matches(targeting domain.AnnouncementTargeting) bool {
+	return targeting.MatchesWithCarpool(a.balance, a.subscriptions, a.carpoolScopes)
 }
 
 func (s *AnnouncementService) Create(ctx context.Context, input *CreateAnnouncementInput) (*Announcement, error) {
@@ -216,21 +261,11 @@ func (s *AnnouncementService) List(ctx context.Context, params pagination.Pagina
 }
 
 func (s *AnnouncementService) ListForUser(ctx context.Context, userID int64, unreadOnly bool) ([]UserAnnouncement, error) {
-	user, err := s.userRepo.GetByID(ctx, userID)
-	if err != nil {
-		return nil, fmt.Errorf("get user: %w", err)
-	}
-
-	activeSubs, err := s.userSubRepo.ListActiveByUserID(ctx, userID)
-	if err != nil {
-		return nil, fmt.Errorf("list active subscriptions: %w", err)
-	}
-	activeGroupIDs := make(map[int64]struct{}, len(activeSubs))
-	for i := range activeSubs {
-		activeGroupIDs[activeSubs[i].GroupID] = struct{}{}
-	}
-
 	now := time.Now()
+	audience, err := s.audienceForUser(ctx, userID, now)
+	if err != nil {
+		return nil, err
+	}
 	anns, err := s.announcementRepo.ListActive(ctx, now)
 	if err != nil {
 		return nil, fmt.Errorf("list active announcements: %w", err)
@@ -243,7 +278,7 @@ func (s *AnnouncementService) ListForUser(ctx context.Context, userID int64, unr
 		if !a.IsActiveAt(now) {
 			continue
 		}
-		if !a.Targeting.Matches(user.Balance, activeGroupIDs) {
+		if !audience.matches(a.Targeting) {
 			continue
 		}
 		visible = append(visible, a)
@@ -291,11 +326,6 @@ func (s *AnnouncementService) ListForUser(ctx context.Context, userID int64, unr
 
 func (s *AnnouncementService) MarkRead(ctx context.Context, userID, announcementID int64) error {
 	// 安全：仅允许标记当前用户“可见”的公告
-	user, err := s.userRepo.GetByID(ctx, userID)
-	if err != nil {
-		return fmt.Errorf("get user: %w", err)
-	}
-
 	a, err := s.announcementRepo.GetByID(ctx, announcementID)
 	if err != nil {
 		return err
@@ -306,16 +336,12 @@ func (s *AnnouncementService) MarkRead(ctx context.Context, userID, announcement
 		return ErrAnnouncementNotFound
 	}
 
-	activeSubs, err := s.userSubRepo.ListActiveByUserID(ctx, userID)
+	audience, err := s.audienceForUser(ctx, userID, now)
 	if err != nil {
-		return fmt.Errorf("list active subscriptions: %w", err)
-	}
-	activeGroupIDs := make(map[int64]struct{}, len(activeSubs))
-	for i := range activeSubs {
-		activeGroupIDs[activeSubs[i].GroupID] = struct{}{}
+		return err
 	}
 
-	if !a.Targeting.Matches(user.Balance, activeGroupIDs) {
+	if !audience.matches(a.Targeting) {
 		return ErrAnnouncementNotFound
 	}
 
@@ -366,6 +392,13 @@ func (s *AnnouncementService) ListUserReadStatus(
 		for j := range subs {
 			activeGroupIDs[subs[j].GroupID] = struct{}{}
 		}
+		carpoolScopes := map[int64]struct{}{}
+		if s.carpoolAudience != nil {
+			carpoolScopes, err = s.carpoolAudience.ListAnnouncementCarpoolScopes(ctx, u.ID, time.Now())
+			if err != nil {
+				return nil, nil, fmt.Errorf("list carpool audience scopes: %w", err)
+			}
+		}
 
 		readAt, ok := readMap[u.ID]
 		var ptr *time.Time
@@ -379,12 +412,32 @@ func (s *AnnouncementService) ListUserReadStatus(
 			Email:    u.Email,
 			Username: u.Username,
 			Balance:  u.Balance,
-			Eligible: domain.AnnouncementTargeting(ann.Targeting).Matches(u.Balance, activeGroupIDs),
+			Eligible: domain.AnnouncementTargeting(ann.Targeting).MatchesWithCarpool(u.Balance, activeGroupIDs, carpoolScopes),
 			ReadAt:   ptr,
 		})
 	}
 
 	return out, page, nil
+}
+
+func (s *AnnouncementService) VersionForUser(ctx context.Context, userID int64) (*AnnouncementVersion, error) {
+	items, err := s.ListForUser(ctx, userID, false)
+	if err != nil {
+		return nil, err
+	}
+	hash := sha256.New()
+	unread := 0
+	for i := range items {
+		item := items[i]
+		_, _ = fmt.Fprintf(hash, "%d:%d:", item.Announcement.ID, item.Announcement.UpdatedAt.UTC().UnixNano())
+		if item.ReadAt == nil {
+			unread++
+			_, _ = hash.Write([]byte("unread;"))
+		} else {
+			_, _ = fmt.Fprintf(hash, "%d;", item.ReadAt.UTC().UnixNano())
+		}
+	}
+	return &AnnouncementVersion{Version: hex.EncodeToString(hash.Sum(nil)), UnreadCount: unread}, nil
 }
 
 func isValidAnnouncementStatus(status string) bool {

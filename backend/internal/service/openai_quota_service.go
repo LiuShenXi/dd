@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/imroc/req/v3"
 )
@@ -79,15 +80,18 @@ type OpenAIRateLimitResetCredits struct {
 // Fields not relevant to the quota card are intentionally omitted to keep the
 // surface narrow; full upstream payload preservation is unnecessary.
 type OpenAIQuotaUsage struct {
-	UserID                string                       `json:"user_id,omitempty"`
-	AccountID             string                       `json:"account_id,omitempty"`
-	Email                 string                       `json:"email,omitempty"`
-	PlanType              string                       `json:"plan_type,omitempty"`
-	RateLimit             *OpenAIRateLimit             `json:"rate_limit,omitempty"`
-	AdditionalRateLimits  []OpenAIAdditionalRateLimit  `json:"additional_rate_limits,omitempty"`
-	RateLimitResetCredits *OpenAIRateLimitResetCredits `json:"rate_limit_reset_credits,omitempty"`
-	FetchedAt             int64                        `json:"fetched_at"`
-	autoResetCandidates   []openAIAutoResetCreditCandidate
+	UserID                 string                       `json:"user_id,omitempty"`
+	AccountID              string                       `json:"account_id,omitempty"`
+	Email                  string                       `json:"email,omitempty"`
+	PlanType               string                       `json:"plan_type,omitempty"`
+	RateLimit              *OpenAIRateLimit             `json:"rate_limit,omitempty"`
+	AdditionalRateLimits   []OpenAIAdditionalRateLimit  `json:"additional_rate_limits,omitempty"`
+	RateLimitResetCredits  *OpenAIRateLimitResetCredits `json:"rate_limit_reset_credits,omitempty"`
+	FetchedAt              int64                        `json:"fetched_at"`
+	autoResetCandidates    []openAIAutoResetCreditCandidate
+	resetObservation       *domain.CarpoolResetObservationInput
+	resetObservationResult *domain.CarpoolResetObservationResult
+	resetObservationErr    error
 }
 
 // OpenAIQuotaResetCredit captures the redeemed credit metadata returned by the
@@ -121,6 +125,12 @@ type OpenAIQuotaService struct {
 	privacyClientFactory PrivacyClientFactory
 	agentIdentityTaskMu  sync.Mutex
 	agentIdentityWS      agentIdentityWSConnectionInvalidator
+	observationMu        sync.RWMutex
+	observationHook      OpenAIQuotaResetObservationHook
+}
+
+type OpenAIQuotaResetObservationHook interface {
+	RecordOpenAIQuotaResetObservation(context.Context, domain.CarpoolResetObservationInput) (*domain.CarpoolResetObservationResult, error)
 }
 
 // NewOpenAIQuotaService constructs a quota service. token provider is required —
@@ -138,6 +148,12 @@ func NewOpenAIQuotaService(
 		tokenProvider:        tokenProvider,
 		privacyClientFactory: privacyClientFactory,
 	}
+}
+
+func (s *OpenAIQuotaService) SetResetObservationHook(hook OpenAIQuotaResetObservationHook) {
+	s.observationMu.Lock()
+	s.observationHook = hook
+	s.observationMu.Unlock()
 }
 
 // QueryUsage fetches the latest rate-limit/usage snapshot for the given OpenAI
@@ -192,7 +208,8 @@ func (s *OpenAIQuotaService) QueryUsage(ctx context.Context, accountID int64) (*
 		break
 	}
 
-	payload.FetchedAt = time.Now().Unix()
+	observedAt := time.Now().UTC()
+	payload.FetchedAt = observedAt.Unix()
 	details := s.queryResetCreditDetails(callCtx, client, accessToken, chatGPTAccountID, fedRAMP, accountID)
 	if details != nil {
 		payload.autoResetCandidates = details.AutoResetCandidates
@@ -210,7 +227,69 @@ func (s *OpenAIQuotaService) QueryUsage(ctx context.Context, accountID int64) (*
 			payload.RateLimitResetCredits.AvailableCount = details.AvailableCreditCount
 		}
 	}
+	payload.resetObservation = buildOpenAIQuotaResetObservation(accountID, chatGPTAccountID, observedAt, details)
+	if canonicalID, canonicalErr := s.canonicalObservationAccountID(ctx, accountID); canonicalErr == nil {
+		payload.resetObservation.RepresentativeAccountID = canonicalID
+	}
+	s.observationMu.RLock()
+	hook := s.observationHook
+	s.observationMu.RUnlock()
+	if hook != nil {
+		observationCtx, observationCancel := context.WithTimeout(ctx, 3*time.Second)
+		payload.resetObservationResult, payload.resetObservationErr = hook.RecordOpenAIQuotaResetObservation(observationCtx, *payload.resetObservation)
+		observationCancel()
+		if payload.resetObservationErr != nil {
+			slog.Warn("openai_quota_reset_observation_failed", "account_id", payload.resetObservation.RepresentativeAccountID, "error", payload.resetObservationErr)
+		}
+	}
 	return &payload, nil
+}
+
+func buildOpenAIQuotaResetObservation(accountID int64, upstreamIdentity string, observedAt time.Time, details *openAIRateLimitResetCreditDetails) *domain.CarpoolResetObservationInput {
+	input := &domain.CarpoolResetObservationInput{
+		UpstreamIdentityHash:    hashCarpoolResetValue("openai:chatgpt-account-id", upstreamIdentity),
+		RepresentativeAccountID: accountID,
+		ObservedAt:              observedAt,
+		Complete:                details != nil && details.CreditListPresent && details.IdentityListComplete,
+	}
+	if details == nil {
+		input.IncompleteReason = "credit_details_unavailable"
+		return input
+	}
+	if !details.CreditListPresent {
+		input.IncompleteReason = "credit_list_missing"
+		return input
+	}
+	if !details.IdentityListComplete {
+		input.IncompleteReason = "credit_identity_incomplete"
+		return input
+	}
+	seen := make(map[string]struct{}, len(details.AutoResetCandidates))
+	for _, candidate := range details.AutoResetCandidates {
+		creditHash := hashCarpoolResetValue("openai:reset-credit:"+input.UpstreamIdentityHash, candidate.ID)
+		if _, duplicate := seen[creditHash]; duplicate {
+			continue
+		}
+		seen[creditHash] = struct{}{}
+		var expiresAt *time.Time
+		if parsed, err := time.Parse(time.RFC3339, candidate.ExpiresAt); err == nil {
+			value := parsed.UTC()
+			expiresAt = &value
+		}
+		input.Credits = append(input.Credits, domain.CarpoolResetCreditEvidence{CreditHash: creditHash, ExpiresAt: expiresAt})
+	}
+	return input
+}
+
+func (s *OpenAIQuotaService) canonicalObservationAccountID(ctx context.Context, accountID int64) (int64, error) {
+	account, err := s.accountRepo.GetByID(ctx, accountID)
+	if err != nil || account == nil {
+		return accountID, err
+	}
+	if account.ParentAccountID != nil {
+		return *account.ParentAccountID, nil
+	}
+	return account.ID, nil
 }
 
 // CacheResetCreditsSnapshot persists a complete reset-credit snapshot after an

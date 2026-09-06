@@ -1,0 +1,2 @@
+{"file": ".trellis/tasks/09-05-sub2api-carpool-v1-3/research/engineering-context.md", "reason": "Verified target conventions, existing workers, full source references and authorized isolated testing boundary"}
+{"file": ".trellis/tasks/09-05-sub2api-carpool-v1-3/design.md", "reason": "Current v1.4 ownership, new-rule compatibility and permitted quota/reset DTO contracts supersede historical v1.3 behavior"}

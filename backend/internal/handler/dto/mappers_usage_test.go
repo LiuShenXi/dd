@@ -3,6 +3,7 @@ package dto
 import (
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/service"
 	"github.com/stretchr/testify/require"
@@ -159,6 +160,37 @@ func TestUsageLogFromService_UsesRequestedModelAndKeepsUpstreamAdminOnly(t *test
 	require.Contains(t, string(adminJSON), `"upstream_model":"claude-sonnet-4-20250514"`)
 	require.Contains(t, string(adminJSON), `"upstream_response_model":"claude-sonnet-4-20250513"`)
 	require.Contains(t, string(adminJSON), `"upstream_model_mismatch":true`)
+}
+
+func TestUsageLogFromService_KeepsCarpoolCorrelationAdminOnly(t *testing.T) {
+	t.Parallel()
+
+	termID := int64(41)
+	cycleID := int64(52)
+	admittedAt := time.Date(2026, 9, 6, 7, 8, 9, 123456000, time.UTC)
+	log := &service.UsageLog{
+		RequestID:         "carpool:canonical-request",
+		Model:             "gpt-5.4",
+		CarpoolTermID:     &termID,
+		CarpoolCycleID:    &cycleID,
+		CarpoolAdmittedAt: &admittedAt,
+	}
+
+	userJSON, err := json.Marshal(UsageLogFromService(log))
+	require.NoError(t, err)
+	require.NotContains(t, string(userJSON), "carpool_term_id")
+	require.NotContains(t, string(userJSON), "carpool_cycle_id")
+	require.NotContains(t, string(userJSON), "carpool_admitted_at")
+
+	adminDTO := UsageLogFromServiceAdmin(log)
+	require.Equal(t, &termID, adminDTO.CarpoolTermID)
+	require.Equal(t, &cycleID, adminDTO.CarpoolCycleID)
+	require.Equal(t, &admittedAt, adminDTO.CarpoolAdmittedAt)
+	adminJSON, err := json.Marshal(adminDTO)
+	require.NoError(t, err)
+	require.Contains(t, string(adminJSON), `"carpool_term_id":41`)
+	require.Contains(t, string(adminJSON), `"carpool_cycle_id":52`)
+	require.Contains(t, string(adminJSON), `"carpool_admitted_at":"2026-09-06T07:08:09.123456Z"`)
 }
 
 func TestUsageLogFromService_KeepsUserBillingAndIPWithoutAdminCostFields(t *testing.T) {

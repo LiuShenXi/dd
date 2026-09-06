@@ -1,0 +1,8 @@
+FROM postgres:18-alpine
+WORKDIR /app
+COPY --chmod=0555 --chown=1000:1000 sub2api mock-upstream /app/
+COPY --chown=1000:1000 resources /app/resources
+RUN mkdir -p /app/data && chown 1000:1000 /app/data
+USER 1000:1000
+ENTRYPOINT ["/app/sub2api"]
+CMD []

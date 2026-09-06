@@ -174,6 +174,10 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 		// ── 4. SimpleMode → early return ─────────────────────────────
 
 		if cfg.RunMode == config.RunModeSimple {
+			if apiKey.Group != nil && apiKey.Group.IsCarpoolType() && !skipBilling {
+				AbortWithError(c, 403, "CARPOOL_SIMPLE_MODE_UNSUPPORTED", "Carpool billing is unavailable in simple mode")
+				return
+			}
 			c.Set(string(ContextKeyAPIKey), apiKey)
 			c.Set(string(ContextKeyUser), AuthSubject{
 				UserID:      apiKey.User.ID,
@@ -192,6 +196,7 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 
 		var subscription *service.UserSubscription
 		isSubscriptionType := apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
+		isCarpoolType := apiKey.Group != nil && apiKey.Group.IsCarpoolType()
 
 		// 倍率自省不需要订阅数据；/v1/usage 仍保留原有订阅读取行为。
 		if isSubscriptionType && subscriptionService != nil && !billingInfoRequest {
@@ -258,7 +263,7 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 					AbortWithError(c, status, code, validateErr.Error())
 					return
 				}
-			} else {
+			} else if !isCarpoolType {
 				// 非订阅模式 或 订阅模式但 subscriptionService 未注入：回退到余额检查
 				if apiKeyBalanceBelowAuthThreshold(apiKey.User.Balance, cfg) {
 					AbortWithError(c, 403, "INSUFFICIENT_BALANCE", "Insufficient account balance")
@@ -428,7 +433,7 @@ func validateAPIKeyGroupAllowed(apiKey *service.APIKey) bool {
 		return true
 	}
 	group := apiKey.Group
-	if group.IsSubscriptionType() {
+	if group.IsSubscriptionType() || group.IsCarpoolType() {
 		return true
 	}
 	return apiKey.User.CanBindGroup(group.ID, group.IsExclusive)

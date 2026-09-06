@@ -44,6 +44,12 @@ const (
 	FieldGroupID = "group_id"
 	// FieldSubscriptionID holds the string denoting the subscription_id field in the database.
 	FieldSubscriptionID = "subscription_id"
+	// FieldCarpoolTermID holds the string denoting the carpool_term_id field in the database.
+	FieldCarpoolTermID = "carpool_term_id"
+	// FieldCarpoolCycleID holds the string denoting the carpool_cycle_id field in the database.
+	FieldCarpoolCycleID = "carpool_cycle_id"
+	// FieldCarpoolAdmittedAt holds the string denoting the carpool_admitted_at field in the database.
+	FieldCarpoolAdmittedAt = "carpool_admitted_at"
 	// FieldInputTokens holds the string denoting the input_tokens field in the database.
 	FieldInputTokens = "input_tokens"
 	// FieldOutputTokens holds the string denoting the output_tokens field in the database.
@@ -175,6 +181,9 @@ var Columns = []string{
 	FieldBillingMode,
 	FieldGroupID,
 	FieldSubscriptionID,
+	FieldCarpoolTermID,
+	FieldCarpoolCycleID,
+	FieldCarpoolAdmittedAt,
 	FieldInputTokens,
 	FieldOutputTokens,
 	FieldCacheCreationTokens,
@@ -373,6 +382,21 @@ func ByGroupID(opts ...sql.OrderTermOption) OrderOption {
 // BySubscriptionID orders the results by the subscription_id field.
 func BySubscriptionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSubscriptionID, opts...).ToFunc()
+}
+
+// ByCarpoolTermID orders the results by the carpool_term_id field.
+func ByCarpoolTermID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCarpoolTermID, opts...).ToFunc()
+}
+
+// ByCarpoolCycleID orders the results by the carpool_cycle_id field.
+func ByCarpoolCycleID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCarpoolCycleID, opts...).ToFunc()
+}
+
+// ByCarpoolAdmittedAt orders the results by the carpool_admitted_at field.
+func ByCarpoolAdmittedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCarpoolAdmittedAt, opts...).ToFunc()
 }
 
 // ByInputTokens orders the results by the input_tokens field.

@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -67,6 +68,8 @@ type CyberPolicyUsageInput struct {
 	SessionID          string
 	RequestPayloadHash string
 	APIKeyService      APIKeyQuotaUpdater
+	QuotaPlatform      string
+	PricingAt          time.Time
 	NativeCompactionV2 bool
 	ChannelUsageFields
 }
@@ -77,9 +80,9 @@ type CyberPolicyUsageInput struct {
 // 报告的 usage（非流式直接拒通常为 0，cost 随之为 0）。复用 RecordUsage 完成成本计算、
 // 扣费与用量行写入（request_type=cyber 由 CyberBlocked 置位）。仅 forward 返回错误的
 // 路径由 handler 调用，避免与成功路径的正常 RecordUsage 重复。
-func (s *OpenAIGatewayService) RecordCyberPolicyUsageLog(ctx context.Context, in CyberPolicyUsageInput) {
+func (s *OpenAIGatewayService) RecordCyberPolicyUsageLog(ctx context.Context, in CyberPolicyUsageInput) error {
 	if s == nil || in.APIKey == nil || in.APIKey.User == nil || in.Account == nil || strings.TrimSpace(in.Model) == "" {
-		return
+		return nil
 	}
 	result := &OpenAIForwardResult{
 		RequestID: in.RequestID,
@@ -103,12 +106,16 @@ func (s *OpenAIGatewayService) RecordCyberPolicyUsageLog(ctx context.Context, in
 		SessionID:          in.SessionID,
 		RequestPayloadHash: in.RequestPayloadHash,
 		APIKeyService:      in.APIKeyService,
+		QuotaPlatform:      in.QuotaPlatform,
+		PricingAt:          in.PricingAt,
 		ChannelUsageFields: in.ChannelUsageFields,
 		CyberBlocked:       true,
 		NativeCompactionV2: in.NativeCompactionV2,
 	}); err != nil {
 		logger.LegacyPrintf("service.openai_gateway", "cyber usage record failed: request_id=%s err=%v", in.RequestID, err)
+		return err
 	}
+	return nil
 }
 
 // ResolveUserGroupRateMultiplier resolves the same cached multiplier used by OpenAI usage billing.
@@ -130,6 +137,33 @@ func openAIUsagePricingAt(input *OpenAIRecordUsageInput) time.Time {
 		return input.PricingAt
 	}
 	return timezone.Now()
+}
+
+func openAIUsagePricingAtWithContext(ctx context.Context, input *OpenAIRecordUsageInput) time.Time {
+	if snapshot, ok := CarpoolBillingSnapshotFromContext(ctx); ok {
+		return snapshot.AdmittedAt
+	}
+	return openAIUsagePricingAt(input)
+}
+
+func openAIForwardResultHasKnownBillableUsage(result *OpenAIForwardResult) bool {
+	if result == nil {
+		return false
+	}
+	usage := result.Usage
+	if usage.InputTokens < 0 || usage.OutputTokens < 0 || usage.CacheCreationInputTokens < 0 ||
+		usage.CacheReadInputTokens < 0 || usage.ImageInputTokens < 0 || usage.ImageOutputTokens < 0 ||
+		result.ImageCount < 0 || result.VideoCount < 0 || result.WebSearchCalls < 0 || result.SearchCount < 0 {
+		return false
+	}
+	if result.AudioUsage != nil && (result.AudioUsage.DurationOrUnits <= 0 ||
+		math.IsNaN(result.AudioUsage.DurationOrUnits) || math.IsInf(result.AudioUsage.DurationOrUnits, 0)) {
+		return false
+	}
+	return usage.InputTokens > 0 || usage.OutputTokens > 0 || usage.CacheCreationInputTokens > 0 ||
+		usage.CacheReadInputTokens > 0 || usage.ImageInputTokens > 0 || usage.ImageOutputTokens > 0 ||
+		result.ImageCount > 0 || result.VideoCount > 0 || result.WebSearchCalls > 0 || result.SearchCount > 0 ||
+		result.AudioUsage != nil
 }
 
 func groupBillsOpenAIFastAtStandard(apiKey *APIKey, account *Account, serviceTier string) bool {
@@ -167,6 +201,12 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 	user := input.User
 	account := input.Account
 	subscription := input.Subscription
+	if err := requireCarpoolBillingSnapshot(ctx, apiKey); err != nil {
+		return err
+	}
+	if _, carpool := CarpoolBillingSnapshotFromContext(ctx); carpool && !openAIForwardResultHasKnownBillableUsage(result) {
+		return ErrCarpoolUsageUnknown
+	}
 	billingAccount, err := resolveCredentialAccount(ctx, s.accountRepo, account)
 	if err != nil {
 		return err
@@ -206,7 +246,7 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 	// 变价）；未装配 PricingAt 的路径回退记录时刻，保持既有行为。不并入上面的
 	// Resolve，以免污染 user:group 倍率缓存。
 	baseMultiplier := multiplier
-	pricingAt := openAIUsagePricingAt(input)
+	pricingAt := openAIUsagePricingAtWithContext(ctx, input)
 	multiplier, imageMultiplier := computePeakAwareMultipliers(apiKey, baseMultiplier, pricingAt)
 	videoMultiplier := resolveVideoRateMultiplier(apiKey, baseMultiplier)
 
@@ -251,6 +291,9 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 	)
 	if err != nil {
 		if !isUsagePricingUnavailableError(err) {
+			return err
+		}
+		if _, carpool := CarpoolBillingSnapshotFromContext(ctx); carpool {
 			return err
 		}
 		logger.L().With(
@@ -348,6 +391,9 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 		)); stable != "" {
 			requestID = stable
 		}
+	}
+	if snapshot, ok := CarpoolBillingSnapshotFromContext(ctx); ok {
+		requestID = snapshot.RequestID
 	}
 
 	// 确定 RequestedModel（渠道映射前的原始模型）
@@ -466,6 +512,12 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 	}
 	if subscription != nil {
 		usageLog.SubscriptionID = &subscription.ID
+	}
+	if snapshot, ok := CarpoolBillingSnapshotFromContext(ctx); ok {
+		usageLog.CarpoolTermID = &snapshot.TermID
+		usageLog.CarpoolCycleID = &snapshot.CycleID
+		admittedAt := snapshot.AdmittedAt
+		usageLog.CarpoolAdmittedAt = &admittedAt
 	}
 
 	// 计算账号统计定价费用（使用最终上游模型匹配自定义规则）

@@ -67,6 +67,23 @@ func (Announcement) Fields() []ent.Field {
 			Optional().
 			Nillable().
 			Comment("更新人用户ID（管理员）"),
+		field.String("source_type").
+			MaxLen(32).
+			Optional().
+			Nillable().
+			Comment("System source type for idempotent publication"),
+		field.Int64("source_id").
+			Optional().
+			Nillable().
+			Comment("System source entity id"),
+		field.String("source_event_kind").
+			MaxLen(32).
+			Optional().
+			Nillable().
+			Comment("System source event kind"),
+		field.Int("source_revision").
+			Default(0).
+			Comment("System source event revision"),
 		field.Time("created_at").
 			Immutable().
 			Default(time.Now).
@@ -90,5 +107,6 @@ func (Announcement) Indexes() []ent.Index {
 		index.Fields("created_at"),
 		index.Fields("starts_at"),
 		index.Fields("ends_at"),
+		index.Fields("source_type", "source_id", "source_event_kind", "source_revision").Unique(),
 	}
 }

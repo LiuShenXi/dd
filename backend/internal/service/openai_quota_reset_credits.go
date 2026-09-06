@@ -31,6 +31,7 @@ type openAIRateLimitResetCreditDetails struct {
 	AvailableCount       *int
 	AvailableCreditCount int
 	CreditListPresent    bool
+	IdentityListComplete bool
 	Credits              []OpenAIRateLimitResetCreditDetail
 	AutoResetCandidates  []openAIAutoResetCreditCandidate
 }
@@ -77,8 +78,10 @@ func parseOpenAIRateLimitResetCreditDetails(body []byte) (openAIRateLimitResetCr
 	credits := make([]OpenAIRateLimitResetCreditDetail, 0, len(rawCredits))
 	autoResetCandidates := make([]openAIAutoResetCreditCandidate, 0, len(rawCredits))
 	availableCreditCount := 0
+	identityListComplete := creditListPresent
 	for _, raw := range rawCredits {
 		if raw == nil {
+			identityListComplete = false
 			continue
 		}
 		resetType := strings.TrimSpace(raw.ResetType)
@@ -92,6 +95,18 @@ func parseOpenAIRateLimitResetCreditDetails(body []byte) (openAIRateLimitResetCr
 			continue
 		}
 		availableCreditCount++
+		creditID := strings.TrimSpace(raw.ID)
+		if creditID == "" {
+			creditID = strings.TrimSpace(raw.CreditID)
+		}
+		if creditID == "" {
+			creditID = strings.TrimSpace(raw.CreditIDCamel)
+		}
+		if creditID == "" {
+			identityListComplete = false
+		} else {
+			autoResetCandidates = append(autoResetCandidates, openAIAutoResetCreditCandidate{ID: creditID})
+		}
 		expiresAt := strings.TrimSpace(raw.ExpiresAt)
 		if expiresAt == "" {
 			expiresAt = strings.TrimSpace(raw.ExpiresAtCamel)
@@ -100,22 +115,18 @@ func parseOpenAIRateLimitResetCreditDetails(body []byte) (openAIRateLimitResetCr
 			continue
 		}
 		credits = append(credits, OpenAIRateLimitResetCreditDetail{ExpiresAt: expiresAt})
-		creditID := strings.TrimSpace(raw.ID)
-		if creditID == "" {
-			creditID = strings.TrimSpace(raw.CreditID)
+		if creditID != "" {
+			autoResetCandidates[len(autoResetCandidates)-1].ExpiresAt = expiresAt
 		}
-		if creditID == "" {
-			creditID = strings.TrimSpace(raw.CreditIDCamel)
-		}
-		autoResetCandidates = append(autoResetCandidates, openAIAutoResetCreditCandidate{
-			ID:        creditID,
-			ExpiresAt: expiresAt,
-		})
+	}
+	if availableCount != nil && *availableCount != availableCreditCount {
+		identityListComplete = false
 	}
 	return openAIRateLimitResetCreditDetails{
 		AvailableCount:       availableCount,
 		AvailableCreditCount: availableCreditCount,
 		CreditListPresent:    creditListPresent,
+		IdentityListComplete: identityListComplete,
 		Credits:              credits,
 		AutoResetCandidates:  autoResetCandidates,
 	}, nil

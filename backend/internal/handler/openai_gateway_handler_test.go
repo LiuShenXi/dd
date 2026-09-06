@@ -1920,6 +1920,8 @@ type openAIResponsesWSUsageLogCase struct {
 	secondPayload             string
 	userAgent                 *string
 	ingressMode               string
+	carpoolBilling            service.CarpoolGatewayBilling
+	usageBillingRepo          service.UsageBillingRepository
 	channelMapping            map[string]string
 	billingModelSource        string
 	accountModelMapping       map[string]any
@@ -2524,7 +2526,7 @@ func TestOpenAIResponsesWebSocket_FailoverOnUpstreamUsageLimitEvent(t *testing.T
 	}
 
 	cfg := &config.Config{}
-	cfg.RunMode = config.RunModeSimple
+	cfg.RunMode = config.RunModeStandard
 	cfg.Default.RateMultiplier = 1
 	cfg.Security.URLAllowlist.Enabled = false
 	cfg.Security.URLAllowlist.AllowInsecureHTTP = true
@@ -2539,11 +2541,17 @@ func TestOpenAIResponsesWebSocket_FailoverOnUpstreamUsageLimitEvent(t *testing.T
 
 	accountRepo := &openAIWSFailoverHandlerAccountRepoStub{accounts: accounts}
 	rateLimitSvc := service.NewRateLimitService(accountRepo, nil, cfg, nil, nil)
+	usageRepo := &openAIWSUsageHandlerUsageLogRepoStub{created: make(chan *service.UsageLog, 1)}
+	billingRepo := &carpoolWSUsageBillingRepoStub{}
+	carpoolBilling := &carpoolWSBillingStub{
+		canonicalStart: time.Date(2026, 9, 6, 13, 0, 0, 123456000, time.UTC),
+	}
 	billingCacheSvc := service.NewBillingCacheService(nil, nil, nil, nil, nil, nil, cfg, nil)
+	billingCacheSvc.SetCarpoolGatewayBilling(carpoolBilling)
 	gatewaySvc := service.NewOpenAIGatewayService(
 		accountRepo,
-		nil,
-		nil,
+		usageRepo,
+		billingRepo,
 		nil,
 		nil,
 		nil,
@@ -2583,9 +2591,16 @@ func TestOpenAIResponsesWebSocket_FailoverOnUpstreamUsageLimitEvent(t *testing.T
 
 	apiKey := &service.APIKey{
 		ID:      1802,
+		UserID:  1702,
 		GroupID: &groupID,
 		User:    &service.User{ID: 1702, Status: service.StatusActive},
-		Group:   &service.Group{ID: groupID, Platform: service.PlatformOpenAI, Status: service.StatusActive},
+		Group: &service.Group{
+			ID:               groupID,
+			Platform:         service.PlatformOpenAI,
+			Status:           service.StatusActive,
+			SubscriptionType: service.SubscriptionTypeCarpool,
+			RateMultiplier:   1,
+		},
 	}
 	router := gin.New()
 	router.Use(func(c *gin.Context) {
@@ -2630,6 +2645,29 @@ func TestOpenAIResponsesWebSocket_FailoverOnUpstreamUsageLimitEvent(t *testing.T
 		t.Fatal("等待第二个上游收到重放首帧超时")
 	}
 	require.Equal(t, []int64{int64(9902)}, accountRepo.rateLimitedIDs)
+
+	var usageLog *service.UsageLog
+	select {
+	case usageLog = <-usageRepo.created:
+	case <-time.After(3 * time.Second):
+		t.Fatal("等待故障转移后的 WebSocket usage log 写入超时")
+	}
+	require.NotNil(t, usageLog)
+
+	admitCalls, requestIDs, snapshots, persisted, marked, _ := carpoolBilling.state()
+	require.Equal(t, 1, admitCalls, "同一逻辑 turn 的故障转移不得重复准入")
+	require.Len(t, requestIDs, 1)
+	require.Len(t, snapshots, 1)
+	require.Equal(t, snapshots, persisted)
+	require.Empty(t, marked)
+
+	commands := billingRepo.appliedCommands()
+	require.Len(t, commands, 1)
+	require.NotNil(t, commands[0].CarpoolSnapshot)
+	require.Equal(t, snapshots[0], *commands[0].CarpoolSnapshot)
+	require.InDelta(t, usageLog.ActualCost, commands[0].CarpoolCost.InexactFloat64(), 1e-8)
+	require.NotNil(t, usageLog.CarpoolAdmittedAt)
+	require.Equal(t, snapshots[0].AdmittedAt, *usageLog.CarpoolAdmittedAt, "定价与用量归因必须沿用首次准入返回的 canonical 时间")
 }
 
 func TestOpenAIResponsesWebSocket_FirstOutputTimeoutWithoutDownstreamReusesClientForOneFailover(t *testing.T) {
@@ -2923,6 +2961,9 @@ func runOpenAIResponsesWebSocketUsageLogCase(t *testing.T, tc openAIResponsesWSU
 
 	cfg := &config.Config{}
 	cfg.RunMode = config.RunModeSimple
+	if tc.carpoolBilling != nil {
+		cfg.RunMode = config.RunModeStandard
+	}
 	cfg.Default.RateMultiplier = 1
 	cfg.Security.URLAllowlist.Enabled = false
 	cfg.Security.URLAllowlist.AllowInsecureHTTP = true
@@ -2952,10 +2993,13 @@ func runOpenAIResponsesWebSocketUsageLogCase(t *testing.T, tc openAIResponsesWSU
 	}
 
 	billingCacheSvc := service.NewBillingCacheService(nil, nil, nil, nil, nil, nil, cfg, nil)
+	if tc.carpoolBilling != nil {
+		billingCacheSvc.SetCarpoolGatewayBilling(tc.carpoolBilling)
+	}
 	gatewaySvc := service.NewOpenAIGatewayService(
 		accountRepo,
 		usageRepo,
-		nil,
+		tc.usageBillingRepo,
 		nil,
 		nil,
 		nil,
@@ -2994,8 +3038,18 @@ func runOpenAIResponsesWebSocketUsageLogCase(t *testing.T, tc openAIResponsesWSU
 
 	apiKey := &service.APIKey{
 		ID:      1801,
+		UserID:  1701,
 		GroupID: &groupID,
 		User:    &service.User{ID: 1701, Status: service.StatusActive},
+	}
+	if tc.carpoolBilling != nil {
+		apiKey.Group = &service.Group{
+			ID:               groupID,
+			Platform:         service.PlatformOpenAI,
+			Status:           service.StatusActive,
+			SubscriptionType: service.SubscriptionTypeCarpool,
+			RateMultiplier:   1,
+		}
 	}
 	router := gin.New()
 	router.Use(func(c *gin.Context) {

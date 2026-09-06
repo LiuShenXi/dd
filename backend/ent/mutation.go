@@ -22,6 +22,20 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/batchimageevent"
 	"github.com/Wei-Shaw/sub2api/ent/batchimageitem"
 	"github.com/Wei-Shaw/sub2api/ent/batchimagejob"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolbillingrequest"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolcycle"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolledger"
+	"github.com/Wei-Shaw/sub2api/ent/carpooloperation"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolpayment"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolplan"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetaccountstate"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetannouncementoutbox"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetbatch"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetcredit"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetqualification"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetscopestate"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresettarget"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolterm"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitor"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitordailyrollup"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
@@ -64,45 +78,59 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAPIKey                        = "APIKey"
-	TypeAccount                       = "Account"
-	TypeAccountGroup                  = "AccountGroup"
-	TypeAnnouncement                  = "Announcement"
-	TypeAnnouncementRead              = "AnnouncementRead"
-	TypeAuthIdentity                  = "AuthIdentity"
-	TypeAuthIdentityChannel           = "AuthIdentityChannel"
-	TypeBatchImageEvent               = "BatchImageEvent"
-	TypeBatchImageItem                = "BatchImageItem"
-	TypeBatchImageJob                 = "BatchImageJob"
-	TypeChannelMonitor                = "ChannelMonitor"
-	TypeChannelMonitorDailyRollup     = "ChannelMonitorDailyRollup"
-	TypeChannelMonitorHistory         = "ChannelMonitorHistory"
-	TypeChannelMonitorRequestTemplate = "ChannelMonitorRequestTemplate"
-	TypeCompositeModelRoute           = "CompositeModelRoute"
-	TypeErrorPassthroughRule          = "ErrorPassthroughRule"
-	TypeGroup                         = "Group"
-	TypeIdempotencyRecord             = "IdempotencyRecord"
-	TypeIdentityAdoptionDecision      = "IdentityAdoptionDecision"
-	TypePaymentAuditLog               = "PaymentAuditLog"
-	TypePaymentOrder                  = "PaymentOrder"
-	TypePaymentProviderInstance       = "PaymentProviderInstance"
-	TypePendingAuthSession            = "PendingAuthSession"
-	TypePromoCode                     = "PromoCode"
-	TypePromoCodeUsage                = "PromoCodeUsage"
-	TypeProxy                         = "Proxy"
-	TypeRedeemCode                    = "RedeemCode"
-	TypeSecuritySecret                = "SecuritySecret"
-	TypeSetting                       = "Setting"
-	TypeSubscriptionPlan              = "SubscriptionPlan"
-	TypeTLSFingerprintProfile         = "TLSFingerprintProfile"
-	TypeUsageCleanupTask              = "UsageCleanupTask"
-	TypeUsageLog                      = "UsageLog"
-	TypeUser                          = "User"
-	TypeUserAllowedGroup              = "UserAllowedGroup"
-	TypeUserAttributeDefinition       = "UserAttributeDefinition"
-	TypeUserAttributeValue            = "UserAttributeValue"
-	TypeUserPlatformQuota             = "UserPlatformQuota"
-	TypeUserSubscription              = "UserSubscription"
+	TypeAPIKey                         = "APIKey"
+	TypeAccount                        = "Account"
+	TypeAccountGroup                   = "AccountGroup"
+	TypeAnnouncement                   = "Announcement"
+	TypeAnnouncementRead               = "AnnouncementRead"
+	TypeAuthIdentity                   = "AuthIdentity"
+	TypeAuthIdentityChannel            = "AuthIdentityChannel"
+	TypeBatchImageEvent                = "BatchImageEvent"
+	TypeBatchImageItem                 = "BatchImageItem"
+	TypeBatchImageJob                  = "BatchImageJob"
+	TypeCarpoolBillingRequest          = "CarpoolBillingRequest"
+	TypeCarpoolCycle                   = "CarpoolCycle"
+	TypeCarpoolLedger                  = "CarpoolLedger"
+	TypeCarpoolOperation               = "CarpoolOperation"
+	TypeCarpoolPayment                 = "CarpoolPayment"
+	TypeCarpoolPlan                    = "CarpoolPlan"
+	TypeCarpoolResetAccountState       = "CarpoolResetAccountState"
+	TypeCarpoolResetAnnouncementOutbox = "CarpoolResetAnnouncementOutbox"
+	TypeCarpoolResetBatch              = "CarpoolResetBatch"
+	TypeCarpoolResetCredit             = "CarpoolResetCredit"
+	TypeCarpoolResetQualification      = "CarpoolResetQualification"
+	TypeCarpoolResetScopeState         = "CarpoolResetScopeState"
+	TypeCarpoolResetTarget             = "CarpoolResetTarget"
+	TypeCarpoolTerm                    = "CarpoolTerm"
+	TypeChannelMonitor                 = "ChannelMonitor"
+	TypeChannelMonitorDailyRollup      = "ChannelMonitorDailyRollup"
+	TypeChannelMonitorHistory          = "ChannelMonitorHistory"
+	TypeChannelMonitorRequestTemplate  = "ChannelMonitorRequestTemplate"
+	TypeCompositeModelRoute            = "CompositeModelRoute"
+	TypeErrorPassthroughRule           = "ErrorPassthroughRule"
+	TypeGroup                          = "Group"
+	TypeIdempotencyRecord              = "IdempotencyRecord"
+	TypeIdentityAdoptionDecision       = "IdentityAdoptionDecision"
+	TypePaymentAuditLog                = "PaymentAuditLog"
+	TypePaymentOrder                   = "PaymentOrder"
+	TypePaymentProviderInstance        = "PaymentProviderInstance"
+	TypePendingAuthSession             = "PendingAuthSession"
+	TypePromoCode                      = "PromoCode"
+	TypePromoCodeUsage                 = "PromoCodeUsage"
+	TypeProxy                          = "Proxy"
+	TypeRedeemCode                     = "RedeemCode"
+	TypeSecuritySecret                 = "SecuritySecret"
+	TypeSetting                        = "Setting"
+	TypeSubscriptionPlan               = "SubscriptionPlan"
+	TypeTLSFingerprintProfile          = "TLSFingerprintProfile"
+	TypeUsageCleanupTask               = "UsageCleanupTask"
+	TypeUsageLog                       = "UsageLog"
+	TypeUser                           = "User"
+	TypeUserAllowedGroup               = "UserAllowedGroup"
+	TypeUserAttributeDefinition        = "UserAttributeDefinition"
+	TypeUserAttributeValue             = "UserAttributeValue"
+	TypeUserPlatformQuota              = "UserPlatformQuota"
+	TypeUserSubscription               = "UserSubscription"
 )
 
 // APIKeyMutation represents an operation that mutates the APIKey nodes in the graph.
@@ -5573,29 +5601,35 @@ func (m *AccountGroupMutation) ResetEdge(name string) error {
 // AnnouncementMutation represents an operation that mutates the Announcement nodes in the graph.
 type AnnouncementMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int64
-	title         *string
-	content       *string
-	status        *string
-	notify_mode   *string
-	targeting     *domain.AnnouncementTargeting
-	starts_at     *time.Time
-	ends_at       *time.Time
-	created_by    *int64
-	addcreated_by *int64
-	updated_by    *int64
-	addupdated_by *int64
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	reads         map[int64]struct{}
-	removedreads  map[int64]struct{}
-	clearedreads  bool
-	done          bool
-	oldValue      func(context.Context) (*Announcement, error)
-	predicates    []predicate.Announcement
+	op                 Op
+	typ                string
+	id                 *int64
+	title              *string
+	content            *string
+	status             *string
+	notify_mode        *string
+	targeting          *domain.AnnouncementTargeting
+	starts_at          *time.Time
+	ends_at            *time.Time
+	created_by         *int64
+	addcreated_by      *int64
+	updated_by         *int64
+	addupdated_by      *int64
+	source_type        *string
+	source_id          *int64
+	addsource_id       *int64
+	source_event_kind  *string
+	source_revision    *int
+	addsource_revision *int
+	created_at         *time.Time
+	updated_at         *time.Time
+	clearedFields      map[string]struct{}
+	reads              map[int64]struct{}
+	removedreads       map[int64]struct{}
+	clearedreads       bool
+	done               bool
+	oldValue           func(context.Context) (*Announcement, error)
+	predicates         []predicate.Announcement
 }
 
 var _ ent.Mutation = (*AnnouncementMutation)(nil)
@@ -6127,6 +6161,230 @@ func (m *AnnouncementMutation) ResetUpdatedBy() {
 	delete(m.clearedFields, announcement.FieldUpdatedBy)
 }
 
+// SetSourceType sets the "source_type" field.
+func (m *AnnouncementMutation) SetSourceType(s string) {
+	m.source_type = &s
+}
+
+// SourceType returns the value of the "source_type" field in the mutation.
+func (m *AnnouncementMutation) SourceType() (r string, exists bool) {
+	v := m.source_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceType returns the old "source_type" field's value of the Announcement entity.
+// If the Announcement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnnouncementMutation) OldSourceType(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceType: %w", err)
+	}
+	return oldValue.SourceType, nil
+}
+
+// ClearSourceType clears the value of the "source_type" field.
+func (m *AnnouncementMutation) ClearSourceType() {
+	m.source_type = nil
+	m.clearedFields[announcement.FieldSourceType] = struct{}{}
+}
+
+// SourceTypeCleared returns if the "source_type" field was cleared in this mutation.
+func (m *AnnouncementMutation) SourceTypeCleared() bool {
+	_, ok := m.clearedFields[announcement.FieldSourceType]
+	return ok
+}
+
+// ResetSourceType resets all changes to the "source_type" field.
+func (m *AnnouncementMutation) ResetSourceType() {
+	m.source_type = nil
+	delete(m.clearedFields, announcement.FieldSourceType)
+}
+
+// SetSourceID sets the "source_id" field.
+func (m *AnnouncementMutation) SetSourceID(i int64) {
+	m.source_id = &i
+	m.addsource_id = nil
+}
+
+// SourceID returns the value of the "source_id" field in the mutation.
+func (m *AnnouncementMutation) SourceID() (r int64, exists bool) {
+	v := m.source_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceID returns the old "source_id" field's value of the Announcement entity.
+// If the Announcement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnnouncementMutation) OldSourceID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceID: %w", err)
+	}
+	return oldValue.SourceID, nil
+}
+
+// AddSourceID adds i to the "source_id" field.
+func (m *AnnouncementMutation) AddSourceID(i int64) {
+	if m.addsource_id != nil {
+		*m.addsource_id += i
+	} else {
+		m.addsource_id = &i
+	}
+}
+
+// AddedSourceID returns the value that was added to the "source_id" field in this mutation.
+func (m *AnnouncementMutation) AddedSourceID() (r int64, exists bool) {
+	v := m.addsource_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearSourceID clears the value of the "source_id" field.
+func (m *AnnouncementMutation) ClearSourceID() {
+	m.source_id = nil
+	m.addsource_id = nil
+	m.clearedFields[announcement.FieldSourceID] = struct{}{}
+}
+
+// SourceIDCleared returns if the "source_id" field was cleared in this mutation.
+func (m *AnnouncementMutation) SourceIDCleared() bool {
+	_, ok := m.clearedFields[announcement.FieldSourceID]
+	return ok
+}
+
+// ResetSourceID resets all changes to the "source_id" field.
+func (m *AnnouncementMutation) ResetSourceID() {
+	m.source_id = nil
+	m.addsource_id = nil
+	delete(m.clearedFields, announcement.FieldSourceID)
+}
+
+// SetSourceEventKind sets the "source_event_kind" field.
+func (m *AnnouncementMutation) SetSourceEventKind(s string) {
+	m.source_event_kind = &s
+}
+
+// SourceEventKind returns the value of the "source_event_kind" field in the mutation.
+func (m *AnnouncementMutation) SourceEventKind() (r string, exists bool) {
+	v := m.source_event_kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceEventKind returns the old "source_event_kind" field's value of the Announcement entity.
+// If the Announcement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnnouncementMutation) OldSourceEventKind(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceEventKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceEventKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceEventKind: %w", err)
+	}
+	return oldValue.SourceEventKind, nil
+}
+
+// ClearSourceEventKind clears the value of the "source_event_kind" field.
+func (m *AnnouncementMutation) ClearSourceEventKind() {
+	m.source_event_kind = nil
+	m.clearedFields[announcement.FieldSourceEventKind] = struct{}{}
+}
+
+// SourceEventKindCleared returns if the "source_event_kind" field was cleared in this mutation.
+func (m *AnnouncementMutation) SourceEventKindCleared() bool {
+	_, ok := m.clearedFields[announcement.FieldSourceEventKind]
+	return ok
+}
+
+// ResetSourceEventKind resets all changes to the "source_event_kind" field.
+func (m *AnnouncementMutation) ResetSourceEventKind() {
+	m.source_event_kind = nil
+	delete(m.clearedFields, announcement.FieldSourceEventKind)
+}
+
+// SetSourceRevision sets the "source_revision" field.
+func (m *AnnouncementMutation) SetSourceRevision(i int) {
+	m.source_revision = &i
+	m.addsource_revision = nil
+}
+
+// SourceRevision returns the value of the "source_revision" field in the mutation.
+func (m *AnnouncementMutation) SourceRevision() (r int, exists bool) {
+	v := m.source_revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceRevision returns the old "source_revision" field's value of the Announcement entity.
+// If the Announcement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnnouncementMutation) OldSourceRevision(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceRevision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceRevision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceRevision: %w", err)
+	}
+	return oldValue.SourceRevision, nil
+}
+
+// AddSourceRevision adds i to the "source_revision" field.
+func (m *AnnouncementMutation) AddSourceRevision(i int) {
+	if m.addsource_revision != nil {
+		*m.addsource_revision += i
+	} else {
+		m.addsource_revision = &i
+	}
+}
+
+// AddedSourceRevision returns the value that was added to the "source_revision" field in this mutation.
+func (m *AnnouncementMutation) AddedSourceRevision() (r int, exists bool) {
+	v := m.addsource_revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSourceRevision resets all changes to the "source_revision" field.
+func (m *AnnouncementMutation) ResetSourceRevision() {
+	m.source_revision = nil
+	m.addsource_revision = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *AnnouncementMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -6287,7 +6545,7 @@ func (m *AnnouncementMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AnnouncementMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 15)
 	if m.title != nil {
 		fields = append(fields, announcement.FieldTitle)
 	}
@@ -6314,6 +6572,18 @@ func (m *AnnouncementMutation) Fields() []string {
 	}
 	if m.updated_by != nil {
 		fields = append(fields, announcement.FieldUpdatedBy)
+	}
+	if m.source_type != nil {
+		fields = append(fields, announcement.FieldSourceType)
+	}
+	if m.source_id != nil {
+		fields = append(fields, announcement.FieldSourceID)
+	}
+	if m.source_event_kind != nil {
+		fields = append(fields, announcement.FieldSourceEventKind)
+	}
+	if m.source_revision != nil {
+		fields = append(fields, announcement.FieldSourceRevision)
 	}
 	if m.created_at != nil {
 		fields = append(fields, announcement.FieldCreatedAt)
@@ -6347,6 +6617,14 @@ func (m *AnnouncementMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedBy()
 	case announcement.FieldUpdatedBy:
 		return m.UpdatedBy()
+	case announcement.FieldSourceType:
+		return m.SourceType()
+	case announcement.FieldSourceID:
+		return m.SourceID()
+	case announcement.FieldSourceEventKind:
+		return m.SourceEventKind()
+	case announcement.FieldSourceRevision:
+		return m.SourceRevision()
 	case announcement.FieldCreatedAt:
 		return m.CreatedAt()
 	case announcement.FieldUpdatedAt:
@@ -6378,6 +6656,14 @@ func (m *AnnouncementMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldCreatedBy(ctx)
 	case announcement.FieldUpdatedBy:
 		return m.OldUpdatedBy(ctx)
+	case announcement.FieldSourceType:
+		return m.OldSourceType(ctx)
+	case announcement.FieldSourceID:
+		return m.OldSourceID(ctx)
+	case announcement.FieldSourceEventKind:
+		return m.OldSourceEventKind(ctx)
+	case announcement.FieldSourceRevision:
+		return m.OldSourceRevision(ctx)
 	case announcement.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case announcement.FieldUpdatedAt:
@@ -6454,6 +6740,34 @@ func (m *AnnouncementMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedBy(v)
 		return nil
+	case announcement.FieldSourceType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceType(v)
+		return nil
+	case announcement.FieldSourceID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceID(v)
+		return nil
+	case announcement.FieldSourceEventKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceEventKind(v)
+		return nil
+	case announcement.FieldSourceRevision:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceRevision(v)
+		return nil
 	case announcement.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -6482,6 +6796,12 @@ func (m *AnnouncementMutation) AddedFields() []string {
 	if m.addupdated_by != nil {
 		fields = append(fields, announcement.FieldUpdatedBy)
 	}
+	if m.addsource_id != nil {
+		fields = append(fields, announcement.FieldSourceID)
+	}
+	if m.addsource_revision != nil {
+		fields = append(fields, announcement.FieldSourceRevision)
+	}
 	return fields
 }
 
@@ -6494,6 +6814,10 @@ func (m *AnnouncementMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedCreatedBy()
 	case announcement.FieldUpdatedBy:
 		return m.AddedUpdatedBy()
+	case announcement.FieldSourceID:
+		return m.AddedSourceID()
+	case announcement.FieldSourceRevision:
+		return m.AddedSourceRevision()
 	}
 	return nil, false
 }
@@ -6517,6 +6841,20 @@ func (m *AnnouncementMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddUpdatedBy(v)
 		return nil
+	case announcement.FieldSourceID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSourceID(v)
+		return nil
+	case announcement.FieldSourceRevision:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSourceRevision(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Announcement numeric field %s", name)
 }
@@ -6539,6 +6877,15 @@ func (m *AnnouncementMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(announcement.FieldUpdatedBy) {
 		fields = append(fields, announcement.FieldUpdatedBy)
+	}
+	if m.FieldCleared(announcement.FieldSourceType) {
+		fields = append(fields, announcement.FieldSourceType)
+	}
+	if m.FieldCleared(announcement.FieldSourceID) {
+		fields = append(fields, announcement.FieldSourceID)
+	}
+	if m.FieldCleared(announcement.FieldSourceEventKind) {
+		fields = append(fields, announcement.FieldSourceEventKind)
 	}
 	return fields
 }
@@ -6568,6 +6915,15 @@ func (m *AnnouncementMutation) ClearField(name string) error {
 		return nil
 	case announcement.FieldUpdatedBy:
 		m.ClearUpdatedBy()
+		return nil
+	case announcement.FieldSourceType:
+		m.ClearSourceType()
+		return nil
+	case announcement.FieldSourceID:
+		m.ClearSourceID()
+		return nil
+	case announcement.FieldSourceEventKind:
+		m.ClearSourceEventKind()
 		return nil
 	}
 	return fmt.Errorf("unknown Announcement nullable field %s", name)
@@ -6603,6 +6959,18 @@ func (m *AnnouncementMutation) ResetField(name string) error {
 		return nil
 	case announcement.FieldUpdatedBy:
 		m.ResetUpdatedBy()
+		return nil
+	case announcement.FieldSourceType:
+		m.ResetSourceType()
+		return nil
+	case announcement.FieldSourceID:
+		m.ResetSourceID()
+		return nil
+	case announcement.FieldSourceEventKind:
+		m.ResetSourceEventKind()
+		return nil
+	case announcement.FieldSourceRevision:
+		m.ResetSourceRevision()
 		return nil
 	case announcement.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -14596,6 +14964,16311 @@ func (m *BatchImageJobMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *BatchImageJobMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown BatchImageJob edge %s", name)
+}
+
+// CarpoolBillingRequestMutation represents an operation that mutates the CarpoolBillingRequest nodes in the graph.
+type CarpoolBillingRequestMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *int64
+	request_id          *string
+	api_key_id          *int64
+	addapi_key_id       *int64
+	user_id             *int64
+	adduser_id          *int64
+	group_id            *int64
+	addgroup_id         *int64
+	term_id             *int64
+	addterm_id          *int64
+	cycle_id            *int64
+	addcycle_id         *int64
+	admitted_at         *time.Time
+	status              *string
+	request_fingerprint *string
+	billing_payload     *map[string]interface{}
+	actual_cost_usd     *float64
+	addactual_cost_usd  *float64
+	retry_count         *int
+	addretry_count      *int
+	last_error          *string
+	receipt_recorded_at *time.Time
+	settled_at          *time.Time
+	resolution          *string
+	resolved_at         *time.Time
+	resolved_by         *int64
+	addresolved_by      *int64
+	resolution_reason   *string
+	created_at          *time.Time
+	updated_at          *time.Time
+	clearedFields       map[string]struct{}
+	done                bool
+	oldValue            func(context.Context) (*CarpoolBillingRequest, error)
+	predicates          []predicate.CarpoolBillingRequest
+}
+
+var _ ent.Mutation = (*CarpoolBillingRequestMutation)(nil)
+
+// carpoolbillingrequestOption allows management of the mutation configuration using functional options.
+type carpoolbillingrequestOption func(*CarpoolBillingRequestMutation)
+
+// newCarpoolBillingRequestMutation creates new mutation for the CarpoolBillingRequest entity.
+func newCarpoolBillingRequestMutation(c config, op Op, opts ...carpoolbillingrequestOption) *CarpoolBillingRequestMutation {
+	m := &CarpoolBillingRequestMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolBillingRequest,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolBillingRequestID sets the ID field of the mutation.
+func withCarpoolBillingRequestID(id int64) carpoolbillingrequestOption {
+	return func(m *CarpoolBillingRequestMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolBillingRequest
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolBillingRequest, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolBillingRequest.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolBillingRequest sets the old CarpoolBillingRequest of the mutation.
+func withCarpoolBillingRequest(node *CarpoolBillingRequest) carpoolbillingrequestOption {
+	return func(m *CarpoolBillingRequestMutation) {
+		m.oldValue = func(context.Context) (*CarpoolBillingRequest, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolBillingRequestMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolBillingRequestMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolBillingRequestMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolBillingRequestMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolBillingRequest.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetRequestID sets the "request_id" field.
+func (m *CarpoolBillingRequestMutation) SetRequestID(s string) {
+	m.request_id = &s
+}
+
+// RequestID returns the value of the "request_id" field in the mutation.
+func (m *CarpoolBillingRequestMutation) RequestID() (r string, exists bool) {
+	v := m.request_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestID returns the old "request_id" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldRequestID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestID: %w", err)
+	}
+	return oldValue.RequestID, nil
+}
+
+// ResetRequestID resets all changes to the "request_id" field.
+func (m *CarpoolBillingRequestMutation) ResetRequestID() {
+	m.request_id = nil
+}
+
+// SetAPIKeyID sets the "api_key_id" field.
+func (m *CarpoolBillingRequestMutation) SetAPIKeyID(i int64) {
+	m.api_key_id = &i
+	m.addapi_key_id = nil
+}
+
+// APIKeyID returns the value of the "api_key_id" field in the mutation.
+func (m *CarpoolBillingRequestMutation) APIKeyID() (r int64, exists bool) {
+	v := m.api_key_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAPIKeyID returns the old "api_key_id" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldAPIKeyID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAPIKeyID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAPIKeyID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAPIKeyID: %w", err)
+	}
+	return oldValue.APIKeyID, nil
+}
+
+// AddAPIKeyID adds i to the "api_key_id" field.
+func (m *CarpoolBillingRequestMutation) AddAPIKeyID(i int64) {
+	if m.addapi_key_id != nil {
+		*m.addapi_key_id += i
+	} else {
+		m.addapi_key_id = &i
+	}
+}
+
+// AddedAPIKeyID returns the value that was added to the "api_key_id" field in this mutation.
+func (m *CarpoolBillingRequestMutation) AddedAPIKeyID() (r int64, exists bool) {
+	v := m.addapi_key_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAPIKeyID resets all changes to the "api_key_id" field.
+func (m *CarpoolBillingRequestMutation) ResetAPIKeyID() {
+	m.api_key_id = nil
+	m.addapi_key_id = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *CarpoolBillingRequestMutation) SetUserID(i int64) {
+	m.user_id = &i
+	m.adduser_id = nil
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *CarpoolBillingRequestMutation) UserID() (r int64, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldUserID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// AddUserID adds i to the "user_id" field.
+func (m *CarpoolBillingRequestMutation) AddUserID(i int64) {
+	if m.adduser_id != nil {
+		*m.adduser_id += i
+	} else {
+		m.adduser_id = &i
+	}
+}
+
+// AddedUserID returns the value that was added to the "user_id" field in this mutation.
+func (m *CarpoolBillingRequestMutation) AddedUserID() (r int64, exists bool) {
+	v := m.adduser_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *CarpoolBillingRequestMutation) ResetUserID() {
+	m.user_id = nil
+	m.adduser_id = nil
+}
+
+// SetGroupID sets the "group_id" field.
+func (m *CarpoolBillingRequestMutation) SetGroupID(i int64) {
+	m.group_id = &i
+	m.addgroup_id = nil
+}
+
+// GroupID returns the value of the "group_id" field in the mutation.
+func (m *CarpoolBillingRequestMutation) GroupID() (r int64, exists bool) {
+	v := m.group_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupID returns the old "group_id" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldGroupID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroupID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroupID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupID: %w", err)
+	}
+	return oldValue.GroupID, nil
+}
+
+// AddGroupID adds i to the "group_id" field.
+func (m *CarpoolBillingRequestMutation) AddGroupID(i int64) {
+	if m.addgroup_id != nil {
+		*m.addgroup_id += i
+	} else {
+		m.addgroup_id = &i
+	}
+}
+
+// AddedGroupID returns the value that was added to the "group_id" field in this mutation.
+func (m *CarpoolBillingRequestMutation) AddedGroupID() (r int64, exists bool) {
+	v := m.addgroup_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetGroupID resets all changes to the "group_id" field.
+func (m *CarpoolBillingRequestMutation) ResetGroupID() {
+	m.group_id = nil
+	m.addgroup_id = nil
+}
+
+// SetTermID sets the "term_id" field.
+func (m *CarpoolBillingRequestMutation) SetTermID(i int64) {
+	m.term_id = &i
+	m.addterm_id = nil
+}
+
+// TermID returns the value of the "term_id" field in the mutation.
+func (m *CarpoolBillingRequestMutation) TermID() (r int64, exists bool) {
+	v := m.term_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTermID returns the old "term_id" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldTermID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTermID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTermID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTermID: %w", err)
+	}
+	return oldValue.TermID, nil
+}
+
+// AddTermID adds i to the "term_id" field.
+func (m *CarpoolBillingRequestMutation) AddTermID(i int64) {
+	if m.addterm_id != nil {
+		*m.addterm_id += i
+	} else {
+		m.addterm_id = &i
+	}
+}
+
+// AddedTermID returns the value that was added to the "term_id" field in this mutation.
+func (m *CarpoolBillingRequestMutation) AddedTermID() (r int64, exists bool) {
+	v := m.addterm_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTermID resets all changes to the "term_id" field.
+func (m *CarpoolBillingRequestMutation) ResetTermID() {
+	m.term_id = nil
+	m.addterm_id = nil
+}
+
+// SetCycleID sets the "cycle_id" field.
+func (m *CarpoolBillingRequestMutation) SetCycleID(i int64) {
+	m.cycle_id = &i
+	m.addcycle_id = nil
+}
+
+// CycleID returns the value of the "cycle_id" field in the mutation.
+func (m *CarpoolBillingRequestMutation) CycleID() (r int64, exists bool) {
+	v := m.cycle_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCycleID returns the old "cycle_id" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldCycleID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCycleID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCycleID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCycleID: %w", err)
+	}
+	return oldValue.CycleID, nil
+}
+
+// AddCycleID adds i to the "cycle_id" field.
+func (m *CarpoolBillingRequestMutation) AddCycleID(i int64) {
+	if m.addcycle_id != nil {
+		*m.addcycle_id += i
+	} else {
+		m.addcycle_id = &i
+	}
+}
+
+// AddedCycleID returns the value that was added to the "cycle_id" field in this mutation.
+func (m *CarpoolBillingRequestMutation) AddedCycleID() (r int64, exists bool) {
+	v := m.addcycle_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCycleID resets all changes to the "cycle_id" field.
+func (m *CarpoolBillingRequestMutation) ResetCycleID() {
+	m.cycle_id = nil
+	m.addcycle_id = nil
+}
+
+// SetAdmittedAt sets the "admitted_at" field.
+func (m *CarpoolBillingRequestMutation) SetAdmittedAt(t time.Time) {
+	m.admitted_at = &t
+}
+
+// AdmittedAt returns the value of the "admitted_at" field in the mutation.
+func (m *CarpoolBillingRequestMutation) AdmittedAt() (r time.Time, exists bool) {
+	v := m.admitted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAdmittedAt returns the old "admitted_at" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldAdmittedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAdmittedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAdmittedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAdmittedAt: %w", err)
+	}
+	return oldValue.AdmittedAt, nil
+}
+
+// ResetAdmittedAt resets all changes to the "admitted_at" field.
+func (m *CarpoolBillingRequestMutation) ResetAdmittedAt() {
+	m.admitted_at = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *CarpoolBillingRequestMutation) SetStatus(s string) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *CarpoolBillingRequestMutation) Status() (r string, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *CarpoolBillingRequestMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetRequestFingerprint sets the "request_fingerprint" field.
+func (m *CarpoolBillingRequestMutation) SetRequestFingerprint(s string) {
+	m.request_fingerprint = &s
+}
+
+// RequestFingerprint returns the value of the "request_fingerprint" field in the mutation.
+func (m *CarpoolBillingRequestMutation) RequestFingerprint() (r string, exists bool) {
+	v := m.request_fingerprint
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestFingerprint returns the old "request_fingerprint" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldRequestFingerprint(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestFingerprint is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestFingerprint requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestFingerprint: %w", err)
+	}
+	return oldValue.RequestFingerprint, nil
+}
+
+// ResetRequestFingerprint resets all changes to the "request_fingerprint" field.
+func (m *CarpoolBillingRequestMutation) ResetRequestFingerprint() {
+	m.request_fingerprint = nil
+}
+
+// SetBillingPayload sets the "billing_payload" field.
+func (m *CarpoolBillingRequestMutation) SetBillingPayload(value map[string]interface{}) {
+	m.billing_payload = &value
+}
+
+// BillingPayload returns the value of the "billing_payload" field in the mutation.
+func (m *CarpoolBillingRequestMutation) BillingPayload() (r map[string]interface{}, exists bool) {
+	v := m.billing_payload
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBillingPayload returns the old "billing_payload" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldBillingPayload(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBillingPayload is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBillingPayload requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBillingPayload: %w", err)
+	}
+	return oldValue.BillingPayload, nil
+}
+
+// ClearBillingPayload clears the value of the "billing_payload" field.
+func (m *CarpoolBillingRequestMutation) ClearBillingPayload() {
+	m.billing_payload = nil
+	m.clearedFields[carpoolbillingrequest.FieldBillingPayload] = struct{}{}
+}
+
+// BillingPayloadCleared returns if the "billing_payload" field was cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) BillingPayloadCleared() bool {
+	_, ok := m.clearedFields[carpoolbillingrequest.FieldBillingPayload]
+	return ok
+}
+
+// ResetBillingPayload resets all changes to the "billing_payload" field.
+func (m *CarpoolBillingRequestMutation) ResetBillingPayload() {
+	m.billing_payload = nil
+	delete(m.clearedFields, carpoolbillingrequest.FieldBillingPayload)
+}
+
+// SetActualCostUsd sets the "actual_cost_usd" field.
+func (m *CarpoolBillingRequestMutation) SetActualCostUsd(f float64) {
+	m.actual_cost_usd = &f
+	m.addactual_cost_usd = nil
+}
+
+// ActualCostUsd returns the value of the "actual_cost_usd" field in the mutation.
+func (m *CarpoolBillingRequestMutation) ActualCostUsd() (r float64, exists bool) {
+	v := m.actual_cost_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActualCostUsd returns the old "actual_cost_usd" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldActualCostUsd(ctx context.Context) (v *float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActualCostUsd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActualCostUsd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActualCostUsd: %w", err)
+	}
+	return oldValue.ActualCostUsd, nil
+}
+
+// AddActualCostUsd adds f to the "actual_cost_usd" field.
+func (m *CarpoolBillingRequestMutation) AddActualCostUsd(f float64) {
+	if m.addactual_cost_usd != nil {
+		*m.addactual_cost_usd += f
+	} else {
+		m.addactual_cost_usd = &f
+	}
+}
+
+// AddedActualCostUsd returns the value that was added to the "actual_cost_usd" field in this mutation.
+func (m *CarpoolBillingRequestMutation) AddedActualCostUsd() (r float64, exists bool) {
+	v := m.addactual_cost_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearActualCostUsd clears the value of the "actual_cost_usd" field.
+func (m *CarpoolBillingRequestMutation) ClearActualCostUsd() {
+	m.actual_cost_usd = nil
+	m.addactual_cost_usd = nil
+	m.clearedFields[carpoolbillingrequest.FieldActualCostUsd] = struct{}{}
+}
+
+// ActualCostUsdCleared returns if the "actual_cost_usd" field was cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) ActualCostUsdCleared() bool {
+	_, ok := m.clearedFields[carpoolbillingrequest.FieldActualCostUsd]
+	return ok
+}
+
+// ResetActualCostUsd resets all changes to the "actual_cost_usd" field.
+func (m *CarpoolBillingRequestMutation) ResetActualCostUsd() {
+	m.actual_cost_usd = nil
+	m.addactual_cost_usd = nil
+	delete(m.clearedFields, carpoolbillingrequest.FieldActualCostUsd)
+}
+
+// SetRetryCount sets the "retry_count" field.
+func (m *CarpoolBillingRequestMutation) SetRetryCount(i int) {
+	m.retry_count = &i
+	m.addretry_count = nil
+}
+
+// RetryCount returns the value of the "retry_count" field in the mutation.
+func (m *CarpoolBillingRequestMutation) RetryCount() (r int, exists bool) {
+	v := m.retry_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRetryCount returns the old "retry_count" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldRetryCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRetryCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRetryCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRetryCount: %w", err)
+	}
+	return oldValue.RetryCount, nil
+}
+
+// AddRetryCount adds i to the "retry_count" field.
+func (m *CarpoolBillingRequestMutation) AddRetryCount(i int) {
+	if m.addretry_count != nil {
+		*m.addretry_count += i
+	} else {
+		m.addretry_count = &i
+	}
+}
+
+// AddedRetryCount returns the value that was added to the "retry_count" field in this mutation.
+func (m *CarpoolBillingRequestMutation) AddedRetryCount() (r int, exists bool) {
+	v := m.addretry_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRetryCount resets all changes to the "retry_count" field.
+func (m *CarpoolBillingRequestMutation) ResetRetryCount() {
+	m.retry_count = nil
+	m.addretry_count = nil
+}
+
+// SetLastError sets the "last_error" field.
+func (m *CarpoolBillingRequestMutation) SetLastError(s string) {
+	m.last_error = &s
+}
+
+// LastError returns the value of the "last_error" field in the mutation.
+func (m *CarpoolBillingRequestMutation) LastError() (r string, exists bool) {
+	v := m.last_error
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastError returns the old "last_error" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldLastError(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastError is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastError requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastError: %w", err)
+	}
+	return oldValue.LastError, nil
+}
+
+// ClearLastError clears the value of the "last_error" field.
+func (m *CarpoolBillingRequestMutation) ClearLastError() {
+	m.last_error = nil
+	m.clearedFields[carpoolbillingrequest.FieldLastError] = struct{}{}
+}
+
+// LastErrorCleared returns if the "last_error" field was cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) LastErrorCleared() bool {
+	_, ok := m.clearedFields[carpoolbillingrequest.FieldLastError]
+	return ok
+}
+
+// ResetLastError resets all changes to the "last_error" field.
+func (m *CarpoolBillingRequestMutation) ResetLastError() {
+	m.last_error = nil
+	delete(m.clearedFields, carpoolbillingrequest.FieldLastError)
+}
+
+// SetReceiptRecordedAt sets the "receipt_recorded_at" field.
+func (m *CarpoolBillingRequestMutation) SetReceiptRecordedAt(t time.Time) {
+	m.receipt_recorded_at = &t
+}
+
+// ReceiptRecordedAt returns the value of the "receipt_recorded_at" field in the mutation.
+func (m *CarpoolBillingRequestMutation) ReceiptRecordedAt() (r time.Time, exists bool) {
+	v := m.receipt_recorded_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReceiptRecordedAt returns the old "receipt_recorded_at" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldReceiptRecordedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReceiptRecordedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReceiptRecordedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReceiptRecordedAt: %w", err)
+	}
+	return oldValue.ReceiptRecordedAt, nil
+}
+
+// ClearReceiptRecordedAt clears the value of the "receipt_recorded_at" field.
+func (m *CarpoolBillingRequestMutation) ClearReceiptRecordedAt() {
+	m.receipt_recorded_at = nil
+	m.clearedFields[carpoolbillingrequest.FieldReceiptRecordedAt] = struct{}{}
+}
+
+// ReceiptRecordedAtCleared returns if the "receipt_recorded_at" field was cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) ReceiptRecordedAtCleared() bool {
+	_, ok := m.clearedFields[carpoolbillingrequest.FieldReceiptRecordedAt]
+	return ok
+}
+
+// ResetReceiptRecordedAt resets all changes to the "receipt_recorded_at" field.
+func (m *CarpoolBillingRequestMutation) ResetReceiptRecordedAt() {
+	m.receipt_recorded_at = nil
+	delete(m.clearedFields, carpoolbillingrequest.FieldReceiptRecordedAt)
+}
+
+// SetSettledAt sets the "settled_at" field.
+func (m *CarpoolBillingRequestMutation) SetSettledAt(t time.Time) {
+	m.settled_at = &t
+}
+
+// SettledAt returns the value of the "settled_at" field in the mutation.
+func (m *CarpoolBillingRequestMutation) SettledAt() (r time.Time, exists bool) {
+	v := m.settled_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSettledAt returns the old "settled_at" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldSettledAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSettledAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSettledAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSettledAt: %w", err)
+	}
+	return oldValue.SettledAt, nil
+}
+
+// ClearSettledAt clears the value of the "settled_at" field.
+func (m *CarpoolBillingRequestMutation) ClearSettledAt() {
+	m.settled_at = nil
+	m.clearedFields[carpoolbillingrequest.FieldSettledAt] = struct{}{}
+}
+
+// SettledAtCleared returns if the "settled_at" field was cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) SettledAtCleared() bool {
+	_, ok := m.clearedFields[carpoolbillingrequest.FieldSettledAt]
+	return ok
+}
+
+// ResetSettledAt resets all changes to the "settled_at" field.
+func (m *CarpoolBillingRequestMutation) ResetSettledAt() {
+	m.settled_at = nil
+	delete(m.clearedFields, carpoolbillingrequest.FieldSettledAt)
+}
+
+// SetResolution sets the "resolution" field.
+func (m *CarpoolBillingRequestMutation) SetResolution(s string) {
+	m.resolution = &s
+}
+
+// Resolution returns the value of the "resolution" field in the mutation.
+func (m *CarpoolBillingRequestMutation) Resolution() (r string, exists bool) {
+	v := m.resolution
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResolution returns the old "resolution" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldResolution(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResolution is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResolution requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResolution: %w", err)
+	}
+	return oldValue.Resolution, nil
+}
+
+// ClearResolution clears the value of the "resolution" field.
+func (m *CarpoolBillingRequestMutation) ClearResolution() {
+	m.resolution = nil
+	m.clearedFields[carpoolbillingrequest.FieldResolution] = struct{}{}
+}
+
+// ResolutionCleared returns if the "resolution" field was cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) ResolutionCleared() bool {
+	_, ok := m.clearedFields[carpoolbillingrequest.FieldResolution]
+	return ok
+}
+
+// ResetResolution resets all changes to the "resolution" field.
+func (m *CarpoolBillingRequestMutation) ResetResolution() {
+	m.resolution = nil
+	delete(m.clearedFields, carpoolbillingrequest.FieldResolution)
+}
+
+// SetResolvedAt sets the "resolved_at" field.
+func (m *CarpoolBillingRequestMutation) SetResolvedAt(t time.Time) {
+	m.resolved_at = &t
+}
+
+// ResolvedAt returns the value of the "resolved_at" field in the mutation.
+func (m *CarpoolBillingRequestMutation) ResolvedAt() (r time.Time, exists bool) {
+	v := m.resolved_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResolvedAt returns the old "resolved_at" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldResolvedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResolvedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResolvedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResolvedAt: %w", err)
+	}
+	return oldValue.ResolvedAt, nil
+}
+
+// ClearResolvedAt clears the value of the "resolved_at" field.
+func (m *CarpoolBillingRequestMutation) ClearResolvedAt() {
+	m.resolved_at = nil
+	m.clearedFields[carpoolbillingrequest.FieldResolvedAt] = struct{}{}
+}
+
+// ResolvedAtCleared returns if the "resolved_at" field was cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) ResolvedAtCleared() bool {
+	_, ok := m.clearedFields[carpoolbillingrequest.FieldResolvedAt]
+	return ok
+}
+
+// ResetResolvedAt resets all changes to the "resolved_at" field.
+func (m *CarpoolBillingRequestMutation) ResetResolvedAt() {
+	m.resolved_at = nil
+	delete(m.clearedFields, carpoolbillingrequest.FieldResolvedAt)
+}
+
+// SetResolvedBy sets the "resolved_by" field.
+func (m *CarpoolBillingRequestMutation) SetResolvedBy(i int64) {
+	m.resolved_by = &i
+	m.addresolved_by = nil
+}
+
+// ResolvedBy returns the value of the "resolved_by" field in the mutation.
+func (m *CarpoolBillingRequestMutation) ResolvedBy() (r int64, exists bool) {
+	v := m.resolved_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResolvedBy returns the old "resolved_by" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldResolvedBy(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResolvedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResolvedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResolvedBy: %w", err)
+	}
+	return oldValue.ResolvedBy, nil
+}
+
+// AddResolvedBy adds i to the "resolved_by" field.
+func (m *CarpoolBillingRequestMutation) AddResolvedBy(i int64) {
+	if m.addresolved_by != nil {
+		*m.addresolved_by += i
+	} else {
+		m.addresolved_by = &i
+	}
+}
+
+// AddedResolvedBy returns the value that was added to the "resolved_by" field in this mutation.
+func (m *CarpoolBillingRequestMutation) AddedResolvedBy() (r int64, exists bool) {
+	v := m.addresolved_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearResolvedBy clears the value of the "resolved_by" field.
+func (m *CarpoolBillingRequestMutation) ClearResolvedBy() {
+	m.resolved_by = nil
+	m.addresolved_by = nil
+	m.clearedFields[carpoolbillingrequest.FieldResolvedBy] = struct{}{}
+}
+
+// ResolvedByCleared returns if the "resolved_by" field was cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) ResolvedByCleared() bool {
+	_, ok := m.clearedFields[carpoolbillingrequest.FieldResolvedBy]
+	return ok
+}
+
+// ResetResolvedBy resets all changes to the "resolved_by" field.
+func (m *CarpoolBillingRequestMutation) ResetResolvedBy() {
+	m.resolved_by = nil
+	m.addresolved_by = nil
+	delete(m.clearedFields, carpoolbillingrequest.FieldResolvedBy)
+}
+
+// SetResolutionReason sets the "resolution_reason" field.
+func (m *CarpoolBillingRequestMutation) SetResolutionReason(s string) {
+	m.resolution_reason = &s
+}
+
+// ResolutionReason returns the value of the "resolution_reason" field in the mutation.
+func (m *CarpoolBillingRequestMutation) ResolutionReason() (r string, exists bool) {
+	v := m.resolution_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResolutionReason returns the old "resolution_reason" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldResolutionReason(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResolutionReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResolutionReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResolutionReason: %w", err)
+	}
+	return oldValue.ResolutionReason, nil
+}
+
+// ClearResolutionReason clears the value of the "resolution_reason" field.
+func (m *CarpoolBillingRequestMutation) ClearResolutionReason() {
+	m.resolution_reason = nil
+	m.clearedFields[carpoolbillingrequest.FieldResolutionReason] = struct{}{}
+}
+
+// ResolutionReasonCleared returns if the "resolution_reason" field was cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) ResolutionReasonCleared() bool {
+	_, ok := m.clearedFields[carpoolbillingrequest.FieldResolutionReason]
+	return ok
+}
+
+// ResetResolutionReason resets all changes to the "resolution_reason" field.
+func (m *CarpoolBillingRequestMutation) ResetResolutionReason() {
+	m.resolution_reason = nil
+	delete(m.clearedFields, carpoolbillingrequest.FieldResolutionReason)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolBillingRequestMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolBillingRequestMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolBillingRequestMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CarpoolBillingRequestMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CarpoolBillingRequestMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CarpoolBillingRequest entity.
+// If the CarpoolBillingRequest object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolBillingRequestMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CarpoolBillingRequestMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the CarpoolBillingRequestMutation builder.
+func (m *CarpoolBillingRequestMutation) Where(ps ...predicate.CarpoolBillingRequest) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolBillingRequestMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolBillingRequestMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolBillingRequest, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolBillingRequestMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolBillingRequestMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolBillingRequest).
+func (m *CarpoolBillingRequestMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolBillingRequestMutation) Fields() []string {
+	fields := make([]string, 0, 21)
+	if m.request_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldRequestID)
+	}
+	if m.api_key_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldAPIKeyID)
+	}
+	if m.user_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldUserID)
+	}
+	if m.group_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldGroupID)
+	}
+	if m.term_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldTermID)
+	}
+	if m.cycle_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldCycleID)
+	}
+	if m.admitted_at != nil {
+		fields = append(fields, carpoolbillingrequest.FieldAdmittedAt)
+	}
+	if m.status != nil {
+		fields = append(fields, carpoolbillingrequest.FieldStatus)
+	}
+	if m.request_fingerprint != nil {
+		fields = append(fields, carpoolbillingrequest.FieldRequestFingerprint)
+	}
+	if m.billing_payload != nil {
+		fields = append(fields, carpoolbillingrequest.FieldBillingPayload)
+	}
+	if m.actual_cost_usd != nil {
+		fields = append(fields, carpoolbillingrequest.FieldActualCostUsd)
+	}
+	if m.retry_count != nil {
+		fields = append(fields, carpoolbillingrequest.FieldRetryCount)
+	}
+	if m.last_error != nil {
+		fields = append(fields, carpoolbillingrequest.FieldLastError)
+	}
+	if m.receipt_recorded_at != nil {
+		fields = append(fields, carpoolbillingrequest.FieldReceiptRecordedAt)
+	}
+	if m.settled_at != nil {
+		fields = append(fields, carpoolbillingrequest.FieldSettledAt)
+	}
+	if m.resolution != nil {
+		fields = append(fields, carpoolbillingrequest.FieldResolution)
+	}
+	if m.resolved_at != nil {
+		fields = append(fields, carpoolbillingrequest.FieldResolvedAt)
+	}
+	if m.resolved_by != nil {
+		fields = append(fields, carpoolbillingrequest.FieldResolvedBy)
+	}
+	if m.resolution_reason != nil {
+		fields = append(fields, carpoolbillingrequest.FieldResolutionReason)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolbillingrequest.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, carpoolbillingrequest.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolBillingRequestMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolbillingrequest.FieldRequestID:
+		return m.RequestID()
+	case carpoolbillingrequest.FieldAPIKeyID:
+		return m.APIKeyID()
+	case carpoolbillingrequest.FieldUserID:
+		return m.UserID()
+	case carpoolbillingrequest.FieldGroupID:
+		return m.GroupID()
+	case carpoolbillingrequest.FieldTermID:
+		return m.TermID()
+	case carpoolbillingrequest.FieldCycleID:
+		return m.CycleID()
+	case carpoolbillingrequest.FieldAdmittedAt:
+		return m.AdmittedAt()
+	case carpoolbillingrequest.FieldStatus:
+		return m.Status()
+	case carpoolbillingrequest.FieldRequestFingerprint:
+		return m.RequestFingerprint()
+	case carpoolbillingrequest.FieldBillingPayload:
+		return m.BillingPayload()
+	case carpoolbillingrequest.FieldActualCostUsd:
+		return m.ActualCostUsd()
+	case carpoolbillingrequest.FieldRetryCount:
+		return m.RetryCount()
+	case carpoolbillingrequest.FieldLastError:
+		return m.LastError()
+	case carpoolbillingrequest.FieldReceiptRecordedAt:
+		return m.ReceiptRecordedAt()
+	case carpoolbillingrequest.FieldSettledAt:
+		return m.SettledAt()
+	case carpoolbillingrequest.FieldResolution:
+		return m.Resolution()
+	case carpoolbillingrequest.FieldResolvedAt:
+		return m.ResolvedAt()
+	case carpoolbillingrequest.FieldResolvedBy:
+		return m.ResolvedBy()
+	case carpoolbillingrequest.FieldResolutionReason:
+		return m.ResolutionReason()
+	case carpoolbillingrequest.FieldCreatedAt:
+		return m.CreatedAt()
+	case carpoolbillingrequest.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolBillingRequestMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolbillingrequest.FieldRequestID:
+		return m.OldRequestID(ctx)
+	case carpoolbillingrequest.FieldAPIKeyID:
+		return m.OldAPIKeyID(ctx)
+	case carpoolbillingrequest.FieldUserID:
+		return m.OldUserID(ctx)
+	case carpoolbillingrequest.FieldGroupID:
+		return m.OldGroupID(ctx)
+	case carpoolbillingrequest.FieldTermID:
+		return m.OldTermID(ctx)
+	case carpoolbillingrequest.FieldCycleID:
+		return m.OldCycleID(ctx)
+	case carpoolbillingrequest.FieldAdmittedAt:
+		return m.OldAdmittedAt(ctx)
+	case carpoolbillingrequest.FieldStatus:
+		return m.OldStatus(ctx)
+	case carpoolbillingrequest.FieldRequestFingerprint:
+		return m.OldRequestFingerprint(ctx)
+	case carpoolbillingrequest.FieldBillingPayload:
+		return m.OldBillingPayload(ctx)
+	case carpoolbillingrequest.FieldActualCostUsd:
+		return m.OldActualCostUsd(ctx)
+	case carpoolbillingrequest.FieldRetryCount:
+		return m.OldRetryCount(ctx)
+	case carpoolbillingrequest.FieldLastError:
+		return m.OldLastError(ctx)
+	case carpoolbillingrequest.FieldReceiptRecordedAt:
+		return m.OldReceiptRecordedAt(ctx)
+	case carpoolbillingrequest.FieldSettledAt:
+		return m.OldSettledAt(ctx)
+	case carpoolbillingrequest.FieldResolution:
+		return m.OldResolution(ctx)
+	case carpoolbillingrequest.FieldResolvedAt:
+		return m.OldResolvedAt(ctx)
+	case carpoolbillingrequest.FieldResolvedBy:
+		return m.OldResolvedBy(ctx)
+	case carpoolbillingrequest.FieldResolutionReason:
+		return m.OldResolutionReason(ctx)
+	case carpoolbillingrequest.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case carpoolbillingrequest.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolBillingRequest field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolBillingRequestMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolbillingrequest.FieldRequestID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestID(v)
+		return nil
+	case carpoolbillingrequest.FieldAPIKeyID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAPIKeyID(v)
+		return nil
+	case carpoolbillingrequest.FieldUserID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case carpoolbillingrequest.FieldGroupID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupID(v)
+		return nil
+	case carpoolbillingrequest.FieldTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTermID(v)
+		return nil
+	case carpoolbillingrequest.FieldCycleID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCycleID(v)
+		return nil
+	case carpoolbillingrequest.FieldAdmittedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAdmittedAt(v)
+		return nil
+	case carpoolbillingrequest.FieldStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case carpoolbillingrequest.FieldRequestFingerprint:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestFingerprint(v)
+		return nil
+	case carpoolbillingrequest.FieldBillingPayload:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBillingPayload(v)
+		return nil
+	case carpoolbillingrequest.FieldActualCostUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActualCostUsd(v)
+		return nil
+	case carpoolbillingrequest.FieldRetryCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRetryCount(v)
+		return nil
+	case carpoolbillingrequest.FieldLastError:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastError(v)
+		return nil
+	case carpoolbillingrequest.FieldReceiptRecordedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReceiptRecordedAt(v)
+		return nil
+	case carpoolbillingrequest.FieldSettledAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSettledAt(v)
+		return nil
+	case carpoolbillingrequest.FieldResolution:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResolution(v)
+		return nil
+	case carpoolbillingrequest.FieldResolvedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResolvedAt(v)
+		return nil
+	case carpoolbillingrequest.FieldResolvedBy:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResolvedBy(v)
+		return nil
+	case carpoolbillingrequest.FieldResolutionReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResolutionReason(v)
+		return nil
+	case carpoolbillingrequest.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case carpoolbillingrequest.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolBillingRequest field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolBillingRequestMutation) AddedFields() []string {
+	var fields []string
+	if m.addapi_key_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldAPIKeyID)
+	}
+	if m.adduser_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldUserID)
+	}
+	if m.addgroup_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldGroupID)
+	}
+	if m.addterm_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldTermID)
+	}
+	if m.addcycle_id != nil {
+		fields = append(fields, carpoolbillingrequest.FieldCycleID)
+	}
+	if m.addactual_cost_usd != nil {
+		fields = append(fields, carpoolbillingrequest.FieldActualCostUsd)
+	}
+	if m.addretry_count != nil {
+		fields = append(fields, carpoolbillingrequest.FieldRetryCount)
+	}
+	if m.addresolved_by != nil {
+		fields = append(fields, carpoolbillingrequest.FieldResolvedBy)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolBillingRequestMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolbillingrequest.FieldAPIKeyID:
+		return m.AddedAPIKeyID()
+	case carpoolbillingrequest.FieldUserID:
+		return m.AddedUserID()
+	case carpoolbillingrequest.FieldGroupID:
+		return m.AddedGroupID()
+	case carpoolbillingrequest.FieldTermID:
+		return m.AddedTermID()
+	case carpoolbillingrequest.FieldCycleID:
+		return m.AddedCycleID()
+	case carpoolbillingrequest.FieldActualCostUsd:
+		return m.AddedActualCostUsd()
+	case carpoolbillingrequest.FieldRetryCount:
+		return m.AddedRetryCount()
+	case carpoolbillingrequest.FieldResolvedBy:
+		return m.AddedResolvedBy()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolBillingRequestMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolbillingrequest.FieldAPIKeyID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAPIKeyID(v)
+		return nil
+	case carpoolbillingrequest.FieldUserID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUserID(v)
+		return nil
+	case carpoolbillingrequest.FieldGroupID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddGroupID(v)
+		return nil
+	case carpoolbillingrequest.FieldTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTermID(v)
+		return nil
+	case carpoolbillingrequest.FieldCycleID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCycleID(v)
+		return nil
+	case carpoolbillingrequest.FieldActualCostUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddActualCostUsd(v)
+		return nil
+	case carpoolbillingrequest.FieldRetryCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRetryCount(v)
+		return nil
+	case carpoolbillingrequest.FieldResolvedBy:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddResolvedBy(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolBillingRequest numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolBillingRequestMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(carpoolbillingrequest.FieldBillingPayload) {
+		fields = append(fields, carpoolbillingrequest.FieldBillingPayload)
+	}
+	if m.FieldCleared(carpoolbillingrequest.FieldActualCostUsd) {
+		fields = append(fields, carpoolbillingrequest.FieldActualCostUsd)
+	}
+	if m.FieldCleared(carpoolbillingrequest.FieldLastError) {
+		fields = append(fields, carpoolbillingrequest.FieldLastError)
+	}
+	if m.FieldCleared(carpoolbillingrequest.FieldReceiptRecordedAt) {
+		fields = append(fields, carpoolbillingrequest.FieldReceiptRecordedAt)
+	}
+	if m.FieldCleared(carpoolbillingrequest.FieldSettledAt) {
+		fields = append(fields, carpoolbillingrequest.FieldSettledAt)
+	}
+	if m.FieldCleared(carpoolbillingrequest.FieldResolution) {
+		fields = append(fields, carpoolbillingrequest.FieldResolution)
+	}
+	if m.FieldCleared(carpoolbillingrequest.FieldResolvedAt) {
+		fields = append(fields, carpoolbillingrequest.FieldResolvedAt)
+	}
+	if m.FieldCleared(carpoolbillingrequest.FieldResolvedBy) {
+		fields = append(fields, carpoolbillingrequest.FieldResolvedBy)
+	}
+	if m.FieldCleared(carpoolbillingrequest.FieldResolutionReason) {
+		fields = append(fields, carpoolbillingrequest.FieldResolutionReason)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolBillingRequestMutation) ClearField(name string) error {
+	switch name {
+	case carpoolbillingrequest.FieldBillingPayload:
+		m.ClearBillingPayload()
+		return nil
+	case carpoolbillingrequest.FieldActualCostUsd:
+		m.ClearActualCostUsd()
+		return nil
+	case carpoolbillingrequest.FieldLastError:
+		m.ClearLastError()
+		return nil
+	case carpoolbillingrequest.FieldReceiptRecordedAt:
+		m.ClearReceiptRecordedAt()
+		return nil
+	case carpoolbillingrequest.FieldSettledAt:
+		m.ClearSettledAt()
+		return nil
+	case carpoolbillingrequest.FieldResolution:
+		m.ClearResolution()
+		return nil
+	case carpoolbillingrequest.FieldResolvedAt:
+		m.ClearResolvedAt()
+		return nil
+	case carpoolbillingrequest.FieldResolvedBy:
+		m.ClearResolvedBy()
+		return nil
+	case carpoolbillingrequest.FieldResolutionReason:
+		m.ClearResolutionReason()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolBillingRequest nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolBillingRequestMutation) ResetField(name string) error {
+	switch name {
+	case carpoolbillingrequest.FieldRequestID:
+		m.ResetRequestID()
+		return nil
+	case carpoolbillingrequest.FieldAPIKeyID:
+		m.ResetAPIKeyID()
+		return nil
+	case carpoolbillingrequest.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case carpoolbillingrequest.FieldGroupID:
+		m.ResetGroupID()
+		return nil
+	case carpoolbillingrequest.FieldTermID:
+		m.ResetTermID()
+		return nil
+	case carpoolbillingrequest.FieldCycleID:
+		m.ResetCycleID()
+		return nil
+	case carpoolbillingrequest.FieldAdmittedAt:
+		m.ResetAdmittedAt()
+		return nil
+	case carpoolbillingrequest.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case carpoolbillingrequest.FieldRequestFingerprint:
+		m.ResetRequestFingerprint()
+		return nil
+	case carpoolbillingrequest.FieldBillingPayload:
+		m.ResetBillingPayload()
+		return nil
+	case carpoolbillingrequest.FieldActualCostUsd:
+		m.ResetActualCostUsd()
+		return nil
+	case carpoolbillingrequest.FieldRetryCount:
+		m.ResetRetryCount()
+		return nil
+	case carpoolbillingrequest.FieldLastError:
+		m.ResetLastError()
+		return nil
+	case carpoolbillingrequest.FieldReceiptRecordedAt:
+		m.ResetReceiptRecordedAt()
+		return nil
+	case carpoolbillingrequest.FieldSettledAt:
+		m.ResetSettledAt()
+		return nil
+	case carpoolbillingrequest.FieldResolution:
+		m.ResetResolution()
+		return nil
+	case carpoolbillingrequest.FieldResolvedAt:
+		m.ResetResolvedAt()
+		return nil
+	case carpoolbillingrequest.FieldResolvedBy:
+		m.ResetResolvedBy()
+		return nil
+	case carpoolbillingrequest.FieldResolutionReason:
+		m.ResetResolutionReason()
+		return nil
+	case carpoolbillingrequest.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case carpoolbillingrequest.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolBillingRequest field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolBillingRequestMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolBillingRequestMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolBillingRequestMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolBillingRequestMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolBillingRequestMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolBillingRequestMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolBillingRequest unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolBillingRequestMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolBillingRequest edge %s", name)
+}
+
+// CarpoolCycleMutation represents an operation that mutates the CarpoolCycle nodes in the graph.
+type CarpoolCycleMutation struct {
+	config
+	op                    Op
+	typ                   string
+	id                    *int64
+	term_id               *int64
+	addterm_id            *int64
+	cycle_no              *int
+	addcycle_no           *int
+	starts_at             *time.Time
+	ends_at               *time.Time
+	base_quota_usd        *float64
+	addbase_quota_usd     *float64
+	base_balance_usd      *float64
+	addbase_balance_usd   *float64
+	boost_balance_usd     *float64
+	addboost_balance_usd  *float64
+	manual_balance_usd    *float64
+	addmanual_balance_usd *float64
+	state                 *string
+	revision              *int64
+	addrevision           *int64
+	activated_at          *time.Time
+	closed_at             *time.Time
+	created_at            *time.Time
+	updated_at            *time.Time
+	clearedFields         map[string]struct{}
+	done                  bool
+	oldValue              func(context.Context) (*CarpoolCycle, error)
+	predicates            []predicate.CarpoolCycle
+}
+
+var _ ent.Mutation = (*CarpoolCycleMutation)(nil)
+
+// carpoolcycleOption allows management of the mutation configuration using functional options.
+type carpoolcycleOption func(*CarpoolCycleMutation)
+
+// newCarpoolCycleMutation creates new mutation for the CarpoolCycle entity.
+func newCarpoolCycleMutation(c config, op Op, opts ...carpoolcycleOption) *CarpoolCycleMutation {
+	m := &CarpoolCycleMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolCycle,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolCycleID sets the ID field of the mutation.
+func withCarpoolCycleID(id int64) carpoolcycleOption {
+	return func(m *CarpoolCycleMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolCycle
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolCycle, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolCycle.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolCycle sets the old CarpoolCycle of the mutation.
+func withCarpoolCycle(node *CarpoolCycle) carpoolcycleOption {
+	return func(m *CarpoolCycleMutation) {
+		m.oldValue = func(context.Context) (*CarpoolCycle, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolCycleMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolCycleMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolCycleMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolCycleMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolCycle.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetTermID sets the "term_id" field.
+func (m *CarpoolCycleMutation) SetTermID(i int64) {
+	m.term_id = &i
+	m.addterm_id = nil
+}
+
+// TermID returns the value of the "term_id" field in the mutation.
+func (m *CarpoolCycleMutation) TermID() (r int64, exists bool) {
+	v := m.term_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTermID returns the old "term_id" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldTermID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTermID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTermID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTermID: %w", err)
+	}
+	return oldValue.TermID, nil
+}
+
+// AddTermID adds i to the "term_id" field.
+func (m *CarpoolCycleMutation) AddTermID(i int64) {
+	if m.addterm_id != nil {
+		*m.addterm_id += i
+	} else {
+		m.addterm_id = &i
+	}
+}
+
+// AddedTermID returns the value that was added to the "term_id" field in this mutation.
+func (m *CarpoolCycleMutation) AddedTermID() (r int64, exists bool) {
+	v := m.addterm_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTermID resets all changes to the "term_id" field.
+func (m *CarpoolCycleMutation) ResetTermID() {
+	m.term_id = nil
+	m.addterm_id = nil
+}
+
+// SetCycleNo sets the "cycle_no" field.
+func (m *CarpoolCycleMutation) SetCycleNo(i int) {
+	m.cycle_no = &i
+	m.addcycle_no = nil
+}
+
+// CycleNo returns the value of the "cycle_no" field in the mutation.
+func (m *CarpoolCycleMutation) CycleNo() (r int, exists bool) {
+	v := m.cycle_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCycleNo returns the old "cycle_no" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldCycleNo(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCycleNo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCycleNo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCycleNo: %w", err)
+	}
+	return oldValue.CycleNo, nil
+}
+
+// AddCycleNo adds i to the "cycle_no" field.
+func (m *CarpoolCycleMutation) AddCycleNo(i int) {
+	if m.addcycle_no != nil {
+		*m.addcycle_no += i
+	} else {
+		m.addcycle_no = &i
+	}
+}
+
+// AddedCycleNo returns the value that was added to the "cycle_no" field in this mutation.
+func (m *CarpoolCycleMutation) AddedCycleNo() (r int, exists bool) {
+	v := m.addcycle_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCycleNo resets all changes to the "cycle_no" field.
+func (m *CarpoolCycleMutation) ResetCycleNo() {
+	m.cycle_no = nil
+	m.addcycle_no = nil
+}
+
+// SetStartsAt sets the "starts_at" field.
+func (m *CarpoolCycleMutation) SetStartsAt(t time.Time) {
+	m.starts_at = &t
+}
+
+// StartsAt returns the value of the "starts_at" field in the mutation.
+func (m *CarpoolCycleMutation) StartsAt() (r time.Time, exists bool) {
+	v := m.starts_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStartsAt returns the old "starts_at" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldStartsAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStartsAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStartsAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStartsAt: %w", err)
+	}
+	return oldValue.StartsAt, nil
+}
+
+// ResetStartsAt resets all changes to the "starts_at" field.
+func (m *CarpoolCycleMutation) ResetStartsAt() {
+	m.starts_at = nil
+}
+
+// SetEndsAt sets the "ends_at" field.
+func (m *CarpoolCycleMutation) SetEndsAt(t time.Time) {
+	m.ends_at = &t
+}
+
+// EndsAt returns the value of the "ends_at" field in the mutation.
+func (m *CarpoolCycleMutation) EndsAt() (r time.Time, exists bool) {
+	v := m.ends_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEndsAt returns the old "ends_at" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldEndsAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEndsAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEndsAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEndsAt: %w", err)
+	}
+	return oldValue.EndsAt, nil
+}
+
+// ResetEndsAt resets all changes to the "ends_at" field.
+func (m *CarpoolCycleMutation) ResetEndsAt() {
+	m.ends_at = nil
+}
+
+// SetBaseQuotaUsd sets the "base_quota_usd" field.
+func (m *CarpoolCycleMutation) SetBaseQuotaUsd(f float64) {
+	m.base_quota_usd = &f
+	m.addbase_quota_usd = nil
+}
+
+// BaseQuotaUsd returns the value of the "base_quota_usd" field in the mutation.
+func (m *CarpoolCycleMutation) BaseQuotaUsd() (r float64, exists bool) {
+	v := m.base_quota_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBaseQuotaUsd returns the old "base_quota_usd" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldBaseQuotaUsd(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBaseQuotaUsd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBaseQuotaUsd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBaseQuotaUsd: %w", err)
+	}
+	return oldValue.BaseQuotaUsd, nil
+}
+
+// AddBaseQuotaUsd adds f to the "base_quota_usd" field.
+func (m *CarpoolCycleMutation) AddBaseQuotaUsd(f float64) {
+	if m.addbase_quota_usd != nil {
+		*m.addbase_quota_usd += f
+	} else {
+		m.addbase_quota_usd = &f
+	}
+}
+
+// AddedBaseQuotaUsd returns the value that was added to the "base_quota_usd" field in this mutation.
+func (m *CarpoolCycleMutation) AddedBaseQuotaUsd() (r float64, exists bool) {
+	v := m.addbase_quota_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBaseQuotaUsd resets all changes to the "base_quota_usd" field.
+func (m *CarpoolCycleMutation) ResetBaseQuotaUsd() {
+	m.base_quota_usd = nil
+	m.addbase_quota_usd = nil
+}
+
+// SetBaseBalanceUsd sets the "base_balance_usd" field.
+func (m *CarpoolCycleMutation) SetBaseBalanceUsd(f float64) {
+	m.base_balance_usd = &f
+	m.addbase_balance_usd = nil
+}
+
+// BaseBalanceUsd returns the value of the "base_balance_usd" field in the mutation.
+func (m *CarpoolCycleMutation) BaseBalanceUsd() (r float64, exists bool) {
+	v := m.base_balance_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBaseBalanceUsd returns the old "base_balance_usd" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldBaseBalanceUsd(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBaseBalanceUsd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBaseBalanceUsd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBaseBalanceUsd: %w", err)
+	}
+	return oldValue.BaseBalanceUsd, nil
+}
+
+// AddBaseBalanceUsd adds f to the "base_balance_usd" field.
+func (m *CarpoolCycleMutation) AddBaseBalanceUsd(f float64) {
+	if m.addbase_balance_usd != nil {
+		*m.addbase_balance_usd += f
+	} else {
+		m.addbase_balance_usd = &f
+	}
+}
+
+// AddedBaseBalanceUsd returns the value that was added to the "base_balance_usd" field in this mutation.
+func (m *CarpoolCycleMutation) AddedBaseBalanceUsd() (r float64, exists bool) {
+	v := m.addbase_balance_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBaseBalanceUsd resets all changes to the "base_balance_usd" field.
+func (m *CarpoolCycleMutation) ResetBaseBalanceUsd() {
+	m.base_balance_usd = nil
+	m.addbase_balance_usd = nil
+}
+
+// SetBoostBalanceUsd sets the "boost_balance_usd" field.
+func (m *CarpoolCycleMutation) SetBoostBalanceUsd(f float64) {
+	m.boost_balance_usd = &f
+	m.addboost_balance_usd = nil
+}
+
+// BoostBalanceUsd returns the value of the "boost_balance_usd" field in the mutation.
+func (m *CarpoolCycleMutation) BoostBalanceUsd() (r float64, exists bool) {
+	v := m.boost_balance_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBoostBalanceUsd returns the old "boost_balance_usd" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldBoostBalanceUsd(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBoostBalanceUsd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBoostBalanceUsd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBoostBalanceUsd: %w", err)
+	}
+	return oldValue.BoostBalanceUsd, nil
+}
+
+// AddBoostBalanceUsd adds f to the "boost_balance_usd" field.
+func (m *CarpoolCycleMutation) AddBoostBalanceUsd(f float64) {
+	if m.addboost_balance_usd != nil {
+		*m.addboost_balance_usd += f
+	} else {
+		m.addboost_balance_usd = &f
+	}
+}
+
+// AddedBoostBalanceUsd returns the value that was added to the "boost_balance_usd" field in this mutation.
+func (m *CarpoolCycleMutation) AddedBoostBalanceUsd() (r float64, exists bool) {
+	v := m.addboost_balance_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBoostBalanceUsd resets all changes to the "boost_balance_usd" field.
+func (m *CarpoolCycleMutation) ResetBoostBalanceUsd() {
+	m.boost_balance_usd = nil
+	m.addboost_balance_usd = nil
+}
+
+// SetManualBalanceUsd sets the "manual_balance_usd" field.
+func (m *CarpoolCycleMutation) SetManualBalanceUsd(f float64) {
+	m.manual_balance_usd = &f
+	m.addmanual_balance_usd = nil
+}
+
+// ManualBalanceUsd returns the value of the "manual_balance_usd" field in the mutation.
+func (m *CarpoolCycleMutation) ManualBalanceUsd() (r float64, exists bool) {
+	v := m.manual_balance_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldManualBalanceUsd returns the old "manual_balance_usd" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldManualBalanceUsd(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldManualBalanceUsd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldManualBalanceUsd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldManualBalanceUsd: %w", err)
+	}
+	return oldValue.ManualBalanceUsd, nil
+}
+
+// AddManualBalanceUsd adds f to the "manual_balance_usd" field.
+func (m *CarpoolCycleMutation) AddManualBalanceUsd(f float64) {
+	if m.addmanual_balance_usd != nil {
+		*m.addmanual_balance_usd += f
+	} else {
+		m.addmanual_balance_usd = &f
+	}
+}
+
+// AddedManualBalanceUsd returns the value that was added to the "manual_balance_usd" field in this mutation.
+func (m *CarpoolCycleMutation) AddedManualBalanceUsd() (r float64, exists bool) {
+	v := m.addmanual_balance_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetManualBalanceUsd resets all changes to the "manual_balance_usd" field.
+func (m *CarpoolCycleMutation) ResetManualBalanceUsd() {
+	m.manual_balance_usd = nil
+	m.addmanual_balance_usd = nil
+}
+
+// SetState sets the "state" field.
+func (m *CarpoolCycleMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *CarpoolCycleMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *CarpoolCycleMutation) ResetState() {
+	m.state = nil
+}
+
+// SetRevision sets the "revision" field.
+func (m *CarpoolCycleMutation) SetRevision(i int64) {
+	m.revision = &i
+	m.addrevision = nil
+}
+
+// Revision returns the value of the "revision" field in the mutation.
+func (m *CarpoolCycleMutation) Revision() (r int64, exists bool) {
+	v := m.revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRevision returns the old "revision" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldRevision(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRevision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRevision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRevision: %w", err)
+	}
+	return oldValue.Revision, nil
+}
+
+// AddRevision adds i to the "revision" field.
+func (m *CarpoolCycleMutation) AddRevision(i int64) {
+	if m.addrevision != nil {
+		*m.addrevision += i
+	} else {
+		m.addrevision = &i
+	}
+}
+
+// AddedRevision returns the value that was added to the "revision" field in this mutation.
+func (m *CarpoolCycleMutation) AddedRevision() (r int64, exists bool) {
+	v := m.addrevision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRevision resets all changes to the "revision" field.
+func (m *CarpoolCycleMutation) ResetRevision() {
+	m.revision = nil
+	m.addrevision = nil
+}
+
+// SetActivatedAt sets the "activated_at" field.
+func (m *CarpoolCycleMutation) SetActivatedAt(t time.Time) {
+	m.activated_at = &t
+}
+
+// ActivatedAt returns the value of the "activated_at" field in the mutation.
+func (m *CarpoolCycleMutation) ActivatedAt() (r time.Time, exists bool) {
+	v := m.activated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActivatedAt returns the old "activated_at" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldActivatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActivatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActivatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActivatedAt: %w", err)
+	}
+	return oldValue.ActivatedAt, nil
+}
+
+// ClearActivatedAt clears the value of the "activated_at" field.
+func (m *CarpoolCycleMutation) ClearActivatedAt() {
+	m.activated_at = nil
+	m.clearedFields[carpoolcycle.FieldActivatedAt] = struct{}{}
+}
+
+// ActivatedAtCleared returns if the "activated_at" field was cleared in this mutation.
+func (m *CarpoolCycleMutation) ActivatedAtCleared() bool {
+	_, ok := m.clearedFields[carpoolcycle.FieldActivatedAt]
+	return ok
+}
+
+// ResetActivatedAt resets all changes to the "activated_at" field.
+func (m *CarpoolCycleMutation) ResetActivatedAt() {
+	m.activated_at = nil
+	delete(m.clearedFields, carpoolcycle.FieldActivatedAt)
+}
+
+// SetClosedAt sets the "closed_at" field.
+func (m *CarpoolCycleMutation) SetClosedAt(t time.Time) {
+	m.closed_at = &t
+}
+
+// ClosedAt returns the value of the "closed_at" field in the mutation.
+func (m *CarpoolCycleMutation) ClosedAt() (r time.Time, exists bool) {
+	v := m.closed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldClosedAt returns the old "closed_at" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldClosedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldClosedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldClosedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldClosedAt: %w", err)
+	}
+	return oldValue.ClosedAt, nil
+}
+
+// ClearClosedAt clears the value of the "closed_at" field.
+func (m *CarpoolCycleMutation) ClearClosedAt() {
+	m.closed_at = nil
+	m.clearedFields[carpoolcycle.FieldClosedAt] = struct{}{}
+}
+
+// ClosedAtCleared returns if the "closed_at" field was cleared in this mutation.
+func (m *CarpoolCycleMutation) ClosedAtCleared() bool {
+	_, ok := m.clearedFields[carpoolcycle.FieldClosedAt]
+	return ok
+}
+
+// ResetClosedAt resets all changes to the "closed_at" field.
+func (m *CarpoolCycleMutation) ResetClosedAt() {
+	m.closed_at = nil
+	delete(m.clearedFields, carpoolcycle.FieldClosedAt)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolCycleMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolCycleMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolCycleMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CarpoolCycleMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CarpoolCycleMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CarpoolCycle entity.
+// If the CarpoolCycle object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolCycleMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CarpoolCycleMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the CarpoolCycleMutation builder.
+func (m *CarpoolCycleMutation) Where(ps ...predicate.CarpoolCycle) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolCycleMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolCycleMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolCycle, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolCycleMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolCycleMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolCycle).
+func (m *CarpoolCycleMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolCycleMutation) Fields() []string {
+	fields := make([]string, 0, 14)
+	if m.term_id != nil {
+		fields = append(fields, carpoolcycle.FieldTermID)
+	}
+	if m.cycle_no != nil {
+		fields = append(fields, carpoolcycle.FieldCycleNo)
+	}
+	if m.starts_at != nil {
+		fields = append(fields, carpoolcycle.FieldStartsAt)
+	}
+	if m.ends_at != nil {
+		fields = append(fields, carpoolcycle.FieldEndsAt)
+	}
+	if m.base_quota_usd != nil {
+		fields = append(fields, carpoolcycle.FieldBaseQuotaUsd)
+	}
+	if m.base_balance_usd != nil {
+		fields = append(fields, carpoolcycle.FieldBaseBalanceUsd)
+	}
+	if m.boost_balance_usd != nil {
+		fields = append(fields, carpoolcycle.FieldBoostBalanceUsd)
+	}
+	if m.manual_balance_usd != nil {
+		fields = append(fields, carpoolcycle.FieldManualBalanceUsd)
+	}
+	if m.state != nil {
+		fields = append(fields, carpoolcycle.FieldState)
+	}
+	if m.revision != nil {
+		fields = append(fields, carpoolcycle.FieldRevision)
+	}
+	if m.activated_at != nil {
+		fields = append(fields, carpoolcycle.FieldActivatedAt)
+	}
+	if m.closed_at != nil {
+		fields = append(fields, carpoolcycle.FieldClosedAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolcycle.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, carpoolcycle.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolCycleMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolcycle.FieldTermID:
+		return m.TermID()
+	case carpoolcycle.FieldCycleNo:
+		return m.CycleNo()
+	case carpoolcycle.FieldStartsAt:
+		return m.StartsAt()
+	case carpoolcycle.FieldEndsAt:
+		return m.EndsAt()
+	case carpoolcycle.FieldBaseQuotaUsd:
+		return m.BaseQuotaUsd()
+	case carpoolcycle.FieldBaseBalanceUsd:
+		return m.BaseBalanceUsd()
+	case carpoolcycle.FieldBoostBalanceUsd:
+		return m.BoostBalanceUsd()
+	case carpoolcycle.FieldManualBalanceUsd:
+		return m.ManualBalanceUsd()
+	case carpoolcycle.FieldState:
+		return m.State()
+	case carpoolcycle.FieldRevision:
+		return m.Revision()
+	case carpoolcycle.FieldActivatedAt:
+		return m.ActivatedAt()
+	case carpoolcycle.FieldClosedAt:
+		return m.ClosedAt()
+	case carpoolcycle.FieldCreatedAt:
+		return m.CreatedAt()
+	case carpoolcycle.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolCycleMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolcycle.FieldTermID:
+		return m.OldTermID(ctx)
+	case carpoolcycle.FieldCycleNo:
+		return m.OldCycleNo(ctx)
+	case carpoolcycle.FieldStartsAt:
+		return m.OldStartsAt(ctx)
+	case carpoolcycle.FieldEndsAt:
+		return m.OldEndsAt(ctx)
+	case carpoolcycle.FieldBaseQuotaUsd:
+		return m.OldBaseQuotaUsd(ctx)
+	case carpoolcycle.FieldBaseBalanceUsd:
+		return m.OldBaseBalanceUsd(ctx)
+	case carpoolcycle.FieldBoostBalanceUsd:
+		return m.OldBoostBalanceUsd(ctx)
+	case carpoolcycle.FieldManualBalanceUsd:
+		return m.OldManualBalanceUsd(ctx)
+	case carpoolcycle.FieldState:
+		return m.OldState(ctx)
+	case carpoolcycle.FieldRevision:
+		return m.OldRevision(ctx)
+	case carpoolcycle.FieldActivatedAt:
+		return m.OldActivatedAt(ctx)
+	case carpoolcycle.FieldClosedAt:
+		return m.OldClosedAt(ctx)
+	case carpoolcycle.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case carpoolcycle.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolCycle field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolCycleMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolcycle.FieldTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTermID(v)
+		return nil
+	case carpoolcycle.FieldCycleNo:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCycleNo(v)
+		return nil
+	case carpoolcycle.FieldStartsAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStartsAt(v)
+		return nil
+	case carpoolcycle.FieldEndsAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEndsAt(v)
+		return nil
+	case carpoolcycle.FieldBaseQuotaUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBaseQuotaUsd(v)
+		return nil
+	case carpoolcycle.FieldBaseBalanceUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBaseBalanceUsd(v)
+		return nil
+	case carpoolcycle.FieldBoostBalanceUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBoostBalanceUsd(v)
+		return nil
+	case carpoolcycle.FieldManualBalanceUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetManualBalanceUsd(v)
+		return nil
+	case carpoolcycle.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case carpoolcycle.FieldRevision:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRevision(v)
+		return nil
+	case carpoolcycle.FieldActivatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActivatedAt(v)
+		return nil
+	case carpoolcycle.FieldClosedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetClosedAt(v)
+		return nil
+	case carpoolcycle.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case carpoolcycle.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolCycle field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolCycleMutation) AddedFields() []string {
+	var fields []string
+	if m.addterm_id != nil {
+		fields = append(fields, carpoolcycle.FieldTermID)
+	}
+	if m.addcycle_no != nil {
+		fields = append(fields, carpoolcycle.FieldCycleNo)
+	}
+	if m.addbase_quota_usd != nil {
+		fields = append(fields, carpoolcycle.FieldBaseQuotaUsd)
+	}
+	if m.addbase_balance_usd != nil {
+		fields = append(fields, carpoolcycle.FieldBaseBalanceUsd)
+	}
+	if m.addboost_balance_usd != nil {
+		fields = append(fields, carpoolcycle.FieldBoostBalanceUsd)
+	}
+	if m.addmanual_balance_usd != nil {
+		fields = append(fields, carpoolcycle.FieldManualBalanceUsd)
+	}
+	if m.addrevision != nil {
+		fields = append(fields, carpoolcycle.FieldRevision)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolCycleMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolcycle.FieldTermID:
+		return m.AddedTermID()
+	case carpoolcycle.FieldCycleNo:
+		return m.AddedCycleNo()
+	case carpoolcycle.FieldBaseQuotaUsd:
+		return m.AddedBaseQuotaUsd()
+	case carpoolcycle.FieldBaseBalanceUsd:
+		return m.AddedBaseBalanceUsd()
+	case carpoolcycle.FieldBoostBalanceUsd:
+		return m.AddedBoostBalanceUsd()
+	case carpoolcycle.FieldManualBalanceUsd:
+		return m.AddedManualBalanceUsd()
+	case carpoolcycle.FieldRevision:
+		return m.AddedRevision()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolCycleMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolcycle.FieldTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTermID(v)
+		return nil
+	case carpoolcycle.FieldCycleNo:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCycleNo(v)
+		return nil
+	case carpoolcycle.FieldBaseQuotaUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBaseQuotaUsd(v)
+		return nil
+	case carpoolcycle.FieldBaseBalanceUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBaseBalanceUsd(v)
+		return nil
+	case carpoolcycle.FieldBoostBalanceUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBoostBalanceUsd(v)
+		return nil
+	case carpoolcycle.FieldManualBalanceUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddManualBalanceUsd(v)
+		return nil
+	case carpoolcycle.FieldRevision:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRevision(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolCycle numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolCycleMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(carpoolcycle.FieldActivatedAt) {
+		fields = append(fields, carpoolcycle.FieldActivatedAt)
+	}
+	if m.FieldCleared(carpoolcycle.FieldClosedAt) {
+		fields = append(fields, carpoolcycle.FieldClosedAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolCycleMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolCycleMutation) ClearField(name string) error {
+	switch name {
+	case carpoolcycle.FieldActivatedAt:
+		m.ClearActivatedAt()
+		return nil
+	case carpoolcycle.FieldClosedAt:
+		m.ClearClosedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolCycle nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolCycleMutation) ResetField(name string) error {
+	switch name {
+	case carpoolcycle.FieldTermID:
+		m.ResetTermID()
+		return nil
+	case carpoolcycle.FieldCycleNo:
+		m.ResetCycleNo()
+		return nil
+	case carpoolcycle.FieldStartsAt:
+		m.ResetStartsAt()
+		return nil
+	case carpoolcycle.FieldEndsAt:
+		m.ResetEndsAt()
+		return nil
+	case carpoolcycle.FieldBaseQuotaUsd:
+		m.ResetBaseQuotaUsd()
+		return nil
+	case carpoolcycle.FieldBaseBalanceUsd:
+		m.ResetBaseBalanceUsd()
+		return nil
+	case carpoolcycle.FieldBoostBalanceUsd:
+		m.ResetBoostBalanceUsd()
+		return nil
+	case carpoolcycle.FieldManualBalanceUsd:
+		m.ResetManualBalanceUsd()
+		return nil
+	case carpoolcycle.FieldState:
+		m.ResetState()
+		return nil
+	case carpoolcycle.FieldRevision:
+		m.ResetRevision()
+		return nil
+	case carpoolcycle.FieldActivatedAt:
+		m.ResetActivatedAt()
+		return nil
+	case carpoolcycle.FieldClosedAt:
+		m.ResetClosedAt()
+		return nil
+	case carpoolcycle.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case carpoolcycle.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolCycle field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolCycleMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolCycleMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolCycleMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolCycleMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolCycleMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolCycleMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolCycleMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolCycle unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolCycleMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolCycle edge %s", name)
+}
+
+// CarpoolLedgerMutation represents an operation that mutates the CarpoolLedger nodes in the graph.
+type CarpoolLedgerMutation struct {
+	config
+	op                    Op
+	typ                   string
+	id                    *int64
+	user_id               *int64
+	adduser_id            *int64
+	term_id               *int64
+	addterm_id            *int64
+	cycle_id              *int64
+	addcycle_id           *int64
+	event_type            *string
+	bucket                *string
+	delta_usd             *float64
+	adddelta_usd          *float64
+	event_key             *string
+	request_id            *string
+	api_key_id            *int64
+	addapi_key_id         *int64
+	reset_batch_id        *int64
+	addreset_batch_id     *int64
+	boost_slot            *int
+	addboost_slot         *int
+	actor_id              *int64
+	addactor_id           *int64
+	reverses_ledger_id    *int64
+	addreverses_ledger_id *int64
+	reason                *string
+	effective_at          *time.Time
+	recorded_at           *time.Time
+	clearedFields         map[string]struct{}
+	done                  bool
+	oldValue              func(context.Context) (*CarpoolLedger, error)
+	predicates            []predicate.CarpoolLedger
+}
+
+var _ ent.Mutation = (*CarpoolLedgerMutation)(nil)
+
+// carpoolledgerOption allows management of the mutation configuration using functional options.
+type carpoolledgerOption func(*CarpoolLedgerMutation)
+
+// newCarpoolLedgerMutation creates new mutation for the CarpoolLedger entity.
+func newCarpoolLedgerMutation(c config, op Op, opts ...carpoolledgerOption) *CarpoolLedgerMutation {
+	m := &CarpoolLedgerMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolLedger,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolLedgerID sets the ID field of the mutation.
+func withCarpoolLedgerID(id int64) carpoolledgerOption {
+	return func(m *CarpoolLedgerMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolLedger
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolLedger, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolLedger.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolLedger sets the old CarpoolLedger of the mutation.
+func withCarpoolLedger(node *CarpoolLedger) carpoolledgerOption {
+	return func(m *CarpoolLedgerMutation) {
+		m.oldValue = func(context.Context) (*CarpoolLedger, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolLedgerMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolLedgerMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolLedgerMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolLedgerMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolLedger.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetUserID sets the "user_id" field.
+func (m *CarpoolLedgerMutation) SetUserID(i int64) {
+	m.user_id = &i
+	m.adduser_id = nil
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *CarpoolLedgerMutation) UserID() (r int64, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldUserID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// AddUserID adds i to the "user_id" field.
+func (m *CarpoolLedgerMutation) AddUserID(i int64) {
+	if m.adduser_id != nil {
+		*m.adduser_id += i
+	} else {
+		m.adduser_id = &i
+	}
+}
+
+// AddedUserID returns the value that was added to the "user_id" field in this mutation.
+func (m *CarpoolLedgerMutation) AddedUserID() (r int64, exists bool) {
+	v := m.adduser_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *CarpoolLedgerMutation) ResetUserID() {
+	m.user_id = nil
+	m.adduser_id = nil
+}
+
+// SetTermID sets the "term_id" field.
+func (m *CarpoolLedgerMutation) SetTermID(i int64) {
+	m.term_id = &i
+	m.addterm_id = nil
+}
+
+// TermID returns the value of the "term_id" field in the mutation.
+func (m *CarpoolLedgerMutation) TermID() (r int64, exists bool) {
+	v := m.term_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTermID returns the old "term_id" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldTermID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTermID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTermID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTermID: %w", err)
+	}
+	return oldValue.TermID, nil
+}
+
+// AddTermID adds i to the "term_id" field.
+func (m *CarpoolLedgerMutation) AddTermID(i int64) {
+	if m.addterm_id != nil {
+		*m.addterm_id += i
+	} else {
+		m.addterm_id = &i
+	}
+}
+
+// AddedTermID returns the value that was added to the "term_id" field in this mutation.
+func (m *CarpoolLedgerMutation) AddedTermID() (r int64, exists bool) {
+	v := m.addterm_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTermID resets all changes to the "term_id" field.
+func (m *CarpoolLedgerMutation) ResetTermID() {
+	m.term_id = nil
+	m.addterm_id = nil
+}
+
+// SetCycleID sets the "cycle_id" field.
+func (m *CarpoolLedgerMutation) SetCycleID(i int64) {
+	m.cycle_id = &i
+	m.addcycle_id = nil
+}
+
+// CycleID returns the value of the "cycle_id" field in the mutation.
+func (m *CarpoolLedgerMutation) CycleID() (r int64, exists bool) {
+	v := m.cycle_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCycleID returns the old "cycle_id" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldCycleID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCycleID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCycleID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCycleID: %w", err)
+	}
+	return oldValue.CycleID, nil
+}
+
+// AddCycleID adds i to the "cycle_id" field.
+func (m *CarpoolLedgerMutation) AddCycleID(i int64) {
+	if m.addcycle_id != nil {
+		*m.addcycle_id += i
+	} else {
+		m.addcycle_id = &i
+	}
+}
+
+// AddedCycleID returns the value that was added to the "cycle_id" field in this mutation.
+func (m *CarpoolLedgerMutation) AddedCycleID() (r int64, exists bool) {
+	v := m.addcycle_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCycleID resets all changes to the "cycle_id" field.
+func (m *CarpoolLedgerMutation) ResetCycleID() {
+	m.cycle_id = nil
+	m.addcycle_id = nil
+}
+
+// SetEventType sets the "event_type" field.
+func (m *CarpoolLedgerMutation) SetEventType(s string) {
+	m.event_type = &s
+}
+
+// EventType returns the value of the "event_type" field in the mutation.
+func (m *CarpoolLedgerMutation) EventType() (r string, exists bool) {
+	v := m.event_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEventType returns the old "event_type" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldEventType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEventType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEventType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEventType: %w", err)
+	}
+	return oldValue.EventType, nil
+}
+
+// ResetEventType resets all changes to the "event_type" field.
+func (m *CarpoolLedgerMutation) ResetEventType() {
+	m.event_type = nil
+}
+
+// SetBucket sets the "bucket" field.
+func (m *CarpoolLedgerMutation) SetBucket(s string) {
+	m.bucket = &s
+}
+
+// Bucket returns the value of the "bucket" field in the mutation.
+func (m *CarpoolLedgerMutation) Bucket() (r string, exists bool) {
+	v := m.bucket
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBucket returns the old "bucket" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldBucket(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBucket is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBucket requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBucket: %w", err)
+	}
+	return oldValue.Bucket, nil
+}
+
+// ResetBucket resets all changes to the "bucket" field.
+func (m *CarpoolLedgerMutation) ResetBucket() {
+	m.bucket = nil
+}
+
+// SetDeltaUsd sets the "delta_usd" field.
+func (m *CarpoolLedgerMutation) SetDeltaUsd(f float64) {
+	m.delta_usd = &f
+	m.adddelta_usd = nil
+}
+
+// DeltaUsd returns the value of the "delta_usd" field in the mutation.
+func (m *CarpoolLedgerMutation) DeltaUsd() (r float64, exists bool) {
+	v := m.delta_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeltaUsd returns the old "delta_usd" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldDeltaUsd(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeltaUsd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeltaUsd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeltaUsd: %w", err)
+	}
+	return oldValue.DeltaUsd, nil
+}
+
+// AddDeltaUsd adds f to the "delta_usd" field.
+func (m *CarpoolLedgerMutation) AddDeltaUsd(f float64) {
+	if m.adddelta_usd != nil {
+		*m.adddelta_usd += f
+	} else {
+		m.adddelta_usd = &f
+	}
+}
+
+// AddedDeltaUsd returns the value that was added to the "delta_usd" field in this mutation.
+func (m *CarpoolLedgerMutation) AddedDeltaUsd() (r float64, exists bool) {
+	v := m.adddelta_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeltaUsd resets all changes to the "delta_usd" field.
+func (m *CarpoolLedgerMutation) ResetDeltaUsd() {
+	m.delta_usd = nil
+	m.adddelta_usd = nil
+}
+
+// SetEventKey sets the "event_key" field.
+func (m *CarpoolLedgerMutation) SetEventKey(s string) {
+	m.event_key = &s
+}
+
+// EventKey returns the value of the "event_key" field in the mutation.
+func (m *CarpoolLedgerMutation) EventKey() (r string, exists bool) {
+	v := m.event_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEventKey returns the old "event_key" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldEventKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEventKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEventKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEventKey: %w", err)
+	}
+	return oldValue.EventKey, nil
+}
+
+// ResetEventKey resets all changes to the "event_key" field.
+func (m *CarpoolLedgerMutation) ResetEventKey() {
+	m.event_key = nil
+}
+
+// SetRequestID sets the "request_id" field.
+func (m *CarpoolLedgerMutation) SetRequestID(s string) {
+	m.request_id = &s
+}
+
+// RequestID returns the value of the "request_id" field in the mutation.
+func (m *CarpoolLedgerMutation) RequestID() (r string, exists bool) {
+	v := m.request_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestID returns the old "request_id" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldRequestID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestID: %w", err)
+	}
+	return oldValue.RequestID, nil
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (m *CarpoolLedgerMutation) ClearRequestID() {
+	m.request_id = nil
+	m.clearedFields[carpoolledger.FieldRequestID] = struct{}{}
+}
+
+// RequestIDCleared returns if the "request_id" field was cleared in this mutation.
+func (m *CarpoolLedgerMutation) RequestIDCleared() bool {
+	_, ok := m.clearedFields[carpoolledger.FieldRequestID]
+	return ok
+}
+
+// ResetRequestID resets all changes to the "request_id" field.
+func (m *CarpoolLedgerMutation) ResetRequestID() {
+	m.request_id = nil
+	delete(m.clearedFields, carpoolledger.FieldRequestID)
+}
+
+// SetAPIKeyID sets the "api_key_id" field.
+func (m *CarpoolLedgerMutation) SetAPIKeyID(i int64) {
+	m.api_key_id = &i
+	m.addapi_key_id = nil
+}
+
+// APIKeyID returns the value of the "api_key_id" field in the mutation.
+func (m *CarpoolLedgerMutation) APIKeyID() (r int64, exists bool) {
+	v := m.api_key_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAPIKeyID returns the old "api_key_id" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldAPIKeyID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAPIKeyID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAPIKeyID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAPIKeyID: %w", err)
+	}
+	return oldValue.APIKeyID, nil
+}
+
+// AddAPIKeyID adds i to the "api_key_id" field.
+func (m *CarpoolLedgerMutation) AddAPIKeyID(i int64) {
+	if m.addapi_key_id != nil {
+		*m.addapi_key_id += i
+	} else {
+		m.addapi_key_id = &i
+	}
+}
+
+// AddedAPIKeyID returns the value that was added to the "api_key_id" field in this mutation.
+func (m *CarpoolLedgerMutation) AddedAPIKeyID() (r int64, exists bool) {
+	v := m.addapi_key_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearAPIKeyID clears the value of the "api_key_id" field.
+func (m *CarpoolLedgerMutation) ClearAPIKeyID() {
+	m.api_key_id = nil
+	m.addapi_key_id = nil
+	m.clearedFields[carpoolledger.FieldAPIKeyID] = struct{}{}
+}
+
+// APIKeyIDCleared returns if the "api_key_id" field was cleared in this mutation.
+func (m *CarpoolLedgerMutation) APIKeyIDCleared() bool {
+	_, ok := m.clearedFields[carpoolledger.FieldAPIKeyID]
+	return ok
+}
+
+// ResetAPIKeyID resets all changes to the "api_key_id" field.
+func (m *CarpoolLedgerMutation) ResetAPIKeyID() {
+	m.api_key_id = nil
+	m.addapi_key_id = nil
+	delete(m.clearedFields, carpoolledger.FieldAPIKeyID)
+}
+
+// SetResetBatchID sets the "reset_batch_id" field.
+func (m *CarpoolLedgerMutation) SetResetBatchID(i int64) {
+	m.reset_batch_id = &i
+	m.addreset_batch_id = nil
+}
+
+// ResetBatchID returns the value of the "reset_batch_id" field in the mutation.
+func (m *CarpoolLedgerMutation) ResetBatchID() (r int64, exists bool) {
+	v := m.reset_batch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResetBatchID returns the old "reset_batch_id" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldResetBatchID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResetBatchID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResetBatchID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResetBatchID: %w", err)
+	}
+	return oldValue.ResetBatchID, nil
+}
+
+// AddResetBatchID adds i to the "reset_batch_id" field.
+func (m *CarpoolLedgerMutation) AddResetBatchID(i int64) {
+	if m.addreset_batch_id != nil {
+		*m.addreset_batch_id += i
+	} else {
+		m.addreset_batch_id = &i
+	}
+}
+
+// AddedResetBatchID returns the value that was added to the "reset_batch_id" field in this mutation.
+func (m *CarpoolLedgerMutation) AddedResetBatchID() (r int64, exists bool) {
+	v := m.addreset_batch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearResetBatchID clears the value of the "reset_batch_id" field.
+func (m *CarpoolLedgerMutation) ClearResetBatchID() {
+	m.reset_batch_id = nil
+	m.addreset_batch_id = nil
+	m.clearedFields[carpoolledger.FieldResetBatchID] = struct{}{}
+}
+
+// ResetBatchIDCleared returns if the "reset_batch_id" field was cleared in this mutation.
+func (m *CarpoolLedgerMutation) ResetBatchIDCleared() bool {
+	_, ok := m.clearedFields[carpoolledger.FieldResetBatchID]
+	return ok
+}
+
+// ResetResetBatchID resets all changes to the "reset_batch_id" field.
+func (m *CarpoolLedgerMutation) ResetResetBatchID() {
+	m.reset_batch_id = nil
+	m.addreset_batch_id = nil
+	delete(m.clearedFields, carpoolledger.FieldResetBatchID)
+}
+
+// SetBoostSlot sets the "boost_slot" field.
+func (m *CarpoolLedgerMutation) SetBoostSlot(i int) {
+	m.boost_slot = &i
+	m.addboost_slot = nil
+}
+
+// BoostSlot returns the value of the "boost_slot" field in the mutation.
+func (m *CarpoolLedgerMutation) BoostSlot() (r int, exists bool) {
+	v := m.boost_slot
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBoostSlot returns the old "boost_slot" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldBoostSlot(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBoostSlot is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBoostSlot requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBoostSlot: %w", err)
+	}
+	return oldValue.BoostSlot, nil
+}
+
+// AddBoostSlot adds i to the "boost_slot" field.
+func (m *CarpoolLedgerMutation) AddBoostSlot(i int) {
+	if m.addboost_slot != nil {
+		*m.addboost_slot += i
+	} else {
+		m.addboost_slot = &i
+	}
+}
+
+// AddedBoostSlot returns the value that was added to the "boost_slot" field in this mutation.
+func (m *CarpoolLedgerMutation) AddedBoostSlot() (r int, exists bool) {
+	v := m.addboost_slot
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearBoostSlot clears the value of the "boost_slot" field.
+func (m *CarpoolLedgerMutation) ClearBoostSlot() {
+	m.boost_slot = nil
+	m.addboost_slot = nil
+	m.clearedFields[carpoolledger.FieldBoostSlot] = struct{}{}
+}
+
+// BoostSlotCleared returns if the "boost_slot" field was cleared in this mutation.
+func (m *CarpoolLedgerMutation) BoostSlotCleared() bool {
+	_, ok := m.clearedFields[carpoolledger.FieldBoostSlot]
+	return ok
+}
+
+// ResetBoostSlot resets all changes to the "boost_slot" field.
+func (m *CarpoolLedgerMutation) ResetBoostSlot() {
+	m.boost_slot = nil
+	m.addboost_slot = nil
+	delete(m.clearedFields, carpoolledger.FieldBoostSlot)
+}
+
+// SetActorID sets the "actor_id" field.
+func (m *CarpoolLedgerMutation) SetActorID(i int64) {
+	m.actor_id = &i
+	m.addactor_id = nil
+}
+
+// ActorID returns the value of the "actor_id" field in the mutation.
+func (m *CarpoolLedgerMutation) ActorID() (r int64, exists bool) {
+	v := m.actor_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActorID returns the old "actor_id" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldActorID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActorID: %w", err)
+	}
+	return oldValue.ActorID, nil
+}
+
+// AddActorID adds i to the "actor_id" field.
+func (m *CarpoolLedgerMutation) AddActorID(i int64) {
+	if m.addactor_id != nil {
+		*m.addactor_id += i
+	} else {
+		m.addactor_id = &i
+	}
+}
+
+// AddedActorID returns the value that was added to the "actor_id" field in this mutation.
+func (m *CarpoolLedgerMutation) AddedActorID() (r int64, exists bool) {
+	v := m.addactor_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearActorID clears the value of the "actor_id" field.
+func (m *CarpoolLedgerMutation) ClearActorID() {
+	m.actor_id = nil
+	m.addactor_id = nil
+	m.clearedFields[carpoolledger.FieldActorID] = struct{}{}
+}
+
+// ActorIDCleared returns if the "actor_id" field was cleared in this mutation.
+func (m *CarpoolLedgerMutation) ActorIDCleared() bool {
+	_, ok := m.clearedFields[carpoolledger.FieldActorID]
+	return ok
+}
+
+// ResetActorID resets all changes to the "actor_id" field.
+func (m *CarpoolLedgerMutation) ResetActorID() {
+	m.actor_id = nil
+	m.addactor_id = nil
+	delete(m.clearedFields, carpoolledger.FieldActorID)
+}
+
+// SetReversesLedgerID sets the "reverses_ledger_id" field.
+func (m *CarpoolLedgerMutation) SetReversesLedgerID(i int64) {
+	m.reverses_ledger_id = &i
+	m.addreverses_ledger_id = nil
+}
+
+// ReversesLedgerID returns the value of the "reverses_ledger_id" field in the mutation.
+func (m *CarpoolLedgerMutation) ReversesLedgerID() (r int64, exists bool) {
+	v := m.reverses_ledger_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReversesLedgerID returns the old "reverses_ledger_id" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldReversesLedgerID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReversesLedgerID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReversesLedgerID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReversesLedgerID: %w", err)
+	}
+	return oldValue.ReversesLedgerID, nil
+}
+
+// AddReversesLedgerID adds i to the "reverses_ledger_id" field.
+func (m *CarpoolLedgerMutation) AddReversesLedgerID(i int64) {
+	if m.addreverses_ledger_id != nil {
+		*m.addreverses_ledger_id += i
+	} else {
+		m.addreverses_ledger_id = &i
+	}
+}
+
+// AddedReversesLedgerID returns the value that was added to the "reverses_ledger_id" field in this mutation.
+func (m *CarpoolLedgerMutation) AddedReversesLedgerID() (r int64, exists bool) {
+	v := m.addreverses_ledger_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearReversesLedgerID clears the value of the "reverses_ledger_id" field.
+func (m *CarpoolLedgerMutation) ClearReversesLedgerID() {
+	m.reverses_ledger_id = nil
+	m.addreverses_ledger_id = nil
+	m.clearedFields[carpoolledger.FieldReversesLedgerID] = struct{}{}
+}
+
+// ReversesLedgerIDCleared returns if the "reverses_ledger_id" field was cleared in this mutation.
+func (m *CarpoolLedgerMutation) ReversesLedgerIDCleared() bool {
+	_, ok := m.clearedFields[carpoolledger.FieldReversesLedgerID]
+	return ok
+}
+
+// ResetReversesLedgerID resets all changes to the "reverses_ledger_id" field.
+func (m *CarpoolLedgerMutation) ResetReversesLedgerID() {
+	m.reverses_ledger_id = nil
+	m.addreverses_ledger_id = nil
+	delete(m.clearedFields, carpoolledger.FieldReversesLedgerID)
+}
+
+// SetReason sets the "reason" field.
+func (m *CarpoolLedgerMutation) SetReason(s string) {
+	m.reason = &s
+}
+
+// Reason returns the value of the "reason" field in the mutation.
+func (m *CarpoolLedgerMutation) Reason() (r string, exists bool) {
+	v := m.reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReason returns the old "reason" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldReason(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReason: %w", err)
+	}
+	return oldValue.Reason, nil
+}
+
+// ClearReason clears the value of the "reason" field.
+func (m *CarpoolLedgerMutation) ClearReason() {
+	m.reason = nil
+	m.clearedFields[carpoolledger.FieldReason] = struct{}{}
+}
+
+// ReasonCleared returns if the "reason" field was cleared in this mutation.
+func (m *CarpoolLedgerMutation) ReasonCleared() bool {
+	_, ok := m.clearedFields[carpoolledger.FieldReason]
+	return ok
+}
+
+// ResetReason resets all changes to the "reason" field.
+func (m *CarpoolLedgerMutation) ResetReason() {
+	m.reason = nil
+	delete(m.clearedFields, carpoolledger.FieldReason)
+}
+
+// SetEffectiveAt sets the "effective_at" field.
+func (m *CarpoolLedgerMutation) SetEffectiveAt(t time.Time) {
+	m.effective_at = &t
+}
+
+// EffectiveAt returns the value of the "effective_at" field in the mutation.
+func (m *CarpoolLedgerMutation) EffectiveAt() (r time.Time, exists bool) {
+	v := m.effective_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEffectiveAt returns the old "effective_at" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldEffectiveAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEffectiveAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEffectiveAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEffectiveAt: %w", err)
+	}
+	return oldValue.EffectiveAt, nil
+}
+
+// ResetEffectiveAt resets all changes to the "effective_at" field.
+func (m *CarpoolLedgerMutation) ResetEffectiveAt() {
+	m.effective_at = nil
+}
+
+// SetRecordedAt sets the "recorded_at" field.
+func (m *CarpoolLedgerMutation) SetRecordedAt(t time.Time) {
+	m.recorded_at = &t
+}
+
+// RecordedAt returns the value of the "recorded_at" field in the mutation.
+func (m *CarpoolLedgerMutation) RecordedAt() (r time.Time, exists bool) {
+	v := m.recorded_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordedAt returns the old "recorded_at" field's value of the CarpoolLedger entity.
+// If the CarpoolLedger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolLedgerMutation) OldRecordedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordedAt: %w", err)
+	}
+	return oldValue.RecordedAt, nil
+}
+
+// ResetRecordedAt resets all changes to the "recorded_at" field.
+func (m *CarpoolLedgerMutation) ResetRecordedAt() {
+	m.recorded_at = nil
+}
+
+// Where appends a list predicates to the CarpoolLedgerMutation builder.
+func (m *CarpoolLedgerMutation) Where(ps ...predicate.CarpoolLedger) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolLedgerMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolLedgerMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolLedger, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolLedgerMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolLedgerMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolLedger).
+func (m *CarpoolLedgerMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolLedgerMutation) Fields() []string {
+	fields := make([]string, 0, 16)
+	if m.user_id != nil {
+		fields = append(fields, carpoolledger.FieldUserID)
+	}
+	if m.term_id != nil {
+		fields = append(fields, carpoolledger.FieldTermID)
+	}
+	if m.cycle_id != nil {
+		fields = append(fields, carpoolledger.FieldCycleID)
+	}
+	if m.event_type != nil {
+		fields = append(fields, carpoolledger.FieldEventType)
+	}
+	if m.bucket != nil {
+		fields = append(fields, carpoolledger.FieldBucket)
+	}
+	if m.delta_usd != nil {
+		fields = append(fields, carpoolledger.FieldDeltaUsd)
+	}
+	if m.event_key != nil {
+		fields = append(fields, carpoolledger.FieldEventKey)
+	}
+	if m.request_id != nil {
+		fields = append(fields, carpoolledger.FieldRequestID)
+	}
+	if m.api_key_id != nil {
+		fields = append(fields, carpoolledger.FieldAPIKeyID)
+	}
+	if m.reset_batch_id != nil {
+		fields = append(fields, carpoolledger.FieldResetBatchID)
+	}
+	if m.boost_slot != nil {
+		fields = append(fields, carpoolledger.FieldBoostSlot)
+	}
+	if m.actor_id != nil {
+		fields = append(fields, carpoolledger.FieldActorID)
+	}
+	if m.reverses_ledger_id != nil {
+		fields = append(fields, carpoolledger.FieldReversesLedgerID)
+	}
+	if m.reason != nil {
+		fields = append(fields, carpoolledger.FieldReason)
+	}
+	if m.effective_at != nil {
+		fields = append(fields, carpoolledger.FieldEffectiveAt)
+	}
+	if m.recorded_at != nil {
+		fields = append(fields, carpoolledger.FieldRecordedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolLedgerMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolledger.FieldUserID:
+		return m.UserID()
+	case carpoolledger.FieldTermID:
+		return m.TermID()
+	case carpoolledger.FieldCycleID:
+		return m.CycleID()
+	case carpoolledger.FieldEventType:
+		return m.EventType()
+	case carpoolledger.FieldBucket:
+		return m.Bucket()
+	case carpoolledger.FieldDeltaUsd:
+		return m.DeltaUsd()
+	case carpoolledger.FieldEventKey:
+		return m.EventKey()
+	case carpoolledger.FieldRequestID:
+		return m.RequestID()
+	case carpoolledger.FieldAPIKeyID:
+		return m.APIKeyID()
+	case carpoolledger.FieldResetBatchID:
+		return m.ResetBatchID()
+	case carpoolledger.FieldBoostSlot:
+		return m.BoostSlot()
+	case carpoolledger.FieldActorID:
+		return m.ActorID()
+	case carpoolledger.FieldReversesLedgerID:
+		return m.ReversesLedgerID()
+	case carpoolledger.FieldReason:
+		return m.Reason()
+	case carpoolledger.FieldEffectiveAt:
+		return m.EffectiveAt()
+	case carpoolledger.FieldRecordedAt:
+		return m.RecordedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolLedgerMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolledger.FieldUserID:
+		return m.OldUserID(ctx)
+	case carpoolledger.FieldTermID:
+		return m.OldTermID(ctx)
+	case carpoolledger.FieldCycleID:
+		return m.OldCycleID(ctx)
+	case carpoolledger.FieldEventType:
+		return m.OldEventType(ctx)
+	case carpoolledger.FieldBucket:
+		return m.OldBucket(ctx)
+	case carpoolledger.FieldDeltaUsd:
+		return m.OldDeltaUsd(ctx)
+	case carpoolledger.FieldEventKey:
+		return m.OldEventKey(ctx)
+	case carpoolledger.FieldRequestID:
+		return m.OldRequestID(ctx)
+	case carpoolledger.FieldAPIKeyID:
+		return m.OldAPIKeyID(ctx)
+	case carpoolledger.FieldResetBatchID:
+		return m.OldResetBatchID(ctx)
+	case carpoolledger.FieldBoostSlot:
+		return m.OldBoostSlot(ctx)
+	case carpoolledger.FieldActorID:
+		return m.OldActorID(ctx)
+	case carpoolledger.FieldReversesLedgerID:
+		return m.OldReversesLedgerID(ctx)
+	case carpoolledger.FieldReason:
+		return m.OldReason(ctx)
+	case carpoolledger.FieldEffectiveAt:
+		return m.OldEffectiveAt(ctx)
+	case carpoolledger.FieldRecordedAt:
+		return m.OldRecordedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolLedger field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolLedgerMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolledger.FieldUserID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case carpoolledger.FieldTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTermID(v)
+		return nil
+	case carpoolledger.FieldCycleID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCycleID(v)
+		return nil
+	case carpoolledger.FieldEventType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEventType(v)
+		return nil
+	case carpoolledger.FieldBucket:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBucket(v)
+		return nil
+	case carpoolledger.FieldDeltaUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeltaUsd(v)
+		return nil
+	case carpoolledger.FieldEventKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEventKey(v)
+		return nil
+	case carpoolledger.FieldRequestID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestID(v)
+		return nil
+	case carpoolledger.FieldAPIKeyID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAPIKeyID(v)
+		return nil
+	case carpoolledger.FieldResetBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResetBatchID(v)
+		return nil
+	case carpoolledger.FieldBoostSlot:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBoostSlot(v)
+		return nil
+	case carpoolledger.FieldActorID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActorID(v)
+		return nil
+	case carpoolledger.FieldReversesLedgerID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReversesLedgerID(v)
+		return nil
+	case carpoolledger.FieldReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReason(v)
+		return nil
+	case carpoolledger.FieldEffectiveAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEffectiveAt(v)
+		return nil
+	case carpoolledger.FieldRecordedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolLedger field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolLedgerMutation) AddedFields() []string {
+	var fields []string
+	if m.adduser_id != nil {
+		fields = append(fields, carpoolledger.FieldUserID)
+	}
+	if m.addterm_id != nil {
+		fields = append(fields, carpoolledger.FieldTermID)
+	}
+	if m.addcycle_id != nil {
+		fields = append(fields, carpoolledger.FieldCycleID)
+	}
+	if m.adddelta_usd != nil {
+		fields = append(fields, carpoolledger.FieldDeltaUsd)
+	}
+	if m.addapi_key_id != nil {
+		fields = append(fields, carpoolledger.FieldAPIKeyID)
+	}
+	if m.addreset_batch_id != nil {
+		fields = append(fields, carpoolledger.FieldResetBatchID)
+	}
+	if m.addboost_slot != nil {
+		fields = append(fields, carpoolledger.FieldBoostSlot)
+	}
+	if m.addactor_id != nil {
+		fields = append(fields, carpoolledger.FieldActorID)
+	}
+	if m.addreverses_ledger_id != nil {
+		fields = append(fields, carpoolledger.FieldReversesLedgerID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolLedgerMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolledger.FieldUserID:
+		return m.AddedUserID()
+	case carpoolledger.FieldTermID:
+		return m.AddedTermID()
+	case carpoolledger.FieldCycleID:
+		return m.AddedCycleID()
+	case carpoolledger.FieldDeltaUsd:
+		return m.AddedDeltaUsd()
+	case carpoolledger.FieldAPIKeyID:
+		return m.AddedAPIKeyID()
+	case carpoolledger.FieldResetBatchID:
+		return m.AddedResetBatchID()
+	case carpoolledger.FieldBoostSlot:
+		return m.AddedBoostSlot()
+	case carpoolledger.FieldActorID:
+		return m.AddedActorID()
+	case carpoolledger.FieldReversesLedgerID:
+		return m.AddedReversesLedgerID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolLedgerMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolledger.FieldUserID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUserID(v)
+		return nil
+	case carpoolledger.FieldTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTermID(v)
+		return nil
+	case carpoolledger.FieldCycleID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCycleID(v)
+		return nil
+	case carpoolledger.FieldDeltaUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeltaUsd(v)
+		return nil
+	case carpoolledger.FieldAPIKeyID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAPIKeyID(v)
+		return nil
+	case carpoolledger.FieldResetBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddResetBatchID(v)
+		return nil
+	case carpoolledger.FieldBoostSlot:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBoostSlot(v)
+		return nil
+	case carpoolledger.FieldActorID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddActorID(v)
+		return nil
+	case carpoolledger.FieldReversesLedgerID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddReversesLedgerID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolLedger numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolLedgerMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(carpoolledger.FieldRequestID) {
+		fields = append(fields, carpoolledger.FieldRequestID)
+	}
+	if m.FieldCleared(carpoolledger.FieldAPIKeyID) {
+		fields = append(fields, carpoolledger.FieldAPIKeyID)
+	}
+	if m.FieldCleared(carpoolledger.FieldResetBatchID) {
+		fields = append(fields, carpoolledger.FieldResetBatchID)
+	}
+	if m.FieldCleared(carpoolledger.FieldBoostSlot) {
+		fields = append(fields, carpoolledger.FieldBoostSlot)
+	}
+	if m.FieldCleared(carpoolledger.FieldActorID) {
+		fields = append(fields, carpoolledger.FieldActorID)
+	}
+	if m.FieldCleared(carpoolledger.FieldReversesLedgerID) {
+		fields = append(fields, carpoolledger.FieldReversesLedgerID)
+	}
+	if m.FieldCleared(carpoolledger.FieldReason) {
+		fields = append(fields, carpoolledger.FieldReason)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolLedgerMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolLedgerMutation) ClearField(name string) error {
+	switch name {
+	case carpoolledger.FieldRequestID:
+		m.ClearRequestID()
+		return nil
+	case carpoolledger.FieldAPIKeyID:
+		m.ClearAPIKeyID()
+		return nil
+	case carpoolledger.FieldResetBatchID:
+		m.ClearResetBatchID()
+		return nil
+	case carpoolledger.FieldBoostSlot:
+		m.ClearBoostSlot()
+		return nil
+	case carpoolledger.FieldActorID:
+		m.ClearActorID()
+		return nil
+	case carpoolledger.FieldReversesLedgerID:
+		m.ClearReversesLedgerID()
+		return nil
+	case carpoolledger.FieldReason:
+		m.ClearReason()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolLedger nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolLedgerMutation) ResetField(name string) error {
+	switch name {
+	case carpoolledger.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case carpoolledger.FieldTermID:
+		m.ResetTermID()
+		return nil
+	case carpoolledger.FieldCycleID:
+		m.ResetCycleID()
+		return nil
+	case carpoolledger.FieldEventType:
+		m.ResetEventType()
+		return nil
+	case carpoolledger.FieldBucket:
+		m.ResetBucket()
+		return nil
+	case carpoolledger.FieldDeltaUsd:
+		m.ResetDeltaUsd()
+		return nil
+	case carpoolledger.FieldEventKey:
+		m.ResetEventKey()
+		return nil
+	case carpoolledger.FieldRequestID:
+		m.ResetRequestID()
+		return nil
+	case carpoolledger.FieldAPIKeyID:
+		m.ResetAPIKeyID()
+		return nil
+	case carpoolledger.FieldResetBatchID:
+		m.ResetResetBatchID()
+		return nil
+	case carpoolledger.FieldBoostSlot:
+		m.ResetBoostSlot()
+		return nil
+	case carpoolledger.FieldActorID:
+		m.ResetActorID()
+		return nil
+	case carpoolledger.FieldReversesLedgerID:
+		m.ResetReversesLedgerID()
+		return nil
+	case carpoolledger.FieldReason:
+		m.ResetReason()
+		return nil
+	case carpoolledger.FieldEffectiveAt:
+		m.ResetEffectiveAt()
+		return nil
+	case carpoolledger.FieldRecordedAt:
+		m.ResetRecordedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolLedger field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolLedgerMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolLedgerMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolLedgerMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolLedgerMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolLedgerMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolLedgerMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolLedgerMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolLedger unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolLedgerMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolLedger edge %s", name)
+}
+
+// CarpoolOperationMutation represents an operation that mutates the CarpoolOperation nodes in the graph.
+type CarpoolOperationMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *int64
+	kind                *string
+	actor_id            *int64
+	addactor_id         *int64
+	key_hash            *string
+	request_fingerprint *string
+	resource_type       *string
+	resource_id         *int64
+	addresource_id      *int64
+	response            *map[string]interface{}
+	created_at          *time.Time
+	clearedFields       map[string]struct{}
+	done                bool
+	oldValue            func(context.Context) (*CarpoolOperation, error)
+	predicates          []predicate.CarpoolOperation
+}
+
+var _ ent.Mutation = (*CarpoolOperationMutation)(nil)
+
+// carpooloperationOption allows management of the mutation configuration using functional options.
+type carpooloperationOption func(*CarpoolOperationMutation)
+
+// newCarpoolOperationMutation creates new mutation for the CarpoolOperation entity.
+func newCarpoolOperationMutation(c config, op Op, opts ...carpooloperationOption) *CarpoolOperationMutation {
+	m := &CarpoolOperationMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolOperation,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolOperationID sets the ID field of the mutation.
+func withCarpoolOperationID(id int64) carpooloperationOption {
+	return func(m *CarpoolOperationMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolOperation
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolOperation, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolOperation.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolOperation sets the old CarpoolOperation of the mutation.
+func withCarpoolOperation(node *CarpoolOperation) carpooloperationOption {
+	return func(m *CarpoolOperationMutation) {
+		m.oldValue = func(context.Context) (*CarpoolOperation, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolOperationMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolOperationMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolOperationMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolOperationMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolOperation.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetKind sets the "kind" field.
+func (m *CarpoolOperationMutation) SetKind(s string) {
+	m.kind = &s
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *CarpoolOperationMutation) Kind() (r string, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the CarpoolOperation entity.
+// If the CarpoolOperation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolOperationMutation) OldKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *CarpoolOperationMutation) ResetKind() {
+	m.kind = nil
+}
+
+// SetActorID sets the "actor_id" field.
+func (m *CarpoolOperationMutation) SetActorID(i int64) {
+	m.actor_id = &i
+	m.addactor_id = nil
+}
+
+// ActorID returns the value of the "actor_id" field in the mutation.
+func (m *CarpoolOperationMutation) ActorID() (r int64, exists bool) {
+	v := m.actor_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActorID returns the old "actor_id" field's value of the CarpoolOperation entity.
+// If the CarpoolOperation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolOperationMutation) OldActorID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActorID: %w", err)
+	}
+	return oldValue.ActorID, nil
+}
+
+// AddActorID adds i to the "actor_id" field.
+func (m *CarpoolOperationMutation) AddActorID(i int64) {
+	if m.addactor_id != nil {
+		*m.addactor_id += i
+	} else {
+		m.addactor_id = &i
+	}
+}
+
+// AddedActorID returns the value that was added to the "actor_id" field in this mutation.
+func (m *CarpoolOperationMutation) AddedActorID() (r int64, exists bool) {
+	v := m.addactor_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetActorID resets all changes to the "actor_id" field.
+func (m *CarpoolOperationMutation) ResetActorID() {
+	m.actor_id = nil
+	m.addactor_id = nil
+}
+
+// SetKeyHash sets the "key_hash" field.
+func (m *CarpoolOperationMutation) SetKeyHash(s string) {
+	m.key_hash = &s
+}
+
+// KeyHash returns the value of the "key_hash" field in the mutation.
+func (m *CarpoolOperationMutation) KeyHash() (r string, exists bool) {
+	v := m.key_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKeyHash returns the old "key_hash" field's value of the CarpoolOperation entity.
+// If the CarpoolOperation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolOperationMutation) OldKeyHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKeyHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKeyHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKeyHash: %w", err)
+	}
+	return oldValue.KeyHash, nil
+}
+
+// ResetKeyHash resets all changes to the "key_hash" field.
+func (m *CarpoolOperationMutation) ResetKeyHash() {
+	m.key_hash = nil
+}
+
+// SetRequestFingerprint sets the "request_fingerprint" field.
+func (m *CarpoolOperationMutation) SetRequestFingerprint(s string) {
+	m.request_fingerprint = &s
+}
+
+// RequestFingerprint returns the value of the "request_fingerprint" field in the mutation.
+func (m *CarpoolOperationMutation) RequestFingerprint() (r string, exists bool) {
+	v := m.request_fingerprint
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestFingerprint returns the old "request_fingerprint" field's value of the CarpoolOperation entity.
+// If the CarpoolOperation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolOperationMutation) OldRequestFingerprint(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestFingerprint is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestFingerprint requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestFingerprint: %w", err)
+	}
+	return oldValue.RequestFingerprint, nil
+}
+
+// ResetRequestFingerprint resets all changes to the "request_fingerprint" field.
+func (m *CarpoolOperationMutation) ResetRequestFingerprint() {
+	m.request_fingerprint = nil
+}
+
+// SetResourceType sets the "resource_type" field.
+func (m *CarpoolOperationMutation) SetResourceType(s string) {
+	m.resource_type = &s
+}
+
+// ResourceType returns the value of the "resource_type" field in the mutation.
+func (m *CarpoolOperationMutation) ResourceType() (r string, exists bool) {
+	v := m.resource_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResourceType returns the old "resource_type" field's value of the CarpoolOperation entity.
+// If the CarpoolOperation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolOperationMutation) OldResourceType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResourceType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResourceType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResourceType: %w", err)
+	}
+	return oldValue.ResourceType, nil
+}
+
+// ResetResourceType resets all changes to the "resource_type" field.
+func (m *CarpoolOperationMutation) ResetResourceType() {
+	m.resource_type = nil
+}
+
+// SetResourceID sets the "resource_id" field.
+func (m *CarpoolOperationMutation) SetResourceID(i int64) {
+	m.resource_id = &i
+	m.addresource_id = nil
+}
+
+// ResourceID returns the value of the "resource_id" field in the mutation.
+func (m *CarpoolOperationMutation) ResourceID() (r int64, exists bool) {
+	v := m.resource_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResourceID returns the old "resource_id" field's value of the CarpoolOperation entity.
+// If the CarpoolOperation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolOperationMutation) OldResourceID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResourceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResourceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResourceID: %w", err)
+	}
+	return oldValue.ResourceID, nil
+}
+
+// AddResourceID adds i to the "resource_id" field.
+func (m *CarpoolOperationMutation) AddResourceID(i int64) {
+	if m.addresource_id != nil {
+		*m.addresource_id += i
+	} else {
+		m.addresource_id = &i
+	}
+}
+
+// AddedResourceID returns the value that was added to the "resource_id" field in this mutation.
+func (m *CarpoolOperationMutation) AddedResourceID() (r int64, exists bool) {
+	v := m.addresource_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetResourceID resets all changes to the "resource_id" field.
+func (m *CarpoolOperationMutation) ResetResourceID() {
+	m.resource_id = nil
+	m.addresource_id = nil
+}
+
+// SetResponse sets the "response" field.
+func (m *CarpoolOperationMutation) SetResponse(value map[string]interface{}) {
+	m.response = &value
+}
+
+// Response returns the value of the "response" field in the mutation.
+func (m *CarpoolOperationMutation) Response() (r map[string]interface{}, exists bool) {
+	v := m.response
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResponse returns the old "response" field's value of the CarpoolOperation entity.
+// If the CarpoolOperation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolOperationMutation) OldResponse(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResponse is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResponse requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResponse: %w", err)
+	}
+	return oldValue.Response, nil
+}
+
+// ResetResponse resets all changes to the "response" field.
+func (m *CarpoolOperationMutation) ResetResponse() {
+	m.response = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolOperationMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolOperationMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolOperation entity.
+// If the CarpoolOperation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolOperationMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolOperationMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the CarpoolOperationMutation builder.
+func (m *CarpoolOperationMutation) Where(ps ...predicate.CarpoolOperation) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolOperationMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolOperationMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolOperation, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolOperationMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolOperationMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolOperation).
+func (m *CarpoolOperationMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolOperationMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.kind != nil {
+		fields = append(fields, carpooloperation.FieldKind)
+	}
+	if m.actor_id != nil {
+		fields = append(fields, carpooloperation.FieldActorID)
+	}
+	if m.key_hash != nil {
+		fields = append(fields, carpooloperation.FieldKeyHash)
+	}
+	if m.request_fingerprint != nil {
+		fields = append(fields, carpooloperation.FieldRequestFingerprint)
+	}
+	if m.resource_type != nil {
+		fields = append(fields, carpooloperation.FieldResourceType)
+	}
+	if m.resource_id != nil {
+		fields = append(fields, carpooloperation.FieldResourceID)
+	}
+	if m.response != nil {
+		fields = append(fields, carpooloperation.FieldResponse)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpooloperation.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolOperationMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpooloperation.FieldKind:
+		return m.Kind()
+	case carpooloperation.FieldActorID:
+		return m.ActorID()
+	case carpooloperation.FieldKeyHash:
+		return m.KeyHash()
+	case carpooloperation.FieldRequestFingerprint:
+		return m.RequestFingerprint()
+	case carpooloperation.FieldResourceType:
+		return m.ResourceType()
+	case carpooloperation.FieldResourceID:
+		return m.ResourceID()
+	case carpooloperation.FieldResponse:
+		return m.Response()
+	case carpooloperation.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolOperationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpooloperation.FieldKind:
+		return m.OldKind(ctx)
+	case carpooloperation.FieldActorID:
+		return m.OldActorID(ctx)
+	case carpooloperation.FieldKeyHash:
+		return m.OldKeyHash(ctx)
+	case carpooloperation.FieldRequestFingerprint:
+		return m.OldRequestFingerprint(ctx)
+	case carpooloperation.FieldResourceType:
+		return m.OldResourceType(ctx)
+	case carpooloperation.FieldResourceID:
+		return m.OldResourceID(ctx)
+	case carpooloperation.FieldResponse:
+		return m.OldResponse(ctx)
+	case carpooloperation.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolOperation field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolOperationMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpooloperation.FieldKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
+		return nil
+	case carpooloperation.FieldActorID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActorID(v)
+		return nil
+	case carpooloperation.FieldKeyHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKeyHash(v)
+		return nil
+	case carpooloperation.FieldRequestFingerprint:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestFingerprint(v)
+		return nil
+	case carpooloperation.FieldResourceType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResourceType(v)
+		return nil
+	case carpooloperation.FieldResourceID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResourceID(v)
+		return nil
+	case carpooloperation.FieldResponse:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResponse(v)
+		return nil
+	case carpooloperation.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolOperation field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolOperationMutation) AddedFields() []string {
+	var fields []string
+	if m.addactor_id != nil {
+		fields = append(fields, carpooloperation.FieldActorID)
+	}
+	if m.addresource_id != nil {
+		fields = append(fields, carpooloperation.FieldResourceID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolOperationMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpooloperation.FieldActorID:
+		return m.AddedActorID()
+	case carpooloperation.FieldResourceID:
+		return m.AddedResourceID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolOperationMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpooloperation.FieldActorID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddActorID(v)
+		return nil
+	case carpooloperation.FieldResourceID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddResourceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolOperation numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolOperationMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolOperationMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolOperationMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown CarpoolOperation nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolOperationMutation) ResetField(name string) error {
+	switch name {
+	case carpooloperation.FieldKind:
+		m.ResetKind()
+		return nil
+	case carpooloperation.FieldActorID:
+		m.ResetActorID()
+		return nil
+	case carpooloperation.FieldKeyHash:
+		m.ResetKeyHash()
+		return nil
+	case carpooloperation.FieldRequestFingerprint:
+		m.ResetRequestFingerprint()
+		return nil
+	case carpooloperation.FieldResourceType:
+		m.ResetResourceType()
+		return nil
+	case carpooloperation.FieldResourceID:
+		m.ResetResourceID()
+		return nil
+	case carpooloperation.FieldResponse:
+		m.ResetResponse()
+		return nil
+	case carpooloperation.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolOperation field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolOperationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolOperationMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolOperationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolOperationMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolOperationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolOperationMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolOperationMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolOperation unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolOperationMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolOperation edge %s", name)
+}
+
+// CarpoolPaymentMutation represents an operation that mutates the CarpoolPayment nodes in the graph.
+type CarpoolPaymentMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *int64
+	term_id             *int64
+	addterm_id          *int64
+	amount_cny          *float64
+	addamount_cny       *float64
+	payment_kind        *string
+	paid_at             *time.Time
+	channel             *string
+	external_order_no   *string
+	request_id          *string
+	request_fingerprint *string
+	recorded_by         *int64
+	addrecorded_by      *int64
+	notes               *string
+	recorded_at         *time.Time
+	clearedFields       map[string]struct{}
+	done                bool
+	oldValue            func(context.Context) (*CarpoolPayment, error)
+	predicates          []predicate.CarpoolPayment
+}
+
+var _ ent.Mutation = (*CarpoolPaymentMutation)(nil)
+
+// carpoolpaymentOption allows management of the mutation configuration using functional options.
+type carpoolpaymentOption func(*CarpoolPaymentMutation)
+
+// newCarpoolPaymentMutation creates new mutation for the CarpoolPayment entity.
+func newCarpoolPaymentMutation(c config, op Op, opts ...carpoolpaymentOption) *CarpoolPaymentMutation {
+	m := &CarpoolPaymentMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolPayment,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolPaymentID sets the ID field of the mutation.
+func withCarpoolPaymentID(id int64) carpoolpaymentOption {
+	return func(m *CarpoolPaymentMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolPayment
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolPayment, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolPayment.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolPayment sets the old CarpoolPayment of the mutation.
+func withCarpoolPayment(node *CarpoolPayment) carpoolpaymentOption {
+	return func(m *CarpoolPaymentMutation) {
+		m.oldValue = func(context.Context) (*CarpoolPayment, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolPaymentMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolPaymentMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolPaymentMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolPaymentMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolPayment.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetTermID sets the "term_id" field.
+func (m *CarpoolPaymentMutation) SetTermID(i int64) {
+	m.term_id = &i
+	m.addterm_id = nil
+}
+
+// TermID returns the value of the "term_id" field in the mutation.
+func (m *CarpoolPaymentMutation) TermID() (r int64, exists bool) {
+	v := m.term_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTermID returns the old "term_id" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldTermID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTermID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTermID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTermID: %w", err)
+	}
+	return oldValue.TermID, nil
+}
+
+// AddTermID adds i to the "term_id" field.
+func (m *CarpoolPaymentMutation) AddTermID(i int64) {
+	if m.addterm_id != nil {
+		*m.addterm_id += i
+	} else {
+		m.addterm_id = &i
+	}
+}
+
+// AddedTermID returns the value that was added to the "term_id" field in this mutation.
+func (m *CarpoolPaymentMutation) AddedTermID() (r int64, exists bool) {
+	v := m.addterm_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTermID resets all changes to the "term_id" field.
+func (m *CarpoolPaymentMutation) ResetTermID() {
+	m.term_id = nil
+	m.addterm_id = nil
+}
+
+// SetAmountCny sets the "amount_cny" field.
+func (m *CarpoolPaymentMutation) SetAmountCny(f float64) {
+	m.amount_cny = &f
+	m.addamount_cny = nil
+}
+
+// AmountCny returns the value of the "amount_cny" field in the mutation.
+func (m *CarpoolPaymentMutation) AmountCny() (r float64, exists bool) {
+	v := m.amount_cny
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAmountCny returns the old "amount_cny" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldAmountCny(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAmountCny is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAmountCny requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAmountCny: %w", err)
+	}
+	return oldValue.AmountCny, nil
+}
+
+// AddAmountCny adds f to the "amount_cny" field.
+func (m *CarpoolPaymentMutation) AddAmountCny(f float64) {
+	if m.addamount_cny != nil {
+		*m.addamount_cny += f
+	} else {
+		m.addamount_cny = &f
+	}
+}
+
+// AddedAmountCny returns the value that was added to the "amount_cny" field in this mutation.
+func (m *CarpoolPaymentMutation) AddedAmountCny() (r float64, exists bool) {
+	v := m.addamount_cny
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAmountCny resets all changes to the "amount_cny" field.
+func (m *CarpoolPaymentMutation) ResetAmountCny() {
+	m.amount_cny = nil
+	m.addamount_cny = nil
+}
+
+// SetPaymentKind sets the "payment_kind" field.
+func (m *CarpoolPaymentMutation) SetPaymentKind(s string) {
+	m.payment_kind = &s
+}
+
+// PaymentKind returns the value of the "payment_kind" field in the mutation.
+func (m *CarpoolPaymentMutation) PaymentKind() (r string, exists bool) {
+	v := m.payment_kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPaymentKind returns the old "payment_kind" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldPaymentKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPaymentKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPaymentKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPaymentKind: %w", err)
+	}
+	return oldValue.PaymentKind, nil
+}
+
+// ResetPaymentKind resets all changes to the "payment_kind" field.
+func (m *CarpoolPaymentMutation) ResetPaymentKind() {
+	m.payment_kind = nil
+}
+
+// SetPaidAt sets the "paid_at" field.
+func (m *CarpoolPaymentMutation) SetPaidAt(t time.Time) {
+	m.paid_at = &t
+}
+
+// PaidAt returns the value of the "paid_at" field in the mutation.
+func (m *CarpoolPaymentMutation) PaidAt() (r time.Time, exists bool) {
+	v := m.paid_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPaidAt returns the old "paid_at" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldPaidAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPaidAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPaidAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPaidAt: %w", err)
+	}
+	return oldValue.PaidAt, nil
+}
+
+// ResetPaidAt resets all changes to the "paid_at" field.
+func (m *CarpoolPaymentMutation) ResetPaidAt() {
+	m.paid_at = nil
+}
+
+// SetChannel sets the "channel" field.
+func (m *CarpoolPaymentMutation) SetChannel(s string) {
+	m.channel = &s
+}
+
+// Channel returns the value of the "channel" field in the mutation.
+func (m *CarpoolPaymentMutation) Channel() (r string, exists bool) {
+	v := m.channel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChannel returns the old "channel" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldChannel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChannel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChannel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChannel: %w", err)
+	}
+	return oldValue.Channel, nil
+}
+
+// ResetChannel resets all changes to the "channel" field.
+func (m *CarpoolPaymentMutation) ResetChannel() {
+	m.channel = nil
+}
+
+// SetExternalOrderNo sets the "external_order_no" field.
+func (m *CarpoolPaymentMutation) SetExternalOrderNo(s string) {
+	m.external_order_no = &s
+}
+
+// ExternalOrderNo returns the value of the "external_order_no" field in the mutation.
+func (m *CarpoolPaymentMutation) ExternalOrderNo() (r string, exists bool) {
+	v := m.external_order_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExternalOrderNo returns the old "external_order_no" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldExternalOrderNo(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExternalOrderNo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExternalOrderNo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExternalOrderNo: %w", err)
+	}
+	return oldValue.ExternalOrderNo, nil
+}
+
+// ClearExternalOrderNo clears the value of the "external_order_no" field.
+func (m *CarpoolPaymentMutation) ClearExternalOrderNo() {
+	m.external_order_no = nil
+	m.clearedFields[carpoolpayment.FieldExternalOrderNo] = struct{}{}
+}
+
+// ExternalOrderNoCleared returns if the "external_order_no" field was cleared in this mutation.
+func (m *CarpoolPaymentMutation) ExternalOrderNoCleared() bool {
+	_, ok := m.clearedFields[carpoolpayment.FieldExternalOrderNo]
+	return ok
+}
+
+// ResetExternalOrderNo resets all changes to the "external_order_no" field.
+func (m *CarpoolPaymentMutation) ResetExternalOrderNo() {
+	m.external_order_no = nil
+	delete(m.clearedFields, carpoolpayment.FieldExternalOrderNo)
+}
+
+// SetRequestID sets the "request_id" field.
+func (m *CarpoolPaymentMutation) SetRequestID(s string) {
+	m.request_id = &s
+}
+
+// RequestID returns the value of the "request_id" field in the mutation.
+func (m *CarpoolPaymentMutation) RequestID() (r string, exists bool) {
+	v := m.request_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestID returns the old "request_id" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldRequestID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestID: %w", err)
+	}
+	return oldValue.RequestID, nil
+}
+
+// ResetRequestID resets all changes to the "request_id" field.
+func (m *CarpoolPaymentMutation) ResetRequestID() {
+	m.request_id = nil
+}
+
+// SetRequestFingerprint sets the "request_fingerprint" field.
+func (m *CarpoolPaymentMutation) SetRequestFingerprint(s string) {
+	m.request_fingerprint = &s
+}
+
+// RequestFingerprint returns the value of the "request_fingerprint" field in the mutation.
+func (m *CarpoolPaymentMutation) RequestFingerprint() (r string, exists bool) {
+	v := m.request_fingerprint
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestFingerprint returns the old "request_fingerprint" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldRequestFingerprint(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestFingerprint is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestFingerprint requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestFingerprint: %w", err)
+	}
+	return oldValue.RequestFingerprint, nil
+}
+
+// ResetRequestFingerprint resets all changes to the "request_fingerprint" field.
+func (m *CarpoolPaymentMutation) ResetRequestFingerprint() {
+	m.request_fingerprint = nil
+}
+
+// SetRecordedBy sets the "recorded_by" field.
+func (m *CarpoolPaymentMutation) SetRecordedBy(i int64) {
+	m.recorded_by = &i
+	m.addrecorded_by = nil
+}
+
+// RecordedBy returns the value of the "recorded_by" field in the mutation.
+func (m *CarpoolPaymentMutation) RecordedBy() (r int64, exists bool) {
+	v := m.recorded_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordedBy returns the old "recorded_by" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldRecordedBy(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordedBy: %w", err)
+	}
+	return oldValue.RecordedBy, nil
+}
+
+// AddRecordedBy adds i to the "recorded_by" field.
+func (m *CarpoolPaymentMutation) AddRecordedBy(i int64) {
+	if m.addrecorded_by != nil {
+		*m.addrecorded_by += i
+	} else {
+		m.addrecorded_by = &i
+	}
+}
+
+// AddedRecordedBy returns the value that was added to the "recorded_by" field in this mutation.
+func (m *CarpoolPaymentMutation) AddedRecordedBy() (r int64, exists bool) {
+	v := m.addrecorded_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRecordedBy resets all changes to the "recorded_by" field.
+func (m *CarpoolPaymentMutation) ResetRecordedBy() {
+	m.recorded_by = nil
+	m.addrecorded_by = nil
+}
+
+// SetNotes sets the "notes" field.
+func (m *CarpoolPaymentMutation) SetNotes(s string) {
+	m.notes = &s
+}
+
+// Notes returns the value of the "notes" field in the mutation.
+func (m *CarpoolPaymentMutation) Notes() (r string, exists bool) {
+	v := m.notes
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotes returns the old "notes" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldNotes(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotes is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotes requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotes: %w", err)
+	}
+	return oldValue.Notes, nil
+}
+
+// ClearNotes clears the value of the "notes" field.
+func (m *CarpoolPaymentMutation) ClearNotes() {
+	m.notes = nil
+	m.clearedFields[carpoolpayment.FieldNotes] = struct{}{}
+}
+
+// NotesCleared returns if the "notes" field was cleared in this mutation.
+func (m *CarpoolPaymentMutation) NotesCleared() bool {
+	_, ok := m.clearedFields[carpoolpayment.FieldNotes]
+	return ok
+}
+
+// ResetNotes resets all changes to the "notes" field.
+func (m *CarpoolPaymentMutation) ResetNotes() {
+	m.notes = nil
+	delete(m.clearedFields, carpoolpayment.FieldNotes)
+}
+
+// SetRecordedAt sets the "recorded_at" field.
+func (m *CarpoolPaymentMutation) SetRecordedAt(t time.Time) {
+	m.recorded_at = &t
+}
+
+// RecordedAt returns the value of the "recorded_at" field in the mutation.
+func (m *CarpoolPaymentMutation) RecordedAt() (r time.Time, exists bool) {
+	v := m.recorded_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordedAt returns the old "recorded_at" field's value of the CarpoolPayment entity.
+// If the CarpoolPayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPaymentMutation) OldRecordedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordedAt: %w", err)
+	}
+	return oldValue.RecordedAt, nil
+}
+
+// ResetRecordedAt resets all changes to the "recorded_at" field.
+func (m *CarpoolPaymentMutation) ResetRecordedAt() {
+	m.recorded_at = nil
+}
+
+// Where appends a list predicates to the CarpoolPaymentMutation builder.
+func (m *CarpoolPaymentMutation) Where(ps ...predicate.CarpoolPayment) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolPaymentMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolPaymentMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolPayment, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolPaymentMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolPaymentMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolPayment).
+func (m *CarpoolPaymentMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolPaymentMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.term_id != nil {
+		fields = append(fields, carpoolpayment.FieldTermID)
+	}
+	if m.amount_cny != nil {
+		fields = append(fields, carpoolpayment.FieldAmountCny)
+	}
+	if m.payment_kind != nil {
+		fields = append(fields, carpoolpayment.FieldPaymentKind)
+	}
+	if m.paid_at != nil {
+		fields = append(fields, carpoolpayment.FieldPaidAt)
+	}
+	if m.channel != nil {
+		fields = append(fields, carpoolpayment.FieldChannel)
+	}
+	if m.external_order_no != nil {
+		fields = append(fields, carpoolpayment.FieldExternalOrderNo)
+	}
+	if m.request_id != nil {
+		fields = append(fields, carpoolpayment.FieldRequestID)
+	}
+	if m.request_fingerprint != nil {
+		fields = append(fields, carpoolpayment.FieldRequestFingerprint)
+	}
+	if m.recorded_by != nil {
+		fields = append(fields, carpoolpayment.FieldRecordedBy)
+	}
+	if m.notes != nil {
+		fields = append(fields, carpoolpayment.FieldNotes)
+	}
+	if m.recorded_at != nil {
+		fields = append(fields, carpoolpayment.FieldRecordedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolPaymentMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolpayment.FieldTermID:
+		return m.TermID()
+	case carpoolpayment.FieldAmountCny:
+		return m.AmountCny()
+	case carpoolpayment.FieldPaymentKind:
+		return m.PaymentKind()
+	case carpoolpayment.FieldPaidAt:
+		return m.PaidAt()
+	case carpoolpayment.FieldChannel:
+		return m.Channel()
+	case carpoolpayment.FieldExternalOrderNo:
+		return m.ExternalOrderNo()
+	case carpoolpayment.FieldRequestID:
+		return m.RequestID()
+	case carpoolpayment.FieldRequestFingerprint:
+		return m.RequestFingerprint()
+	case carpoolpayment.FieldRecordedBy:
+		return m.RecordedBy()
+	case carpoolpayment.FieldNotes:
+		return m.Notes()
+	case carpoolpayment.FieldRecordedAt:
+		return m.RecordedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolPaymentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolpayment.FieldTermID:
+		return m.OldTermID(ctx)
+	case carpoolpayment.FieldAmountCny:
+		return m.OldAmountCny(ctx)
+	case carpoolpayment.FieldPaymentKind:
+		return m.OldPaymentKind(ctx)
+	case carpoolpayment.FieldPaidAt:
+		return m.OldPaidAt(ctx)
+	case carpoolpayment.FieldChannel:
+		return m.OldChannel(ctx)
+	case carpoolpayment.FieldExternalOrderNo:
+		return m.OldExternalOrderNo(ctx)
+	case carpoolpayment.FieldRequestID:
+		return m.OldRequestID(ctx)
+	case carpoolpayment.FieldRequestFingerprint:
+		return m.OldRequestFingerprint(ctx)
+	case carpoolpayment.FieldRecordedBy:
+		return m.OldRecordedBy(ctx)
+	case carpoolpayment.FieldNotes:
+		return m.OldNotes(ctx)
+	case carpoolpayment.FieldRecordedAt:
+		return m.OldRecordedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolPayment field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolPaymentMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolpayment.FieldTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTermID(v)
+		return nil
+	case carpoolpayment.FieldAmountCny:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAmountCny(v)
+		return nil
+	case carpoolpayment.FieldPaymentKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPaymentKind(v)
+		return nil
+	case carpoolpayment.FieldPaidAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPaidAt(v)
+		return nil
+	case carpoolpayment.FieldChannel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChannel(v)
+		return nil
+	case carpoolpayment.FieldExternalOrderNo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExternalOrderNo(v)
+		return nil
+	case carpoolpayment.FieldRequestID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestID(v)
+		return nil
+	case carpoolpayment.FieldRequestFingerprint:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestFingerprint(v)
+		return nil
+	case carpoolpayment.FieldRecordedBy:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordedBy(v)
+		return nil
+	case carpoolpayment.FieldNotes:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotes(v)
+		return nil
+	case carpoolpayment.FieldRecordedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolPayment field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolPaymentMutation) AddedFields() []string {
+	var fields []string
+	if m.addterm_id != nil {
+		fields = append(fields, carpoolpayment.FieldTermID)
+	}
+	if m.addamount_cny != nil {
+		fields = append(fields, carpoolpayment.FieldAmountCny)
+	}
+	if m.addrecorded_by != nil {
+		fields = append(fields, carpoolpayment.FieldRecordedBy)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolPaymentMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolpayment.FieldTermID:
+		return m.AddedTermID()
+	case carpoolpayment.FieldAmountCny:
+		return m.AddedAmountCny()
+	case carpoolpayment.FieldRecordedBy:
+		return m.AddedRecordedBy()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolPaymentMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolpayment.FieldTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTermID(v)
+		return nil
+	case carpoolpayment.FieldAmountCny:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAmountCny(v)
+		return nil
+	case carpoolpayment.FieldRecordedBy:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRecordedBy(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolPayment numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolPaymentMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(carpoolpayment.FieldExternalOrderNo) {
+		fields = append(fields, carpoolpayment.FieldExternalOrderNo)
+	}
+	if m.FieldCleared(carpoolpayment.FieldNotes) {
+		fields = append(fields, carpoolpayment.FieldNotes)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolPaymentMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolPaymentMutation) ClearField(name string) error {
+	switch name {
+	case carpoolpayment.FieldExternalOrderNo:
+		m.ClearExternalOrderNo()
+		return nil
+	case carpoolpayment.FieldNotes:
+		m.ClearNotes()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolPayment nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolPaymentMutation) ResetField(name string) error {
+	switch name {
+	case carpoolpayment.FieldTermID:
+		m.ResetTermID()
+		return nil
+	case carpoolpayment.FieldAmountCny:
+		m.ResetAmountCny()
+		return nil
+	case carpoolpayment.FieldPaymentKind:
+		m.ResetPaymentKind()
+		return nil
+	case carpoolpayment.FieldPaidAt:
+		m.ResetPaidAt()
+		return nil
+	case carpoolpayment.FieldChannel:
+		m.ResetChannel()
+		return nil
+	case carpoolpayment.FieldExternalOrderNo:
+		m.ResetExternalOrderNo()
+		return nil
+	case carpoolpayment.FieldRequestID:
+		m.ResetRequestID()
+		return nil
+	case carpoolpayment.FieldRequestFingerprint:
+		m.ResetRequestFingerprint()
+		return nil
+	case carpoolpayment.FieldRecordedBy:
+		m.ResetRecordedBy()
+		return nil
+	case carpoolpayment.FieldNotes:
+		m.ResetNotes()
+		return nil
+	case carpoolpayment.FieldRecordedAt:
+		m.ResetRecordedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolPayment field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolPaymentMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolPaymentMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolPaymentMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolPaymentMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolPaymentMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolPaymentMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolPaymentMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolPayment unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolPaymentMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolPayment edge %s", name)
+}
+
+// CarpoolPlanMutation represents an operation that mutates the CarpoolPlan nodes in the graph.
+type CarpoolPlanMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *int64
+	code                *string
+	name                *string
+	list_price_cny      *float64
+	addlist_price_cny   *float64
+	weekly_quota_usd    *float64
+	addweekly_quota_usd *float64
+	duration_days       *int
+	addduration_days    *int
+	cycle_days          *int
+	addcycle_days       *int
+	boost_ratio         *float64
+	addboost_ratio      *float64
+	boost_count         *int
+	addboost_count      *int
+	enabled             *bool
+	version             *int
+	addversion          *int
+	created_at          *time.Time
+	updated_at          *time.Time
+	clearedFields       map[string]struct{}
+	done                bool
+	oldValue            func(context.Context) (*CarpoolPlan, error)
+	predicates          []predicate.CarpoolPlan
+}
+
+var _ ent.Mutation = (*CarpoolPlanMutation)(nil)
+
+// carpoolplanOption allows management of the mutation configuration using functional options.
+type carpoolplanOption func(*CarpoolPlanMutation)
+
+// newCarpoolPlanMutation creates new mutation for the CarpoolPlan entity.
+func newCarpoolPlanMutation(c config, op Op, opts ...carpoolplanOption) *CarpoolPlanMutation {
+	m := &CarpoolPlanMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolPlan,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolPlanID sets the ID field of the mutation.
+func withCarpoolPlanID(id int64) carpoolplanOption {
+	return func(m *CarpoolPlanMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolPlan
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolPlan, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolPlan.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolPlan sets the old CarpoolPlan of the mutation.
+func withCarpoolPlan(node *CarpoolPlan) carpoolplanOption {
+	return func(m *CarpoolPlanMutation) {
+		m.oldValue = func(context.Context) (*CarpoolPlan, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolPlanMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolPlanMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolPlanMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolPlanMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolPlan.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCode sets the "code" field.
+func (m *CarpoolPlanMutation) SetCode(s string) {
+	m.code = &s
+}
+
+// Code returns the value of the "code" field in the mutation.
+func (m *CarpoolPlanMutation) Code() (r string, exists bool) {
+	v := m.code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCode returns the old "code" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCode: %w", err)
+	}
+	return oldValue.Code, nil
+}
+
+// ResetCode resets all changes to the "code" field.
+func (m *CarpoolPlanMutation) ResetCode() {
+	m.code = nil
+}
+
+// SetName sets the "name" field.
+func (m *CarpoolPlanMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *CarpoolPlanMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *CarpoolPlanMutation) ResetName() {
+	m.name = nil
+}
+
+// SetListPriceCny sets the "list_price_cny" field.
+func (m *CarpoolPlanMutation) SetListPriceCny(f float64) {
+	m.list_price_cny = &f
+	m.addlist_price_cny = nil
+}
+
+// ListPriceCny returns the value of the "list_price_cny" field in the mutation.
+func (m *CarpoolPlanMutation) ListPriceCny() (r float64, exists bool) {
+	v := m.list_price_cny
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldListPriceCny returns the old "list_price_cny" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldListPriceCny(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldListPriceCny is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldListPriceCny requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldListPriceCny: %w", err)
+	}
+	return oldValue.ListPriceCny, nil
+}
+
+// AddListPriceCny adds f to the "list_price_cny" field.
+func (m *CarpoolPlanMutation) AddListPriceCny(f float64) {
+	if m.addlist_price_cny != nil {
+		*m.addlist_price_cny += f
+	} else {
+		m.addlist_price_cny = &f
+	}
+}
+
+// AddedListPriceCny returns the value that was added to the "list_price_cny" field in this mutation.
+func (m *CarpoolPlanMutation) AddedListPriceCny() (r float64, exists bool) {
+	v := m.addlist_price_cny
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetListPriceCny resets all changes to the "list_price_cny" field.
+func (m *CarpoolPlanMutation) ResetListPriceCny() {
+	m.list_price_cny = nil
+	m.addlist_price_cny = nil
+}
+
+// SetWeeklyQuotaUsd sets the "weekly_quota_usd" field.
+func (m *CarpoolPlanMutation) SetWeeklyQuotaUsd(f float64) {
+	m.weekly_quota_usd = &f
+	m.addweekly_quota_usd = nil
+}
+
+// WeeklyQuotaUsd returns the value of the "weekly_quota_usd" field in the mutation.
+func (m *CarpoolPlanMutation) WeeklyQuotaUsd() (r float64, exists bool) {
+	v := m.weekly_quota_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWeeklyQuotaUsd returns the old "weekly_quota_usd" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldWeeklyQuotaUsd(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWeeklyQuotaUsd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWeeklyQuotaUsd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWeeklyQuotaUsd: %w", err)
+	}
+	return oldValue.WeeklyQuotaUsd, nil
+}
+
+// AddWeeklyQuotaUsd adds f to the "weekly_quota_usd" field.
+func (m *CarpoolPlanMutation) AddWeeklyQuotaUsd(f float64) {
+	if m.addweekly_quota_usd != nil {
+		*m.addweekly_quota_usd += f
+	} else {
+		m.addweekly_quota_usd = &f
+	}
+}
+
+// AddedWeeklyQuotaUsd returns the value that was added to the "weekly_quota_usd" field in this mutation.
+func (m *CarpoolPlanMutation) AddedWeeklyQuotaUsd() (r float64, exists bool) {
+	v := m.addweekly_quota_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetWeeklyQuotaUsd resets all changes to the "weekly_quota_usd" field.
+func (m *CarpoolPlanMutation) ResetWeeklyQuotaUsd() {
+	m.weekly_quota_usd = nil
+	m.addweekly_quota_usd = nil
+}
+
+// SetDurationDays sets the "duration_days" field.
+func (m *CarpoolPlanMutation) SetDurationDays(i int) {
+	m.duration_days = &i
+	m.addduration_days = nil
+}
+
+// DurationDays returns the value of the "duration_days" field in the mutation.
+func (m *CarpoolPlanMutation) DurationDays() (r int, exists bool) {
+	v := m.duration_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDurationDays returns the old "duration_days" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldDurationDays(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDurationDays is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDurationDays requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDurationDays: %w", err)
+	}
+	return oldValue.DurationDays, nil
+}
+
+// AddDurationDays adds i to the "duration_days" field.
+func (m *CarpoolPlanMutation) AddDurationDays(i int) {
+	if m.addduration_days != nil {
+		*m.addduration_days += i
+	} else {
+		m.addduration_days = &i
+	}
+}
+
+// AddedDurationDays returns the value that was added to the "duration_days" field in this mutation.
+func (m *CarpoolPlanMutation) AddedDurationDays() (r int, exists bool) {
+	v := m.addduration_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDurationDays resets all changes to the "duration_days" field.
+func (m *CarpoolPlanMutation) ResetDurationDays() {
+	m.duration_days = nil
+	m.addduration_days = nil
+}
+
+// SetCycleDays sets the "cycle_days" field.
+func (m *CarpoolPlanMutation) SetCycleDays(i int) {
+	m.cycle_days = &i
+	m.addcycle_days = nil
+}
+
+// CycleDays returns the value of the "cycle_days" field in the mutation.
+func (m *CarpoolPlanMutation) CycleDays() (r int, exists bool) {
+	v := m.cycle_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCycleDays returns the old "cycle_days" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldCycleDays(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCycleDays is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCycleDays requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCycleDays: %w", err)
+	}
+	return oldValue.CycleDays, nil
+}
+
+// AddCycleDays adds i to the "cycle_days" field.
+func (m *CarpoolPlanMutation) AddCycleDays(i int) {
+	if m.addcycle_days != nil {
+		*m.addcycle_days += i
+	} else {
+		m.addcycle_days = &i
+	}
+}
+
+// AddedCycleDays returns the value that was added to the "cycle_days" field in this mutation.
+func (m *CarpoolPlanMutation) AddedCycleDays() (r int, exists bool) {
+	v := m.addcycle_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCycleDays resets all changes to the "cycle_days" field.
+func (m *CarpoolPlanMutation) ResetCycleDays() {
+	m.cycle_days = nil
+	m.addcycle_days = nil
+}
+
+// SetBoostRatio sets the "boost_ratio" field.
+func (m *CarpoolPlanMutation) SetBoostRatio(f float64) {
+	m.boost_ratio = &f
+	m.addboost_ratio = nil
+}
+
+// BoostRatio returns the value of the "boost_ratio" field in the mutation.
+func (m *CarpoolPlanMutation) BoostRatio() (r float64, exists bool) {
+	v := m.boost_ratio
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBoostRatio returns the old "boost_ratio" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldBoostRatio(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBoostRatio is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBoostRatio requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBoostRatio: %w", err)
+	}
+	return oldValue.BoostRatio, nil
+}
+
+// AddBoostRatio adds f to the "boost_ratio" field.
+func (m *CarpoolPlanMutation) AddBoostRatio(f float64) {
+	if m.addboost_ratio != nil {
+		*m.addboost_ratio += f
+	} else {
+		m.addboost_ratio = &f
+	}
+}
+
+// AddedBoostRatio returns the value that was added to the "boost_ratio" field in this mutation.
+func (m *CarpoolPlanMutation) AddedBoostRatio() (r float64, exists bool) {
+	v := m.addboost_ratio
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBoostRatio resets all changes to the "boost_ratio" field.
+func (m *CarpoolPlanMutation) ResetBoostRatio() {
+	m.boost_ratio = nil
+	m.addboost_ratio = nil
+}
+
+// SetBoostCount sets the "boost_count" field.
+func (m *CarpoolPlanMutation) SetBoostCount(i int) {
+	m.boost_count = &i
+	m.addboost_count = nil
+}
+
+// BoostCount returns the value of the "boost_count" field in the mutation.
+func (m *CarpoolPlanMutation) BoostCount() (r int, exists bool) {
+	v := m.boost_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBoostCount returns the old "boost_count" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldBoostCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBoostCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBoostCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBoostCount: %w", err)
+	}
+	return oldValue.BoostCount, nil
+}
+
+// AddBoostCount adds i to the "boost_count" field.
+func (m *CarpoolPlanMutation) AddBoostCount(i int) {
+	if m.addboost_count != nil {
+		*m.addboost_count += i
+	} else {
+		m.addboost_count = &i
+	}
+}
+
+// AddedBoostCount returns the value that was added to the "boost_count" field in this mutation.
+func (m *CarpoolPlanMutation) AddedBoostCount() (r int, exists bool) {
+	v := m.addboost_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBoostCount resets all changes to the "boost_count" field.
+func (m *CarpoolPlanMutation) ResetBoostCount() {
+	m.boost_count = nil
+	m.addboost_count = nil
+}
+
+// SetEnabled sets the "enabled" field.
+func (m *CarpoolPlanMutation) SetEnabled(b bool) {
+	m.enabled = &b
+}
+
+// Enabled returns the value of the "enabled" field in the mutation.
+func (m *CarpoolPlanMutation) Enabled() (r bool, exists bool) {
+	v := m.enabled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnabled returns the old "enabled" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldEnabled(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnabled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnabled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnabled: %w", err)
+	}
+	return oldValue.Enabled, nil
+}
+
+// ResetEnabled resets all changes to the "enabled" field.
+func (m *CarpoolPlanMutation) ResetEnabled() {
+	m.enabled = nil
+}
+
+// SetVersion sets the "version" field.
+func (m *CarpoolPlanMutation) SetVersion(i int) {
+	m.version = &i
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *CarpoolPlanMutation) Version() (r int, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds i to the "version" field.
+func (m *CarpoolPlanMutation) AddVersion(i int) {
+	if m.addversion != nil {
+		*m.addversion += i
+	} else {
+		m.addversion = &i
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *CarpoolPlanMutation) AddedVersion() (r int, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *CarpoolPlanMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolPlanMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolPlanMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolPlanMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CarpoolPlanMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CarpoolPlanMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CarpoolPlan entity.
+// If the CarpoolPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolPlanMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CarpoolPlanMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the CarpoolPlanMutation builder.
+func (m *CarpoolPlanMutation) Where(ps ...predicate.CarpoolPlan) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolPlanMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolPlanMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolPlan, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolPlanMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolPlanMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolPlan).
+func (m *CarpoolPlanMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolPlanMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.code != nil {
+		fields = append(fields, carpoolplan.FieldCode)
+	}
+	if m.name != nil {
+		fields = append(fields, carpoolplan.FieldName)
+	}
+	if m.list_price_cny != nil {
+		fields = append(fields, carpoolplan.FieldListPriceCny)
+	}
+	if m.weekly_quota_usd != nil {
+		fields = append(fields, carpoolplan.FieldWeeklyQuotaUsd)
+	}
+	if m.duration_days != nil {
+		fields = append(fields, carpoolplan.FieldDurationDays)
+	}
+	if m.cycle_days != nil {
+		fields = append(fields, carpoolplan.FieldCycleDays)
+	}
+	if m.boost_ratio != nil {
+		fields = append(fields, carpoolplan.FieldBoostRatio)
+	}
+	if m.boost_count != nil {
+		fields = append(fields, carpoolplan.FieldBoostCount)
+	}
+	if m.enabled != nil {
+		fields = append(fields, carpoolplan.FieldEnabled)
+	}
+	if m.version != nil {
+		fields = append(fields, carpoolplan.FieldVersion)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolplan.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, carpoolplan.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolPlanMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolplan.FieldCode:
+		return m.Code()
+	case carpoolplan.FieldName:
+		return m.Name()
+	case carpoolplan.FieldListPriceCny:
+		return m.ListPriceCny()
+	case carpoolplan.FieldWeeklyQuotaUsd:
+		return m.WeeklyQuotaUsd()
+	case carpoolplan.FieldDurationDays:
+		return m.DurationDays()
+	case carpoolplan.FieldCycleDays:
+		return m.CycleDays()
+	case carpoolplan.FieldBoostRatio:
+		return m.BoostRatio()
+	case carpoolplan.FieldBoostCount:
+		return m.BoostCount()
+	case carpoolplan.FieldEnabled:
+		return m.Enabled()
+	case carpoolplan.FieldVersion:
+		return m.Version()
+	case carpoolplan.FieldCreatedAt:
+		return m.CreatedAt()
+	case carpoolplan.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolPlanMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolplan.FieldCode:
+		return m.OldCode(ctx)
+	case carpoolplan.FieldName:
+		return m.OldName(ctx)
+	case carpoolplan.FieldListPriceCny:
+		return m.OldListPriceCny(ctx)
+	case carpoolplan.FieldWeeklyQuotaUsd:
+		return m.OldWeeklyQuotaUsd(ctx)
+	case carpoolplan.FieldDurationDays:
+		return m.OldDurationDays(ctx)
+	case carpoolplan.FieldCycleDays:
+		return m.OldCycleDays(ctx)
+	case carpoolplan.FieldBoostRatio:
+		return m.OldBoostRatio(ctx)
+	case carpoolplan.FieldBoostCount:
+		return m.OldBoostCount(ctx)
+	case carpoolplan.FieldEnabled:
+		return m.OldEnabled(ctx)
+	case carpoolplan.FieldVersion:
+		return m.OldVersion(ctx)
+	case carpoolplan.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case carpoolplan.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolPlan field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolPlanMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolplan.FieldCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCode(v)
+		return nil
+	case carpoolplan.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case carpoolplan.FieldListPriceCny:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetListPriceCny(v)
+		return nil
+	case carpoolplan.FieldWeeklyQuotaUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWeeklyQuotaUsd(v)
+		return nil
+	case carpoolplan.FieldDurationDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDurationDays(v)
+		return nil
+	case carpoolplan.FieldCycleDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCycleDays(v)
+		return nil
+	case carpoolplan.FieldBoostRatio:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBoostRatio(v)
+		return nil
+	case carpoolplan.FieldBoostCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBoostCount(v)
+		return nil
+	case carpoolplan.FieldEnabled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnabled(v)
+		return nil
+	case carpoolplan.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case carpoolplan.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case carpoolplan.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolPlan field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolPlanMutation) AddedFields() []string {
+	var fields []string
+	if m.addlist_price_cny != nil {
+		fields = append(fields, carpoolplan.FieldListPriceCny)
+	}
+	if m.addweekly_quota_usd != nil {
+		fields = append(fields, carpoolplan.FieldWeeklyQuotaUsd)
+	}
+	if m.addduration_days != nil {
+		fields = append(fields, carpoolplan.FieldDurationDays)
+	}
+	if m.addcycle_days != nil {
+		fields = append(fields, carpoolplan.FieldCycleDays)
+	}
+	if m.addboost_ratio != nil {
+		fields = append(fields, carpoolplan.FieldBoostRatio)
+	}
+	if m.addboost_count != nil {
+		fields = append(fields, carpoolplan.FieldBoostCount)
+	}
+	if m.addversion != nil {
+		fields = append(fields, carpoolplan.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolPlanMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolplan.FieldListPriceCny:
+		return m.AddedListPriceCny()
+	case carpoolplan.FieldWeeklyQuotaUsd:
+		return m.AddedWeeklyQuotaUsd()
+	case carpoolplan.FieldDurationDays:
+		return m.AddedDurationDays()
+	case carpoolplan.FieldCycleDays:
+		return m.AddedCycleDays()
+	case carpoolplan.FieldBoostRatio:
+		return m.AddedBoostRatio()
+	case carpoolplan.FieldBoostCount:
+		return m.AddedBoostCount()
+	case carpoolplan.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolPlanMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolplan.FieldListPriceCny:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddListPriceCny(v)
+		return nil
+	case carpoolplan.FieldWeeklyQuotaUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddWeeklyQuotaUsd(v)
+		return nil
+	case carpoolplan.FieldDurationDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDurationDays(v)
+		return nil
+	case carpoolplan.FieldCycleDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCycleDays(v)
+		return nil
+	case carpoolplan.FieldBoostRatio:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBoostRatio(v)
+		return nil
+	case carpoolplan.FieldBoostCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBoostCount(v)
+		return nil
+	case carpoolplan.FieldVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolPlan numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolPlanMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolPlanMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolPlanMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown CarpoolPlan nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolPlanMutation) ResetField(name string) error {
+	switch name {
+	case carpoolplan.FieldCode:
+		m.ResetCode()
+		return nil
+	case carpoolplan.FieldName:
+		m.ResetName()
+		return nil
+	case carpoolplan.FieldListPriceCny:
+		m.ResetListPriceCny()
+		return nil
+	case carpoolplan.FieldWeeklyQuotaUsd:
+		m.ResetWeeklyQuotaUsd()
+		return nil
+	case carpoolplan.FieldDurationDays:
+		m.ResetDurationDays()
+		return nil
+	case carpoolplan.FieldCycleDays:
+		m.ResetCycleDays()
+		return nil
+	case carpoolplan.FieldBoostRatio:
+		m.ResetBoostRatio()
+		return nil
+	case carpoolplan.FieldBoostCount:
+		m.ResetBoostCount()
+		return nil
+	case carpoolplan.FieldEnabled:
+		m.ResetEnabled()
+		return nil
+	case carpoolplan.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case carpoolplan.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case carpoolplan.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolPlan field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolPlanMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolPlanMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolPlanMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolPlanMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolPlanMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolPlanMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolPlanMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolPlan unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolPlanMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolPlan edge %s", name)
+}
+
+// CarpoolResetAccountStateMutation represents an operation that mutates the CarpoolResetAccountState nodes in the graph.
+type CarpoolResetAccountStateMutation struct {
+	config
+	op                           Op
+	typ                          string
+	id                           *int64
+	upstream_identity_hash       *string
+	representative_account_id    *int64
+	addrepresentative_account_id *int64
+	baseline_complete            *bool
+	last_observed_at             *time.Time
+	last_complete_at             *time.Time
+	health_status                *string
+	known_credit_count           *int
+	addknown_credit_count        *int
+	incomplete_reason            *string
+	revision                     *int64
+	addrevision                  *int64
+	created_at                   *time.Time
+	updated_at                   *time.Time
+	clearedFields                map[string]struct{}
+	done                         bool
+	oldValue                     func(context.Context) (*CarpoolResetAccountState, error)
+	predicates                   []predicate.CarpoolResetAccountState
+}
+
+var _ ent.Mutation = (*CarpoolResetAccountStateMutation)(nil)
+
+// carpoolresetaccountstateOption allows management of the mutation configuration using functional options.
+type carpoolresetaccountstateOption func(*CarpoolResetAccountStateMutation)
+
+// newCarpoolResetAccountStateMutation creates new mutation for the CarpoolResetAccountState entity.
+func newCarpoolResetAccountStateMutation(c config, op Op, opts ...carpoolresetaccountstateOption) *CarpoolResetAccountStateMutation {
+	m := &CarpoolResetAccountStateMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolResetAccountState,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolResetAccountStateID sets the ID field of the mutation.
+func withCarpoolResetAccountStateID(id int64) carpoolresetaccountstateOption {
+	return func(m *CarpoolResetAccountStateMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolResetAccountState
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolResetAccountState, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolResetAccountState.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolResetAccountState sets the old CarpoolResetAccountState of the mutation.
+func withCarpoolResetAccountState(node *CarpoolResetAccountState) carpoolresetaccountstateOption {
+	return func(m *CarpoolResetAccountStateMutation) {
+		m.oldValue = func(context.Context) (*CarpoolResetAccountState, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolResetAccountStateMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolResetAccountStateMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolResetAccountStateMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolResetAccountStateMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolResetAccountState.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetUpstreamIdentityHash sets the "upstream_identity_hash" field.
+func (m *CarpoolResetAccountStateMutation) SetUpstreamIdentityHash(s string) {
+	m.upstream_identity_hash = &s
+}
+
+// UpstreamIdentityHash returns the value of the "upstream_identity_hash" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) UpstreamIdentityHash() (r string, exists bool) {
+	v := m.upstream_identity_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpstreamIdentityHash returns the old "upstream_identity_hash" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldUpstreamIdentityHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpstreamIdentityHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpstreamIdentityHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpstreamIdentityHash: %w", err)
+	}
+	return oldValue.UpstreamIdentityHash, nil
+}
+
+// ResetUpstreamIdentityHash resets all changes to the "upstream_identity_hash" field.
+func (m *CarpoolResetAccountStateMutation) ResetUpstreamIdentityHash() {
+	m.upstream_identity_hash = nil
+}
+
+// SetRepresentativeAccountID sets the "representative_account_id" field.
+func (m *CarpoolResetAccountStateMutation) SetRepresentativeAccountID(i int64) {
+	m.representative_account_id = &i
+	m.addrepresentative_account_id = nil
+}
+
+// RepresentativeAccountID returns the value of the "representative_account_id" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) RepresentativeAccountID() (r int64, exists bool) {
+	v := m.representative_account_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRepresentativeAccountID returns the old "representative_account_id" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldRepresentativeAccountID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRepresentativeAccountID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRepresentativeAccountID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRepresentativeAccountID: %w", err)
+	}
+	return oldValue.RepresentativeAccountID, nil
+}
+
+// AddRepresentativeAccountID adds i to the "representative_account_id" field.
+func (m *CarpoolResetAccountStateMutation) AddRepresentativeAccountID(i int64) {
+	if m.addrepresentative_account_id != nil {
+		*m.addrepresentative_account_id += i
+	} else {
+		m.addrepresentative_account_id = &i
+	}
+}
+
+// AddedRepresentativeAccountID returns the value that was added to the "representative_account_id" field in this mutation.
+func (m *CarpoolResetAccountStateMutation) AddedRepresentativeAccountID() (r int64, exists bool) {
+	v := m.addrepresentative_account_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRepresentativeAccountID clears the value of the "representative_account_id" field.
+func (m *CarpoolResetAccountStateMutation) ClearRepresentativeAccountID() {
+	m.representative_account_id = nil
+	m.addrepresentative_account_id = nil
+	m.clearedFields[carpoolresetaccountstate.FieldRepresentativeAccountID] = struct{}{}
+}
+
+// RepresentativeAccountIDCleared returns if the "representative_account_id" field was cleared in this mutation.
+func (m *CarpoolResetAccountStateMutation) RepresentativeAccountIDCleared() bool {
+	_, ok := m.clearedFields[carpoolresetaccountstate.FieldRepresentativeAccountID]
+	return ok
+}
+
+// ResetRepresentativeAccountID resets all changes to the "representative_account_id" field.
+func (m *CarpoolResetAccountStateMutation) ResetRepresentativeAccountID() {
+	m.representative_account_id = nil
+	m.addrepresentative_account_id = nil
+	delete(m.clearedFields, carpoolresetaccountstate.FieldRepresentativeAccountID)
+}
+
+// SetBaselineComplete sets the "baseline_complete" field.
+func (m *CarpoolResetAccountStateMutation) SetBaselineComplete(b bool) {
+	m.baseline_complete = &b
+}
+
+// BaselineComplete returns the value of the "baseline_complete" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) BaselineComplete() (r bool, exists bool) {
+	v := m.baseline_complete
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBaselineComplete returns the old "baseline_complete" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldBaselineComplete(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBaselineComplete is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBaselineComplete requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBaselineComplete: %w", err)
+	}
+	return oldValue.BaselineComplete, nil
+}
+
+// ResetBaselineComplete resets all changes to the "baseline_complete" field.
+func (m *CarpoolResetAccountStateMutation) ResetBaselineComplete() {
+	m.baseline_complete = nil
+}
+
+// SetLastObservedAt sets the "last_observed_at" field.
+func (m *CarpoolResetAccountStateMutation) SetLastObservedAt(t time.Time) {
+	m.last_observed_at = &t
+}
+
+// LastObservedAt returns the value of the "last_observed_at" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) LastObservedAt() (r time.Time, exists bool) {
+	v := m.last_observed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastObservedAt returns the old "last_observed_at" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldLastObservedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastObservedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastObservedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastObservedAt: %w", err)
+	}
+	return oldValue.LastObservedAt, nil
+}
+
+// ClearLastObservedAt clears the value of the "last_observed_at" field.
+func (m *CarpoolResetAccountStateMutation) ClearLastObservedAt() {
+	m.last_observed_at = nil
+	m.clearedFields[carpoolresetaccountstate.FieldLastObservedAt] = struct{}{}
+}
+
+// LastObservedAtCleared returns if the "last_observed_at" field was cleared in this mutation.
+func (m *CarpoolResetAccountStateMutation) LastObservedAtCleared() bool {
+	_, ok := m.clearedFields[carpoolresetaccountstate.FieldLastObservedAt]
+	return ok
+}
+
+// ResetLastObservedAt resets all changes to the "last_observed_at" field.
+func (m *CarpoolResetAccountStateMutation) ResetLastObservedAt() {
+	m.last_observed_at = nil
+	delete(m.clearedFields, carpoolresetaccountstate.FieldLastObservedAt)
+}
+
+// SetLastCompleteAt sets the "last_complete_at" field.
+func (m *CarpoolResetAccountStateMutation) SetLastCompleteAt(t time.Time) {
+	m.last_complete_at = &t
+}
+
+// LastCompleteAt returns the value of the "last_complete_at" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) LastCompleteAt() (r time.Time, exists bool) {
+	v := m.last_complete_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastCompleteAt returns the old "last_complete_at" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldLastCompleteAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastCompleteAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastCompleteAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastCompleteAt: %w", err)
+	}
+	return oldValue.LastCompleteAt, nil
+}
+
+// ClearLastCompleteAt clears the value of the "last_complete_at" field.
+func (m *CarpoolResetAccountStateMutation) ClearLastCompleteAt() {
+	m.last_complete_at = nil
+	m.clearedFields[carpoolresetaccountstate.FieldLastCompleteAt] = struct{}{}
+}
+
+// LastCompleteAtCleared returns if the "last_complete_at" field was cleared in this mutation.
+func (m *CarpoolResetAccountStateMutation) LastCompleteAtCleared() bool {
+	_, ok := m.clearedFields[carpoolresetaccountstate.FieldLastCompleteAt]
+	return ok
+}
+
+// ResetLastCompleteAt resets all changes to the "last_complete_at" field.
+func (m *CarpoolResetAccountStateMutation) ResetLastCompleteAt() {
+	m.last_complete_at = nil
+	delete(m.clearedFields, carpoolresetaccountstate.FieldLastCompleteAt)
+}
+
+// SetHealthStatus sets the "health_status" field.
+func (m *CarpoolResetAccountStateMutation) SetHealthStatus(s string) {
+	m.health_status = &s
+}
+
+// HealthStatus returns the value of the "health_status" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) HealthStatus() (r string, exists bool) {
+	v := m.health_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHealthStatus returns the old "health_status" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldHealthStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHealthStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHealthStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHealthStatus: %w", err)
+	}
+	return oldValue.HealthStatus, nil
+}
+
+// ResetHealthStatus resets all changes to the "health_status" field.
+func (m *CarpoolResetAccountStateMutation) ResetHealthStatus() {
+	m.health_status = nil
+}
+
+// SetKnownCreditCount sets the "known_credit_count" field.
+func (m *CarpoolResetAccountStateMutation) SetKnownCreditCount(i int) {
+	m.known_credit_count = &i
+	m.addknown_credit_count = nil
+}
+
+// KnownCreditCount returns the value of the "known_credit_count" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) KnownCreditCount() (r int, exists bool) {
+	v := m.known_credit_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKnownCreditCount returns the old "known_credit_count" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldKnownCreditCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKnownCreditCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKnownCreditCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKnownCreditCount: %w", err)
+	}
+	return oldValue.KnownCreditCount, nil
+}
+
+// AddKnownCreditCount adds i to the "known_credit_count" field.
+func (m *CarpoolResetAccountStateMutation) AddKnownCreditCount(i int) {
+	if m.addknown_credit_count != nil {
+		*m.addknown_credit_count += i
+	} else {
+		m.addknown_credit_count = &i
+	}
+}
+
+// AddedKnownCreditCount returns the value that was added to the "known_credit_count" field in this mutation.
+func (m *CarpoolResetAccountStateMutation) AddedKnownCreditCount() (r int, exists bool) {
+	v := m.addknown_credit_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetKnownCreditCount resets all changes to the "known_credit_count" field.
+func (m *CarpoolResetAccountStateMutation) ResetKnownCreditCount() {
+	m.known_credit_count = nil
+	m.addknown_credit_count = nil
+}
+
+// SetIncompleteReason sets the "incomplete_reason" field.
+func (m *CarpoolResetAccountStateMutation) SetIncompleteReason(s string) {
+	m.incomplete_reason = &s
+}
+
+// IncompleteReason returns the value of the "incomplete_reason" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) IncompleteReason() (r string, exists bool) {
+	v := m.incomplete_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIncompleteReason returns the old "incomplete_reason" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldIncompleteReason(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIncompleteReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIncompleteReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIncompleteReason: %w", err)
+	}
+	return oldValue.IncompleteReason, nil
+}
+
+// ClearIncompleteReason clears the value of the "incomplete_reason" field.
+func (m *CarpoolResetAccountStateMutation) ClearIncompleteReason() {
+	m.incomplete_reason = nil
+	m.clearedFields[carpoolresetaccountstate.FieldIncompleteReason] = struct{}{}
+}
+
+// IncompleteReasonCleared returns if the "incomplete_reason" field was cleared in this mutation.
+func (m *CarpoolResetAccountStateMutation) IncompleteReasonCleared() bool {
+	_, ok := m.clearedFields[carpoolresetaccountstate.FieldIncompleteReason]
+	return ok
+}
+
+// ResetIncompleteReason resets all changes to the "incomplete_reason" field.
+func (m *CarpoolResetAccountStateMutation) ResetIncompleteReason() {
+	m.incomplete_reason = nil
+	delete(m.clearedFields, carpoolresetaccountstate.FieldIncompleteReason)
+}
+
+// SetRevision sets the "revision" field.
+func (m *CarpoolResetAccountStateMutation) SetRevision(i int64) {
+	m.revision = &i
+	m.addrevision = nil
+}
+
+// Revision returns the value of the "revision" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) Revision() (r int64, exists bool) {
+	v := m.revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRevision returns the old "revision" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldRevision(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRevision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRevision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRevision: %w", err)
+	}
+	return oldValue.Revision, nil
+}
+
+// AddRevision adds i to the "revision" field.
+func (m *CarpoolResetAccountStateMutation) AddRevision(i int64) {
+	if m.addrevision != nil {
+		*m.addrevision += i
+	} else {
+		m.addrevision = &i
+	}
+}
+
+// AddedRevision returns the value that was added to the "revision" field in this mutation.
+func (m *CarpoolResetAccountStateMutation) AddedRevision() (r int64, exists bool) {
+	v := m.addrevision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRevision resets all changes to the "revision" field.
+func (m *CarpoolResetAccountStateMutation) ResetRevision() {
+	m.revision = nil
+	m.addrevision = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolResetAccountStateMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolResetAccountStateMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CarpoolResetAccountStateMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CarpoolResetAccountStateMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CarpoolResetAccountState entity.
+// If the CarpoolResetAccountState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAccountStateMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CarpoolResetAccountStateMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the CarpoolResetAccountStateMutation builder.
+func (m *CarpoolResetAccountStateMutation) Where(ps ...predicate.CarpoolResetAccountState) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolResetAccountStateMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolResetAccountStateMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolResetAccountState, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolResetAccountStateMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolResetAccountStateMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolResetAccountState).
+func (m *CarpoolResetAccountStateMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolResetAccountStateMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.upstream_identity_hash != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldUpstreamIdentityHash)
+	}
+	if m.representative_account_id != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldRepresentativeAccountID)
+	}
+	if m.baseline_complete != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldBaselineComplete)
+	}
+	if m.last_observed_at != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldLastObservedAt)
+	}
+	if m.last_complete_at != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldLastCompleteAt)
+	}
+	if m.health_status != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldHealthStatus)
+	}
+	if m.known_credit_count != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldKnownCreditCount)
+	}
+	if m.incomplete_reason != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldIncompleteReason)
+	}
+	if m.revision != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldRevision)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolResetAccountStateMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetaccountstate.FieldUpstreamIdentityHash:
+		return m.UpstreamIdentityHash()
+	case carpoolresetaccountstate.FieldRepresentativeAccountID:
+		return m.RepresentativeAccountID()
+	case carpoolresetaccountstate.FieldBaselineComplete:
+		return m.BaselineComplete()
+	case carpoolresetaccountstate.FieldLastObservedAt:
+		return m.LastObservedAt()
+	case carpoolresetaccountstate.FieldLastCompleteAt:
+		return m.LastCompleteAt()
+	case carpoolresetaccountstate.FieldHealthStatus:
+		return m.HealthStatus()
+	case carpoolresetaccountstate.FieldKnownCreditCount:
+		return m.KnownCreditCount()
+	case carpoolresetaccountstate.FieldIncompleteReason:
+		return m.IncompleteReason()
+	case carpoolresetaccountstate.FieldRevision:
+		return m.Revision()
+	case carpoolresetaccountstate.FieldCreatedAt:
+		return m.CreatedAt()
+	case carpoolresetaccountstate.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolResetAccountStateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolresetaccountstate.FieldUpstreamIdentityHash:
+		return m.OldUpstreamIdentityHash(ctx)
+	case carpoolresetaccountstate.FieldRepresentativeAccountID:
+		return m.OldRepresentativeAccountID(ctx)
+	case carpoolresetaccountstate.FieldBaselineComplete:
+		return m.OldBaselineComplete(ctx)
+	case carpoolresetaccountstate.FieldLastObservedAt:
+		return m.OldLastObservedAt(ctx)
+	case carpoolresetaccountstate.FieldLastCompleteAt:
+		return m.OldLastCompleteAt(ctx)
+	case carpoolresetaccountstate.FieldHealthStatus:
+		return m.OldHealthStatus(ctx)
+	case carpoolresetaccountstate.FieldKnownCreditCount:
+		return m.OldKnownCreditCount(ctx)
+	case carpoolresetaccountstate.FieldIncompleteReason:
+		return m.OldIncompleteReason(ctx)
+	case carpoolresetaccountstate.FieldRevision:
+		return m.OldRevision(ctx)
+	case carpoolresetaccountstate.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case carpoolresetaccountstate.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolResetAccountState field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetAccountStateMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetaccountstate.FieldUpstreamIdentityHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpstreamIdentityHash(v)
+		return nil
+	case carpoolresetaccountstate.FieldRepresentativeAccountID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRepresentativeAccountID(v)
+		return nil
+	case carpoolresetaccountstate.FieldBaselineComplete:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBaselineComplete(v)
+		return nil
+	case carpoolresetaccountstate.FieldLastObservedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastObservedAt(v)
+		return nil
+	case carpoolresetaccountstate.FieldLastCompleteAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastCompleteAt(v)
+		return nil
+	case carpoolresetaccountstate.FieldHealthStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHealthStatus(v)
+		return nil
+	case carpoolresetaccountstate.FieldKnownCreditCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKnownCreditCount(v)
+		return nil
+	case carpoolresetaccountstate.FieldIncompleteReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIncompleteReason(v)
+		return nil
+	case carpoolresetaccountstate.FieldRevision:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRevision(v)
+		return nil
+	case carpoolresetaccountstate.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case carpoolresetaccountstate.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetAccountState field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolResetAccountStateMutation) AddedFields() []string {
+	var fields []string
+	if m.addrepresentative_account_id != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldRepresentativeAccountID)
+	}
+	if m.addknown_credit_count != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldKnownCreditCount)
+	}
+	if m.addrevision != nil {
+		fields = append(fields, carpoolresetaccountstate.FieldRevision)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolResetAccountStateMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetaccountstate.FieldRepresentativeAccountID:
+		return m.AddedRepresentativeAccountID()
+	case carpoolresetaccountstate.FieldKnownCreditCount:
+		return m.AddedKnownCreditCount()
+	case carpoolresetaccountstate.FieldRevision:
+		return m.AddedRevision()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetAccountStateMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetaccountstate.FieldRepresentativeAccountID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRepresentativeAccountID(v)
+		return nil
+	case carpoolresetaccountstate.FieldKnownCreditCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddKnownCreditCount(v)
+		return nil
+	case carpoolresetaccountstate.FieldRevision:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRevision(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetAccountState numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolResetAccountStateMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(carpoolresetaccountstate.FieldRepresentativeAccountID) {
+		fields = append(fields, carpoolresetaccountstate.FieldRepresentativeAccountID)
+	}
+	if m.FieldCleared(carpoolresetaccountstate.FieldLastObservedAt) {
+		fields = append(fields, carpoolresetaccountstate.FieldLastObservedAt)
+	}
+	if m.FieldCleared(carpoolresetaccountstate.FieldLastCompleteAt) {
+		fields = append(fields, carpoolresetaccountstate.FieldLastCompleteAt)
+	}
+	if m.FieldCleared(carpoolresetaccountstate.FieldIncompleteReason) {
+		fields = append(fields, carpoolresetaccountstate.FieldIncompleteReason)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolResetAccountStateMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolResetAccountStateMutation) ClearField(name string) error {
+	switch name {
+	case carpoolresetaccountstate.FieldRepresentativeAccountID:
+		m.ClearRepresentativeAccountID()
+		return nil
+	case carpoolresetaccountstate.FieldLastObservedAt:
+		m.ClearLastObservedAt()
+		return nil
+	case carpoolresetaccountstate.FieldLastCompleteAt:
+		m.ClearLastCompleteAt()
+		return nil
+	case carpoolresetaccountstate.FieldIncompleteReason:
+		m.ClearIncompleteReason()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetAccountState nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolResetAccountStateMutation) ResetField(name string) error {
+	switch name {
+	case carpoolresetaccountstate.FieldUpstreamIdentityHash:
+		m.ResetUpstreamIdentityHash()
+		return nil
+	case carpoolresetaccountstate.FieldRepresentativeAccountID:
+		m.ResetRepresentativeAccountID()
+		return nil
+	case carpoolresetaccountstate.FieldBaselineComplete:
+		m.ResetBaselineComplete()
+		return nil
+	case carpoolresetaccountstate.FieldLastObservedAt:
+		m.ResetLastObservedAt()
+		return nil
+	case carpoolresetaccountstate.FieldLastCompleteAt:
+		m.ResetLastCompleteAt()
+		return nil
+	case carpoolresetaccountstate.FieldHealthStatus:
+		m.ResetHealthStatus()
+		return nil
+	case carpoolresetaccountstate.FieldKnownCreditCount:
+		m.ResetKnownCreditCount()
+		return nil
+	case carpoolresetaccountstate.FieldIncompleteReason:
+		m.ResetIncompleteReason()
+		return nil
+	case carpoolresetaccountstate.FieldRevision:
+		m.ResetRevision()
+		return nil
+	case carpoolresetaccountstate.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case carpoolresetaccountstate.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetAccountState field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolResetAccountStateMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolResetAccountStateMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolResetAccountStateMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolResetAccountStateMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolResetAccountStateMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolResetAccountStateMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolResetAccountStateMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetAccountState unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolResetAccountStateMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetAccountState edge %s", name)
+}
+
+// CarpoolResetAnnouncementOutboxMutation represents an operation that mutates the CarpoolResetAnnouncementOutbox nodes in the graph.
+type CarpoolResetAnnouncementOutboxMutation struct {
+	config
+	op                          Op
+	typ                         string
+	id                          *int64
+	batch_id                    *int64
+	addbatch_id                 *int64
+	scope_id                    *int64
+	addscope_id                 *int64
+	event_kind                  *string
+	schedule_revision           *int
+	addschedule_revision        *int
+	status                      *string
+	announcement_id             *int64
+	addannouncement_id          *int64
+	original_announcement_id    *int64
+	addoriginal_announcement_id *int64
+	title                       *string
+	content                     *string
+	attempts                    *int
+	addattempts                 *int
+	next_attempt_at             *time.Time
+	last_error                  *string
+	published_at                *time.Time
+	created_at                  *time.Time
+	updated_at                  *time.Time
+	clearedFields               map[string]struct{}
+	done                        bool
+	oldValue                    func(context.Context) (*CarpoolResetAnnouncementOutbox, error)
+	predicates                  []predicate.CarpoolResetAnnouncementOutbox
+}
+
+var _ ent.Mutation = (*CarpoolResetAnnouncementOutboxMutation)(nil)
+
+// carpoolresetannouncementoutboxOption allows management of the mutation configuration using functional options.
+type carpoolresetannouncementoutboxOption func(*CarpoolResetAnnouncementOutboxMutation)
+
+// newCarpoolResetAnnouncementOutboxMutation creates new mutation for the CarpoolResetAnnouncementOutbox entity.
+func newCarpoolResetAnnouncementOutboxMutation(c config, op Op, opts ...carpoolresetannouncementoutboxOption) *CarpoolResetAnnouncementOutboxMutation {
+	m := &CarpoolResetAnnouncementOutboxMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolResetAnnouncementOutbox,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolResetAnnouncementOutboxID sets the ID field of the mutation.
+func withCarpoolResetAnnouncementOutboxID(id int64) carpoolresetannouncementoutboxOption {
+	return func(m *CarpoolResetAnnouncementOutboxMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolResetAnnouncementOutbox
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolResetAnnouncementOutbox, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolResetAnnouncementOutbox.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolResetAnnouncementOutbox sets the old CarpoolResetAnnouncementOutbox of the mutation.
+func withCarpoolResetAnnouncementOutbox(node *CarpoolResetAnnouncementOutbox) carpoolresetannouncementoutboxOption {
+	return func(m *CarpoolResetAnnouncementOutboxMutation) {
+		m.oldValue = func(context.Context) (*CarpoolResetAnnouncementOutbox, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolResetAnnouncementOutboxMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolResetAnnouncementOutboxMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolResetAnnouncementOutboxMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolResetAnnouncementOutbox.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetBatchID sets the "batch_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetBatchID(i int64) {
+	m.batch_id = &i
+	m.addbatch_id = nil
+}
+
+// BatchID returns the value of the "batch_id" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) BatchID() (r int64, exists bool) {
+	v := m.batch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatchID returns the old "batch_id" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldBatchID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatchID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatchID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatchID: %w", err)
+	}
+	return oldValue.BatchID, nil
+}
+
+// AddBatchID adds i to the "batch_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddBatchID(i int64) {
+	if m.addbatch_id != nil {
+		*m.addbatch_id += i
+	} else {
+		m.addbatch_id = &i
+	}
+}
+
+// AddedBatchID returns the value that was added to the "batch_id" field in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddedBatchID() (r int64, exists bool) {
+	v := m.addbatch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBatchID resets all changes to the "batch_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetBatchID() {
+	m.batch_id = nil
+	m.addbatch_id = nil
+}
+
+// SetScopeID sets the "scope_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetScopeID(i int64) {
+	m.scope_id = &i
+	m.addscope_id = nil
+}
+
+// ScopeID returns the value of the "scope_id" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) ScopeID() (r int64, exists bool) {
+	v := m.scope_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScopeID returns the old "scope_id" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldScopeID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScopeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScopeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScopeID: %w", err)
+	}
+	return oldValue.ScopeID, nil
+}
+
+// AddScopeID adds i to the "scope_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddScopeID(i int64) {
+	if m.addscope_id != nil {
+		*m.addscope_id += i
+	} else {
+		m.addscope_id = &i
+	}
+}
+
+// AddedScopeID returns the value that was added to the "scope_id" field in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddedScopeID() (r int64, exists bool) {
+	v := m.addscope_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetScopeID resets all changes to the "scope_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetScopeID() {
+	m.scope_id = nil
+	m.addscope_id = nil
+}
+
+// SetEventKind sets the "event_kind" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetEventKind(s string) {
+	m.event_kind = &s
+}
+
+// EventKind returns the value of the "event_kind" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) EventKind() (r string, exists bool) {
+	v := m.event_kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEventKind returns the old "event_kind" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldEventKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEventKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEventKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEventKind: %w", err)
+	}
+	return oldValue.EventKind, nil
+}
+
+// ResetEventKind resets all changes to the "event_kind" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetEventKind() {
+	m.event_kind = nil
+}
+
+// SetScheduleRevision sets the "schedule_revision" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetScheduleRevision(i int) {
+	m.schedule_revision = &i
+	m.addschedule_revision = nil
+}
+
+// ScheduleRevision returns the value of the "schedule_revision" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) ScheduleRevision() (r int, exists bool) {
+	v := m.schedule_revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScheduleRevision returns the old "schedule_revision" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldScheduleRevision(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScheduleRevision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScheduleRevision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScheduleRevision: %w", err)
+	}
+	return oldValue.ScheduleRevision, nil
+}
+
+// AddScheduleRevision adds i to the "schedule_revision" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddScheduleRevision(i int) {
+	if m.addschedule_revision != nil {
+		*m.addschedule_revision += i
+	} else {
+		m.addschedule_revision = &i
+	}
+}
+
+// AddedScheduleRevision returns the value that was added to the "schedule_revision" field in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddedScheduleRevision() (r int, exists bool) {
+	v := m.addschedule_revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetScheduleRevision resets all changes to the "schedule_revision" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetScheduleRevision() {
+	m.schedule_revision = nil
+	m.addschedule_revision = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetStatus(s string) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) Status() (r string, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetAnnouncementID sets the "announcement_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetAnnouncementID(i int64) {
+	m.announcement_id = &i
+	m.addannouncement_id = nil
+}
+
+// AnnouncementID returns the value of the "announcement_id" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AnnouncementID() (r int64, exists bool) {
+	v := m.announcement_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAnnouncementID returns the old "announcement_id" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldAnnouncementID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAnnouncementID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAnnouncementID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAnnouncementID: %w", err)
+	}
+	return oldValue.AnnouncementID, nil
+}
+
+// AddAnnouncementID adds i to the "announcement_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddAnnouncementID(i int64) {
+	if m.addannouncement_id != nil {
+		*m.addannouncement_id += i
+	} else {
+		m.addannouncement_id = &i
+	}
+}
+
+// AddedAnnouncementID returns the value that was added to the "announcement_id" field in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddedAnnouncementID() (r int64, exists bool) {
+	v := m.addannouncement_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearAnnouncementID clears the value of the "announcement_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ClearAnnouncementID() {
+	m.announcement_id = nil
+	m.addannouncement_id = nil
+	m.clearedFields[carpoolresetannouncementoutbox.FieldAnnouncementID] = struct{}{}
+}
+
+// AnnouncementIDCleared returns if the "announcement_id" field was cleared in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AnnouncementIDCleared() bool {
+	_, ok := m.clearedFields[carpoolresetannouncementoutbox.FieldAnnouncementID]
+	return ok
+}
+
+// ResetAnnouncementID resets all changes to the "announcement_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetAnnouncementID() {
+	m.announcement_id = nil
+	m.addannouncement_id = nil
+	delete(m.clearedFields, carpoolresetannouncementoutbox.FieldAnnouncementID)
+}
+
+// SetOriginalAnnouncementID sets the "original_announcement_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetOriginalAnnouncementID(i int64) {
+	m.original_announcement_id = &i
+	m.addoriginal_announcement_id = nil
+}
+
+// OriginalAnnouncementID returns the value of the "original_announcement_id" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) OriginalAnnouncementID() (r int64, exists bool) {
+	v := m.original_announcement_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOriginalAnnouncementID returns the old "original_announcement_id" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldOriginalAnnouncementID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOriginalAnnouncementID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOriginalAnnouncementID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOriginalAnnouncementID: %w", err)
+	}
+	return oldValue.OriginalAnnouncementID, nil
+}
+
+// AddOriginalAnnouncementID adds i to the "original_announcement_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddOriginalAnnouncementID(i int64) {
+	if m.addoriginal_announcement_id != nil {
+		*m.addoriginal_announcement_id += i
+	} else {
+		m.addoriginal_announcement_id = &i
+	}
+}
+
+// AddedOriginalAnnouncementID returns the value that was added to the "original_announcement_id" field in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddedOriginalAnnouncementID() (r int64, exists bool) {
+	v := m.addoriginal_announcement_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearOriginalAnnouncementID clears the value of the "original_announcement_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ClearOriginalAnnouncementID() {
+	m.original_announcement_id = nil
+	m.addoriginal_announcement_id = nil
+	m.clearedFields[carpoolresetannouncementoutbox.FieldOriginalAnnouncementID] = struct{}{}
+}
+
+// OriginalAnnouncementIDCleared returns if the "original_announcement_id" field was cleared in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) OriginalAnnouncementIDCleared() bool {
+	_, ok := m.clearedFields[carpoolresetannouncementoutbox.FieldOriginalAnnouncementID]
+	return ok
+}
+
+// ResetOriginalAnnouncementID resets all changes to the "original_announcement_id" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetOriginalAnnouncementID() {
+	m.original_announcement_id = nil
+	m.addoriginal_announcement_id = nil
+	delete(m.clearedFields, carpoolresetannouncementoutbox.FieldOriginalAnnouncementID)
+}
+
+// SetTitle sets the "title" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetContent sets the "content" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetContent() {
+	m.content = nil
+}
+
+// SetAttempts sets the "attempts" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetAttempts(i int) {
+	m.attempts = &i
+	m.addattempts = nil
+}
+
+// Attempts returns the value of the "attempts" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) Attempts() (r int, exists bool) {
+	v := m.attempts
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAttempts returns the old "attempts" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldAttempts(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAttempts is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAttempts requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAttempts: %w", err)
+	}
+	return oldValue.Attempts, nil
+}
+
+// AddAttempts adds i to the "attempts" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddAttempts(i int) {
+	if m.addattempts != nil {
+		*m.addattempts += i
+	} else {
+		m.addattempts = &i
+	}
+}
+
+// AddedAttempts returns the value that was added to the "attempts" field in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddedAttempts() (r int, exists bool) {
+	v := m.addattempts
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAttempts resets all changes to the "attempts" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetAttempts() {
+	m.attempts = nil
+	m.addattempts = nil
+}
+
+// SetNextAttemptAt sets the "next_attempt_at" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetNextAttemptAt(t time.Time) {
+	m.next_attempt_at = &t
+}
+
+// NextAttemptAt returns the value of the "next_attempt_at" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) NextAttemptAt() (r time.Time, exists bool) {
+	v := m.next_attempt_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNextAttemptAt returns the old "next_attempt_at" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldNextAttemptAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNextAttemptAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNextAttemptAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNextAttemptAt: %w", err)
+	}
+	return oldValue.NextAttemptAt, nil
+}
+
+// ResetNextAttemptAt resets all changes to the "next_attempt_at" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetNextAttemptAt() {
+	m.next_attempt_at = nil
+}
+
+// SetLastError sets the "last_error" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetLastError(s string) {
+	m.last_error = &s
+}
+
+// LastError returns the value of the "last_error" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) LastError() (r string, exists bool) {
+	v := m.last_error
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastError returns the old "last_error" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldLastError(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastError is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastError requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastError: %w", err)
+	}
+	return oldValue.LastError, nil
+}
+
+// ClearLastError clears the value of the "last_error" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ClearLastError() {
+	m.last_error = nil
+	m.clearedFields[carpoolresetannouncementoutbox.FieldLastError] = struct{}{}
+}
+
+// LastErrorCleared returns if the "last_error" field was cleared in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) LastErrorCleared() bool {
+	_, ok := m.clearedFields[carpoolresetannouncementoutbox.FieldLastError]
+	return ok
+}
+
+// ResetLastError resets all changes to the "last_error" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetLastError() {
+	m.last_error = nil
+	delete(m.clearedFields, carpoolresetannouncementoutbox.FieldLastError)
+}
+
+// SetPublishedAt sets the "published_at" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetPublishedAt(t time.Time) {
+	m.published_at = &t
+}
+
+// PublishedAt returns the value of the "published_at" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) PublishedAt() (r time.Time, exists bool) {
+	v := m.published_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPublishedAt returns the old "published_at" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldPublishedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPublishedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPublishedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPublishedAt: %w", err)
+	}
+	return oldValue.PublishedAt, nil
+}
+
+// ClearPublishedAt clears the value of the "published_at" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ClearPublishedAt() {
+	m.published_at = nil
+	m.clearedFields[carpoolresetannouncementoutbox.FieldPublishedAt] = struct{}{}
+}
+
+// PublishedAtCleared returns if the "published_at" field was cleared in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) PublishedAtCleared() bool {
+	_, ok := m.clearedFields[carpoolresetannouncementoutbox.FieldPublishedAt]
+	return ok
+}
+
+// ResetPublishedAt resets all changes to the "published_at" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetPublishedAt() {
+	m.published_at = nil
+	delete(m.clearedFields, carpoolresetannouncementoutbox.FieldPublishedAt)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CarpoolResetAnnouncementOutbox entity.
+// If the CarpoolResetAnnouncementOutbox object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the CarpoolResetAnnouncementOutboxMutation builder.
+func (m *CarpoolResetAnnouncementOutboxMutation) Where(ps ...predicate.CarpoolResetAnnouncementOutbox) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolResetAnnouncementOutboxMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolResetAnnouncementOutboxMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolResetAnnouncementOutbox, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolResetAnnouncementOutboxMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolResetAnnouncementOutbox).
+func (m *CarpoolResetAnnouncementOutboxMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolResetAnnouncementOutboxMutation) Fields() []string {
+	fields := make([]string, 0, 15)
+	if m.batch_id != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldBatchID)
+	}
+	if m.scope_id != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldScopeID)
+	}
+	if m.event_kind != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldEventKind)
+	}
+	if m.schedule_revision != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldScheduleRevision)
+	}
+	if m.status != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldStatus)
+	}
+	if m.announcement_id != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldAnnouncementID)
+	}
+	if m.original_announcement_id != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldOriginalAnnouncementID)
+	}
+	if m.title != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldTitle)
+	}
+	if m.content != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldContent)
+	}
+	if m.attempts != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldAttempts)
+	}
+	if m.next_attempt_at != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldNextAttemptAt)
+	}
+	if m.last_error != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldLastError)
+	}
+	if m.published_at != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldPublishedAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolResetAnnouncementOutboxMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetannouncementoutbox.FieldBatchID:
+		return m.BatchID()
+	case carpoolresetannouncementoutbox.FieldScopeID:
+		return m.ScopeID()
+	case carpoolresetannouncementoutbox.FieldEventKind:
+		return m.EventKind()
+	case carpoolresetannouncementoutbox.FieldScheduleRevision:
+		return m.ScheduleRevision()
+	case carpoolresetannouncementoutbox.FieldStatus:
+		return m.Status()
+	case carpoolresetannouncementoutbox.FieldAnnouncementID:
+		return m.AnnouncementID()
+	case carpoolresetannouncementoutbox.FieldOriginalAnnouncementID:
+		return m.OriginalAnnouncementID()
+	case carpoolresetannouncementoutbox.FieldTitle:
+		return m.Title()
+	case carpoolresetannouncementoutbox.FieldContent:
+		return m.Content()
+	case carpoolresetannouncementoutbox.FieldAttempts:
+		return m.Attempts()
+	case carpoolresetannouncementoutbox.FieldNextAttemptAt:
+		return m.NextAttemptAt()
+	case carpoolresetannouncementoutbox.FieldLastError:
+		return m.LastError()
+	case carpoolresetannouncementoutbox.FieldPublishedAt:
+		return m.PublishedAt()
+	case carpoolresetannouncementoutbox.FieldCreatedAt:
+		return m.CreatedAt()
+	case carpoolresetannouncementoutbox.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolResetAnnouncementOutboxMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolresetannouncementoutbox.FieldBatchID:
+		return m.OldBatchID(ctx)
+	case carpoolresetannouncementoutbox.FieldScopeID:
+		return m.OldScopeID(ctx)
+	case carpoolresetannouncementoutbox.FieldEventKind:
+		return m.OldEventKind(ctx)
+	case carpoolresetannouncementoutbox.FieldScheduleRevision:
+		return m.OldScheduleRevision(ctx)
+	case carpoolresetannouncementoutbox.FieldStatus:
+		return m.OldStatus(ctx)
+	case carpoolresetannouncementoutbox.FieldAnnouncementID:
+		return m.OldAnnouncementID(ctx)
+	case carpoolresetannouncementoutbox.FieldOriginalAnnouncementID:
+		return m.OldOriginalAnnouncementID(ctx)
+	case carpoolresetannouncementoutbox.FieldTitle:
+		return m.OldTitle(ctx)
+	case carpoolresetannouncementoutbox.FieldContent:
+		return m.OldContent(ctx)
+	case carpoolresetannouncementoutbox.FieldAttempts:
+		return m.OldAttempts(ctx)
+	case carpoolresetannouncementoutbox.FieldNextAttemptAt:
+		return m.OldNextAttemptAt(ctx)
+	case carpoolresetannouncementoutbox.FieldLastError:
+		return m.OldLastError(ctx)
+	case carpoolresetannouncementoutbox.FieldPublishedAt:
+		return m.OldPublishedAt(ctx)
+	case carpoolresetannouncementoutbox.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case carpoolresetannouncementoutbox.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolResetAnnouncementOutbox field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetAnnouncementOutboxMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetannouncementoutbox.FieldBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatchID(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldScopeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScopeID(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldEventKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEventKind(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldScheduleRevision:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScheduleRevision(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldAnnouncementID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAnnouncementID(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldOriginalAnnouncementID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOriginalAnnouncementID(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldAttempts:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAttempts(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldNextAttemptAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNextAttemptAt(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldLastError:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastError(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldPublishedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPublishedAt(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetAnnouncementOutbox field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddedFields() []string {
+	var fields []string
+	if m.addbatch_id != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldBatchID)
+	}
+	if m.addscope_id != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldScopeID)
+	}
+	if m.addschedule_revision != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldScheduleRevision)
+	}
+	if m.addannouncement_id != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldAnnouncementID)
+	}
+	if m.addoriginal_announcement_id != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldOriginalAnnouncementID)
+	}
+	if m.addattempts != nil {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldAttempts)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetannouncementoutbox.FieldBatchID:
+		return m.AddedBatchID()
+	case carpoolresetannouncementoutbox.FieldScopeID:
+		return m.AddedScopeID()
+	case carpoolresetannouncementoutbox.FieldScheduleRevision:
+		return m.AddedScheduleRevision()
+	case carpoolresetannouncementoutbox.FieldAnnouncementID:
+		return m.AddedAnnouncementID()
+	case carpoolresetannouncementoutbox.FieldOriginalAnnouncementID:
+		return m.AddedOriginalAnnouncementID()
+	case carpoolresetannouncementoutbox.FieldAttempts:
+		return m.AddedAttempts()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetannouncementoutbox.FieldBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBatchID(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldScopeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScopeID(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldScheduleRevision:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScheduleRevision(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldAnnouncementID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAnnouncementID(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldOriginalAnnouncementID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOriginalAnnouncementID(v)
+		return nil
+	case carpoolresetannouncementoutbox.FieldAttempts:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAttempts(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetAnnouncementOutbox numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(carpoolresetannouncementoutbox.FieldAnnouncementID) {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldAnnouncementID)
+	}
+	if m.FieldCleared(carpoolresetannouncementoutbox.FieldOriginalAnnouncementID) {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldOriginalAnnouncementID)
+	}
+	if m.FieldCleared(carpoolresetannouncementoutbox.FieldLastError) {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldLastError)
+	}
+	if m.FieldCleared(carpoolresetannouncementoutbox.FieldPublishedAt) {
+		fields = append(fields, carpoolresetannouncementoutbox.FieldPublishedAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolResetAnnouncementOutboxMutation) ClearField(name string) error {
+	switch name {
+	case carpoolresetannouncementoutbox.FieldAnnouncementID:
+		m.ClearAnnouncementID()
+		return nil
+	case carpoolresetannouncementoutbox.FieldOriginalAnnouncementID:
+		m.ClearOriginalAnnouncementID()
+		return nil
+	case carpoolresetannouncementoutbox.FieldLastError:
+		m.ClearLastError()
+		return nil
+	case carpoolresetannouncementoutbox.FieldPublishedAt:
+		m.ClearPublishedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetAnnouncementOutbox nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetField(name string) error {
+	switch name {
+	case carpoolresetannouncementoutbox.FieldBatchID:
+		m.ResetBatchID()
+		return nil
+	case carpoolresetannouncementoutbox.FieldScopeID:
+		m.ResetScopeID()
+		return nil
+	case carpoolresetannouncementoutbox.FieldEventKind:
+		m.ResetEventKind()
+		return nil
+	case carpoolresetannouncementoutbox.FieldScheduleRevision:
+		m.ResetScheduleRevision()
+		return nil
+	case carpoolresetannouncementoutbox.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case carpoolresetannouncementoutbox.FieldAnnouncementID:
+		m.ResetAnnouncementID()
+		return nil
+	case carpoolresetannouncementoutbox.FieldOriginalAnnouncementID:
+		m.ResetOriginalAnnouncementID()
+		return nil
+	case carpoolresetannouncementoutbox.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case carpoolresetannouncementoutbox.FieldContent:
+		m.ResetContent()
+		return nil
+	case carpoolresetannouncementoutbox.FieldAttempts:
+		m.ResetAttempts()
+		return nil
+	case carpoolresetannouncementoutbox.FieldNextAttemptAt:
+		m.ResetNextAttemptAt()
+		return nil
+	case carpoolresetannouncementoutbox.FieldLastError:
+		m.ResetLastError()
+		return nil
+	case carpoolresetannouncementoutbox.FieldPublishedAt:
+		m.ResetPublishedAt()
+		return nil
+	case carpoolresetannouncementoutbox.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case carpoolresetannouncementoutbox.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetAnnouncementOutbox field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolResetAnnouncementOutboxMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolResetAnnouncementOutboxMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetAnnouncementOutbox unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolResetAnnouncementOutboxMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetAnnouncementOutbox edge %s", name)
+}
+
+// CarpoolResetBatchMutation represents an operation that mutates the CarpoolResetBatch nodes in the graph.
+type CarpoolResetBatchMutation struct {
+	config
+	op                    Op
+	typ                   string
+	id                    *int64
+	scope_id              *int64
+	addscope_id           *int64
+	status                *string
+	detected_at           *time.Time
+	qualified_at          *time.Time
+	slot_at               *time.Time
+	scheduled_at          *time.Time
+	schedule_revision     *int
+	addschedule_revision  *int
+	effective_at          *time.Time
+	completed_at          *time.Time
+	delay_reason          *string
+	evidence              *map[string]interface{}
+	announcement_state    *string
+	qualification_source  *string
+	source_event_key_hash *string
+	created_at            *time.Time
+	updated_at            *time.Time
+	clearedFields         map[string]struct{}
+	done                  bool
+	oldValue              func(context.Context) (*CarpoolResetBatch, error)
+	predicates            []predicate.CarpoolResetBatch
+}
+
+var _ ent.Mutation = (*CarpoolResetBatchMutation)(nil)
+
+// carpoolresetbatchOption allows management of the mutation configuration using functional options.
+type carpoolresetbatchOption func(*CarpoolResetBatchMutation)
+
+// newCarpoolResetBatchMutation creates new mutation for the CarpoolResetBatch entity.
+func newCarpoolResetBatchMutation(c config, op Op, opts ...carpoolresetbatchOption) *CarpoolResetBatchMutation {
+	m := &CarpoolResetBatchMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolResetBatch,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolResetBatchID sets the ID field of the mutation.
+func withCarpoolResetBatchID(id int64) carpoolresetbatchOption {
+	return func(m *CarpoolResetBatchMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolResetBatch
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolResetBatch, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolResetBatch.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolResetBatch sets the old CarpoolResetBatch of the mutation.
+func withCarpoolResetBatch(node *CarpoolResetBatch) carpoolresetbatchOption {
+	return func(m *CarpoolResetBatchMutation) {
+		m.oldValue = func(context.Context) (*CarpoolResetBatch, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolResetBatchMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolResetBatchMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolResetBatchMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolResetBatchMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolResetBatch.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetScopeID sets the "scope_id" field.
+func (m *CarpoolResetBatchMutation) SetScopeID(i int64) {
+	m.scope_id = &i
+	m.addscope_id = nil
+}
+
+// ScopeID returns the value of the "scope_id" field in the mutation.
+func (m *CarpoolResetBatchMutation) ScopeID() (r int64, exists bool) {
+	v := m.scope_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScopeID returns the old "scope_id" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldScopeID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScopeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScopeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScopeID: %w", err)
+	}
+	return oldValue.ScopeID, nil
+}
+
+// AddScopeID adds i to the "scope_id" field.
+func (m *CarpoolResetBatchMutation) AddScopeID(i int64) {
+	if m.addscope_id != nil {
+		*m.addscope_id += i
+	} else {
+		m.addscope_id = &i
+	}
+}
+
+// AddedScopeID returns the value that was added to the "scope_id" field in this mutation.
+func (m *CarpoolResetBatchMutation) AddedScopeID() (r int64, exists bool) {
+	v := m.addscope_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetScopeID resets all changes to the "scope_id" field.
+func (m *CarpoolResetBatchMutation) ResetScopeID() {
+	m.scope_id = nil
+	m.addscope_id = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *CarpoolResetBatchMutation) SetStatus(s string) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *CarpoolResetBatchMutation) Status() (r string, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *CarpoolResetBatchMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetDetectedAt sets the "detected_at" field.
+func (m *CarpoolResetBatchMutation) SetDetectedAt(t time.Time) {
+	m.detected_at = &t
+}
+
+// DetectedAt returns the value of the "detected_at" field in the mutation.
+func (m *CarpoolResetBatchMutation) DetectedAt() (r time.Time, exists bool) {
+	v := m.detected_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDetectedAt returns the old "detected_at" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldDetectedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDetectedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDetectedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDetectedAt: %w", err)
+	}
+	return oldValue.DetectedAt, nil
+}
+
+// ResetDetectedAt resets all changes to the "detected_at" field.
+func (m *CarpoolResetBatchMutation) ResetDetectedAt() {
+	m.detected_at = nil
+}
+
+// SetQualifiedAt sets the "qualified_at" field.
+func (m *CarpoolResetBatchMutation) SetQualifiedAt(t time.Time) {
+	m.qualified_at = &t
+}
+
+// QualifiedAt returns the value of the "qualified_at" field in the mutation.
+func (m *CarpoolResetBatchMutation) QualifiedAt() (r time.Time, exists bool) {
+	v := m.qualified_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldQualifiedAt returns the old "qualified_at" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldQualifiedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldQualifiedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldQualifiedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldQualifiedAt: %w", err)
+	}
+	return oldValue.QualifiedAt, nil
+}
+
+// ClearQualifiedAt clears the value of the "qualified_at" field.
+func (m *CarpoolResetBatchMutation) ClearQualifiedAt() {
+	m.qualified_at = nil
+	m.clearedFields[carpoolresetbatch.FieldQualifiedAt] = struct{}{}
+}
+
+// QualifiedAtCleared returns if the "qualified_at" field was cleared in this mutation.
+func (m *CarpoolResetBatchMutation) QualifiedAtCleared() bool {
+	_, ok := m.clearedFields[carpoolresetbatch.FieldQualifiedAt]
+	return ok
+}
+
+// ResetQualifiedAt resets all changes to the "qualified_at" field.
+func (m *CarpoolResetBatchMutation) ResetQualifiedAt() {
+	m.qualified_at = nil
+	delete(m.clearedFields, carpoolresetbatch.FieldQualifiedAt)
+}
+
+// SetSlotAt sets the "slot_at" field.
+func (m *CarpoolResetBatchMutation) SetSlotAt(t time.Time) {
+	m.slot_at = &t
+}
+
+// SlotAt returns the value of the "slot_at" field in the mutation.
+func (m *CarpoolResetBatchMutation) SlotAt() (r time.Time, exists bool) {
+	v := m.slot_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSlotAt returns the old "slot_at" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldSlotAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSlotAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSlotAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSlotAt: %w", err)
+	}
+	return oldValue.SlotAt, nil
+}
+
+// ClearSlotAt clears the value of the "slot_at" field.
+func (m *CarpoolResetBatchMutation) ClearSlotAt() {
+	m.slot_at = nil
+	m.clearedFields[carpoolresetbatch.FieldSlotAt] = struct{}{}
+}
+
+// SlotAtCleared returns if the "slot_at" field was cleared in this mutation.
+func (m *CarpoolResetBatchMutation) SlotAtCleared() bool {
+	_, ok := m.clearedFields[carpoolresetbatch.FieldSlotAt]
+	return ok
+}
+
+// ResetSlotAt resets all changes to the "slot_at" field.
+func (m *CarpoolResetBatchMutation) ResetSlotAt() {
+	m.slot_at = nil
+	delete(m.clearedFields, carpoolresetbatch.FieldSlotAt)
+}
+
+// SetScheduledAt sets the "scheduled_at" field.
+func (m *CarpoolResetBatchMutation) SetScheduledAt(t time.Time) {
+	m.scheduled_at = &t
+}
+
+// ScheduledAt returns the value of the "scheduled_at" field in the mutation.
+func (m *CarpoolResetBatchMutation) ScheduledAt() (r time.Time, exists bool) {
+	v := m.scheduled_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScheduledAt returns the old "scheduled_at" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldScheduledAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScheduledAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScheduledAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScheduledAt: %w", err)
+	}
+	return oldValue.ScheduledAt, nil
+}
+
+// ClearScheduledAt clears the value of the "scheduled_at" field.
+func (m *CarpoolResetBatchMutation) ClearScheduledAt() {
+	m.scheduled_at = nil
+	m.clearedFields[carpoolresetbatch.FieldScheduledAt] = struct{}{}
+}
+
+// ScheduledAtCleared returns if the "scheduled_at" field was cleared in this mutation.
+func (m *CarpoolResetBatchMutation) ScheduledAtCleared() bool {
+	_, ok := m.clearedFields[carpoolresetbatch.FieldScheduledAt]
+	return ok
+}
+
+// ResetScheduledAt resets all changes to the "scheduled_at" field.
+func (m *CarpoolResetBatchMutation) ResetScheduledAt() {
+	m.scheduled_at = nil
+	delete(m.clearedFields, carpoolresetbatch.FieldScheduledAt)
+}
+
+// SetScheduleRevision sets the "schedule_revision" field.
+func (m *CarpoolResetBatchMutation) SetScheduleRevision(i int) {
+	m.schedule_revision = &i
+	m.addschedule_revision = nil
+}
+
+// ScheduleRevision returns the value of the "schedule_revision" field in the mutation.
+func (m *CarpoolResetBatchMutation) ScheduleRevision() (r int, exists bool) {
+	v := m.schedule_revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScheduleRevision returns the old "schedule_revision" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldScheduleRevision(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScheduleRevision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScheduleRevision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScheduleRevision: %w", err)
+	}
+	return oldValue.ScheduleRevision, nil
+}
+
+// AddScheduleRevision adds i to the "schedule_revision" field.
+func (m *CarpoolResetBatchMutation) AddScheduleRevision(i int) {
+	if m.addschedule_revision != nil {
+		*m.addschedule_revision += i
+	} else {
+		m.addschedule_revision = &i
+	}
+}
+
+// AddedScheduleRevision returns the value that was added to the "schedule_revision" field in this mutation.
+func (m *CarpoolResetBatchMutation) AddedScheduleRevision() (r int, exists bool) {
+	v := m.addschedule_revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetScheduleRevision resets all changes to the "schedule_revision" field.
+func (m *CarpoolResetBatchMutation) ResetScheduleRevision() {
+	m.schedule_revision = nil
+	m.addschedule_revision = nil
+}
+
+// SetEffectiveAt sets the "effective_at" field.
+func (m *CarpoolResetBatchMutation) SetEffectiveAt(t time.Time) {
+	m.effective_at = &t
+}
+
+// EffectiveAt returns the value of the "effective_at" field in the mutation.
+func (m *CarpoolResetBatchMutation) EffectiveAt() (r time.Time, exists bool) {
+	v := m.effective_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEffectiveAt returns the old "effective_at" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldEffectiveAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEffectiveAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEffectiveAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEffectiveAt: %w", err)
+	}
+	return oldValue.EffectiveAt, nil
+}
+
+// ClearEffectiveAt clears the value of the "effective_at" field.
+func (m *CarpoolResetBatchMutation) ClearEffectiveAt() {
+	m.effective_at = nil
+	m.clearedFields[carpoolresetbatch.FieldEffectiveAt] = struct{}{}
+}
+
+// EffectiveAtCleared returns if the "effective_at" field was cleared in this mutation.
+func (m *CarpoolResetBatchMutation) EffectiveAtCleared() bool {
+	_, ok := m.clearedFields[carpoolresetbatch.FieldEffectiveAt]
+	return ok
+}
+
+// ResetEffectiveAt resets all changes to the "effective_at" field.
+func (m *CarpoolResetBatchMutation) ResetEffectiveAt() {
+	m.effective_at = nil
+	delete(m.clearedFields, carpoolresetbatch.FieldEffectiveAt)
+}
+
+// SetCompletedAt sets the "completed_at" field.
+func (m *CarpoolResetBatchMutation) SetCompletedAt(t time.Time) {
+	m.completed_at = &t
+}
+
+// CompletedAt returns the value of the "completed_at" field in the mutation.
+func (m *CarpoolResetBatchMutation) CompletedAt() (r time.Time, exists bool) {
+	v := m.completed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCompletedAt returns the old "completed_at" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldCompletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCompletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCompletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCompletedAt: %w", err)
+	}
+	return oldValue.CompletedAt, nil
+}
+
+// ClearCompletedAt clears the value of the "completed_at" field.
+func (m *CarpoolResetBatchMutation) ClearCompletedAt() {
+	m.completed_at = nil
+	m.clearedFields[carpoolresetbatch.FieldCompletedAt] = struct{}{}
+}
+
+// CompletedAtCleared returns if the "completed_at" field was cleared in this mutation.
+func (m *CarpoolResetBatchMutation) CompletedAtCleared() bool {
+	_, ok := m.clearedFields[carpoolresetbatch.FieldCompletedAt]
+	return ok
+}
+
+// ResetCompletedAt resets all changes to the "completed_at" field.
+func (m *CarpoolResetBatchMutation) ResetCompletedAt() {
+	m.completed_at = nil
+	delete(m.clearedFields, carpoolresetbatch.FieldCompletedAt)
+}
+
+// SetDelayReason sets the "delay_reason" field.
+func (m *CarpoolResetBatchMutation) SetDelayReason(s string) {
+	m.delay_reason = &s
+}
+
+// DelayReason returns the value of the "delay_reason" field in the mutation.
+func (m *CarpoolResetBatchMutation) DelayReason() (r string, exists bool) {
+	v := m.delay_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDelayReason returns the old "delay_reason" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldDelayReason(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDelayReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDelayReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDelayReason: %w", err)
+	}
+	return oldValue.DelayReason, nil
+}
+
+// ClearDelayReason clears the value of the "delay_reason" field.
+func (m *CarpoolResetBatchMutation) ClearDelayReason() {
+	m.delay_reason = nil
+	m.clearedFields[carpoolresetbatch.FieldDelayReason] = struct{}{}
+}
+
+// DelayReasonCleared returns if the "delay_reason" field was cleared in this mutation.
+func (m *CarpoolResetBatchMutation) DelayReasonCleared() bool {
+	_, ok := m.clearedFields[carpoolresetbatch.FieldDelayReason]
+	return ok
+}
+
+// ResetDelayReason resets all changes to the "delay_reason" field.
+func (m *CarpoolResetBatchMutation) ResetDelayReason() {
+	m.delay_reason = nil
+	delete(m.clearedFields, carpoolresetbatch.FieldDelayReason)
+}
+
+// SetEvidence sets the "evidence" field.
+func (m *CarpoolResetBatchMutation) SetEvidence(value map[string]interface{}) {
+	m.evidence = &value
+}
+
+// Evidence returns the value of the "evidence" field in the mutation.
+func (m *CarpoolResetBatchMutation) Evidence() (r map[string]interface{}, exists bool) {
+	v := m.evidence
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEvidence returns the old "evidence" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldEvidence(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEvidence is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEvidence requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEvidence: %w", err)
+	}
+	return oldValue.Evidence, nil
+}
+
+// ResetEvidence resets all changes to the "evidence" field.
+func (m *CarpoolResetBatchMutation) ResetEvidence() {
+	m.evidence = nil
+}
+
+// SetAnnouncementState sets the "announcement_state" field.
+func (m *CarpoolResetBatchMutation) SetAnnouncementState(s string) {
+	m.announcement_state = &s
+}
+
+// AnnouncementState returns the value of the "announcement_state" field in the mutation.
+func (m *CarpoolResetBatchMutation) AnnouncementState() (r string, exists bool) {
+	v := m.announcement_state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAnnouncementState returns the old "announcement_state" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldAnnouncementState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAnnouncementState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAnnouncementState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAnnouncementState: %w", err)
+	}
+	return oldValue.AnnouncementState, nil
+}
+
+// ResetAnnouncementState resets all changes to the "announcement_state" field.
+func (m *CarpoolResetBatchMutation) ResetAnnouncementState() {
+	m.announcement_state = nil
+}
+
+// SetQualificationSource sets the "qualification_source" field.
+func (m *CarpoolResetBatchMutation) SetQualificationSource(s string) {
+	m.qualification_source = &s
+}
+
+// QualificationSource returns the value of the "qualification_source" field in the mutation.
+func (m *CarpoolResetBatchMutation) QualificationSource() (r string, exists bool) {
+	v := m.qualification_source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldQualificationSource returns the old "qualification_source" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldQualificationSource(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldQualificationSource is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldQualificationSource requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldQualificationSource: %w", err)
+	}
+	return oldValue.QualificationSource, nil
+}
+
+// ResetQualificationSource resets all changes to the "qualification_source" field.
+func (m *CarpoolResetBatchMutation) ResetQualificationSource() {
+	m.qualification_source = nil
+}
+
+// SetSourceEventKeyHash sets the "source_event_key_hash" field.
+func (m *CarpoolResetBatchMutation) SetSourceEventKeyHash(s string) {
+	m.source_event_key_hash = &s
+}
+
+// SourceEventKeyHash returns the value of the "source_event_key_hash" field in the mutation.
+func (m *CarpoolResetBatchMutation) SourceEventKeyHash() (r string, exists bool) {
+	v := m.source_event_key_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceEventKeyHash returns the old "source_event_key_hash" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldSourceEventKeyHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceEventKeyHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceEventKeyHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceEventKeyHash: %w", err)
+	}
+	return oldValue.SourceEventKeyHash, nil
+}
+
+// ResetSourceEventKeyHash resets all changes to the "source_event_key_hash" field.
+func (m *CarpoolResetBatchMutation) ResetSourceEventKeyHash() {
+	m.source_event_key_hash = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolResetBatchMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolResetBatchMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolResetBatchMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CarpoolResetBatchMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CarpoolResetBatchMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CarpoolResetBatch entity.
+// If the CarpoolResetBatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetBatchMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CarpoolResetBatchMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the CarpoolResetBatchMutation builder.
+func (m *CarpoolResetBatchMutation) Where(ps ...predicate.CarpoolResetBatch) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolResetBatchMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolResetBatchMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolResetBatch, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolResetBatchMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolResetBatchMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolResetBatch).
+func (m *CarpoolResetBatchMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolResetBatchMutation) Fields() []string {
+	fields := make([]string, 0, 16)
+	if m.scope_id != nil {
+		fields = append(fields, carpoolresetbatch.FieldScopeID)
+	}
+	if m.status != nil {
+		fields = append(fields, carpoolresetbatch.FieldStatus)
+	}
+	if m.detected_at != nil {
+		fields = append(fields, carpoolresetbatch.FieldDetectedAt)
+	}
+	if m.qualified_at != nil {
+		fields = append(fields, carpoolresetbatch.FieldQualifiedAt)
+	}
+	if m.slot_at != nil {
+		fields = append(fields, carpoolresetbatch.FieldSlotAt)
+	}
+	if m.scheduled_at != nil {
+		fields = append(fields, carpoolresetbatch.FieldScheduledAt)
+	}
+	if m.schedule_revision != nil {
+		fields = append(fields, carpoolresetbatch.FieldScheduleRevision)
+	}
+	if m.effective_at != nil {
+		fields = append(fields, carpoolresetbatch.FieldEffectiveAt)
+	}
+	if m.completed_at != nil {
+		fields = append(fields, carpoolresetbatch.FieldCompletedAt)
+	}
+	if m.delay_reason != nil {
+		fields = append(fields, carpoolresetbatch.FieldDelayReason)
+	}
+	if m.evidence != nil {
+		fields = append(fields, carpoolresetbatch.FieldEvidence)
+	}
+	if m.announcement_state != nil {
+		fields = append(fields, carpoolresetbatch.FieldAnnouncementState)
+	}
+	if m.qualification_source != nil {
+		fields = append(fields, carpoolresetbatch.FieldQualificationSource)
+	}
+	if m.source_event_key_hash != nil {
+		fields = append(fields, carpoolresetbatch.FieldSourceEventKeyHash)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolresetbatch.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, carpoolresetbatch.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolResetBatchMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetbatch.FieldScopeID:
+		return m.ScopeID()
+	case carpoolresetbatch.FieldStatus:
+		return m.Status()
+	case carpoolresetbatch.FieldDetectedAt:
+		return m.DetectedAt()
+	case carpoolresetbatch.FieldQualifiedAt:
+		return m.QualifiedAt()
+	case carpoolresetbatch.FieldSlotAt:
+		return m.SlotAt()
+	case carpoolresetbatch.FieldScheduledAt:
+		return m.ScheduledAt()
+	case carpoolresetbatch.FieldScheduleRevision:
+		return m.ScheduleRevision()
+	case carpoolresetbatch.FieldEffectiveAt:
+		return m.EffectiveAt()
+	case carpoolresetbatch.FieldCompletedAt:
+		return m.CompletedAt()
+	case carpoolresetbatch.FieldDelayReason:
+		return m.DelayReason()
+	case carpoolresetbatch.FieldEvidence:
+		return m.Evidence()
+	case carpoolresetbatch.FieldAnnouncementState:
+		return m.AnnouncementState()
+	case carpoolresetbatch.FieldQualificationSource:
+		return m.QualificationSource()
+	case carpoolresetbatch.FieldSourceEventKeyHash:
+		return m.SourceEventKeyHash()
+	case carpoolresetbatch.FieldCreatedAt:
+		return m.CreatedAt()
+	case carpoolresetbatch.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolResetBatchMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolresetbatch.FieldScopeID:
+		return m.OldScopeID(ctx)
+	case carpoolresetbatch.FieldStatus:
+		return m.OldStatus(ctx)
+	case carpoolresetbatch.FieldDetectedAt:
+		return m.OldDetectedAt(ctx)
+	case carpoolresetbatch.FieldQualifiedAt:
+		return m.OldQualifiedAt(ctx)
+	case carpoolresetbatch.FieldSlotAt:
+		return m.OldSlotAt(ctx)
+	case carpoolresetbatch.FieldScheduledAt:
+		return m.OldScheduledAt(ctx)
+	case carpoolresetbatch.FieldScheduleRevision:
+		return m.OldScheduleRevision(ctx)
+	case carpoolresetbatch.FieldEffectiveAt:
+		return m.OldEffectiveAt(ctx)
+	case carpoolresetbatch.FieldCompletedAt:
+		return m.OldCompletedAt(ctx)
+	case carpoolresetbatch.FieldDelayReason:
+		return m.OldDelayReason(ctx)
+	case carpoolresetbatch.FieldEvidence:
+		return m.OldEvidence(ctx)
+	case carpoolresetbatch.FieldAnnouncementState:
+		return m.OldAnnouncementState(ctx)
+	case carpoolresetbatch.FieldQualificationSource:
+		return m.OldQualificationSource(ctx)
+	case carpoolresetbatch.FieldSourceEventKeyHash:
+		return m.OldSourceEventKeyHash(ctx)
+	case carpoolresetbatch.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case carpoolresetbatch.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolResetBatch field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetBatchMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetbatch.FieldScopeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScopeID(v)
+		return nil
+	case carpoolresetbatch.FieldStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case carpoolresetbatch.FieldDetectedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDetectedAt(v)
+		return nil
+	case carpoolresetbatch.FieldQualifiedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetQualifiedAt(v)
+		return nil
+	case carpoolresetbatch.FieldSlotAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSlotAt(v)
+		return nil
+	case carpoolresetbatch.FieldScheduledAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScheduledAt(v)
+		return nil
+	case carpoolresetbatch.FieldScheduleRevision:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScheduleRevision(v)
+		return nil
+	case carpoolresetbatch.FieldEffectiveAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEffectiveAt(v)
+		return nil
+	case carpoolresetbatch.FieldCompletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCompletedAt(v)
+		return nil
+	case carpoolresetbatch.FieldDelayReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDelayReason(v)
+		return nil
+	case carpoolresetbatch.FieldEvidence:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEvidence(v)
+		return nil
+	case carpoolresetbatch.FieldAnnouncementState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAnnouncementState(v)
+		return nil
+	case carpoolresetbatch.FieldQualificationSource:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetQualificationSource(v)
+		return nil
+	case carpoolresetbatch.FieldSourceEventKeyHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceEventKeyHash(v)
+		return nil
+	case carpoolresetbatch.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case carpoolresetbatch.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetBatch field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolResetBatchMutation) AddedFields() []string {
+	var fields []string
+	if m.addscope_id != nil {
+		fields = append(fields, carpoolresetbatch.FieldScopeID)
+	}
+	if m.addschedule_revision != nil {
+		fields = append(fields, carpoolresetbatch.FieldScheduleRevision)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolResetBatchMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetbatch.FieldScopeID:
+		return m.AddedScopeID()
+	case carpoolresetbatch.FieldScheduleRevision:
+		return m.AddedScheduleRevision()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetBatchMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetbatch.FieldScopeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScopeID(v)
+		return nil
+	case carpoolresetbatch.FieldScheduleRevision:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScheduleRevision(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetBatch numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolResetBatchMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(carpoolresetbatch.FieldQualifiedAt) {
+		fields = append(fields, carpoolresetbatch.FieldQualifiedAt)
+	}
+	if m.FieldCleared(carpoolresetbatch.FieldSlotAt) {
+		fields = append(fields, carpoolresetbatch.FieldSlotAt)
+	}
+	if m.FieldCleared(carpoolresetbatch.FieldScheduledAt) {
+		fields = append(fields, carpoolresetbatch.FieldScheduledAt)
+	}
+	if m.FieldCleared(carpoolresetbatch.FieldEffectiveAt) {
+		fields = append(fields, carpoolresetbatch.FieldEffectiveAt)
+	}
+	if m.FieldCleared(carpoolresetbatch.FieldCompletedAt) {
+		fields = append(fields, carpoolresetbatch.FieldCompletedAt)
+	}
+	if m.FieldCleared(carpoolresetbatch.FieldDelayReason) {
+		fields = append(fields, carpoolresetbatch.FieldDelayReason)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolResetBatchMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolResetBatchMutation) ClearField(name string) error {
+	switch name {
+	case carpoolresetbatch.FieldQualifiedAt:
+		m.ClearQualifiedAt()
+		return nil
+	case carpoolresetbatch.FieldSlotAt:
+		m.ClearSlotAt()
+		return nil
+	case carpoolresetbatch.FieldScheduledAt:
+		m.ClearScheduledAt()
+		return nil
+	case carpoolresetbatch.FieldEffectiveAt:
+		m.ClearEffectiveAt()
+		return nil
+	case carpoolresetbatch.FieldCompletedAt:
+		m.ClearCompletedAt()
+		return nil
+	case carpoolresetbatch.FieldDelayReason:
+		m.ClearDelayReason()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetBatch nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolResetBatchMutation) ResetField(name string) error {
+	switch name {
+	case carpoolresetbatch.FieldScopeID:
+		m.ResetScopeID()
+		return nil
+	case carpoolresetbatch.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case carpoolresetbatch.FieldDetectedAt:
+		m.ResetDetectedAt()
+		return nil
+	case carpoolresetbatch.FieldQualifiedAt:
+		m.ResetQualifiedAt()
+		return nil
+	case carpoolresetbatch.FieldSlotAt:
+		m.ResetSlotAt()
+		return nil
+	case carpoolresetbatch.FieldScheduledAt:
+		m.ResetScheduledAt()
+		return nil
+	case carpoolresetbatch.FieldScheduleRevision:
+		m.ResetScheduleRevision()
+		return nil
+	case carpoolresetbatch.FieldEffectiveAt:
+		m.ResetEffectiveAt()
+		return nil
+	case carpoolresetbatch.FieldCompletedAt:
+		m.ResetCompletedAt()
+		return nil
+	case carpoolresetbatch.FieldDelayReason:
+		m.ResetDelayReason()
+		return nil
+	case carpoolresetbatch.FieldEvidence:
+		m.ResetEvidence()
+		return nil
+	case carpoolresetbatch.FieldAnnouncementState:
+		m.ResetAnnouncementState()
+		return nil
+	case carpoolresetbatch.FieldQualificationSource:
+		m.ResetQualificationSource()
+		return nil
+	case carpoolresetbatch.FieldSourceEventKeyHash:
+		m.ResetSourceEventKeyHash()
+		return nil
+	case carpoolresetbatch.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case carpoolresetbatch.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetBatch field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolResetBatchMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolResetBatchMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolResetBatchMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolResetBatchMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolResetBatchMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolResetBatchMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolResetBatchMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetBatch unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolResetBatchMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetBatch edge %s", name)
+}
+
+// CarpoolResetCreditMutation represents an operation that mutates the CarpoolResetCredit nodes in the graph.
+type CarpoolResetCreditMutation struct {
+	config
+	op                     Op
+	typ                    string
+	id                     *int64
+	account_state_id       *int64
+	addaccount_state_id    *int64
+	upstream_identity_hash *string
+	credit_hash            *string
+	first_seen_at          *time.Time
+	last_seen_at           *time.Time
+	expires_at             *time.Time
+	initial_stock          *bool
+	assignment_status      *string
+	reset_batch_id         *int64
+	addreset_batch_id      *int64
+	created_at             *time.Time
+	updated_at             *time.Time
+	clearedFields          map[string]struct{}
+	done                   bool
+	oldValue               func(context.Context) (*CarpoolResetCredit, error)
+	predicates             []predicate.CarpoolResetCredit
+}
+
+var _ ent.Mutation = (*CarpoolResetCreditMutation)(nil)
+
+// carpoolresetcreditOption allows management of the mutation configuration using functional options.
+type carpoolresetcreditOption func(*CarpoolResetCreditMutation)
+
+// newCarpoolResetCreditMutation creates new mutation for the CarpoolResetCredit entity.
+func newCarpoolResetCreditMutation(c config, op Op, opts ...carpoolresetcreditOption) *CarpoolResetCreditMutation {
+	m := &CarpoolResetCreditMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolResetCredit,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolResetCreditID sets the ID field of the mutation.
+func withCarpoolResetCreditID(id int64) carpoolresetcreditOption {
+	return func(m *CarpoolResetCreditMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolResetCredit
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolResetCredit, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolResetCredit.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolResetCredit sets the old CarpoolResetCredit of the mutation.
+func withCarpoolResetCredit(node *CarpoolResetCredit) carpoolresetcreditOption {
+	return func(m *CarpoolResetCreditMutation) {
+		m.oldValue = func(context.Context) (*CarpoolResetCredit, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolResetCreditMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolResetCreditMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolResetCreditMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolResetCreditMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolResetCredit.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetAccountStateID sets the "account_state_id" field.
+func (m *CarpoolResetCreditMutation) SetAccountStateID(i int64) {
+	m.account_state_id = &i
+	m.addaccount_state_id = nil
+}
+
+// AccountStateID returns the value of the "account_state_id" field in the mutation.
+func (m *CarpoolResetCreditMutation) AccountStateID() (r int64, exists bool) {
+	v := m.account_state_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccountStateID returns the old "account_state_id" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldAccountStateID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccountStateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccountStateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccountStateID: %w", err)
+	}
+	return oldValue.AccountStateID, nil
+}
+
+// AddAccountStateID adds i to the "account_state_id" field.
+func (m *CarpoolResetCreditMutation) AddAccountStateID(i int64) {
+	if m.addaccount_state_id != nil {
+		*m.addaccount_state_id += i
+	} else {
+		m.addaccount_state_id = &i
+	}
+}
+
+// AddedAccountStateID returns the value that was added to the "account_state_id" field in this mutation.
+func (m *CarpoolResetCreditMutation) AddedAccountStateID() (r int64, exists bool) {
+	v := m.addaccount_state_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAccountStateID resets all changes to the "account_state_id" field.
+func (m *CarpoolResetCreditMutation) ResetAccountStateID() {
+	m.account_state_id = nil
+	m.addaccount_state_id = nil
+}
+
+// SetUpstreamIdentityHash sets the "upstream_identity_hash" field.
+func (m *CarpoolResetCreditMutation) SetUpstreamIdentityHash(s string) {
+	m.upstream_identity_hash = &s
+}
+
+// UpstreamIdentityHash returns the value of the "upstream_identity_hash" field in the mutation.
+func (m *CarpoolResetCreditMutation) UpstreamIdentityHash() (r string, exists bool) {
+	v := m.upstream_identity_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpstreamIdentityHash returns the old "upstream_identity_hash" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldUpstreamIdentityHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpstreamIdentityHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpstreamIdentityHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpstreamIdentityHash: %w", err)
+	}
+	return oldValue.UpstreamIdentityHash, nil
+}
+
+// ResetUpstreamIdentityHash resets all changes to the "upstream_identity_hash" field.
+func (m *CarpoolResetCreditMutation) ResetUpstreamIdentityHash() {
+	m.upstream_identity_hash = nil
+}
+
+// SetCreditHash sets the "credit_hash" field.
+func (m *CarpoolResetCreditMutation) SetCreditHash(s string) {
+	m.credit_hash = &s
+}
+
+// CreditHash returns the value of the "credit_hash" field in the mutation.
+func (m *CarpoolResetCreditMutation) CreditHash() (r string, exists bool) {
+	v := m.credit_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreditHash returns the old "credit_hash" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldCreditHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreditHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreditHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreditHash: %w", err)
+	}
+	return oldValue.CreditHash, nil
+}
+
+// ResetCreditHash resets all changes to the "credit_hash" field.
+func (m *CarpoolResetCreditMutation) ResetCreditHash() {
+	m.credit_hash = nil
+}
+
+// SetFirstSeenAt sets the "first_seen_at" field.
+func (m *CarpoolResetCreditMutation) SetFirstSeenAt(t time.Time) {
+	m.first_seen_at = &t
+}
+
+// FirstSeenAt returns the value of the "first_seen_at" field in the mutation.
+func (m *CarpoolResetCreditMutation) FirstSeenAt() (r time.Time, exists bool) {
+	v := m.first_seen_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFirstSeenAt returns the old "first_seen_at" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldFirstSeenAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFirstSeenAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFirstSeenAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFirstSeenAt: %w", err)
+	}
+	return oldValue.FirstSeenAt, nil
+}
+
+// ResetFirstSeenAt resets all changes to the "first_seen_at" field.
+func (m *CarpoolResetCreditMutation) ResetFirstSeenAt() {
+	m.first_seen_at = nil
+}
+
+// SetLastSeenAt sets the "last_seen_at" field.
+func (m *CarpoolResetCreditMutation) SetLastSeenAt(t time.Time) {
+	m.last_seen_at = &t
+}
+
+// LastSeenAt returns the value of the "last_seen_at" field in the mutation.
+func (m *CarpoolResetCreditMutation) LastSeenAt() (r time.Time, exists bool) {
+	v := m.last_seen_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastSeenAt returns the old "last_seen_at" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldLastSeenAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastSeenAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastSeenAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastSeenAt: %w", err)
+	}
+	return oldValue.LastSeenAt, nil
+}
+
+// ResetLastSeenAt resets all changes to the "last_seen_at" field.
+func (m *CarpoolResetCreditMutation) ResetLastSeenAt() {
+	m.last_seen_at = nil
+}
+
+// SetExpiresAt sets the "expires_at" field.
+func (m *CarpoolResetCreditMutation) SetExpiresAt(t time.Time) {
+	m.expires_at = &t
+}
+
+// ExpiresAt returns the value of the "expires_at" field in the mutation.
+func (m *CarpoolResetCreditMutation) ExpiresAt() (r time.Time, exists bool) {
+	v := m.expires_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExpiresAt returns the old "expires_at" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldExpiresAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExpiresAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExpiresAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExpiresAt: %w", err)
+	}
+	return oldValue.ExpiresAt, nil
+}
+
+// ClearExpiresAt clears the value of the "expires_at" field.
+func (m *CarpoolResetCreditMutation) ClearExpiresAt() {
+	m.expires_at = nil
+	m.clearedFields[carpoolresetcredit.FieldExpiresAt] = struct{}{}
+}
+
+// ExpiresAtCleared returns if the "expires_at" field was cleared in this mutation.
+func (m *CarpoolResetCreditMutation) ExpiresAtCleared() bool {
+	_, ok := m.clearedFields[carpoolresetcredit.FieldExpiresAt]
+	return ok
+}
+
+// ResetExpiresAt resets all changes to the "expires_at" field.
+func (m *CarpoolResetCreditMutation) ResetExpiresAt() {
+	m.expires_at = nil
+	delete(m.clearedFields, carpoolresetcredit.FieldExpiresAt)
+}
+
+// SetInitialStock sets the "initial_stock" field.
+func (m *CarpoolResetCreditMutation) SetInitialStock(b bool) {
+	m.initial_stock = &b
+}
+
+// InitialStock returns the value of the "initial_stock" field in the mutation.
+func (m *CarpoolResetCreditMutation) InitialStock() (r bool, exists bool) {
+	v := m.initial_stock
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInitialStock returns the old "initial_stock" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldInitialStock(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInitialStock is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInitialStock requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInitialStock: %w", err)
+	}
+	return oldValue.InitialStock, nil
+}
+
+// ResetInitialStock resets all changes to the "initial_stock" field.
+func (m *CarpoolResetCreditMutation) ResetInitialStock() {
+	m.initial_stock = nil
+}
+
+// SetAssignmentStatus sets the "assignment_status" field.
+func (m *CarpoolResetCreditMutation) SetAssignmentStatus(s string) {
+	m.assignment_status = &s
+}
+
+// AssignmentStatus returns the value of the "assignment_status" field in the mutation.
+func (m *CarpoolResetCreditMutation) AssignmentStatus() (r string, exists bool) {
+	v := m.assignment_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAssignmentStatus returns the old "assignment_status" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldAssignmentStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAssignmentStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAssignmentStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAssignmentStatus: %w", err)
+	}
+	return oldValue.AssignmentStatus, nil
+}
+
+// ResetAssignmentStatus resets all changes to the "assignment_status" field.
+func (m *CarpoolResetCreditMutation) ResetAssignmentStatus() {
+	m.assignment_status = nil
+}
+
+// SetResetBatchID sets the "reset_batch_id" field.
+func (m *CarpoolResetCreditMutation) SetResetBatchID(i int64) {
+	m.reset_batch_id = &i
+	m.addreset_batch_id = nil
+}
+
+// ResetBatchID returns the value of the "reset_batch_id" field in the mutation.
+func (m *CarpoolResetCreditMutation) ResetBatchID() (r int64, exists bool) {
+	v := m.reset_batch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResetBatchID returns the old "reset_batch_id" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldResetBatchID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResetBatchID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResetBatchID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResetBatchID: %w", err)
+	}
+	return oldValue.ResetBatchID, nil
+}
+
+// AddResetBatchID adds i to the "reset_batch_id" field.
+func (m *CarpoolResetCreditMutation) AddResetBatchID(i int64) {
+	if m.addreset_batch_id != nil {
+		*m.addreset_batch_id += i
+	} else {
+		m.addreset_batch_id = &i
+	}
+}
+
+// AddedResetBatchID returns the value that was added to the "reset_batch_id" field in this mutation.
+func (m *CarpoolResetCreditMutation) AddedResetBatchID() (r int64, exists bool) {
+	v := m.addreset_batch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearResetBatchID clears the value of the "reset_batch_id" field.
+func (m *CarpoolResetCreditMutation) ClearResetBatchID() {
+	m.reset_batch_id = nil
+	m.addreset_batch_id = nil
+	m.clearedFields[carpoolresetcredit.FieldResetBatchID] = struct{}{}
+}
+
+// ResetBatchIDCleared returns if the "reset_batch_id" field was cleared in this mutation.
+func (m *CarpoolResetCreditMutation) ResetBatchIDCleared() bool {
+	_, ok := m.clearedFields[carpoolresetcredit.FieldResetBatchID]
+	return ok
+}
+
+// ResetResetBatchID resets all changes to the "reset_batch_id" field.
+func (m *CarpoolResetCreditMutation) ResetResetBatchID() {
+	m.reset_batch_id = nil
+	m.addreset_batch_id = nil
+	delete(m.clearedFields, carpoolresetcredit.FieldResetBatchID)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolResetCreditMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolResetCreditMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolResetCreditMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CarpoolResetCreditMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CarpoolResetCreditMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CarpoolResetCredit entity.
+// If the CarpoolResetCredit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetCreditMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CarpoolResetCreditMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the CarpoolResetCreditMutation builder.
+func (m *CarpoolResetCreditMutation) Where(ps ...predicate.CarpoolResetCredit) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolResetCreditMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolResetCreditMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolResetCredit, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolResetCreditMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolResetCreditMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolResetCredit).
+func (m *CarpoolResetCreditMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolResetCreditMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.account_state_id != nil {
+		fields = append(fields, carpoolresetcredit.FieldAccountStateID)
+	}
+	if m.upstream_identity_hash != nil {
+		fields = append(fields, carpoolresetcredit.FieldUpstreamIdentityHash)
+	}
+	if m.credit_hash != nil {
+		fields = append(fields, carpoolresetcredit.FieldCreditHash)
+	}
+	if m.first_seen_at != nil {
+		fields = append(fields, carpoolresetcredit.FieldFirstSeenAt)
+	}
+	if m.last_seen_at != nil {
+		fields = append(fields, carpoolresetcredit.FieldLastSeenAt)
+	}
+	if m.expires_at != nil {
+		fields = append(fields, carpoolresetcredit.FieldExpiresAt)
+	}
+	if m.initial_stock != nil {
+		fields = append(fields, carpoolresetcredit.FieldInitialStock)
+	}
+	if m.assignment_status != nil {
+		fields = append(fields, carpoolresetcredit.FieldAssignmentStatus)
+	}
+	if m.reset_batch_id != nil {
+		fields = append(fields, carpoolresetcredit.FieldResetBatchID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolresetcredit.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, carpoolresetcredit.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolResetCreditMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetcredit.FieldAccountStateID:
+		return m.AccountStateID()
+	case carpoolresetcredit.FieldUpstreamIdentityHash:
+		return m.UpstreamIdentityHash()
+	case carpoolresetcredit.FieldCreditHash:
+		return m.CreditHash()
+	case carpoolresetcredit.FieldFirstSeenAt:
+		return m.FirstSeenAt()
+	case carpoolresetcredit.FieldLastSeenAt:
+		return m.LastSeenAt()
+	case carpoolresetcredit.FieldExpiresAt:
+		return m.ExpiresAt()
+	case carpoolresetcredit.FieldInitialStock:
+		return m.InitialStock()
+	case carpoolresetcredit.FieldAssignmentStatus:
+		return m.AssignmentStatus()
+	case carpoolresetcredit.FieldResetBatchID:
+		return m.ResetBatchID()
+	case carpoolresetcredit.FieldCreatedAt:
+		return m.CreatedAt()
+	case carpoolresetcredit.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolResetCreditMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolresetcredit.FieldAccountStateID:
+		return m.OldAccountStateID(ctx)
+	case carpoolresetcredit.FieldUpstreamIdentityHash:
+		return m.OldUpstreamIdentityHash(ctx)
+	case carpoolresetcredit.FieldCreditHash:
+		return m.OldCreditHash(ctx)
+	case carpoolresetcredit.FieldFirstSeenAt:
+		return m.OldFirstSeenAt(ctx)
+	case carpoolresetcredit.FieldLastSeenAt:
+		return m.OldLastSeenAt(ctx)
+	case carpoolresetcredit.FieldExpiresAt:
+		return m.OldExpiresAt(ctx)
+	case carpoolresetcredit.FieldInitialStock:
+		return m.OldInitialStock(ctx)
+	case carpoolresetcredit.FieldAssignmentStatus:
+		return m.OldAssignmentStatus(ctx)
+	case carpoolresetcredit.FieldResetBatchID:
+		return m.OldResetBatchID(ctx)
+	case carpoolresetcredit.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case carpoolresetcredit.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolResetCredit field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetCreditMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetcredit.FieldAccountStateID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccountStateID(v)
+		return nil
+	case carpoolresetcredit.FieldUpstreamIdentityHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpstreamIdentityHash(v)
+		return nil
+	case carpoolresetcredit.FieldCreditHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreditHash(v)
+		return nil
+	case carpoolresetcredit.FieldFirstSeenAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFirstSeenAt(v)
+		return nil
+	case carpoolresetcredit.FieldLastSeenAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastSeenAt(v)
+		return nil
+	case carpoolresetcredit.FieldExpiresAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExpiresAt(v)
+		return nil
+	case carpoolresetcredit.FieldInitialStock:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInitialStock(v)
+		return nil
+	case carpoolresetcredit.FieldAssignmentStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAssignmentStatus(v)
+		return nil
+	case carpoolresetcredit.FieldResetBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResetBatchID(v)
+		return nil
+	case carpoolresetcredit.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case carpoolresetcredit.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetCredit field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolResetCreditMutation) AddedFields() []string {
+	var fields []string
+	if m.addaccount_state_id != nil {
+		fields = append(fields, carpoolresetcredit.FieldAccountStateID)
+	}
+	if m.addreset_batch_id != nil {
+		fields = append(fields, carpoolresetcredit.FieldResetBatchID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolResetCreditMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetcredit.FieldAccountStateID:
+		return m.AddedAccountStateID()
+	case carpoolresetcredit.FieldResetBatchID:
+		return m.AddedResetBatchID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetCreditMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetcredit.FieldAccountStateID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAccountStateID(v)
+		return nil
+	case carpoolresetcredit.FieldResetBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddResetBatchID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetCredit numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolResetCreditMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(carpoolresetcredit.FieldExpiresAt) {
+		fields = append(fields, carpoolresetcredit.FieldExpiresAt)
+	}
+	if m.FieldCleared(carpoolresetcredit.FieldResetBatchID) {
+		fields = append(fields, carpoolresetcredit.FieldResetBatchID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolResetCreditMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolResetCreditMutation) ClearField(name string) error {
+	switch name {
+	case carpoolresetcredit.FieldExpiresAt:
+		m.ClearExpiresAt()
+		return nil
+	case carpoolresetcredit.FieldResetBatchID:
+		m.ClearResetBatchID()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetCredit nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolResetCreditMutation) ResetField(name string) error {
+	switch name {
+	case carpoolresetcredit.FieldAccountStateID:
+		m.ResetAccountStateID()
+		return nil
+	case carpoolresetcredit.FieldUpstreamIdentityHash:
+		m.ResetUpstreamIdentityHash()
+		return nil
+	case carpoolresetcredit.FieldCreditHash:
+		m.ResetCreditHash()
+		return nil
+	case carpoolresetcredit.FieldFirstSeenAt:
+		m.ResetFirstSeenAt()
+		return nil
+	case carpoolresetcredit.FieldLastSeenAt:
+		m.ResetLastSeenAt()
+		return nil
+	case carpoolresetcredit.FieldExpiresAt:
+		m.ResetExpiresAt()
+		return nil
+	case carpoolresetcredit.FieldInitialStock:
+		m.ResetInitialStock()
+		return nil
+	case carpoolresetcredit.FieldAssignmentStatus:
+		m.ResetAssignmentStatus()
+		return nil
+	case carpoolresetcredit.FieldResetBatchID:
+		m.ResetResetBatchID()
+		return nil
+	case carpoolresetcredit.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case carpoolresetcredit.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetCredit field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolResetCreditMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolResetCreditMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolResetCreditMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolResetCreditMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolResetCreditMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolResetCreditMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolResetCreditMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetCredit unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolResetCreditMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetCredit edge %s", name)
+}
+
+// CarpoolResetQualificationMutation represents an operation that mutates the CarpoolResetQualification nodes in the graph.
+type CarpoolResetQualificationMutation struct {
+	config
+	op                    Op
+	typ                   string
+	id                    *int64
+	scope_id              *int64
+	addscope_id           *int64
+	batch_id              *int64
+	addbatch_id           *int64
+	source                *string
+	source_event_key_hash *string
+	reason                *string
+	confirmed_at          *time.Time
+	created_at            *time.Time
+	clearedFields         map[string]struct{}
+	done                  bool
+	oldValue              func(context.Context) (*CarpoolResetQualification, error)
+	predicates            []predicate.CarpoolResetQualification
+}
+
+var _ ent.Mutation = (*CarpoolResetQualificationMutation)(nil)
+
+// carpoolresetqualificationOption allows management of the mutation configuration using functional options.
+type carpoolresetqualificationOption func(*CarpoolResetQualificationMutation)
+
+// newCarpoolResetQualificationMutation creates new mutation for the CarpoolResetQualification entity.
+func newCarpoolResetQualificationMutation(c config, op Op, opts ...carpoolresetqualificationOption) *CarpoolResetQualificationMutation {
+	m := &CarpoolResetQualificationMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolResetQualification,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolResetQualificationID sets the ID field of the mutation.
+func withCarpoolResetQualificationID(id int64) carpoolresetqualificationOption {
+	return func(m *CarpoolResetQualificationMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolResetQualification
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolResetQualification, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolResetQualification.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolResetQualification sets the old CarpoolResetQualification of the mutation.
+func withCarpoolResetQualification(node *CarpoolResetQualification) carpoolresetqualificationOption {
+	return func(m *CarpoolResetQualificationMutation) {
+		m.oldValue = func(context.Context) (*CarpoolResetQualification, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolResetQualificationMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolResetQualificationMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolResetQualificationMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolResetQualificationMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolResetQualification.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetScopeID sets the "scope_id" field.
+func (m *CarpoolResetQualificationMutation) SetScopeID(i int64) {
+	m.scope_id = &i
+	m.addscope_id = nil
+}
+
+// ScopeID returns the value of the "scope_id" field in the mutation.
+func (m *CarpoolResetQualificationMutation) ScopeID() (r int64, exists bool) {
+	v := m.scope_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScopeID returns the old "scope_id" field's value of the CarpoolResetQualification entity.
+// If the CarpoolResetQualification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetQualificationMutation) OldScopeID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScopeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScopeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScopeID: %w", err)
+	}
+	return oldValue.ScopeID, nil
+}
+
+// AddScopeID adds i to the "scope_id" field.
+func (m *CarpoolResetQualificationMutation) AddScopeID(i int64) {
+	if m.addscope_id != nil {
+		*m.addscope_id += i
+	} else {
+		m.addscope_id = &i
+	}
+}
+
+// AddedScopeID returns the value that was added to the "scope_id" field in this mutation.
+func (m *CarpoolResetQualificationMutation) AddedScopeID() (r int64, exists bool) {
+	v := m.addscope_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetScopeID resets all changes to the "scope_id" field.
+func (m *CarpoolResetQualificationMutation) ResetScopeID() {
+	m.scope_id = nil
+	m.addscope_id = nil
+}
+
+// SetBatchID sets the "batch_id" field.
+func (m *CarpoolResetQualificationMutation) SetBatchID(i int64) {
+	m.batch_id = &i
+	m.addbatch_id = nil
+}
+
+// BatchID returns the value of the "batch_id" field in the mutation.
+func (m *CarpoolResetQualificationMutation) BatchID() (r int64, exists bool) {
+	v := m.batch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatchID returns the old "batch_id" field's value of the CarpoolResetQualification entity.
+// If the CarpoolResetQualification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetQualificationMutation) OldBatchID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatchID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatchID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatchID: %w", err)
+	}
+	return oldValue.BatchID, nil
+}
+
+// AddBatchID adds i to the "batch_id" field.
+func (m *CarpoolResetQualificationMutation) AddBatchID(i int64) {
+	if m.addbatch_id != nil {
+		*m.addbatch_id += i
+	} else {
+		m.addbatch_id = &i
+	}
+}
+
+// AddedBatchID returns the value that was added to the "batch_id" field in this mutation.
+func (m *CarpoolResetQualificationMutation) AddedBatchID() (r int64, exists bool) {
+	v := m.addbatch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBatchID resets all changes to the "batch_id" field.
+func (m *CarpoolResetQualificationMutation) ResetBatchID() {
+	m.batch_id = nil
+	m.addbatch_id = nil
+}
+
+// SetSource sets the "source" field.
+func (m *CarpoolResetQualificationMutation) SetSource(s string) {
+	m.source = &s
+}
+
+// Source returns the value of the "source" field in the mutation.
+func (m *CarpoolResetQualificationMutation) Source() (r string, exists bool) {
+	v := m.source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSource returns the old "source" field's value of the CarpoolResetQualification entity.
+// If the CarpoolResetQualification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetQualificationMutation) OldSource(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSource is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSource requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSource: %w", err)
+	}
+	return oldValue.Source, nil
+}
+
+// ResetSource resets all changes to the "source" field.
+func (m *CarpoolResetQualificationMutation) ResetSource() {
+	m.source = nil
+}
+
+// SetSourceEventKeyHash sets the "source_event_key_hash" field.
+func (m *CarpoolResetQualificationMutation) SetSourceEventKeyHash(s string) {
+	m.source_event_key_hash = &s
+}
+
+// SourceEventKeyHash returns the value of the "source_event_key_hash" field in the mutation.
+func (m *CarpoolResetQualificationMutation) SourceEventKeyHash() (r string, exists bool) {
+	v := m.source_event_key_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceEventKeyHash returns the old "source_event_key_hash" field's value of the CarpoolResetQualification entity.
+// If the CarpoolResetQualification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetQualificationMutation) OldSourceEventKeyHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceEventKeyHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceEventKeyHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceEventKeyHash: %w", err)
+	}
+	return oldValue.SourceEventKeyHash, nil
+}
+
+// ResetSourceEventKeyHash resets all changes to the "source_event_key_hash" field.
+func (m *CarpoolResetQualificationMutation) ResetSourceEventKeyHash() {
+	m.source_event_key_hash = nil
+}
+
+// SetReason sets the "reason" field.
+func (m *CarpoolResetQualificationMutation) SetReason(s string) {
+	m.reason = &s
+}
+
+// Reason returns the value of the "reason" field in the mutation.
+func (m *CarpoolResetQualificationMutation) Reason() (r string, exists bool) {
+	v := m.reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReason returns the old "reason" field's value of the CarpoolResetQualification entity.
+// If the CarpoolResetQualification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetQualificationMutation) OldReason(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReason: %w", err)
+	}
+	return oldValue.Reason, nil
+}
+
+// ResetReason resets all changes to the "reason" field.
+func (m *CarpoolResetQualificationMutation) ResetReason() {
+	m.reason = nil
+}
+
+// SetConfirmedAt sets the "confirmed_at" field.
+func (m *CarpoolResetQualificationMutation) SetConfirmedAt(t time.Time) {
+	m.confirmed_at = &t
+}
+
+// ConfirmedAt returns the value of the "confirmed_at" field in the mutation.
+func (m *CarpoolResetQualificationMutation) ConfirmedAt() (r time.Time, exists bool) {
+	v := m.confirmed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfirmedAt returns the old "confirmed_at" field's value of the CarpoolResetQualification entity.
+// If the CarpoolResetQualification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetQualificationMutation) OldConfirmedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfirmedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfirmedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfirmedAt: %w", err)
+	}
+	return oldValue.ConfirmedAt, nil
+}
+
+// ResetConfirmedAt resets all changes to the "confirmed_at" field.
+func (m *CarpoolResetQualificationMutation) ResetConfirmedAt() {
+	m.confirmed_at = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolResetQualificationMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolResetQualificationMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolResetQualification entity.
+// If the CarpoolResetQualification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetQualificationMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolResetQualificationMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the CarpoolResetQualificationMutation builder.
+func (m *CarpoolResetQualificationMutation) Where(ps ...predicate.CarpoolResetQualification) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolResetQualificationMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolResetQualificationMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolResetQualification, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolResetQualificationMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolResetQualificationMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolResetQualification).
+func (m *CarpoolResetQualificationMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolResetQualificationMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.scope_id != nil {
+		fields = append(fields, carpoolresetqualification.FieldScopeID)
+	}
+	if m.batch_id != nil {
+		fields = append(fields, carpoolresetqualification.FieldBatchID)
+	}
+	if m.source != nil {
+		fields = append(fields, carpoolresetqualification.FieldSource)
+	}
+	if m.source_event_key_hash != nil {
+		fields = append(fields, carpoolresetqualification.FieldSourceEventKeyHash)
+	}
+	if m.reason != nil {
+		fields = append(fields, carpoolresetqualification.FieldReason)
+	}
+	if m.confirmed_at != nil {
+		fields = append(fields, carpoolresetqualification.FieldConfirmedAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolresetqualification.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolResetQualificationMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetqualification.FieldScopeID:
+		return m.ScopeID()
+	case carpoolresetqualification.FieldBatchID:
+		return m.BatchID()
+	case carpoolresetqualification.FieldSource:
+		return m.Source()
+	case carpoolresetqualification.FieldSourceEventKeyHash:
+		return m.SourceEventKeyHash()
+	case carpoolresetqualification.FieldReason:
+		return m.Reason()
+	case carpoolresetqualification.FieldConfirmedAt:
+		return m.ConfirmedAt()
+	case carpoolresetqualification.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolResetQualificationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolresetqualification.FieldScopeID:
+		return m.OldScopeID(ctx)
+	case carpoolresetqualification.FieldBatchID:
+		return m.OldBatchID(ctx)
+	case carpoolresetqualification.FieldSource:
+		return m.OldSource(ctx)
+	case carpoolresetqualification.FieldSourceEventKeyHash:
+		return m.OldSourceEventKeyHash(ctx)
+	case carpoolresetqualification.FieldReason:
+		return m.OldReason(ctx)
+	case carpoolresetqualification.FieldConfirmedAt:
+		return m.OldConfirmedAt(ctx)
+	case carpoolresetqualification.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolResetQualification field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetQualificationMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetqualification.FieldScopeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScopeID(v)
+		return nil
+	case carpoolresetqualification.FieldBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatchID(v)
+		return nil
+	case carpoolresetqualification.FieldSource:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSource(v)
+		return nil
+	case carpoolresetqualification.FieldSourceEventKeyHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceEventKeyHash(v)
+		return nil
+	case carpoolresetqualification.FieldReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReason(v)
+		return nil
+	case carpoolresetqualification.FieldConfirmedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfirmedAt(v)
+		return nil
+	case carpoolresetqualification.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetQualification field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolResetQualificationMutation) AddedFields() []string {
+	var fields []string
+	if m.addscope_id != nil {
+		fields = append(fields, carpoolresetqualification.FieldScopeID)
+	}
+	if m.addbatch_id != nil {
+		fields = append(fields, carpoolresetqualification.FieldBatchID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolResetQualificationMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetqualification.FieldScopeID:
+		return m.AddedScopeID()
+	case carpoolresetqualification.FieldBatchID:
+		return m.AddedBatchID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetQualificationMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetqualification.FieldScopeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScopeID(v)
+		return nil
+	case carpoolresetqualification.FieldBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBatchID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetQualification numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolResetQualificationMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolResetQualificationMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolResetQualificationMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown CarpoolResetQualification nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolResetQualificationMutation) ResetField(name string) error {
+	switch name {
+	case carpoolresetqualification.FieldScopeID:
+		m.ResetScopeID()
+		return nil
+	case carpoolresetqualification.FieldBatchID:
+		m.ResetBatchID()
+		return nil
+	case carpoolresetqualification.FieldSource:
+		m.ResetSource()
+		return nil
+	case carpoolresetqualification.FieldSourceEventKeyHash:
+		m.ResetSourceEventKeyHash()
+		return nil
+	case carpoolresetqualification.FieldReason:
+		m.ResetReason()
+		return nil
+	case carpoolresetqualification.FieldConfirmedAt:
+		m.ResetConfirmedAt()
+		return nil
+	case carpoolresetqualification.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetQualification field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolResetQualificationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolResetQualificationMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolResetQualificationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolResetQualificationMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolResetQualificationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolResetQualificationMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolResetQualificationMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetQualification unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolResetQualificationMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetQualification edge %s", name)
+}
+
+// CarpoolResetScopeStateMutation represents an operation that mutates the CarpoolResetScopeState nodes in the graph.
+type CarpoolResetScopeStateMutation struct {
+	config
+	op                       Op
+	typ                      string
+	id                       *int64
+	scope_id                 *int64
+	addscope_id              *int64
+	timezone                 *string
+	last_successful_reset_at *time.Time
+	pending_batch_id         *int64
+	addpending_batch_id      *int64
+	revision                 *int64
+	addrevision              *int64
+	created_at               *time.Time
+	updated_at               *time.Time
+	clearedFields            map[string]struct{}
+	done                     bool
+	oldValue                 func(context.Context) (*CarpoolResetScopeState, error)
+	predicates               []predicate.CarpoolResetScopeState
+}
+
+var _ ent.Mutation = (*CarpoolResetScopeStateMutation)(nil)
+
+// carpoolresetscopestateOption allows management of the mutation configuration using functional options.
+type carpoolresetscopestateOption func(*CarpoolResetScopeStateMutation)
+
+// newCarpoolResetScopeStateMutation creates new mutation for the CarpoolResetScopeState entity.
+func newCarpoolResetScopeStateMutation(c config, op Op, opts ...carpoolresetscopestateOption) *CarpoolResetScopeStateMutation {
+	m := &CarpoolResetScopeStateMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolResetScopeState,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolResetScopeStateID sets the ID field of the mutation.
+func withCarpoolResetScopeStateID(id int64) carpoolresetscopestateOption {
+	return func(m *CarpoolResetScopeStateMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolResetScopeState
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolResetScopeState, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolResetScopeState.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolResetScopeState sets the old CarpoolResetScopeState of the mutation.
+func withCarpoolResetScopeState(node *CarpoolResetScopeState) carpoolresetscopestateOption {
+	return func(m *CarpoolResetScopeStateMutation) {
+		m.oldValue = func(context.Context) (*CarpoolResetScopeState, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolResetScopeStateMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolResetScopeStateMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolResetScopeStateMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolResetScopeStateMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolResetScopeState.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetScopeID sets the "scope_id" field.
+func (m *CarpoolResetScopeStateMutation) SetScopeID(i int64) {
+	m.scope_id = &i
+	m.addscope_id = nil
+}
+
+// ScopeID returns the value of the "scope_id" field in the mutation.
+func (m *CarpoolResetScopeStateMutation) ScopeID() (r int64, exists bool) {
+	v := m.scope_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScopeID returns the old "scope_id" field's value of the CarpoolResetScopeState entity.
+// If the CarpoolResetScopeState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetScopeStateMutation) OldScopeID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScopeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScopeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScopeID: %w", err)
+	}
+	return oldValue.ScopeID, nil
+}
+
+// AddScopeID adds i to the "scope_id" field.
+func (m *CarpoolResetScopeStateMutation) AddScopeID(i int64) {
+	if m.addscope_id != nil {
+		*m.addscope_id += i
+	} else {
+		m.addscope_id = &i
+	}
+}
+
+// AddedScopeID returns the value that was added to the "scope_id" field in this mutation.
+func (m *CarpoolResetScopeStateMutation) AddedScopeID() (r int64, exists bool) {
+	v := m.addscope_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetScopeID resets all changes to the "scope_id" field.
+func (m *CarpoolResetScopeStateMutation) ResetScopeID() {
+	m.scope_id = nil
+	m.addscope_id = nil
+}
+
+// SetTimezone sets the "timezone" field.
+func (m *CarpoolResetScopeStateMutation) SetTimezone(s string) {
+	m.timezone = &s
+}
+
+// Timezone returns the value of the "timezone" field in the mutation.
+func (m *CarpoolResetScopeStateMutation) Timezone() (r string, exists bool) {
+	v := m.timezone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTimezone returns the old "timezone" field's value of the CarpoolResetScopeState entity.
+// If the CarpoolResetScopeState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetScopeStateMutation) OldTimezone(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTimezone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTimezone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTimezone: %w", err)
+	}
+	return oldValue.Timezone, nil
+}
+
+// ResetTimezone resets all changes to the "timezone" field.
+func (m *CarpoolResetScopeStateMutation) ResetTimezone() {
+	m.timezone = nil
+}
+
+// SetLastSuccessfulResetAt sets the "last_successful_reset_at" field.
+func (m *CarpoolResetScopeStateMutation) SetLastSuccessfulResetAt(t time.Time) {
+	m.last_successful_reset_at = &t
+}
+
+// LastSuccessfulResetAt returns the value of the "last_successful_reset_at" field in the mutation.
+func (m *CarpoolResetScopeStateMutation) LastSuccessfulResetAt() (r time.Time, exists bool) {
+	v := m.last_successful_reset_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastSuccessfulResetAt returns the old "last_successful_reset_at" field's value of the CarpoolResetScopeState entity.
+// If the CarpoolResetScopeState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetScopeStateMutation) OldLastSuccessfulResetAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastSuccessfulResetAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastSuccessfulResetAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastSuccessfulResetAt: %w", err)
+	}
+	return oldValue.LastSuccessfulResetAt, nil
+}
+
+// ClearLastSuccessfulResetAt clears the value of the "last_successful_reset_at" field.
+func (m *CarpoolResetScopeStateMutation) ClearLastSuccessfulResetAt() {
+	m.last_successful_reset_at = nil
+	m.clearedFields[carpoolresetscopestate.FieldLastSuccessfulResetAt] = struct{}{}
+}
+
+// LastSuccessfulResetAtCleared returns if the "last_successful_reset_at" field was cleared in this mutation.
+func (m *CarpoolResetScopeStateMutation) LastSuccessfulResetAtCleared() bool {
+	_, ok := m.clearedFields[carpoolresetscopestate.FieldLastSuccessfulResetAt]
+	return ok
+}
+
+// ResetLastSuccessfulResetAt resets all changes to the "last_successful_reset_at" field.
+func (m *CarpoolResetScopeStateMutation) ResetLastSuccessfulResetAt() {
+	m.last_successful_reset_at = nil
+	delete(m.clearedFields, carpoolresetscopestate.FieldLastSuccessfulResetAt)
+}
+
+// SetPendingBatchID sets the "pending_batch_id" field.
+func (m *CarpoolResetScopeStateMutation) SetPendingBatchID(i int64) {
+	m.pending_batch_id = &i
+	m.addpending_batch_id = nil
+}
+
+// PendingBatchID returns the value of the "pending_batch_id" field in the mutation.
+func (m *CarpoolResetScopeStateMutation) PendingBatchID() (r int64, exists bool) {
+	v := m.pending_batch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPendingBatchID returns the old "pending_batch_id" field's value of the CarpoolResetScopeState entity.
+// If the CarpoolResetScopeState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetScopeStateMutation) OldPendingBatchID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPendingBatchID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPendingBatchID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPendingBatchID: %w", err)
+	}
+	return oldValue.PendingBatchID, nil
+}
+
+// AddPendingBatchID adds i to the "pending_batch_id" field.
+func (m *CarpoolResetScopeStateMutation) AddPendingBatchID(i int64) {
+	if m.addpending_batch_id != nil {
+		*m.addpending_batch_id += i
+	} else {
+		m.addpending_batch_id = &i
+	}
+}
+
+// AddedPendingBatchID returns the value that was added to the "pending_batch_id" field in this mutation.
+func (m *CarpoolResetScopeStateMutation) AddedPendingBatchID() (r int64, exists bool) {
+	v := m.addpending_batch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPendingBatchID clears the value of the "pending_batch_id" field.
+func (m *CarpoolResetScopeStateMutation) ClearPendingBatchID() {
+	m.pending_batch_id = nil
+	m.addpending_batch_id = nil
+	m.clearedFields[carpoolresetscopestate.FieldPendingBatchID] = struct{}{}
+}
+
+// PendingBatchIDCleared returns if the "pending_batch_id" field was cleared in this mutation.
+func (m *CarpoolResetScopeStateMutation) PendingBatchIDCleared() bool {
+	_, ok := m.clearedFields[carpoolresetscopestate.FieldPendingBatchID]
+	return ok
+}
+
+// ResetPendingBatchID resets all changes to the "pending_batch_id" field.
+func (m *CarpoolResetScopeStateMutation) ResetPendingBatchID() {
+	m.pending_batch_id = nil
+	m.addpending_batch_id = nil
+	delete(m.clearedFields, carpoolresetscopestate.FieldPendingBatchID)
+}
+
+// SetRevision sets the "revision" field.
+func (m *CarpoolResetScopeStateMutation) SetRevision(i int64) {
+	m.revision = &i
+	m.addrevision = nil
+}
+
+// Revision returns the value of the "revision" field in the mutation.
+func (m *CarpoolResetScopeStateMutation) Revision() (r int64, exists bool) {
+	v := m.revision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRevision returns the old "revision" field's value of the CarpoolResetScopeState entity.
+// If the CarpoolResetScopeState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetScopeStateMutation) OldRevision(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRevision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRevision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRevision: %w", err)
+	}
+	return oldValue.Revision, nil
+}
+
+// AddRevision adds i to the "revision" field.
+func (m *CarpoolResetScopeStateMutation) AddRevision(i int64) {
+	if m.addrevision != nil {
+		*m.addrevision += i
+	} else {
+		m.addrevision = &i
+	}
+}
+
+// AddedRevision returns the value that was added to the "revision" field in this mutation.
+func (m *CarpoolResetScopeStateMutation) AddedRevision() (r int64, exists bool) {
+	v := m.addrevision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRevision resets all changes to the "revision" field.
+func (m *CarpoolResetScopeStateMutation) ResetRevision() {
+	m.revision = nil
+	m.addrevision = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolResetScopeStateMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolResetScopeStateMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolResetScopeState entity.
+// If the CarpoolResetScopeState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetScopeStateMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolResetScopeStateMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CarpoolResetScopeStateMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CarpoolResetScopeStateMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CarpoolResetScopeState entity.
+// If the CarpoolResetScopeState object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetScopeStateMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CarpoolResetScopeStateMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the CarpoolResetScopeStateMutation builder.
+func (m *CarpoolResetScopeStateMutation) Where(ps ...predicate.CarpoolResetScopeState) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolResetScopeStateMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolResetScopeStateMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolResetScopeState, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolResetScopeStateMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolResetScopeStateMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolResetScopeState).
+func (m *CarpoolResetScopeStateMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolResetScopeStateMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.scope_id != nil {
+		fields = append(fields, carpoolresetscopestate.FieldScopeID)
+	}
+	if m.timezone != nil {
+		fields = append(fields, carpoolresetscopestate.FieldTimezone)
+	}
+	if m.last_successful_reset_at != nil {
+		fields = append(fields, carpoolresetscopestate.FieldLastSuccessfulResetAt)
+	}
+	if m.pending_batch_id != nil {
+		fields = append(fields, carpoolresetscopestate.FieldPendingBatchID)
+	}
+	if m.revision != nil {
+		fields = append(fields, carpoolresetscopestate.FieldRevision)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolresetscopestate.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, carpoolresetscopestate.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolResetScopeStateMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetscopestate.FieldScopeID:
+		return m.ScopeID()
+	case carpoolresetscopestate.FieldTimezone:
+		return m.Timezone()
+	case carpoolresetscopestate.FieldLastSuccessfulResetAt:
+		return m.LastSuccessfulResetAt()
+	case carpoolresetscopestate.FieldPendingBatchID:
+		return m.PendingBatchID()
+	case carpoolresetscopestate.FieldRevision:
+		return m.Revision()
+	case carpoolresetscopestate.FieldCreatedAt:
+		return m.CreatedAt()
+	case carpoolresetscopestate.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolResetScopeStateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolresetscopestate.FieldScopeID:
+		return m.OldScopeID(ctx)
+	case carpoolresetscopestate.FieldTimezone:
+		return m.OldTimezone(ctx)
+	case carpoolresetscopestate.FieldLastSuccessfulResetAt:
+		return m.OldLastSuccessfulResetAt(ctx)
+	case carpoolresetscopestate.FieldPendingBatchID:
+		return m.OldPendingBatchID(ctx)
+	case carpoolresetscopestate.FieldRevision:
+		return m.OldRevision(ctx)
+	case carpoolresetscopestate.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case carpoolresetscopestate.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolResetScopeState field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetScopeStateMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetscopestate.FieldScopeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScopeID(v)
+		return nil
+	case carpoolresetscopestate.FieldTimezone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTimezone(v)
+		return nil
+	case carpoolresetscopestate.FieldLastSuccessfulResetAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastSuccessfulResetAt(v)
+		return nil
+	case carpoolresetscopestate.FieldPendingBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPendingBatchID(v)
+		return nil
+	case carpoolresetscopestate.FieldRevision:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRevision(v)
+		return nil
+	case carpoolresetscopestate.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case carpoolresetscopestate.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetScopeState field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolResetScopeStateMutation) AddedFields() []string {
+	var fields []string
+	if m.addscope_id != nil {
+		fields = append(fields, carpoolresetscopestate.FieldScopeID)
+	}
+	if m.addpending_batch_id != nil {
+		fields = append(fields, carpoolresetscopestate.FieldPendingBatchID)
+	}
+	if m.addrevision != nil {
+		fields = append(fields, carpoolresetscopestate.FieldRevision)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolResetScopeStateMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresetscopestate.FieldScopeID:
+		return m.AddedScopeID()
+	case carpoolresetscopestate.FieldPendingBatchID:
+		return m.AddedPendingBatchID()
+	case carpoolresetscopestate.FieldRevision:
+		return m.AddedRevision()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetScopeStateMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresetscopestate.FieldScopeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScopeID(v)
+		return nil
+	case carpoolresetscopestate.FieldPendingBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPendingBatchID(v)
+		return nil
+	case carpoolresetscopestate.FieldRevision:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRevision(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetScopeState numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolResetScopeStateMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(carpoolresetscopestate.FieldLastSuccessfulResetAt) {
+		fields = append(fields, carpoolresetscopestate.FieldLastSuccessfulResetAt)
+	}
+	if m.FieldCleared(carpoolresetscopestate.FieldPendingBatchID) {
+		fields = append(fields, carpoolresetscopestate.FieldPendingBatchID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolResetScopeStateMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolResetScopeStateMutation) ClearField(name string) error {
+	switch name {
+	case carpoolresetscopestate.FieldLastSuccessfulResetAt:
+		m.ClearLastSuccessfulResetAt()
+		return nil
+	case carpoolresetscopestate.FieldPendingBatchID:
+		m.ClearPendingBatchID()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetScopeState nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolResetScopeStateMutation) ResetField(name string) error {
+	switch name {
+	case carpoolresetscopestate.FieldScopeID:
+		m.ResetScopeID()
+		return nil
+	case carpoolresetscopestate.FieldTimezone:
+		m.ResetTimezone()
+		return nil
+	case carpoolresetscopestate.FieldLastSuccessfulResetAt:
+		m.ResetLastSuccessfulResetAt()
+		return nil
+	case carpoolresetscopestate.FieldPendingBatchID:
+		m.ResetPendingBatchID()
+		return nil
+	case carpoolresetscopestate.FieldRevision:
+		m.ResetRevision()
+		return nil
+	case carpoolresetscopestate.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case carpoolresetscopestate.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetScopeState field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolResetScopeStateMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolResetScopeStateMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolResetScopeStateMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolResetScopeStateMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolResetScopeStateMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolResetScopeStateMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolResetScopeStateMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetScopeState unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolResetScopeStateMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetScopeState edge %s", name)
+}
+
+// CarpoolResetTargetMutation represents an operation that mutates the CarpoolResetTarget nodes in the graph.
+type CarpoolResetTargetMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *int64
+	batch_id       *int64
+	addbatch_id    *int64
+	term_id        *int64
+	addterm_id     *int64
+	cycle_id       *int64
+	addcycle_id    *int64
+	status         *string
+	granted_usd    *float64
+	addgranted_usd *float64
+	executed_at    *time.Time
+	created_at     *time.Time
+	clearedFields  map[string]struct{}
+	done           bool
+	oldValue       func(context.Context) (*CarpoolResetTarget, error)
+	predicates     []predicate.CarpoolResetTarget
+}
+
+var _ ent.Mutation = (*CarpoolResetTargetMutation)(nil)
+
+// carpoolresettargetOption allows management of the mutation configuration using functional options.
+type carpoolresettargetOption func(*CarpoolResetTargetMutation)
+
+// newCarpoolResetTargetMutation creates new mutation for the CarpoolResetTarget entity.
+func newCarpoolResetTargetMutation(c config, op Op, opts ...carpoolresettargetOption) *CarpoolResetTargetMutation {
+	m := &CarpoolResetTargetMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolResetTarget,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolResetTargetID sets the ID field of the mutation.
+func withCarpoolResetTargetID(id int64) carpoolresettargetOption {
+	return func(m *CarpoolResetTargetMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolResetTarget
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolResetTarget, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolResetTarget.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolResetTarget sets the old CarpoolResetTarget of the mutation.
+func withCarpoolResetTarget(node *CarpoolResetTarget) carpoolresettargetOption {
+	return func(m *CarpoolResetTargetMutation) {
+		m.oldValue = func(context.Context) (*CarpoolResetTarget, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolResetTargetMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolResetTargetMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolResetTargetMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolResetTargetMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolResetTarget.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetBatchID sets the "batch_id" field.
+func (m *CarpoolResetTargetMutation) SetBatchID(i int64) {
+	m.batch_id = &i
+	m.addbatch_id = nil
+}
+
+// BatchID returns the value of the "batch_id" field in the mutation.
+func (m *CarpoolResetTargetMutation) BatchID() (r int64, exists bool) {
+	v := m.batch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatchID returns the old "batch_id" field's value of the CarpoolResetTarget entity.
+// If the CarpoolResetTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetTargetMutation) OldBatchID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatchID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatchID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatchID: %w", err)
+	}
+	return oldValue.BatchID, nil
+}
+
+// AddBatchID adds i to the "batch_id" field.
+func (m *CarpoolResetTargetMutation) AddBatchID(i int64) {
+	if m.addbatch_id != nil {
+		*m.addbatch_id += i
+	} else {
+		m.addbatch_id = &i
+	}
+}
+
+// AddedBatchID returns the value that was added to the "batch_id" field in this mutation.
+func (m *CarpoolResetTargetMutation) AddedBatchID() (r int64, exists bool) {
+	v := m.addbatch_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBatchID resets all changes to the "batch_id" field.
+func (m *CarpoolResetTargetMutation) ResetBatchID() {
+	m.batch_id = nil
+	m.addbatch_id = nil
+}
+
+// SetTermID sets the "term_id" field.
+func (m *CarpoolResetTargetMutation) SetTermID(i int64) {
+	m.term_id = &i
+	m.addterm_id = nil
+}
+
+// TermID returns the value of the "term_id" field in the mutation.
+func (m *CarpoolResetTargetMutation) TermID() (r int64, exists bool) {
+	v := m.term_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTermID returns the old "term_id" field's value of the CarpoolResetTarget entity.
+// If the CarpoolResetTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetTargetMutation) OldTermID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTermID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTermID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTermID: %w", err)
+	}
+	return oldValue.TermID, nil
+}
+
+// AddTermID adds i to the "term_id" field.
+func (m *CarpoolResetTargetMutation) AddTermID(i int64) {
+	if m.addterm_id != nil {
+		*m.addterm_id += i
+	} else {
+		m.addterm_id = &i
+	}
+}
+
+// AddedTermID returns the value that was added to the "term_id" field in this mutation.
+func (m *CarpoolResetTargetMutation) AddedTermID() (r int64, exists bool) {
+	v := m.addterm_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTermID resets all changes to the "term_id" field.
+func (m *CarpoolResetTargetMutation) ResetTermID() {
+	m.term_id = nil
+	m.addterm_id = nil
+}
+
+// SetCycleID sets the "cycle_id" field.
+func (m *CarpoolResetTargetMutation) SetCycleID(i int64) {
+	m.cycle_id = &i
+	m.addcycle_id = nil
+}
+
+// CycleID returns the value of the "cycle_id" field in the mutation.
+func (m *CarpoolResetTargetMutation) CycleID() (r int64, exists bool) {
+	v := m.cycle_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCycleID returns the old "cycle_id" field's value of the CarpoolResetTarget entity.
+// If the CarpoolResetTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetTargetMutation) OldCycleID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCycleID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCycleID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCycleID: %w", err)
+	}
+	return oldValue.CycleID, nil
+}
+
+// AddCycleID adds i to the "cycle_id" field.
+func (m *CarpoolResetTargetMutation) AddCycleID(i int64) {
+	if m.addcycle_id != nil {
+		*m.addcycle_id += i
+	} else {
+		m.addcycle_id = &i
+	}
+}
+
+// AddedCycleID returns the value that was added to the "cycle_id" field in this mutation.
+func (m *CarpoolResetTargetMutation) AddedCycleID() (r int64, exists bool) {
+	v := m.addcycle_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCycleID resets all changes to the "cycle_id" field.
+func (m *CarpoolResetTargetMutation) ResetCycleID() {
+	m.cycle_id = nil
+	m.addcycle_id = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *CarpoolResetTargetMutation) SetStatus(s string) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *CarpoolResetTargetMutation) Status() (r string, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the CarpoolResetTarget entity.
+// If the CarpoolResetTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetTargetMutation) OldStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *CarpoolResetTargetMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetGrantedUsd sets the "granted_usd" field.
+func (m *CarpoolResetTargetMutation) SetGrantedUsd(f float64) {
+	m.granted_usd = &f
+	m.addgranted_usd = nil
+}
+
+// GrantedUsd returns the value of the "granted_usd" field in the mutation.
+func (m *CarpoolResetTargetMutation) GrantedUsd() (r float64, exists bool) {
+	v := m.granted_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGrantedUsd returns the old "granted_usd" field's value of the CarpoolResetTarget entity.
+// If the CarpoolResetTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetTargetMutation) OldGrantedUsd(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGrantedUsd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGrantedUsd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGrantedUsd: %w", err)
+	}
+	return oldValue.GrantedUsd, nil
+}
+
+// AddGrantedUsd adds f to the "granted_usd" field.
+func (m *CarpoolResetTargetMutation) AddGrantedUsd(f float64) {
+	if m.addgranted_usd != nil {
+		*m.addgranted_usd += f
+	} else {
+		m.addgranted_usd = &f
+	}
+}
+
+// AddedGrantedUsd returns the value that was added to the "granted_usd" field in this mutation.
+func (m *CarpoolResetTargetMutation) AddedGrantedUsd() (r float64, exists bool) {
+	v := m.addgranted_usd
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetGrantedUsd resets all changes to the "granted_usd" field.
+func (m *CarpoolResetTargetMutation) ResetGrantedUsd() {
+	m.granted_usd = nil
+	m.addgranted_usd = nil
+}
+
+// SetExecutedAt sets the "executed_at" field.
+func (m *CarpoolResetTargetMutation) SetExecutedAt(t time.Time) {
+	m.executed_at = &t
+}
+
+// ExecutedAt returns the value of the "executed_at" field in the mutation.
+func (m *CarpoolResetTargetMutation) ExecutedAt() (r time.Time, exists bool) {
+	v := m.executed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExecutedAt returns the old "executed_at" field's value of the CarpoolResetTarget entity.
+// If the CarpoolResetTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetTargetMutation) OldExecutedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExecutedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExecutedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExecutedAt: %w", err)
+	}
+	return oldValue.ExecutedAt, nil
+}
+
+// ResetExecutedAt resets all changes to the "executed_at" field.
+func (m *CarpoolResetTargetMutation) ResetExecutedAt() {
+	m.executed_at = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolResetTargetMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolResetTargetMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolResetTarget entity.
+// If the CarpoolResetTarget object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolResetTargetMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolResetTargetMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the CarpoolResetTargetMutation builder.
+func (m *CarpoolResetTargetMutation) Where(ps ...predicate.CarpoolResetTarget) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolResetTargetMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolResetTargetMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolResetTarget, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolResetTargetMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolResetTargetMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolResetTarget).
+func (m *CarpoolResetTargetMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolResetTargetMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.batch_id != nil {
+		fields = append(fields, carpoolresettarget.FieldBatchID)
+	}
+	if m.term_id != nil {
+		fields = append(fields, carpoolresettarget.FieldTermID)
+	}
+	if m.cycle_id != nil {
+		fields = append(fields, carpoolresettarget.FieldCycleID)
+	}
+	if m.status != nil {
+		fields = append(fields, carpoolresettarget.FieldStatus)
+	}
+	if m.granted_usd != nil {
+		fields = append(fields, carpoolresettarget.FieldGrantedUsd)
+	}
+	if m.executed_at != nil {
+		fields = append(fields, carpoolresettarget.FieldExecutedAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolresettarget.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolResetTargetMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresettarget.FieldBatchID:
+		return m.BatchID()
+	case carpoolresettarget.FieldTermID:
+		return m.TermID()
+	case carpoolresettarget.FieldCycleID:
+		return m.CycleID()
+	case carpoolresettarget.FieldStatus:
+		return m.Status()
+	case carpoolresettarget.FieldGrantedUsd:
+		return m.GrantedUsd()
+	case carpoolresettarget.FieldExecutedAt:
+		return m.ExecutedAt()
+	case carpoolresettarget.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolResetTargetMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolresettarget.FieldBatchID:
+		return m.OldBatchID(ctx)
+	case carpoolresettarget.FieldTermID:
+		return m.OldTermID(ctx)
+	case carpoolresettarget.FieldCycleID:
+		return m.OldCycleID(ctx)
+	case carpoolresettarget.FieldStatus:
+		return m.OldStatus(ctx)
+	case carpoolresettarget.FieldGrantedUsd:
+		return m.OldGrantedUsd(ctx)
+	case carpoolresettarget.FieldExecutedAt:
+		return m.OldExecutedAt(ctx)
+	case carpoolresettarget.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolResetTarget field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetTargetMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresettarget.FieldBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatchID(v)
+		return nil
+	case carpoolresettarget.FieldTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTermID(v)
+		return nil
+	case carpoolresettarget.FieldCycleID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCycleID(v)
+		return nil
+	case carpoolresettarget.FieldStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case carpoolresettarget.FieldGrantedUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGrantedUsd(v)
+		return nil
+	case carpoolresettarget.FieldExecutedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExecutedAt(v)
+		return nil
+	case carpoolresettarget.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetTarget field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolResetTargetMutation) AddedFields() []string {
+	var fields []string
+	if m.addbatch_id != nil {
+		fields = append(fields, carpoolresettarget.FieldBatchID)
+	}
+	if m.addterm_id != nil {
+		fields = append(fields, carpoolresettarget.FieldTermID)
+	}
+	if m.addcycle_id != nil {
+		fields = append(fields, carpoolresettarget.FieldCycleID)
+	}
+	if m.addgranted_usd != nil {
+		fields = append(fields, carpoolresettarget.FieldGrantedUsd)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolResetTargetMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolresettarget.FieldBatchID:
+		return m.AddedBatchID()
+	case carpoolresettarget.FieldTermID:
+		return m.AddedTermID()
+	case carpoolresettarget.FieldCycleID:
+		return m.AddedCycleID()
+	case carpoolresettarget.FieldGrantedUsd:
+		return m.AddedGrantedUsd()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolResetTargetMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolresettarget.FieldBatchID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBatchID(v)
+		return nil
+	case carpoolresettarget.FieldTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTermID(v)
+		return nil
+	case carpoolresettarget.FieldCycleID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCycleID(v)
+		return nil
+	case carpoolresettarget.FieldGrantedUsd:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddGrantedUsd(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetTarget numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolResetTargetMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolResetTargetMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolResetTargetMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown CarpoolResetTarget nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolResetTargetMutation) ResetField(name string) error {
+	switch name {
+	case carpoolresettarget.FieldBatchID:
+		m.ResetBatchID()
+		return nil
+	case carpoolresettarget.FieldTermID:
+		m.ResetTermID()
+		return nil
+	case carpoolresettarget.FieldCycleID:
+		m.ResetCycleID()
+		return nil
+	case carpoolresettarget.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case carpoolresettarget.FieldGrantedUsd:
+		m.ResetGrantedUsd()
+		return nil
+	case carpoolresettarget.FieldExecutedAt:
+		m.ResetExecutedAt()
+		return nil
+	case carpoolresettarget.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolResetTarget field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolResetTargetMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolResetTargetMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolResetTargetMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolResetTargetMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolResetTargetMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolResetTargetMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolResetTargetMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetTarget unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolResetTargetMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolResetTarget edge %s", name)
+}
+
+// CarpoolTermMutation represents an operation that mutates the CarpoolTerm nodes in the graph.
+type CarpoolTermMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *int64
+	user_id            *int64
+	adduser_id         *int64
+	scope_id           *int64
+	addscope_id        *int64
+	group_id           *int64
+	addgroup_id        *int64
+	plan_id            *int64
+	addplan_id         *int64
+	plan_snapshot      *map[string]interface{}
+	starts_at          *time.Time
+	expires_at         *time.Time
+	status             *string
+	boost_used         *int
+	addboost_used      *int
+	source_mode        *string
+	history_complete   *bool
+	statistics_since   *time.Time
+	created_by         *int64
+	addcreated_by      *int64
+	notes              *string
+	terminated_at      *time.Time
+	terminated_by      *int64
+	addterminated_by   *int64
+	termination_reason *string
+	created_at         *time.Time
+	updated_at         *time.Time
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*CarpoolTerm, error)
+	predicates         []predicate.CarpoolTerm
+}
+
+var _ ent.Mutation = (*CarpoolTermMutation)(nil)
+
+// carpooltermOption allows management of the mutation configuration using functional options.
+type carpooltermOption func(*CarpoolTermMutation)
+
+// newCarpoolTermMutation creates new mutation for the CarpoolTerm entity.
+func newCarpoolTermMutation(c config, op Op, opts ...carpooltermOption) *CarpoolTermMutation {
+	m := &CarpoolTermMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCarpoolTerm,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCarpoolTermID sets the ID field of the mutation.
+func withCarpoolTermID(id int64) carpooltermOption {
+	return func(m *CarpoolTermMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CarpoolTerm
+		)
+		m.oldValue = func(ctx context.Context) (*CarpoolTerm, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CarpoolTerm.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCarpoolTerm sets the old CarpoolTerm of the mutation.
+func withCarpoolTerm(node *CarpoolTerm) carpooltermOption {
+	return func(m *CarpoolTermMutation) {
+		m.oldValue = func(context.Context) (*CarpoolTerm, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CarpoolTermMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CarpoolTermMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CarpoolTermMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CarpoolTermMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CarpoolTerm.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetUserID sets the "user_id" field.
+func (m *CarpoolTermMutation) SetUserID(i int64) {
+	m.user_id = &i
+	m.adduser_id = nil
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *CarpoolTermMutation) UserID() (r int64, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldUserID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// AddUserID adds i to the "user_id" field.
+func (m *CarpoolTermMutation) AddUserID(i int64) {
+	if m.adduser_id != nil {
+		*m.adduser_id += i
+	} else {
+		m.adduser_id = &i
+	}
+}
+
+// AddedUserID returns the value that was added to the "user_id" field in this mutation.
+func (m *CarpoolTermMutation) AddedUserID() (r int64, exists bool) {
+	v := m.adduser_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *CarpoolTermMutation) ResetUserID() {
+	m.user_id = nil
+	m.adduser_id = nil
+}
+
+// SetScopeID sets the "scope_id" field.
+func (m *CarpoolTermMutation) SetScopeID(i int64) {
+	m.scope_id = &i
+	m.addscope_id = nil
+}
+
+// ScopeID returns the value of the "scope_id" field in the mutation.
+func (m *CarpoolTermMutation) ScopeID() (r int64, exists bool) {
+	v := m.scope_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScopeID returns the old "scope_id" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldScopeID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScopeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScopeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScopeID: %w", err)
+	}
+	return oldValue.ScopeID, nil
+}
+
+// AddScopeID adds i to the "scope_id" field.
+func (m *CarpoolTermMutation) AddScopeID(i int64) {
+	if m.addscope_id != nil {
+		*m.addscope_id += i
+	} else {
+		m.addscope_id = &i
+	}
+}
+
+// AddedScopeID returns the value that was added to the "scope_id" field in this mutation.
+func (m *CarpoolTermMutation) AddedScopeID() (r int64, exists bool) {
+	v := m.addscope_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetScopeID resets all changes to the "scope_id" field.
+func (m *CarpoolTermMutation) ResetScopeID() {
+	m.scope_id = nil
+	m.addscope_id = nil
+}
+
+// SetGroupID sets the "group_id" field.
+func (m *CarpoolTermMutation) SetGroupID(i int64) {
+	m.group_id = &i
+	m.addgroup_id = nil
+}
+
+// GroupID returns the value of the "group_id" field in the mutation.
+func (m *CarpoolTermMutation) GroupID() (r int64, exists bool) {
+	v := m.group_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupID returns the old "group_id" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldGroupID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGroupID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGroupID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupID: %w", err)
+	}
+	return oldValue.GroupID, nil
+}
+
+// AddGroupID adds i to the "group_id" field.
+func (m *CarpoolTermMutation) AddGroupID(i int64) {
+	if m.addgroup_id != nil {
+		*m.addgroup_id += i
+	} else {
+		m.addgroup_id = &i
+	}
+}
+
+// AddedGroupID returns the value that was added to the "group_id" field in this mutation.
+func (m *CarpoolTermMutation) AddedGroupID() (r int64, exists bool) {
+	v := m.addgroup_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetGroupID resets all changes to the "group_id" field.
+func (m *CarpoolTermMutation) ResetGroupID() {
+	m.group_id = nil
+	m.addgroup_id = nil
+}
+
+// SetPlanID sets the "plan_id" field.
+func (m *CarpoolTermMutation) SetPlanID(i int64) {
+	m.plan_id = &i
+	m.addplan_id = nil
+}
+
+// PlanID returns the value of the "plan_id" field in the mutation.
+func (m *CarpoolTermMutation) PlanID() (r int64, exists bool) {
+	v := m.plan_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanID returns the old "plan_id" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldPlanID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanID: %w", err)
+	}
+	return oldValue.PlanID, nil
+}
+
+// AddPlanID adds i to the "plan_id" field.
+func (m *CarpoolTermMutation) AddPlanID(i int64) {
+	if m.addplan_id != nil {
+		*m.addplan_id += i
+	} else {
+		m.addplan_id = &i
+	}
+}
+
+// AddedPlanID returns the value that was added to the "plan_id" field in this mutation.
+func (m *CarpoolTermMutation) AddedPlanID() (r int64, exists bool) {
+	v := m.addplan_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPlanID resets all changes to the "plan_id" field.
+func (m *CarpoolTermMutation) ResetPlanID() {
+	m.plan_id = nil
+	m.addplan_id = nil
+}
+
+// SetPlanSnapshot sets the "plan_snapshot" field.
+func (m *CarpoolTermMutation) SetPlanSnapshot(value map[string]interface{}) {
+	m.plan_snapshot = &value
+}
+
+// PlanSnapshot returns the value of the "plan_snapshot" field in the mutation.
+func (m *CarpoolTermMutation) PlanSnapshot() (r map[string]interface{}, exists bool) {
+	v := m.plan_snapshot
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanSnapshot returns the old "plan_snapshot" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldPlanSnapshot(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanSnapshot is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanSnapshot requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanSnapshot: %w", err)
+	}
+	return oldValue.PlanSnapshot, nil
+}
+
+// ResetPlanSnapshot resets all changes to the "plan_snapshot" field.
+func (m *CarpoolTermMutation) ResetPlanSnapshot() {
+	m.plan_snapshot = nil
+}
+
+// SetStartsAt sets the "starts_at" field.
+func (m *CarpoolTermMutation) SetStartsAt(t time.Time) {
+	m.starts_at = &t
+}
+
+// StartsAt returns the value of the "starts_at" field in the mutation.
+func (m *CarpoolTermMutation) StartsAt() (r time.Time, exists bool) {
+	v := m.starts_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStartsAt returns the old "starts_at" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldStartsAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStartsAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStartsAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStartsAt: %w", err)
+	}
+	return oldValue.StartsAt, nil
+}
+
+// ResetStartsAt resets all changes to the "starts_at" field.
+func (m *CarpoolTermMutation) ResetStartsAt() {
+	m.starts_at = nil
+}
+
+// SetExpiresAt sets the "expires_at" field.
+func (m *CarpoolTermMutation) SetExpiresAt(t time.Time) {
+	m.expires_at = &t
+}
+
+// ExpiresAt returns the value of the "expires_at" field in the mutation.
+func (m *CarpoolTermMutation) ExpiresAt() (r time.Time, exists bool) {
+	v := m.expires_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExpiresAt returns the old "expires_at" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldExpiresAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExpiresAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExpiresAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExpiresAt: %w", err)
+	}
+	return oldValue.ExpiresAt, nil
+}
+
+// ResetExpiresAt resets all changes to the "expires_at" field.
+func (m *CarpoolTermMutation) ResetExpiresAt() {
+	m.expires_at = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *CarpoolTermMutation) SetStatus(s string) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *CarpoolTermMutation) Status() (r string, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *CarpoolTermMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetBoostUsed sets the "boost_used" field.
+func (m *CarpoolTermMutation) SetBoostUsed(i int) {
+	m.boost_used = &i
+	m.addboost_used = nil
+}
+
+// BoostUsed returns the value of the "boost_used" field in the mutation.
+func (m *CarpoolTermMutation) BoostUsed() (r int, exists bool) {
+	v := m.boost_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBoostUsed returns the old "boost_used" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldBoostUsed(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBoostUsed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBoostUsed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBoostUsed: %w", err)
+	}
+	return oldValue.BoostUsed, nil
+}
+
+// AddBoostUsed adds i to the "boost_used" field.
+func (m *CarpoolTermMutation) AddBoostUsed(i int) {
+	if m.addboost_used != nil {
+		*m.addboost_used += i
+	} else {
+		m.addboost_used = &i
+	}
+}
+
+// AddedBoostUsed returns the value that was added to the "boost_used" field in this mutation.
+func (m *CarpoolTermMutation) AddedBoostUsed() (r int, exists bool) {
+	v := m.addboost_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBoostUsed resets all changes to the "boost_used" field.
+func (m *CarpoolTermMutation) ResetBoostUsed() {
+	m.boost_used = nil
+	m.addboost_used = nil
+}
+
+// SetSourceMode sets the "source_mode" field.
+func (m *CarpoolTermMutation) SetSourceMode(s string) {
+	m.source_mode = &s
+}
+
+// SourceMode returns the value of the "source_mode" field in the mutation.
+func (m *CarpoolTermMutation) SourceMode() (r string, exists bool) {
+	v := m.source_mode
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceMode returns the old "source_mode" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldSourceMode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceMode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceMode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceMode: %w", err)
+	}
+	return oldValue.SourceMode, nil
+}
+
+// ResetSourceMode resets all changes to the "source_mode" field.
+func (m *CarpoolTermMutation) ResetSourceMode() {
+	m.source_mode = nil
+}
+
+// SetHistoryComplete sets the "history_complete" field.
+func (m *CarpoolTermMutation) SetHistoryComplete(b bool) {
+	m.history_complete = &b
+}
+
+// HistoryComplete returns the value of the "history_complete" field in the mutation.
+func (m *CarpoolTermMutation) HistoryComplete() (r bool, exists bool) {
+	v := m.history_complete
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHistoryComplete returns the old "history_complete" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldHistoryComplete(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHistoryComplete is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHistoryComplete requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHistoryComplete: %w", err)
+	}
+	return oldValue.HistoryComplete, nil
+}
+
+// ResetHistoryComplete resets all changes to the "history_complete" field.
+func (m *CarpoolTermMutation) ResetHistoryComplete() {
+	m.history_complete = nil
+}
+
+// SetStatisticsSince sets the "statistics_since" field.
+func (m *CarpoolTermMutation) SetStatisticsSince(t time.Time) {
+	m.statistics_since = &t
+}
+
+// StatisticsSince returns the value of the "statistics_since" field in the mutation.
+func (m *CarpoolTermMutation) StatisticsSince() (r time.Time, exists bool) {
+	v := m.statistics_since
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatisticsSince returns the old "statistics_since" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldStatisticsSince(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatisticsSince is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatisticsSince requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatisticsSince: %w", err)
+	}
+	return oldValue.StatisticsSince, nil
+}
+
+// ClearStatisticsSince clears the value of the "statistics_since" field.
+func (m *CarpoolTermMutation) ClearStatisticsSince() {
+	m.statistics_since = nil
+	m.clearedFields[carpoolterm.FieldStatisticsSince] = struct{}{}
+}
+
+// StatisticsSinceCleared returns if the "statistics_since" field was cleared in this mutation.
+func (m *CarpoolTermMutation) StatisticsSinceCleared() bool {
+	_, ok := m.clearedFields[carpoolterm.FieldStatisticsSince]
+	return ok
+}
+
+// ResetStatisticsSince resets all changes to the "statistics_since" field.
+func (m *CarpoolTermMutation) ResetStatisticsSince() {
+	m.statistics_since = nil
+	delete(m.clearedFields, carpoolterm.FieldStatisticsSince)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *CarpoolTermMutation) SetCreatedBy(i int64) {
+	m.created_by = &i
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *CarpoolTermMutation) CreatedBy() (r int64, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldCreatedBy(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds i to the "created_by" field.
+func (m *CarpoolTermMutation) AddCreatedBy(i int64) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += i
+	} else {
+		m.addcreated_by = &i
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *CarpoolTermMutation) AddedCreatedBy() (r int64, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *CarpoolTermMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+}
+
+// SetNotes sets the "notes" field.
+func (m *CarpoolTermMutation) SetNotes(s string) {
+	m.notes = &s
+}
+
+// Notes returns the value of the "notes" field in the mutation.
+func (m *CarpoolTermMutation) Notes() (r string, exists bool) {
+	v := m.notes
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotes returns the old "notes" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldNotes(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotes is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotes requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotes: %w", err)
+	}
+	return oldValue.Notes, nil
+}
+
+// ClearNotes clears the value of the "notes" field.
+func (m *CarpoolTermMutation) ClearNotes() {
+	m.notes = nil
+	m.clearedFields[carpoolterm.FieldNotes] = struct{}{}
+}
+
+// NotesCleared returns if the "notes" field was cleared in this mutation.
+func (m *CarpoolTermMutation) NotesCleared() bool {
+	_, ok := m.clearedFields[carpoolterm.FieldNotes]
+	return ok
+}
+
+// ResetNotes resets all changes to the "notes" field.
+func (m *CarpoolTermMutation) ResetNotes() {
+	m.notes = nil
+	delete(m.clearedFields, carpoolterm.FieldNotes)
+}
+
+// SetTerminatedAt sets the "terminated_at" field.
+func (m *CarpoolTermMutation) SetTerminatedAt(t time.Time) {
+	m.terminated_at = &t
+}
+
+// TerminatedAt returns the value of the "terminated_at" field in the mutation.
+func (m *CarpoolTermMutation) TerminatedAt() (r time.Time, exists bool) {
+	v := m.terminated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTerminatedAt returns the old "terminated_at" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldTerminatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTerminatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTerminatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTerminatedAt: %w", err)
+	}
+	return oldValue.TerminatedAt, nil
+}
+
+// ClearTerminatedAt clears the value of the "terminated_at" field.
+func (m *CarpoolTermMutation) ClearTerminatedAt() {
+	m.terminated_at = nil
+	m.clearedFields[carpoolterm.FieldTerminatedAt] = struct{}{}
+}
+
+// TerminatedAtCleared returns if the "terminated_at" field was cleared in this mutation.
+func (m *CarpoolTermMutation) TerminatedAtCleared() bool {
+	_, ok := m.clearedFields[carpoolterm.FieldTerminatedAt]
+	return ok
+}
+
+// ResetTerminatedAt resets all changes to the "terminated_at" field.
+func (m *CarpoolTermMutation) ResetTerminatedAt() {
+	m.terminated_at = nil
+	delete(m.clearedFields, carpoolterm.FieldTerminatedAt)
+}
+
+// SetTerminatedBy sets the "terminated_by" field.
+func (m *CarpoolTermMutation) SetTerminatedBy(i int64) {
+	m.terminated_by = &i
+	m.addterminated_by = nil
+}
+
+// TerminatedBy returns the value of the "terminated_by" field in the mutation.
+func (m *CarpoolTermMutation) TerminatedBy() (r int64, exists bool) {
+	v := m.terminated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTerminatedBy returns the old "terminated_by" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldTerminatedBy(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTerminatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTerminatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTerminatedBy: %w", err)
+	}
+	return oldValue.TerminatedBy, nil
+}
+
+// AddTerminatedBy adds i to the "terminated_by" field.
+func (m *CarpoolTermMutation) AddTerminatedBy(i int64) {
+	if m.addterminated_by != nil {
+		*m.addterminated_by += i
+	} else {
+		m.addterminated_by = &i
+	}
+}
+
+// AddedTerminatedBy returns the value that was added to the "terminated_by" field in this mutation.
+func (m *CarpoolTermMutation) AddedTerminatedBy() (r int64, exists bool) {
+	v := m.addterminated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTerminatedBy clears the value of the "terminated_by" field.
+func (m *CarpoolTermMutation) ClearTerminatedBy() {
+	m.terminated_by = nil
+	m.addterminated_by = nil
+	m.clearedFields[carpoolterm.FieldTerminatedBy] = struct{}{}
+}
+
+// TerminatedByCleared returns if the "terminated_by" field was cleared in this mutation.
+func (m *CarpoolTermMutation) TerminatedByCleared() bool {
+	_, ok := m.clearedFields[carpoolterm.FieldTerminatedBy]
+	return ok
+}
+
+// ResetTerminatedBy resets all changes to the "terminated_by" field.
+func (m *CarpoolTermMutation) ResetTerminatedBy() {
+	m.terminated_by = nil
+	m.addterminated_by = nil
+	delete(m.clearedFields, carpoolterm.FieldTerminatedBy)
+}
+
+// SetTerminationReason sets the "termination_reason" field.
+func (m *CarpoolTermMutation) SetTerminationReason(s string) {
+	m.termination_reason = &s
+}
+
+// TerminationReason returns the value of the "termination_reason" field in the mutation.
+func (m *CarpoolTermMutation) TerminationReason() (r string, exists bool) {
+	v := m.termination_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTerminationReason returns the old "termination_reason" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldTerminationReason(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTerminationReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTerminationReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTerminationReason: %w", err)
+	}
+	return oldValue.TerminationReason, nil
+}
+
+// ClearTerminationReason clears the value of the "termination_reason" field.
+func (m *CarpoolTermMutation) ClearTerminationReason() {
+	m.termination_reason = nil
+	m.clearedFields[carpoolterm.FieldTerminationReason] = struct{}{}
+}
+
+// TerminationReasonCleared returns if the "termination_reason" field was cleared in this mutation.
+func (m *CarpoolTermMutation) TerminationReasonCleared() bool {
+	_, ok := m.clearedFields[carpoolterm.FieldTerminationReason]
+	return ok
+}
+
+// ResetTerminationReason resets all changes to the "termination_reason" field.
+func (m *CarpoolTermMutation) ResetTerminationReason() {
+	m.termination_reason = nil
+	delete(m.clearedFields, carpoolterm.FieldTerminationReason)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CarpoolTermMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CarpoolTermMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CarpoolTermMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CarpoolTermMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CarpoolTermMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CarpoolTerm entity.
+// If the CarpoolTerm object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarpoolTermMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CarpoolTermMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the CarpoolTermMutation builder.
+func (m *CarpoolTermMutation) Where(ps ...predicate.CarpoolTerm) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CarpoolTermMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CarpoolTermMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CarpoolTerm, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CarpoolTermMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CarpoolTermMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CarpoolTerm).
+func (m *CarpoolTermMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CarpoolTermMutation) Fields() []string {
+	fields := make([]string, 0, 19)
+	if m.user_id != nil {
+		fields = append(fields, carpoolterm.FieldUserID)
+	}
+	if m.scope_id != nil {
+		fields = append(fields, carpoolterm.FieldScopeID)
+	}
+	if m.group_id != nil {
+		fields = append(fields, carpoolterm.FieldGroupID)
+	}
+	if m.plan_id != nil {
+		fields = append(fields, carpoolterm.FieldPlanID)
+	}
+	if m.plan_snapshot != nil {
+		fields = append(fields, carpoolterm.FieldPlanSnapshot)
+	}
+	if m.starts_at != nil {
+		fields = append(fields, carpoolterm.FieldStartsAt)
+	}
+	if m.expires_at != nil {
+		fields = append(fields, carpoolterm.FieldExpiresAt)
+	}
+	if m.status != nil {
+		fields = append(fields, carpoolterm.FieldStatus)
+	}
+	if m.boost_used != nil {
+		fields = append(fields, carpoolterm.FieldBoostUsed)
+	}
+	if m.source_mode != nil {
+		fields = append(fields, carpoolterm.FieldSourceMode)
+	}
+	if m.history_complete != nil {
+		fields = append(fields, carpoolterm.FieldHistoryComplete)
+	}
+	if m.statistics_since != nil {
+		fields = append(fields, carpoolterm.FieldStatisticsSince)
+	}
+	if m.created_by != nil {
+		fields = append(fields, carpoolterm.FieldCreatedBy)
+	}
+	if m.notes != nil {
+		fields = append(fields, carpoolterm.FieldNotes)
+	}
+	if m.terminated_at != nil {
+		fields = append(fields, carpoolterm.FieldTerminatedAt)
+	}
+	if m.terminated_by != nil {
+		fields = append(fields, carpoolterm.FieldTerminatedBy)
+	}
+	if m.termination_reason != nil {
+		fields = append(fields, carpoolterm.FieldTerminationReason)
+	}
+	if m.created_at != nil {
+		fields = append(fields, carpoolterm.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, carpoolterm.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CarpoolTermMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolterm.FieldUserID:
+		return m.UserID()
+	case carpoolterm.FieldScopeID:
+		return m.ScopeID()
+	case carpoolterm.FieldGroupID:
+		return m.GroupID()
+	case carpoolterm.FieldPlanID:
+		return m.PlanID()
+	case carpoolterm.FieldPlanSnapshot:
+		return m.PlanSnapshot()
+	case carpoolterm.FieldStartsAt:
+		return m.StartsAt()
+	case carpoolterm.FieldExpiresAt:
+		return m.ExpiresAt()
+	case carpoolterm.FieldStatus:
+		return m.Status()
+	case carpoolterm.FieldBoostUsed:
+		return m.BoostUsed()
+	case carpoolterm.FieldSourceMode:
+		return m.SourceMode()
+	case carpoolterm.FieldHistoryComplete:
+		return m.HistoryComplete()
+	case carpoolterm.FieldStatisticsSince:
+		return m.StatisticsSince()
+	case carpoolterm.FieldCreatedBy:
+		return m.CreatedBy()
+	case carpoolterm.FieldNotes:
+		return m.Notes()
+	case carpoolterm.FieldTerminatedAt:
+		return m.TerminatedAt()
+	case carpoolterm.FieldTerminatedBy:
+		return m.TerminatedBy()
+	case carpoolterm.FieldTerminationReason:
+		return m.TerminationReason()
+	case carpoolterm.FieldCreatedAt:
+		return m.CreatedAt()
+	case carpoolterm.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CarpoolTermMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case carpoolterm.FieldUserID:
+		return m.OldUserID(ctx)
+	case carpoolterm.FieldScopeID:
+		return m.OldScopeID(ctx)
+	case carpoolterm.FieldGroupID:
+		return m.OldGroupID(ctx)
+	case carpoolterm.FieldPlanID:
+		return m.OldPlanID(ctx)
+	case carpoolterm.FieldPlanSnapshot:
+		return m.OldPlanSnapshot(ctx)
+	case carpoolterm.FieldStartsAt:
+		return m.OldStartsAt(ctx)
+	case carpoolterm.FieldExpiresAt:
+		return m.OldExpiresAt(ctx)
+	case carpoolterm.FieldStatus:
+		return m.OldStatus(ctx)
+	case carpoolterm.FieldBoostUsed:
+		return m.OldBoostUsed(ctx)
+	case carpoolterm.FieldSourceMode:
+		return m.OldSourceMode(ctx)
+	case carpoolterm.FieldHistoryComplete:
+		return m.OldHistoryComplete(ctx)
+	case carpoolterm.FieldStatisticsSince:
+		return m.OldStatisticsSince(ctx)
+	case carpoolterm.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case carpoolterm.FieldNotes:
+		return m.OldNotes(ctx)
+	case carpoolterm.FieldTerminatedAt:
+		return m.OldTerminatedAt(ctx)
+	case carpoolterm.FieldTerminatedBy:
+		return m.OldTerminatedBy(ctx)
+	case carpoolterm.FieldTerminationReason:
+		return m.OldTerminationReason(ctx)
+	case carpoolterm.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case carpoolterm.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CarpoolTerm field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolTermMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case carpoolterm.FieldUserID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case carpoolterm.FieldScopeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScopeID(v)
+		return nil
+	case carpoolterm.FieldGroupID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupID(v)
+		return nil
+	case carpoolterm.FieldPlanID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanID(v)
+		return nil
+	case carpoolterm.FieldPlanSnapshot:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanSnapshot(v)
+		return nil
+	case carpoolterm.FieldStartsAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStartsAt(v)
+		return nil
+	case carpoolterm.FieldExpiresAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExpiresAt(v)
+		return nil
+	case carpoolterm.FieldStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case carpoolterm.FieldBoostUsed:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBoostUsed(v)
+		return nil
+	case carpoolterm.FieldSourceMode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceMode(v)
+		return nil
+	case carpoolterm.FieldHistoryComplete:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHistoryComplete(v)
+		return nil
+	case carpoolterm.FieldStatisticsSince:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatisticsSince(v)
+		return nil
+	case carpoolterm.FieldCreatedBy:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case carpoolterm.FieldNotes:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotes(v)
+		return nil
+	case carpoolterm.FieldTerminatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTerminatedAt(v)
+		return nil
+	case carpoolterm.FieldTerminatedBy:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTerminatedBy(v)
+		return nil
+	case carpoolterm.FieldTerminationReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTerminationReason(v)
+		return nil
+	case carpoolterm.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case carpoolterm.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolTerm field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CarpoolTermMutation) AddedFields() []string {
+	var fields []string
+	if m.adduser_id != nil {
+		fields = append(fields, carpoolterm.FieldUserID)
+	}
+	if m.addscope_id != nil {
+		fields = append(fields, carpoolterm.FieldScopeID)
+	}
+	if m.addgroup_id != nil {
+		fields = append(fields, carpoolterm.FieldGroupID)
+	}
+	if m.addplan_id != nil {
+		fields = append(fields, carpoolterm.FieldPlanID)
+	}
+	if m.addboost_used != nil {
+		fields = append(fields, carpoolterm.FieldBoostUsed)
+	}
+	if m.addcreated_by != nil {
+		fields = append(fields, carpoolterm.FieldCreatedBy)
+	}
+	if m.addterminated_by != nil {
+		fields = append(fields, carpoolterm.FieldTerminatedBy)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CarpoolTermMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case carpoolterm.FieldUserID:
+		return m.AddedUserID()
+	case carpoolterm.FieldScopeID:
+		return m.AddedScopeID()
+	case carpoolterm.FieldGroupID:
+		return m.AddedGroupID()
+	case carpoolterm.FieldPlanID:
+		return m.AddedPlanID()
+	case carpoolterm.FieldBoostUsed:
+		return m.AddedBoostUsed()
+	case carpoolterm.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case carpoolterm.FieldTerminatedBy:
+		return m.AddedTerminatedBy()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CarpoolTermMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case carpoolterm.FieldUserID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUserID(v)
+		return nil
+	case carpoolterm.FieldScopeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScopeID(v)
+		return nil
+	case carpoolterm.FieldGroupID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddGroupID(v)
+		return nil
+	case carpoolterm.FieldPlanID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPlanID(v)
+		return nil
+	case carpoolterm.FieldBoostUsed:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBoostUsed(v)
+		return nil
+	case carpoolterm.FieldCreatedBy:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case carpoolterm.FieldTerminatedBy:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTerminatedBy(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolTerm numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CarpoolTermMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(carpoolterm.FieldStatisticsSince) {
+		fields = append(fields, carpoolterm.FieldStatisticsSince)
+	}
+	if m.FieldCleared(carpoolterm.FieldNotes) {
+		fields = append(fields, carpoolterm.FieldNotes)
+	}
+	if m.FieldCleared(carpoolterm.FieldTerminatedAt) {
+		fields = append(fields, carpoolterm.FieldTerminatedAt)
+	}
+	if m.FieldCleared(carpoolterm.FieldTerminatedBy) {
+		fields = append(fields, carpoolterm.FieldTerminatedBy)
+	}
+	if m.FieldCleared(carpoolterm.FieldTerminationReason) {
+		fields = append(fields, carpoolterm.FieldTerminationReason)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CarpoolTermMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CarpoolTermMutation) ClearField(name string) error {
+	switch name {
+	case carpoolterm.FieldStatisticsSince:
+		m.ClearStatisticsSince()
+		return nil
+	case carpoolterm.FieldNotes:
+		m.ClearNotes()
+		return nil
+	case carpoolterm.FieldTerminatedAt:
+		m.ClearTerminatedAt()
+		return nil
+	case carpoolterm.FieldTerminatedBy:
+		m.ClearTerminatedBy()
+		return nil
+	case carpoolterm.FieldTerminationReason:
+		m.ClearTerminationReason()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolTerm nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CarpoolTermMutation) ResetField(name string) error {
+	switch name {
+	case carpoolterm.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case carpoolterm.FieldScopeID:
+		m.ResetScopeID()
+		return nil
+	case carpoolterm.FieldGroupID:
+		m.ResetGroupID()
+		return nil
+	case carpoolterm.FieldPlanID:
+		m.ResetPlanID()
+		return nil
+	case carpoolterm.FieldPlanSnapshot:
+		m.ResetPlanSnapshot()
+		return nil
+	case carpoolterm.FieldStartsAt:
+		m.ResetStartsAt()
+		return nil
+	case carpoolterm.FieldExpiresAt:
+		m.ResetExpiresAt()
+		return nil
+	case carpoolterm.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case carpoolterm.FieldBoostUsed:
+		m.ResetBoostUsed()
+		return nil
+	case carpoolterm.FieldSourceMode:
+		m.ResetSourceMode()
+		return nil
+	case carpoolterm.FieldHistoryComplete:
+		m.ResetHistoryComplete()
+		return nil
+	case carpoolterm.FieldStatisticsSince:
+		m.ResetStatisticsSince()
+		return nil
+	case carpoolterm.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case carpoolterm.FieldNotes:
+		m.ResetNotes()
+		return nil
+	case carpoolterm.FieldTerminatedAt:
+		m.ResetTerminatedAt()
+		return nil
+	case carpoolterm.FieldTerminatedBy:
+		m.ResetTerminatedBy()
+		return nil
+	case carpoolterm.FieldTerminationReason:
+		m.ResetTerminationReason()
+		return nil
+	case carpoolterm.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case carpoolterm.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CarpoolTerm field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CarpoolTermMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CarpoolTermMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CarpoolTermMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CarpoolTermMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CarpoolTermMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CarpoolTermMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CarpoolTermMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolTerm unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CarpoolTermMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CarpoolTerm edge %s", name)
 }
 
 // ChannelMonitorMutation represents an operation that mutates the ChannelMonitor nodes in the graph.
@@ -44458,6 +61131,11 @@ type UsageLogMutation struct {
 	model_mapping_chain          *string
 	billing_tier                 *string
 	billing_mode                 *string
+	carpool_term_id              *int64
+	addcarpool_term_id           *int64
+	carpool_cycle_id             *int64
+	addcarpool_cycle_id          *int64
+	carpool_admitted_at          *time.Time
 	input_tokens                 *int
 	addinput_tokens              *int
 	output_tokens                *int
@@ -45313,6 +61991,195 @@ func (m *UsageLogMutation) SubscriptionIDCleared() bool {
 func (m *UsageLogMutation) ResetSubscriptionID() {
 	m.subscription = nil
 	delete(m.clearedFields, usagelog.FieldSubscriptionID)
+}
+
+// SetCarpoolTermID sets the "carpool_term_id" field.
+func (m *UsageLogMutation) SetCarpoolTermID(i int64) {
+	m.carpool_term_id = &i
+	m.addcarpool_term_id = nil
+}
+
+// CarpoolTermID returns the value of the "carpool_term_id" field in the mutation.
+func (m *UsageLogMutation) CarpoolTermID() (r int64, exists bool) {
+	v := m.carpool_term_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCarpoolTermID returns the old "carpool_term_id" field's value of the UsageLog entity.
+// If the UsageLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UsageLogMutation) OldCarpoolTermID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCarpoolTermID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCarpoolTermID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCarpoolTermID: %w", err)
+	}
+	return oldValue.CarpoolTermID, nil
+}
+
+// AddCarpoolTermID adds i to the "carpool_term_id" field.
+func (m *UsageLogMutation) AddCarpoolTermID(i int64) {
+	if m.addcarpool_term_id != nil {
+		*m.addcarpool_term_id += i
+	} else {
+		m.addcarpool_term_id = &i
+	}
+}
+
+// AddedCarpoolTermID returns the value that was added to the "carpool_term_id" field in this mutation.
+func (m *UsageLogMutation) AddedCarpoolTermID() (r int64, exists bool) {
+	v := m.addcarpool_term_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCarpoolTermID clears the value of the "carpool_term_id" field.
+func (m *UsageLogMutation) ClearCarpoolTermID() {
+	m.carpool_term_id = nil
+	m.addcarpool_term_id = nil
+	m.clearedFields[usagelog.FieldCarpoolTermID] = struct{}{}
+}
+
+// CarpoolTermIDCleared returns if the "carpool_term_id" field was cleared in this mutation.
+func (m *UsageLogMutation) CarpoolTermIDCleared() bool {
+	_, ok := m.clearedFields[usagelog.FieldCarpoolTermID]
+	return ok
+}
+
+// ResetCarpoolTermID resets all changes to the "carpool_term_id" field.
+func (m *UsageLogMutation) ResetCarpoolTermID() {
+	m.carpool_term_id = nil
+	m.addcarpool_term_id = nil
+	delete(m.clearedFields, usagelog.FieldCarpoolTermID)
+}
+
+// SetCarpoolCycleID sets the "carpool_cycle_id" field.
+func (m *UsageLogMutation) SetCarpoolCycleID(i int64) {
+	m.carpool_cycle_id = &i
+	m.addcarpool_cycle_id = nil
+}
+
+// CarpoolCycleID returns the value of the "carpool_cycle_id" field in the mutation.
+func (m *UsageLogMutation) CarpoolCycleID() (r int64, exists bool) {
+	v := m.carpool_cycle_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCarpoolCycleID returns the old "carpool_cycle_id" field's value of the UsageLog entity.
+// If the UsageLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UsageLogMutation) OldCarpoolCycleID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCarpoolCycleID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCarpoolCycleID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCarpoolCycleID: %w", err)
+	}
+	return oldValue.CarpoolCycleID, nil
+}
+
+// AddCarpoolCycleID adds i to the "carpool_cycle_id" field.
+func (m *UsageLogMutation) AddCarpoolCycleID(i int64) {
+	if m.addcarpool_cycle_id != nil {
+		*m.addcarpool_cycle_id += i
+	} else {
+		m.addcarpool_cycle_id = &i
+	}
+}
+
+// AddedCarpoolCycleID returns the value that was added to the "carpool_cycle_id" field in this mutation.
+func (m *UsageLogMutation) AddedCarpoolCycleID() (r int64, exists bool) {
+	v := m.addcarpool_cycle_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCarpoolCycleID clears the value of the "carpool_cycle_id" field.
+func (m *UsageLogMutation) ClearCarpoolCycleID() {
+	m.carpool_cycle_id = nil
+	m.addcarpool_cycle_id = nil
+	m.clearedFields[usagelog.FieldCarpoolCycleID] = struct{}{}
+}
+
+// CarpoolCycleIDCleared returns if the "carpool_cycle_id" field was cleared in this mutation.
+func (m *UsageLogMutation) CarpoolCycleIDCleared() bool {
+	_, ok := m.clearedFields[usagelog.FieldCarpoolCycleID]
+	return ok
+}
+
+// ResetCarpoolCycleID resets all changes to the "carpool_cycle_id" field.
+func (m *UsageLogMutation) ResetCarpoolCycleID() {
+	m.carpool_cycle_id = nil
+	m.addcarpool_cycle_id = nil
+	delete(m.clearedFields, usagelog.FieldCarpoolCycleID)
+}
+
+// SetCarpoolAdmittedAt sets the "carpool_admitted_at" field.
+func (m *UsageLogMutation) SetCarpoolAdmittedAt(t time.Time) {
+	m.carpool_admitted_at = &t
+}
+
+// CarpoolAdmittedAt returns the value of the "carpool_admitted_at" field in the mutation.
+func (m *UsageLogMutation) CarpoolAdmittedAt() (r time.Time, exists bool) {
+	v := m.carpool_admitted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCarpoolAdmittedAt returns the old "carpool_admitted_at" field's value of the UsageLog entity.
+// If the UsageLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UsageLogMutation) OldCarpoolAdmittedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCarpoolAdmittedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCarpoolAdmittedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCarpoolAdmittedAt: %w", err)
+	}
+	return oldValue.CarpoolAdmittedAt, nil
+}
+
+// ClearCarpoolAdmittedAt clears the value of the "carpool_admitted_at" field.
+func (m *UsageLogMutation) ClearCarpoolAdmittedAt() {
+	m.carpool_admitted_at = nil
+	m.clearedFields[usagelog.FieldCarpoolAdmittedAt] = struct{}{}
+}
+
+// CarpoolAdmittedAtCleared returns if the "carpool_admitted_at" field was cleared in this mutation.
+func (m *UsageLogMutation) CarpoolAdmittedAtCleared() bool {
+	_, ok := m.clearedFields[usagelog.FieldCarpoolAdmittedAt]
+	return ok
+}
+
+// ResetCarpoolAdmittedAt resets all changes to the "carpool_admitted_at" field.
+func (m *UsageLogMutation) ResetCarpoolAdmittedAt() {
+	m.carpool_admitted_at = nil
+	delete(m.clearedFields, usagelog.FieldCarpoolAdmittedAt)
 }
 
 // SetInputTokens sets the "input_tokens" field.
@@ -47196,7 +64063,7 @@ func (m *UsageLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UsageLogMutation) Fields() []string {
-	fields := make([]string, 0, 47)
+	fields := make([]string, 0, 50)
 	if m.user != nil {
 		fields = append(fields, usagelog.FieldUserID)
 	}
@@ -47241,6 +64108,15 @@ func (m *UsageLogMutation) Fields() []string {
 	}
 	if m.subscription != nil {
 		fields = append(fields, usagelog.FieldSubscriptionID)
+	}
+	if m.carpool_term_id != nil {
+		fields = append(fields, usagelog.FieldCarpoolTermID)
+	}
+	if m.carpool_cycle_id != nil {
+		fields = append(fields, usagelog.FieldCarpoolCycleID)
+	}
+	if m.carpool_admitted_at != nil {
+		fields = append(fields, usagelog.FieldCarpoolAdmittedAt)
 	}
 	if m.input_tokens != nil {
 		fields = append(fields, usagelog.FieldInputTokens)
@@ -47376,6 +64252,12 @@ func (m *UsageLogMutation) Field(name string) (ent.Value, bool) {
 		return m.GroupID()
 	case usagelog.FieldSubscriptionID:
 		return m.SubscriptionID()
+	case usagelog.FieldCarpoolTermID:
+		return m.CarpoolTermID()
+	case usagelog.FieldCarpoolCycleID:
+		return m.CarpoolCycleID()
+	case usagelog.FieldCarpoolAdmittedAt:
+		return m.CarpoolAdmittedAt()
 	case usagelog.FieldInputTokens:
 		return m.InputTokens()
 	case usagelog.FieldOutputTokens:
@@ -47479,6 +64361,12 @@ func (m *UsageLogMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldGroupID(ctx)
 	case usagelog.FieldSubscriptionID:
 		return m.OldSubscriptionID(ctx)
+	case usagelog.FieldCarpoolTermID:
+		return m.OldCarpoolTermID(ctx)
+	case usagelog.FieldCarpoolCycleID:
+		return m.OldCarpoolCycleID(ctx)
+	case usagelog.FieldCarpoolAdmittedAt:
+		return m.OldCarpoolAdmittedAt(ctx)
 	case usagelog.FieldInputTokens:
 		return m.OldInputTokens(ctx)
 	case usagelog.FieldOutputTokens:
@@ -47656,6 +64544,27 @@ func (m *UsageLogMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSubscriptionID(v)
+		return nil
+	case usagelog.FieldCarpoolTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCarpoolTermID(v)
+		return nil
+	case usagelog.FieldCarpoolCycleID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCarpoolCycleID(v)
+		return nil
+	case usagelog.FieldCarpoolAdmittedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCarpoolAdmittedAt(v)
 		return nil
 	case usagelog.FieldInputTokens:
 		v, ok := value.(int)
@@ -47892,6 +64801,12 @@ func (m *UsageLogMutation) AddedFields() []string {
 	if m.addchannel_id != nil {
 		fields = append(fields, usagelog.FieldChannelID)
 	}
+	if m.addcarpool_term_id != nil {
+		fields = append(fields, usagelog.FieldCarpoolTermID)
+	}
+	if m.addcarpool_cycle_id != nil {
+		fields = append(fields, usagelog.FieldCarpoolCycleID)
+	}
 	if m.addinput_tokens != nil {
 		fields = append(fields, usagelog.FieldInputTokens)
 	}
@@ -47962,6 +64877,10 @@ func (m *UsageLogMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case usagelog.FieldChannelID:
 		return m.AddedChannelID()
+	case usagelog.FieldCarpoolTermID:
+		return m.AddedCarpoolTermID()
+	case usagelog.FieldCarpoolCycleID:
+		return m.AddedCarpoolCycleID()
 	case usagelog.FieldInputTokens:
 		return m.AddedInputTokens()
 	case usagelog.FieldOutputTokens:
@@ -48017,6 +64936,20 @@ func (m *UsageLogMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddChannelID(v)
+		return nil
+	case usagelog.FieldCarpoolTermID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCarpoolTermID(v)
+		return nil
+	case usagelog.FieldCarpoolCycleID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCarpoolCycleID(v)
 		return nil
 	case usagelog.FieldInputTokens:
 		v, ok := value.(int)
@@ -48196,6 +65129,15 @@ func (m *UsageLogMutation) ClearedFields() []string {
 	if m.FieldCleared(usagelog.FieldSubscriptionID) {
 		fields = append(fields, usagelog.FieldSubscriptionID)
 	}
+	if m.FieldCleared(usagelog.FieldCarpoolTermID) {
+		fields = append(fields, usagelog.FieldCarpoolTermID)
+	}
+	if m.FieldCleared(usagelog.FieldCarpoolCycleID) {
+		fields = append(fields, usagelog.FieldCarpoolCycleID)
+	}
+	if m.FieldCleared(usagelog.FieldCarpoolAdmittedAt) {
+		fields = append(fields, usagelog.FieldCarpoolAdmittedAt)
+	}
 	if m.FieldCleared(usagelog.FieldAccountRateMultiplier) {
 		fields = append(fields, usagelog.FieldAccountRateMultiplier)
 	}
@@ -48275,6 +65217,15 @@ func (m *UsageLogMutation) ClearField(name string) error {
 		return nil
 	case usagelog.FieldSubscriptionID:
 		m.ClearSubscriptionID()
+		return nil
+	case usagelog.FieldCarpoolTermID:
+		m.ClearCarpoolTermID()
+		return nil
+	case usagelog.FieldCarpoolCycleID:
+		m.ClearCarpoolCycleID()
+		return nil
+	case usagelog.FieldCarpoolAdmittedAt:
+		m.ClearCarpoolAdmittedAt()
 		return nil
 	case usagelog.FieldAccountRateMultiplier:
 		m.ClearAccountRateMultiplier()
@@ -48364,6 +65315,15 @@ func (m *UsageLogMutation) ResetField(name string) error {
 		return nil
 	case usagelog.FieldSubscriptionID:
 		m.ResetSubscriptionID()
+		return nil
+	case usagelog.FieldCarpoolTermID:
+		m.ResetCarpoolTermID()
+		return nil
+	case usagelog.FieldCarpoolCycleID:
+		m.ResetCarpoolCycleID()
+		return nil
+	case usagelog.FieldCarpoolAdmittedAt:
+		m.ResetCarpoolAdmittedAt()
 		return nil
 	case usagelog.FieldInputTokens:
 		m.ResetInputTokens()

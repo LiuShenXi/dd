@@ -22,6 +22,20 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/batchimageevent"
 	"github.com/Wei-Shaw/sub2api/ent/batchimageitem"
 	"github.com/Wei-Shaw/sub2api/ent/batchimagejob"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolbillingrequest"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolcycle"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolledger"
+	"github.com/Wei-Shaw/sub2api/ent/carpooloperation"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolpayment"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolplan"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetaccountstate"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetannouncementoutbox"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetbatch"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetcredit"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetqualification"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresetscopestate"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolresettarget"
+	"github.com/Wei-Shaw/sub2api/ent/carpoolterm"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitor"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitordailyrollup"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
@@ -111,45 +125,59 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			apikey.Table:                        apikey.ValidColumn,
-			account.Table:                       account.ValidColumn,
-			accountgroup.Table:                  accountgroup.ValidColumn,
-			announcement.Table:                  announcement.ValidColumn,
-			announcementread.Table:              announcementread.ValidColumn,
-			authidentity.Table:                  authidentity.ValidColumn,
-			authidentitychannel.Table:           authidentitychannel.ValidColumn,
-			batchimageevent.Table:               batchimageevent.ValidColumn,
-			batchimageitem.Table:                batchimageitem.ValidColumn,
-			batchimagejob.Table:                 batchimagejob.ValidColumn,
-			channelmonitor.Table:                channelmonitor.ValidColumn,
-			channelmonitordailyrollup.Table:     channelmonitordailyrollup.ValidColumn,
-			channelmonitorhistory.Table:         channelmonitorhistory.ValidColumn,
-			channelmonitorrequesttemplate.Table: channelmonitorrequesttemplate.ValidColumn,
-			compositemodelroute.Table:           compositemodelroute.ValidColumn,
-			errorpassthroughrule.Table:          errorpassthroughrule.ValidColumn,
-			group.Table:                         group.ValidColumn,
-			idempotencyrecord.Table:             idempotencyrecord.ValidColumn,
-			identityadoptiondecision.Table:      identityadoptiondecision.ValidColumn,
-			paymentauditlog.Table:               paymentauditlog.ValidColumn,
-			paymentorder.Table:                  paymentorder.ValidColumn,
-			paymentproviderinstance.Table:       paymentproviderinstance.ValidColumn,
-			pendingauthsession.Table:            pendingauthsession.ValidColumn,
-			promocode.Table:                     promocode.ValidColumn,
-			promocodeusage.Table:                promocodeusage.ValidColumn,
-			proxy.Table:                         proxy.ValidColumn,
-			redeemcode.Table:                    redeemcode.ValidColumn,
-			securitysecret.Table:                securitysecret.ValidColumn,
-			setting.Table:                       setting.ValidColumn,
-			subscriptionplan.Table:              subscriptionplan.ValidColumn,
-			tlsfingerprintprofile.Table:         tlsfingerprintprofile.ValidColumn,
-			usagecleanuptask.Table:              usagecleanuptask.ValidColumn,
-			usagelog.Table:                      usagelog.ValidColumn,
-			user.Table:                          user.ValidColumn,
-			userallowedgroup.Table:              userallowedgroup.ValidColumn,
-			userattributedefinition.Table:       userattributedefinition.ValidColumn,
-			userattributevalue.Table:            userattributevalue.ValidColumn,
-			userplatformquota.Table:             userplatformquota.ValidColumn,
-			usersubscription.Table:              usersubscription.ValidColumn,
+			apikey.Table:                         apikey.ValidColumn,
+			account.Table:                        account.ValidColumn,
+			accountgroup.Table:                   accountgroup.ValidColumn,
+			announcement.Table:                   announcement.ValidColumn,
+			announcementread.Table:               announcementread.ValidColumn,
+			authidentity.Table:                   authidentity.ValidColumn,
+			authidentitychannel.Table:            authidentitychannel.ValidColumn,
+			batchimageevent.Table:                batchimageevent.ValidColumn,
+			batchimageitem.Table:                 batchimageitem.ValidColumn,
+			batchimagejob.Table:                  batchimagejob.ValidColumn,
+			carpoolbillingrequest.Table:          carpoolbillingrequest.ValidColumn,
+			carpoolcycle.Table:                   carpoolcycle.ValidColumn,
+			carpoolledger.Table:                  carpoolledger.ValidColumn,
+			carpooloperation.Table:               carpooloperation.ValidColumn,
+			carpoolpayment.Table:                 carpoolpayment.ValidColumn,
+			carpoolplan.Table:                    carpoolplan.ValidColumn,
+			carpoolresetaccountstate.Table:       carpoolresetaccountstate.ValidColumn,
+			carpoolresetannouncementoutbox.Table: carpoolresetannouncementoutbox.ValidColumn,
+			carpoolresetbatch.Table:              carpoolresetbatch.ValidColumn,
+			carpoolresetcredit.Table:             carpoolresetcredit.ValidColumn,
+			carpoolresetqualification.Table:      carpoolresetqualification.ValidColumn,
+			carpoolresetscopestate.Table:         carpoolresetscopestate.ValidColumn,
+			carpoolresettarget.Table:             carpoolresettarget.ValidColumn,
+			carpoolterm.Table:                    carpoolterm.ValidColumn,
+			channelmonitor.Table:                 channelmonitor.ValidColumn,
+			channelmonitordailyrollup.Table:      channelmonitordailyrollup.ValidColumn,
+			channelmonitorhistory.Table:          channelmonitorhistory.ValidColumn,
+			channelmonitorrequesttemplate.Table:  channelmonitorrequesttemplate.ValidColumn,
+			compositemodelroute.Table:            compositemodelroute.ValidColumn,
+			errorpassthroughrule.Table:           errorpassthroughrule.ValidColumn,
+			group.Table:                          group.ValidColumn,
+			idempotencyrecord.Table:              idempotencyrecord.ValidColumn,
+			identityadoptiondecision.Table:       identityadoptiondecision.ValidColumn,
+			paymentauditlog.Table:                paymentauditlog.ValidColumn,
+			paymentorder.Table:                   paymentorder.ValidColumn,
+			paymentproviderinstance.Table:        paymentproviderinstance.ValidColumn,
+			pendingauthsession.Table:             pendingauthsession.ValidColumn,
+			promocode.Table:                      promocode.ValidColumn,
+			promocodeusage.Table:                 promocodeusage.ValidColumn,
+			proxy.Table:                          proxy.ValidColumn,
+			redeemcode.Table:                     redeemcode.ValidColumn,
+			securitysecret.Table:                 securitysecret.ValidColumn,
+			setting.Table:                        setting.ValidColumn,
+			subscriptionplan.Table:               subscriptionplan.ValidColumn,
+			tlsfingerprintprofile.Table:          tlsfingerprintprofile.ValidColumn,
+			usagecleanuptask.Table:               usagecleanuptask.ValidColumn,
+			usagelog.Table:                       usagelog.ValidColumn,
+			user.Table:                           user.ValidColumn,
+			userallowedgroup.Table:               userallowedgroup.ValidColumn,
+			userattributedefinition.Table:        userattributedefinition.ValidColumn,
+			userattributevalue.Table:             userattributevalue.ValidColumn,
+			userplatformquota.Table:              userplatformquota.ValidColumn,
+			usersubscription.Table:               usersubscription.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)
