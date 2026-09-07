@@ -12,9 +12,10 @@ const api = vi.hoisted(() => ({
   registerResetQualification: vi.fn(), scheduleResetBatch: vi.fn(), createPlanVersion: vi.fn(),
 }))
 const showSuccess = vi.hoisted(() => vi.fn())
+const listUsers = vi.hoisted(() => vi.fn())
 const i18nTranslations = vi.hoisted(() => new Map<string, string>())
 
-vi.mock('@/api/admin', () => ({ adminAPI: { carpool: api } }))
+vi.mock('@/api/admin', () => ({ adminAPI: { carpool: api, users: { list: listUsers } } }))
 vi.mock('@/stores/app', () => ({ useAppStore: () => ({ showSuccess, showError: vi.fn() }) }))
 vi.mock('vue-i18n', async (importOriginal) => ({
   ...await importOriginal<typeof import('vue-i18n')>(),
@@ -25,13 +26,13 @@ vi.mock('vue-router', () => ({ useRouter: () => ({ push: vi.fn() }) }))
 const plan: CarpoolPlan = {
   plan_id: 3, code: 'four-seat', name: 'Four-seat', version: 1, list_price_cny: '330.00', weekly_quota_usd: '550.00000000',
   cycle_5_quota_usd: null, duration_days: 28, cycle_days: 7, boost_ratio: '0.10000000', boost_amount_usd: '55.00000000',
-  boost_count: 3, rounding_mode: 'half_up', enabled: true, is_latest: true,
+  reset_mode: 'rolling', boost_count: 3, rounding_mode: 'half_up', enabled: true, is_latest: true,
 }
 
 function term(id: number, userId: number): CarpoolAdminTerm {
   return {
     id, user_id: userId, scope_id: 1, group_id: 8, plan_id: plan.plan_id, plan_snapshot: plan,
-    starts_at: '2026-09-01T12:00:00+08:00', expires_at: '2026-09-29T12:00:00+08:00', status: 'active',
+    starts_at: '2026-09-01T12:00:00+08:00', expires_at: '2026-09-29T12:00:00+08:00', next_natural_reset_at: '2026-09-08T12:00:00+08:00', status: 'active',
     boost_used: 0, boost_remaining: 3, history_complete: true, statistics_since: '2026-09-01T12:00:00+08:00',
     payment_net_cny: '0.00', current_cycle: null, created_at: '2026-09-01T12:00:00+08:00',
   }
@@ -50,10 +51,19 @@ function button(wrapper: VueWrapper, text: string, index = 0) {
   return matches[index]
 }
 
+async function mountTermsView() {
+  const wrapper = mount(CarpoolView, { global: { stubs } })
+  await flushPromises()
+  await button(wrapper, 'admin.carpool.tabs.terms').trigger('click')
+  await flushPromises()
+  return wrapper
+}
+
 describe('CarpoolView async identity guards', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     i18nTranslations.clear()
+    listUsers.mockResolvedValue({ items: [], total: 0, page: 1, page_size: 20 })
     api.listPlans.mockResolvedValue([plan])
     api.listTerms.mockResolvedValue({ items: [], total: 0, page: 1, page_size: 20 })
     api.listCycles.mockResolvedValue({ items: [], total: 0, page: 1, page_size: 20 })
@@ -70,14 +80,16 @@ describe('CarpoolView async identity guards', () => {
   it('keeps the newest term load when an older refresh resolves last', async () => {
     let resolveFirst!: (value: { items: CarpoolAdminTerm[]; total: number; page: number; page_size: number }) => void
     api.listTerms
+      .mockResolvedValueOnce({ items: [], total: 0, page: 1, page_size: 20 })
       .mockReturnValueOnce(new Promise((resolve) => { resolveFirst = resolve }))
       .mockResolvedValueOnce({ items: [term(2, 202)], total: 1, page: 1, page_size: 20 })
-    const wrapper = mount(CarpoolView, { global: { stubs } })
-    await flushPromises()
+    const wrapper = await mountTermsView()
 
     await button(wrapper, 'carpool.refresh').trigger('click')
     await flushPromises()
     expect(wrapper.text()).toContain('#202')
+    expect(wrapper.text()).toContain('admin.carpool.columns.nextGrant')
+    expect(wrapper.text()).not.toContain('admin.carpool.noNaturalRefill')
 
     resolveFirst({ items: [term(1, 101)], total: 1, page: 1, page_size: 20 })
     await flushPromises()
@@ -93,8 +105,7 @@ describe('CarpoolView async identity guards', () => {
     api.listTerms.mockResolvedValue({ items: [first, second], total: 2, page: 1, page_size: 20 })
     api.listPayments.mockResolvedValueOnce({ items: [], total: 0, page: 1, page_size: 50 }).mockResolvedValueOnce({ items: [secondHistory], total: 1, page: 1, page_size: 50 })
     api.addPayment.mockReturnValueOnce(new Promise((resolve) => { resolvePayment = resolve }))
-    const wrapper = mount(CarpoolView, { global: { stubs } })
-    await flushPromises()
+    const wrapper = await mountTermsView()
 
     await button(wrapper, 'admin.carpool.actions.payment', 0).trigger('click')
     await flushPromises()
@@ -115,9 +126,11 @@ describe('CarpoolView async identity guards', () => {
   it('closes and clears a successful payment before its refresh resolves', async () => {
     const first = term(1, 101)
     let resolveRefresh!: (value: { items: CarpoolAdminTerm[]; total: number; page: number; page_size: number }) => void
-    api.listTerms.mockResolvedValueOnce({ items: [first], total: 1, page: 1, page_size: 20 }).mockReturnValueOnce(new Promise((resolve) => { resolveRefresh = resolve }))
-    const wrapper = mount(CarpoolView, { global: { stubs } })
-    await flushPromises()
+    api.listTerms
+      .mockResolvedValueOnce({ items: [], total: 0, page: 1, page_size: 20 })
+      .mockResolvedValueOnce({ items: [first], total: 1, page: 1, page_size: 20 })
+      .mockReturnValueOnce(new Promise((resolve) => { resolveRefresh = resolve }))
+    const wrapper = await mountTermsView()
 
     await button(wrapper, 'admin.carpool.actions.payment').trigger('click')
     await flushPromises()
@@ -138,8 +151,7 @@ describe('CarpoolView async identity guards', () => {
     let resolveRenew!: (value: unknown) => void
     api.listTerms.mockResolvedValue({ items: [first], total: 1, page: 1, page_size: 20 })
     api.renewTerm.mockReturnValueOnce(new Promise((resolve) => { resolveRenew = resolve }))
-    const wrapper = mount(CarpoolView, { global: { stubs } })
-    await flushPromises()
+    const wrapper = await mountTermsView()
 
     await button(wrapper, 'admin.carpool.actions.renew', 0).trigger('click')
     await wrapper.get('.dialog form').trigger('submit')
@@ -158,8 +170,7 @@ describe('CarpoolView async identity guards', () => {
     let rejectRenew!: (reason: unknown) => void
     api.listTerms.mockResolvedValue({ items: [first], total: 1, page: 1, page_size: 20 })
     api.renewTerm.mockReturnValueOnce(new Promise((_resolve, reject) => { rejectRenew = reject }))
-    const wrapper = mount(CarpoolView, { global: { stubs } })
-    await flushPromises()
+    const wrapper = await mountTermsView()
 
     await button(wrapper, 'admin.carpool.actions.renew', 0).trigger('click')
     await wrapper.get('.dialog form').trigger('submit')
@@ -179,8 +190,7 @@ describe('CarpoolView async identity guards', () => {
     const disabled = { ...plan, plan_id: 5, code: 'disabled-tier', name: 'Disabled', enabled: false }
     api.listPlans.mockResolvedValue([replacement, disabled])
     api.listTerms.mockResolvedValue({ items: [oldTerm], total: 1, page: 1, page_size: 20 })
-    const wrapper = mount(CarpoolView, { global: { stubs } })
-    await flushPromises()
+    const wrapper = await mountTermsView()
 
     await button(wrapper, 'admin.carpool.actions.renew', 0).trigger('click')
     const select = wrapper.get('.dialog').findComponent({ name: 'Select' })

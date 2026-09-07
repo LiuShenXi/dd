@@ -1,4 +1,30 @@
-# Carpool v1.4 HTTP and Gateway Contract
+# Carpool HTTP and Gateway Contract
+
+## Rolling Refill Revision (2026-09-07)
+
+The [current architecture](../../../sub2api-carpool-architecture.md) supersedes
+fixed-four-cycle requirements and examples below. New standard 28-day snapshots
+expose `reset_mode: "rolling"`; a legacy missing mode means `fixed`.
+
+User `term` adds `reset_mode: "rolling" | "fixed"` and
+`next_natural_reset_at: RFC3339 | null`. Administrator term and opening preview
+also add top-level `next_natural_reset_at`; their plan snapshot exposes reset_mode.
+The timestamp represents a natural refill strictly before membership expiry.
+Return null for expiry-only, expired and terminated states. `reset_window`
+continues to describe qualified special reset, not this natural deadline.
+Pending/future terms expose their known starts_at + seven-day deadline if it is
+strictly before expiry, while user quota remains null until activation.
+
+Opening returns only actually created accounting periods, not four future
+promised grants. A successful special reset atomically updates available base
+quota and the natural deadline without changing membership expiry. All existing
+identity, decimal-string, replay, receipt and ledger contracts remain in force.
+
+`takeover.next_natural_reset_at` is an optional explicit timestamp, valid only
+for rolling takeover with an active period, later than calculation time and no
+more than seven days later. Period coverage is capped at membership expiry.
+Omission uses the existing no-special-reset baseline selected from membership
+start. Preview and opening validate the same input. Ordinary balance is read-only.
 
 All paths below are relative to `/api/v1`. Existing response envelopes and authentication middleware remain unchanged. USD and CNY amounts are JSON decimal strings. Times are RFC3339 instants. All state-changing endpoints require `Idempotency-Key`; replay with the same normalized payload returns the original response, while the same key with a different payload returns `409`. The read-only POST preview is explicitly exempt and creates no operation or financial records.
 
@@ -112,7 +138,7 @@ The response omits term/cycle IDs and expiry. A successful replay returns the or
 }
 ```
 
-`starts_at: null` is evaluated from database time. For a deterministic preview, the response returns `calculated_at` and the resolved `starts_at`. Historical takeover requires `takeover` with `current_base_balance_usd`, `current_boost_balance_usd`, `current_manual_balance_usd`, `boost_used`, `history_complete`, and optional `ordinary_balance_transfer_usd`.
+`starts_at: null` is evaluated from database time. For a deterministic preview, the response returns `calculated_at` and the resolved `starts_at`. Historical takeover requires `takeover` with `current_base_balance_usd`, `current_boost_balance_usd`, `current_manual_balance_usd`, `boost_used`, and `history_complete`. The ordinary user balance is read-only during carpool takeover; omitted or zero `ordinary_balance_transfer_usd` is accepted for compatibility and any non-zero value is rejected.
 
 Preview validates the positive path user ID and the existence of that nondeleted user (invalid ID: 400; unknown user: 404), and rejects disabled or superseded plans. It is a read-only calculation; no `Idempotency-Key` is required or persisted. Each invocation recalculates database time, and a later open with null `starts_at` resolves its own transaction time rather than inheriting the preview time.
 
@@ -138,7 +164,7 @@ Uses the preview body plus `group_id`, `notes`, and optional payment. The backen
 
 Returns the admin term with all four weekly cycles and optional payment. Snapshot price, weekly quota, boost ratio/count/amount and duration/cycle rules. No fifth cycle is created for new28-day terms. The legacy cycle_5_quota_usd field may remain for compatibility, but is not a new-term grant or displayed offering. Overlap remains transactional; old snapshots/ledger are unchanged.
 
-When `history_complete` is true, takeover also requires `historical_used_usd` and `statistics_since`. `ordinary_balance_transfer_usd` is funding attribution for the supplied final current bucket balances, must not exceed their positive net total, and never adds quota a second time.
+When `history_complete` is true, takeover also requires `historical_used_usd` and `statistics_since`. Opening balances are recorded only in the independent carpool ledger and never debit or otherwise mutate `users.balance`.
 
 ### `POST /admin/carpool/plans/:id/versions`
 

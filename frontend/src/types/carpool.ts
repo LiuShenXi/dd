@@ -6,6 +6,7 @@ export type CarpoolResetStatus = 'none' | 'scheduled' | 'executing' | 'delayed' 
 export type CarpoolOpeningMode = 'new' | 'takeover'
 export type CarpoolPaymentKind = 'payment' | 'refund'
 export type CarpoolBucket = 'base' | 'boost' | 'manual'
+export type CarpoolResetMode = 'rolling' | 'fixed'
 
 export interface CarpoolUserCycle {
   cycle_no: number
@@ -18,6 +19,8 @@ export interface CarpoolUserTerm {
   status: CarpoolTermStatus
   starts_at: string
   expires_at: string
+  reset_mode?: CarpoolResetMode
+  next_natural_reset_at?: string | null
   reset_count: number
   reset_count_basis: 'current_term'
   current_cycle_no: number | null
@@ -75,6 +78,7 @@ export interface CarpoolPlan {
   cycle_5_quota_usd?: DecimalString | null
   duration_days: number
   cycle_days: number
+  reset_mode?: CarpoolResetMode
   boost_ratio: DecimalString
   boost_amount_usd: DecimalString
   boost_count: number
@@ -101,6 +105,7 @@ export interface CarpoolTakeoverInput {
   history_complete: boolean
   historical_used_usd?: DecimalString | null
   statistics_since?: string | null
+  next_natural_reset_at?: string | null
   ordinary_balance_transfer_usd?: DecimalString | null
 }
 
@@ -117,6 +122,7 @@ export interface CarpoolPreview {
   plan: CarpoolPlan
   starts_at: string
   expires_at: string
+  next_natural_reset_at?: string | null
   cycles: CarpoolPreviewCycle[]
   warnings: string[]
 }
@@ -174,6 +180,7 @@ export interface CarpoolAdminTerm {
   plan_snapshot: CarpoolPlan
   starts_at: string
   expires_at: string
+  next_natural_reset_at?: string | null
   status: CarpoolTermStatus
   boost_used: number
   boost_remaining: number

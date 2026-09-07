@@ -1,4 +1,20 @@
-# Sub2API Carpool v1.4 PRD
+# Sub2API Carpool PRD
+
+## Approved Rolling Refill Revision (2026-09-07)
+
+The user approved a 28-day membership with rolling seven-day refill deadlines,
+replacing fixed four-cycle scheduling. Successful special reset replaces the
+next natural deadline with effective reset time + seven days; membership expiry
+never moves. This applies even to zero-increment success, but not to failures or
+idempotent replays. The last valid natural period receives full base quota, and
+expiry itself never grants quota.
+
+Read [the current architecture](../../../sub2api-carpool-architecture.md) for
+complete rules, preserved boost/ordinary-balance behavior, API contracts and
+acceptance. There is no live carpool-cycle migration because this feature has
+not launched. The user explicitly requested direct Sol-agent development without
+Trellis. The older requirements below are implementation history where they
+conflict with this revision.
 
 ## Executive Summary
 

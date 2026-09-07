@@ -137,8 +137,15 @@ func (r *CarpoolRepository) CreateTerm(ctx context.Context, params domain.Create
 	if params.Takeover != nil {
 		quantized := params.Takeover.Quantized()
 		params.Takeover = &quantized
+		if params.Takeover.NextNaturalResetAt != nil {
+			value := params.Takeover.NextNaturalResetAt.UTC()
+			params.Takeover.NextNaturalResetAt = &value
+		}
 		if params.Takeover.CurrentBoostBalanceUSD.IsNegative() || params.Takeover.CurrentManualBalanceUSD.IsNegative() {
 			return nil, nil, fmt.Errorf("takeover boost and manual balances cannot be negative")
+		}
+		if !params.Takeover.OrdinaryBalanceTransferUSD.IsZero() {
+			return nil, nil, fmt.Errorf("ordinary balance is read-only during carpool takeover")
 		}
 	}
 	if err = validateOperation(params.Operation, "open_term", "renew_term"); err != nil {
@@ -231,6 +238,13 @@ func (r *CarpoolRepository) CreateTerm(ctx context.Context, params domain.Create
 	if !now.Before(expiresAt) {
 		status = domain.CarpoolTermExpired
 	}
+	if params.Takeover != nil && params.Takeover.NextNaturalResetAt != nil {
+		deadline := *params.Takeover.NextNaturalResetAt
+		if snapshot.EffectiveResetMode() != domain.CarpoolResetModeRolling || status != domain.CarpoolTermActive ||
+			!deadline.After(now) || deadline.After(now.Add(time.Duration(snapshot.CycleDays)*24*time.Hour)) {
+			return nil, nil, service.ErrCarpoolInvalidNaturalReset
+		}
+	}
 	historyComplete := params.Mode != "takeover"
 	boostUsed := 0
 	if params.Takeover != nil {
@@ -240,10 +254,6 @@ func (r *CarpoolRepository) CreateTerm(ctx context.Context, params domain.Create
 		}
 		if params.Takeover.HistoricalUsedUSD != nil && params.Takeover.HistoricalUsedUSD.IsNegative() {
 			return nil, nil, fmt.Errorf("historical_used_usd cannot be negative")
-		}
-		finalNet := params.Takeover.CurrentBaseBalanceUSD.Add(params.Takeover.CurrentBoostBalanceUSD).Add(params.Takeover.CurrentManualBalanceUSD)
-		if params.Takeover.OrdinaryBalanceTransferUSD.IsNegative() || params.Takeover.OrdinaryBalanceTransferUSD.GreaterThan(decimal.Max(finalNet, decimal.Zero)) {
-			return nil, nil, fmt.Errorf("ordinary balance transfer exceeds final takeover balance")
 		}
 	}
 	if boostUsed < 0 || boostUsed > snapshot.BoostCount {
@@ -269,8 +279,13 @@ func (r *CarpoolRepository) CreateTerm(ctx context.Context, params domain.Create
 		return nil, nil, err
 	}
 
-	cycles := make([]domain.CarpoolCycle, 0, 5)
-	for _, spec := range domain.BuildCarpoolCycles(startsAt, snapshot) {
+	var nextNaturalResetAt *time.Time
+	if params.Takeover != nil {
+		nextNaturalResetAt = params.Takeover.NextNaturalResetAt
+	}
+	specs := domain.BuildCarpoolOpeningCycles(startsAt, now, snapshot, nextNaturalResetAt)
+	cycles := make([]domain.CarpoolCycle, 0, len(specs))
+	for _, spec := range specs {
 		state := domain.CarpoolCycleScheduled
 		base, boost, manual := decimal.Zero, decimal.Zero, decimal.Zero
 		if !now.Before(spec.EndsAt) {
@@ -380,23 +395,13 @@ func importTakeoverTx(ctx context.Context, tx *sql.Tx, term *domain.CarpoolTerm,
 		}
 	}
 	if current == nil {
-		if !takeover.CurrentBaseBalanceUSD.IsZero() || !takeover.CurrentBoostBalanceUSD.IsZero() || !takeover.CurrentManualBalanceUSD.IsZero() || takeover.OrdinaryBalanceTransferUSD.IsPositive() {
+		if !takeover.CurrentBaseBalanceUSD.IsZero() || !takeover.CurrentBoostBalanceUSD.IsZero() || !takeover.CurrentManualBalanceUSD.IsZero() {
 			return service.ErrCarpoolUnavailable
 		}
 		if len(cycles) > 0 {
 			current = &cycles[len(cycles)-1]
 		} else {
 			return service.ErrCarpoolUnavailable
-		}
-	}
-	remainingTransfer := takeover.OrdinaryBalanceTransferUSD
-	if remainingTransfer.IsPositive() {
-		var newBalance string
-		if err := tx.QueryRowContext(ctx, `UPDATE users SET balance=balance-$1,updated_at=NOW() WHERE id=$2 AND deleted_at IS NULL AND balance >= $1 RETURNING balance::text`, remainingTransfer.StringFixed(8), term.UserID).Scan(&newBalance); err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return service.ErrCarpoolQuotaExhausted
-			}
-			return err
 		}
 	}
 	for _, grant := range []struct {
@@ -406,25 +411,9 @@ func importTakeoverTx(ctx context.Context, tx *sql.Tx, term *domain.CarpoolTerm,
 		if grant.amount.IsZero() {
 			continue
 		}
-		funded := decimal.Zero
-		if grant.amount.IsPositive() && remainingTransfer.IsPositive() {
-			funded = decimal.Min(grant.amount, remainingTransfer)
-			remainingTransfer = remainingTransfer.Sub(funded)
+		if err := insertLedgerTx(ctx, tx, term.UserID, term.ID, current.ID, "takeover_opening", grant.bucket, grant.amount, fmt.Sprintf("takeover:%d:%s:opening", term.ID, grant.bucket), nil, nil, nil, nil, &actorID, nil, "historical takeover opening balance", now); err != nil {
+			return err
 		}
-		if funded.IsPositive() {
-			if err := insertLedgerTx(ctx, tx, term.UserID, term.ID, current.ID, "takeover_transfer_funded", grant.bucket, funded, fmt.Sprintf("takeover:%d:%s:transfer", term.ID, grant.bucket), nil, nil, nil, nil, &actorID, nil, "opening balance funded from ordinary balance", now); err != nil {
-				return err
-			}
-		}
-		independent := grant.amount.Sub(funded)
-		if !independent.IsZero() {
-			if err := insertLedgerTx(ctx, tx, term.UserID, term.ID, current.ID, "takeover_opening", grant.bucket, independent, fmt.Sprintf("takeover:%d:%s:opening", term.ID, grant.bucket), nil, nil, nil, nil, &actorID, nil, "historical takeover opening balance", now); err != nil {
-				return err
-			}
-		}
-	}
-	if remainingTransfer.IsPositive() {
-		return fmt.Errorf("ordinary balance transfer could not be attributed")
 	}
 	if takeover.HistoricalUsedUSD != nil && takeover.HistoricalUsedUSD.IsPositive() {
 		used := takeover.HistoricalUsedUSD.Round(8)
@@ -467,7 +456,8 @@ func ensureCurrentCycleTx(ctx context.Context, tx *sql.Tx, termID int64, at time
 	var userID int64
 	var status string
 	var startsAt, expiresAt time.Time
-	if err := tx.QueryRowContext(ctx, `SELECT user_id,status,starts_at,expires_at FROM carpool_terms WHERE id=$1 FOR UPDATE`, termID).Scan(&userID, &status, &startsAt, &expiresAt); err != nil {
+	var snapshotJSON string
+	if err := tx.QueryRowContext(ctx, `SELECT user_id,status,starts_at,expires_at,plan_snapshot::text FROM carpool_terms WHERE id=$1 FOR UPDATE`, termID).Scan(&userID, &status, &startsAt, &expiresAt, &snapshotJSON); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, service.ErrCarpoolNotFound
 		}
@@ -491,6 +481,11 @@ func ensureCurrentCycleTx(ctx context.Context, tx *sql.Tx, termID int64, at time
 	if at.Before(startsAt) {
 		return nil, service.ErrCarpoolUnavailable
 	}
+	var snapshot domain.CarpoolPlanSnapshot
+	if err := json.Unmarshal([]byte(snapshotJSON), &snapshot); err != nil {
+		return nil, err
+	}
+	snapshot.NormalizeResetMode()
 	if _, err := tx.ExecContext(ctx, `UPDATE carpool_cycles SET state='missed',updated_at=NOW(),revision=revision+1 WHERE term_id=$1 AND state='scheduled' AND ends_at <= $2`, termID, at); err != nil {
 		return nil, err
 	}
@@ -498,7 +493,10 @@ func ensureCurrentCycleTx(ctx context.Context, tx *sql.Tx, termID int64, at time
 		return nil, err
 	}
 
-	cycle, err := scanCarpoolCycle(tx.QueryRowContext(ctx, `SELECT id,term_id,cycle_no,starts_at,ends_at,base_quota_usd::text,base_balance_usd::text,boost_balance_usd::text,manual_balance_usd::text,state,revision FROM carpool_cycles WHERE term_id=$1 AND starts_at <= $2 AND ends_at > $2 FOR UPDATE`, termID, at))
+	cycle, err := scanCarpoolCycle(tx.QueryRowContext(ctx, cycleSelect+` WHERE term_id=$1 AND starts_at <= $2 AND ends_at > $2 FOR UPDATE`, termID, at))
+	if errors.Is(err, service.ErrCarpoolNotFound) && snapshot.EffectiveResetMode() == domain.CarpoolResetModeRolling {
+		cycle, err = createCurrentRollingCycleTx(ctx, tx, termID, userID, expiresAt, at, snapshot)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -518,6 +516,49 @@ func ensureCurrentCycleTx(ctx context.Context, tx *sql.Tx, termID int64, at time
 		return nil, err
 	}
 	return cycle, nil
+}
+
+func createCurrentRollingCycleTx(ctx context.Context, tx *sql.Tx, termID, userID int64, expiresAt, at time.Time, snapshot domain.CarpoolPlanSnapshot) (*domain.CarpoolCycle, error) {
+	last, err := scanCarpoolCycle(tx.QueryRowContext(ctx, cycleSelect+` WHERE term_id=$1 ORDER BY cycle_no DESC LIMIT 1 FOR UPDATE`, termID))
+	if err != nil {
+		return nil, err
+	}
+	period := time.Duration(snapshot.CycleDays) * 24 * time.Hour
+	if period <= 0 {
+		return nil, service.ErrCarpoolUnavailable
+	}
+	for !at.Before(last.EndsAt) && last.EndsAt.Before(expiresAt) {
+		startsAt := last.EndsAt
+		endsAt := startsAt.Add(period)
+		if endsAt.After(expiresAt) {
+			endsAt = expiresAt
+		}
+		state := domain.CarpoolCycleActive
+		base := snapshot.WeeklyQuotaUSD.Round(8)
+		var activatedAt *time.Time
+		if !at.Before(endsAt) {
+			state = domain.CarpoolCycleMissed
+			base = decimal.Zero
+		} else {
+			activated := at
+			activatedAt = &activated
+		}
+		next := &domain.CarpoolCycle{
+			TermID: termID, CycleNo: last.CycleNo + 1, StartsAt: startsAt, EndsAt: endsAt,
+			BaseQuotaUSD: snapshot.WeeklyQuotaUSD.Round(8), BaseBalanceUSD: base, State: state,
+		}
+		if err = tx.QueryRowContext(ctx, `INSERT INTO carpool_cycles(term_id,cycle_no,starts_at,ends_at,base_quota_usd,base_balance_usd,boost_balance_usd,manual_balance_usd,state,activated_at) VALUES($1,$2,$3,$4,$5,$6,0,0,$7,$8) RETURNING id`, termID, next.CycleNo, startsAt, endsAt, next.BaseQuotaUSD.StringFixed(8), base.StringFixed(8), state, activatedAt).Scan(&next.ID); err != nil {
+			return nil, err
+		}
+		if state == domain.CarpoolCycleActive {
+			if err = insertLedgerTx(ctx, tx, userID, termID, next.ID, "cycle_initial", domain.CarpoolBucketBase, next.BaseQuotaUSD, fmt.Sprintf("cycle_initial:%d", next.ID), nil, nil, nil, nil, nil, nil, "natural rolling refill", startsAt); err != nil {
+				return nil, err
+			}
+			return next, nil
+		}
+		last = next
+	}
+	return nil, service.ErrCarpoolNotFound
 }
 
 func scanCarpoolCycle(row carpoolRowScanner) (*domain.CarpoolCycle, error) {

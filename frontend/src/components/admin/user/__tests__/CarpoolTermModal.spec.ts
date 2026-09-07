@@ -42,6 +42,7 @@ const plan: CarpoolPlan = {
   cycle_5_quota_usd: null,
   duration_days: 28,
   cycle_days: 7,
+  reset_mode: 'rolling',
   boost_ratio: '0.10000000',
   boost_amount_usd: '55.00000000',
   boost_count: 3,
@@ -59,6 +60,7 @@ const activeTerm: CarpoolAdminTerm = {
   plan_snapshot: plan,
   starts_at: '2026-09-01T12:00:00+08:00',
   expires_at: '2026-09-29T12:00:00+08:00',
+  next_natural_reset_at: '2026-09-08T12:00:00+08:00',
   status: 'active',
   boost_used: 0,
   boost_remaining: 3,
@@ -112,11 +114,12 @@ describe('CarpoolTermModal', () => {
     await inputFor(wrapper, 'admin.carpool.takeover.baseBalance').setValue('10.00000000')
     await inputFor(wrapper, 'admin.carpool.takeover.boostBalance').setValue('2.00000000')
     await inputFor(wrapper, 'admin.carpool.takeover.manualBalance').setValue('3.00000000')
-    await inputFor(wrapper, 'admin.carpool.takeover.transfer').setValue('1.00000000')
+    expect(wrapper.text()).not.toContain('admin.carpool.takeover.transfer')
     await inputFor(wrapper, 'admin.carpool.takeover.boostUsed').setValue('1')
     await inputFor(wrapper, 'admin.carpool.takeover.historyComplete').setValue(true)
     await inputFor(wrapper, 'admin.carpool.takeover.historicalUsed').setValue('4.00000000')
     await inputFor(wrapper, 'admin.carpool.takeover.statisticsSince').setValue('2026-09-02T10:30')
+    await inputFor(wrapper, 'admin.carpool.takeover.nextNaturalRefill').setValue('2026-09-08T12:00')
 
     await wrapper.get('form').trigger('submit')
     await flushPromises()
@@ -134,11 +137,11 @@ describe('CarpoolTermModal', () => {
         current_base_balance_usd: '10',
         current_boost_balance_usd: '2',
         current_manual_balance_usd: '3',
-        ordinary_balance_transfer_usd: '1',
         boost_used: 1,
         history_complete: true,
         historical_used_usd: '4',
         statistics_since: '2026-09-02T02:30:00.000Z',
+        next_natural_reset_at: '2026-09-08T04:00:00.000Z',
       },
       notes: null,
       payment: null,
@@ -248,6 +251,40 @@ describe('CarpoolTermModal', () => {
     initialActionLabels.forEach(([, label], index) => expect(rows[index].findAll('td')[3].text()).toBe(label))
     expect(rows[initialActionLabels.length].findAll('td')[3].text()).toBe('future_action')
     expect(wrapper.text()).toContain('Server warning remains unchanged')
+  })
+
+  it('previews only actual opening periods with membership dates and the next natural refill', async () => {
+    i18nTranslations.set('admin.carpool.columns.nextGrant', 'Next natural refill')
+    api.previewTerm.mockResolvedValue({
+      calculated_at: activeTerm.starts_at,
+      mode: 'new',
+      plan,
+      starts_at: activeTerm.starts_at,
+      expires_at: activeTerm.expires_at,
+      next_natural_reset_at: activeTerm.next_natural_reset_at,
+      cycles: [{
+        cycle_no: 1,
+        starts_at: activeTerm.starts_at,
+        ends_at: activeTerm.next_natural_reset_at!,
+        base_quota_usd: plan.weekly_quota_usd,
+        initial_action: 'grant',
+      }],
+      warnings: [],
+    })
+    const wrapper = mount(CarpoolTermModal, { props: { show: true, user }, global: { stubs } })
+    await flushPromises()
+
+    await button(wrapper, 'admin.carpool.preview.action').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.get('tbody').findAll('tr')).toHaveLength(1)
+    expect(wrapper.get('[data-testid="admin-carpool-preview-next-refill"]').text()).toContain('Next natural refill')
+    expect(wrapper.get('[data-testid="admin-carpool-preview-next-refill"]').text()).not.toContain('admin.carpool.noNaturalRefill')
+  })
+
+  it('removes fixed-cycle promises from both localized preview actions', () => {
+    expect(zhAdminCarpool.carpool.preview.action).toBe('预览开通结果')
+    expect(enAdminCarpool.carpool.preview.action).toBe('Preview opening')
   })
 
   it('tracks the selected plan price until the operator edits the payment amount', async () => {

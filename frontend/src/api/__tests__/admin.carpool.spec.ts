@@ -30,11 +30,11 @@ describe('carpool admin API', () => {
       current_base_balance_usd: '10.00000000',
       current_boost_balance_usd: '2.00000000',
       current_manual_balance_usd: '3.00000000',
-      ordinary_balance_transfer_usd: '1.00000000',
       boost_used: 1,
       history_complete: true,
       historical_used_usd: '4.00000000',
       statistics_since: '2026-09-01T00:00:00+08:00',
+      next_natural_reset_at: '2026-09-08T00:00:00+08:00',
     }
     const opening = { plan_id: 3, group_id: 8, starts_at: null, mode: 'takeover' as const, takeover, notes: null, payment: null }
 

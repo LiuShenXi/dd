@@ -106,6 +106,7 @@ func scanCarpoolTerm(row carpoolRowScanner) (*domain.CarpoolTerm, error) {
 	if err := json.Unmarshal([]byte(snapshot), &term.PlanSnapshot); err != nil {
 		return nil, err
 	}
+	term.PlanSnapshot.NormalizeResetMode()
 	return &term, nil
 }
 
@@ -446,6 +447,7 @@ func (r *CarpoolRepository) claimBoostOnce(ctx context.Context, userID int64, ke
 	if err = json.Unmarshal([]byte(snapshotJSON), &snapshot); err != nil {
 		return nil, err
 	}
+	snapshot.NormalizeResetMode()
 	if used >= snapshot.BoostCount {
 		return nil, service.ErrCarpoolBoostExhausted
 	}
@@ -512,6 +514,7 @@ func (r *CarpoolRepository) GetBoostStatus(ctx context.Context, userID int64) (*
 	if err = json.Unmarshal([]byte(snapshotJSON), &snapshot); err != nil {
 		return nil, err
 	}
+	snapshot.NormalizeResetMode()
 	remaining := snapshot.BoostCount - used
 	result := &domain.CarpoolBoostStatus{Eligible: true, Remaining: remaining, Total: snapshot.BoostCount, AmountUSD: snapshot.BoostAmountUSD, HelpText: boostHelpText(snapshot)}
 	if status == domain.CarpoolTermTerminated {

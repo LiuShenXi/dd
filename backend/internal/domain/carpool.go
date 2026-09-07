@@ -28,6 +28,9 @@ const (
 
 	CarpoolBillingResolutionNoCost     = "no_cost"
 	CarpoolBillingResolutionActualCost = "actual_cost"
+
+	CarpoolResetModeFixed   = "fixed"
+	CarpoolResetModeRolling = "rolling"
 )
 
 type CarpoolPlanSnapshot struct {
@@ -45,6 +48,20 @@ type CarpoolPlanSnapshot struct {
 	BoostCount     int             `json:"boost_count"`
 	RoundingMode   string          `json:"rounding_mode"`
 	Enabled        bool            `json:"enabled"`
+	ResetMode      string          `json:"reset_mode"`
+}
+
+func (s CarpoolPlanSnapshot) EffectiveResetMode() string {
+	if s.ResetMode == CarpoolResetModeRolling {
+		return CarpoolResetModeRolling
+	}
+	return CarpoolResetModeFixed
+}
+
+func (s *CarpoolPlanSnapshot) NormalizeResetMode() {
+	if s != nil {
+		s.ResetMode = s.EffectiveResetMode()
+	}
 }
 
 type CarpoolPlan struct {
@@ -82,7 +99,15 @@ func (p CarpoolPlan) Snapshot() CarpoolPlanSnapshot {
 		BoostCount:     p.BoostCount,
 		RoundingMode:   "half_up",
 		Enabled:        p.Enabled,
+		ResetMode:      resetModeForNewSnapshot(p.DurationDays),
 	}
+}
+
+func resetModeForNewSnapshot(durationDays int) string {
+	if durationDays == 28 {
+		return CarpoolResetModeRolling
+	}
+	return CarpoolResetModeFixed
 }
 
 func (p CarpoolPlan) AdminProjection() CarpoolAdminPlan {
@@ -120,6 +145,41 @@ func BuildCarpoolCycles(startsAt time.Time, snapshot CarpoolPlanSnapshot) []Carp
 		cycles = append(cycles, CarpoolCycleSpec{CycleNo: cycleNo, StartsAt: cycleStart, EndsAt: cycleEnd, BaseQuotaUSD: quota.Round(8)})
 	}
 	return cycles
+}
+
+func BuildCarpoolOpeningCycles(startsAt, at time.Time, snapshot CarpoolPlanSnapshot, nextNaturalResetAt *time.Time) []CarpoolCycleSpec {
+	if snapshot.EffectiveResetMode() != CarpoolResetModeRolling {
+		return BuildCarpoolCycles(startsAt, snapshot)
+	}
+	period := time.Duration(snapshot.CycleDays) * 24 * time.Hour
+	expiresAt := startsAt.Add(time.Duration(snapshot.DurationDays) * 24 * time.Hour)
+	if period <= 0 || !startsAt.Before(expiresAt) {
+		return nil
+	}
+	endsAt := startsAt.Add(period)
+	if endsAt.After(expiresAt) {
+		endsAt = expiresAt
+	}
+	specs := []CarpoolCycleSpec{{CycleNo: 1, StartsAt: startsAt, EndsAt: endsAt, BaseQuotaUSD: snapshot.WeeklyQuotaUSD.Round(8)}}
+	if at.Before(startsAt) || !at.Before(expiresAt) {
+		return specs
+	}
+	for !at.Before(specs[len(specs)-1].EndsAt) && specs[len(specs)-1].EndsAt.Before(expiresAt) {
+		start := specs[len(specs)-1].EndsAt
+		end := start.Add(period)
+		if end.After(expiresAt) {
+			end = expiresAt
+		}
+		specs = append(specs, CarpoolCycleSpec{CycleNo: len(specs) + 1, StartsAt: start, EndsAt: end, BaseQuotaUSD: snapshot.WeeklyQuotaUSD.Round(8)})
+	}
+	if nextNaturalResetAt != nil {
+		deadline := nextNaturalResetAt.UTC()
+		if deadline.After(expiresAt) {
+			deadline = expiresAt
+		}
+		specs[len(specs)-1].EndsAt = deadline
+	}
+	return specs
 }
 
 type CarpoolTerm struct {
@@ -218,6 +278,7 @@ type CarpoolTakeoverInput struct {
 	StatisticsSince            *time.Time       `json:"statistics_since"`
 	BoostUsed                  int              `json:"boost_used"`
 	HistoryComplete            bool             `json:"history_complete"`
+	NextNaturalResetAt         *time.Time       `json:"next_natural_reset_at"`
 }
 
 func (t CarpoolTakeoverInput) Quantized() CarpoolTakeoverInput {
@@ -297,14 +358,16 @@ type CarpoolUserCycle struct {
 }
 
 type CarpoolUserTerm struct {
-	Status          string                  `json:"status"`
-	StartsAt        time.Time               `json:"starts_at"`
-	ExpiresAt       time.Time               `json:"expires_at"`
-	ResetCount      int                     `json:"reset_count"`
-	ResetCountBasis string                  `json:"reset_count_basis"`
-	ResetEvents     []CarpoolUserResetEvent `json:"reset_events"`
-	CurrentCycleNo  *int                    `json:"current_cycle_no"`
-	Cycles          []CarpoolUserCycle      `json:"cycles"`
+	Status             string                  `json:"status"`
+	StartsAt           time.Time               `json:"starts_at"`
+	ExpiresAt          time.Time               `json:"expires_at"`
+	ResetCount         int                     `json:"reset_count"`
+	ResetCountBasis    string                  `json:"reset_count_basis"`
+	ResetEvents        []CarpoolUserResetEvent `json:"reset_events"`
+	CurrentCycleNo     *int                    `json:"current_cycle_no"`
+	Cycles             []CarpoolUserCycle      `json:"cycles"`
+	ResetMode          string                  `json:"reset_mode"`
+	NextNaturalResetAt *time.Time              `json:"next_natural_reset_at"`
 }
 
 type CarpoolUserResetEvent struct {
@@ -335,24 +398,25 @@ type CarpoolUserDetails struct {
 }
 
 type CarpoolAdminTerm struct {
-	ID              int64               `json:"id"`
-	UserID          int64               `json:"user_id"`
-	ScopeID         int64               `json:"scope_id"`
-	GroupID         int64               `json:"group_id"`
-	PlanID          int64               `json:"plan_id"`
-	PlanSnapshot    CarpoolPlanSnapshot `json:"plan_snapshot"`
-	StartsAt        time.Time           `json:"starts_at"`
-	ExpiresAt       time.Time           `json:"expires_at"`
-	Status          string              `json:"status"`
-	BoostUsed       int                 `json:"boost_used"`
-	BoostRemaining  int                 `json:"boost_remaining"`
-	HistoryComplete bool                `json:"history_complete"`
-	StatisticsSince *time.Time          `json:"statistics_since"`
-	PaymentNetCNY   decimal.Decimal     `json:"payment_net_cny"`
-	CurrentCycle    *CarpoolAdminCycle  `json:"current_cycle"`
-	Cycles          []CarpoolAdminCycle `json:"cycles,omitempty"`
-	Payments        []CarpoolPayment    `json:"payments,omitempty"`
-	CreatedAt       time.Time           `json:"created_at"`
+	ID                 int64               `json:"id"`
+	UserID             int64               `json:"user_id"`
+	ScopeID            int64               `json:"scope_id"`
+	GroupID            int64               `json:"group_id"`
+	PlanID             int64               `json:"plan_id"`
+	PlanSnapshot       CarpoolPlanSnapshot `json:"plan_snapshot"`
+	StartsAt           time.Time           `json:"starts_at"`
+	ExpiresAt          time.Time           `json:"expires_at"`
+	Status             string              `json:"status"`
+	BoostUsed          int                 `json:"boost_used"`
+	BoostRemaining     int                 `json:"boost_remaining"`
+	HistoryComplete    bool                `json:"history_complete"`
+	StatisticsSince    *time.Time          `json:"statistics_since"`
+	PaymentNetCNY      decimal.Decimal     `json:"payment_net_cny"`
+	CurrentCycle       *CarpoolAdminCycle  `json:"current_cycle"`
+	Cycles             []CarpoolAdminCycle `json:"cycles,omitempty"`
+	Payments           []CarpoolPayment    `json:"payments,omitempty"`
+	CreatedAt          time.Time           `json:"created_at"`
+	NextNaturalResetAt *time.Time          `json:"next_natural_reset_at"`
 }
 
 type CarpoolAdminCycle struct {
@@ -443,4 +507,31 @@ type CarpoolTermPreview struct {
 	Cycles                      []CarpoolPreviewCycle `json:"cycles"`
 	Warnings                    []string              `json:"warnings"`
 	OrdinaryBalanceDeductionUSD decimal.Decimal       `json:"ordinary_balance_deduction_usd"`
+	NextNaturalResetAt          *time.Time            `json:"next_natural_reset_at"`
+}
+
+func CarpoolNextNaturalResetAt(status string, expiresAt, at time.Time, cycles []CarpoolCycle) *time.Time {
+	if status == CarpoolTermExpired || status == CarpoolTermTerminated || !at.Before(expiresAt) {
+		return nil
+	}
+	for _, cycle := range cycles {
+		if cycle.EndsAt.Before(expiresAt) && (at.Before(cycle.StartsAt) || (at.Before(cycle.EndsAt) && !at.Before(cycle.StartsAt))) {
+			deadline := cycle.EndsAt
+			return &deadline
+		}
+	}
+	return nil
+}
+
+func CarpoolProjectedNextNaturalResetAt(status string, expiresAt time.Time, cycles []CarpoolCycle) *time.Time {
+	if status == CarpoolTermExpired || status == CarpoolTermTerminated {
+		return nil
+	}
+	for _, cycle := range cycles {
+		if (cycle.State == CarpoolCycleActive || cycle.State == CarpoolCycleScheduled) && cycle.EndsAt.Before(expiresAt) {
+			deadline := cycle.EndsAt
+			return &deadline
+		}
+	}
+	return nil
 }

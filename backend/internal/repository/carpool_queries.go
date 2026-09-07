@@ -101,7 +101,7 @@ func (r *CarpoolRepository) GetUserDetails(ctx context.Context, userID int64) (*
 	if err != nil {
 		return nil, err
 	}
-	userTerm := &domain.CarpoolUserTerm{Status: effectiveStatus, StartsAt: term.StartsAt, ExpiresAt: term.ExpiresAt, ResetCountBasis: "current_term", ResetEvents: make([]domain.CarpoolUserResetEvent, 0), Cycles: make([]domain.CarpoolUserCycle, 0, len(cycles))}
+	userTerm := &domain.CarpoolUserTerm{Status: effectiveStatus, StartsAt: term.StartsAt, ExpiresAt: term.ExpiresAt, ResetCountBasis: "current_term", ResetEvents: make([]domain.CarpoolUserResetEvent, 0), Cycles: make([]domain.CarpoolUserCycle, 0, len(cycles)), ResetMode: term.PlanSnapshot.EffectiveResetMode(), NextNaturalResetAt: domain.CarpoolNextNaturalResetAt(effectiveStatus, term.ExpiresAt, details.ServerNow, cycles)}
 	for _, cycle := range cycles {
 		userTerm.Cycles = append(userTerm.Cycles, domain.CarpoolUserCycle{CycleNo: cycle.CycleNo, StartsAt: cycle.StartsAt, EndsAt: cycle.EndsAt, Status: cycle.State})
 		if effectiveStatus == domain.CarpoolTermActive && cycle.State == domain.CarpoolCycleActive && !details.ServerNow.Before(cycle.StartsAt) && details.ServerNow.Before(cycle.EndsAt) {
@@ -184,6 +184,10 @@ func appendFilter(where *[]string, args *[]any, expression string, value any) {
 
 func (r *CarpoolRepository) ListAdminTerms(ctx context.Context, filters domain.CarpoolTermFilters) ([]domain.CarpoolAdminTerm, int64, error) {
 	normalizePage(&filters.Page, &filters.PageSize)
+	var projectionAt time.Time
+	if err := r.db.QueryRowContext(ctx, `SELECT clock_timestamp()`).Scan(&projectionAt); err != nil {
+		return nil, 0, err
+	}
 	where := []string{"1=1"}
 	args := []any{}
 	if filters.UserID != nil {
@@ -193,7 +197,11 @@ func (r *CarpoolRepository) ListAdminTerms(ctx context.Context, filters domain.C
 		appendFilter(&where, &args, "t.plan_id=$%d", *filters.PlanID)
 	}
 	if filters.Status != "" {
-		appendFilter(&where, &args, "t.status=$%d", filters.Status)
+		args = append(args, projectionAt)
+		clockArg := len(args)
+		args = append(args, filters.Status)
+		statusArg := len(args)
+		where = append(where, fmt.Sprintf(`CASE WHEN t.status='terminated' THEN 'terminated' WHEN t.starts_at > $%d THEN 'pending' WHEN t.expires_at <= $%d THEN 'expired' ELSE 'active' END=$%d`, clockArg, clockArg, statusArg))
 	}
 	if filters.StartsFrom != nil {
 		appendFilter(&where, &args, "t.starts_at >= $%d", *filters.StartsFrom)
@@ -222,6 +230,7 @@ func (r *CarpoolRepository) ListAdminTerms(ctx context.Context, filters domain.C
 		if err = json.Unmarshal([]byte(snapshot), &item.PlanSnapshot); err != nil {
 			return nil, 0, err
 		}
+		item.PlanSnapshot.NormalizeResetMode()
 		item.BoostRemaining = item.PlanSnapshot.BoostCount - item.BoostUsed
 		item.PaymentNetCNY, err = decimal.NewFromString(payment)
 		if err != nil {
@@ -238,14 +247,67 @@ func (r *CarpoolRepository) ListAdminTerms(ctx context.Context, filters domain.C
 	}
 	for i := range out {
 		termID := out[i].ID
-		active := domain.CarpoolCycleActive
-		cycles, _, listErr := r.ListAdminCycles(ctx, domain.CarpoolCycleFilters{Page: 1, PageSize: 1, TermID: &termID, State: active})
+		termProjectionAt := projectionAt
+		effectiveStatus := out[i].Status
+		var ensuredCycle *domain.CarpoolCycle
+		if effectiveStatus != domain.CarpoolTermTerminated {
+			switch {
+			case termProjectionAt.Before(out[i].StartsAt):
+				effectiveStatus = domain.CarpoolTermPending
+			case !termProjectionAt.Before(out[i].ExpiresAt):
+				effectiveStatus = domain.CarpoolTermExpired
+			default:
+				effectiveStatus = domain.CarpoolTermActive
+			}
+		}
+		if effectiveStatus == domain.CarpoolTermActive {
+			resolved := false
+			for attempt := 0; attempt < 4; attempt++ {
+				current, currentAt, ensureErr := r.ensureCurrentCycleForUserDetails(ctx, termID)
+				termProjectionAt = currentAt
+				if errors.Is(ensureErr, errCarpoolCycleBoundaryMoved) {
+					continue
+				}
+				if errors.Is(ensureErr, service.ErrCarpoolUnavailable) {
+					fresh, getErr := r.GetTerm(ctx, termID)
+					if getErr != nil {
+						return nil, 0, getErr
+					}
+					effectiveStatus = fresh.Status
+					if effectiveStatus != domain.CarpoolTermTerminated && !termProjectionAt.Before(fresh.ExpiresAt) {
+						effectiveStatus = domain.CarpoolTermExpired
+					}
+					resolved = true
+					break
+				}
+				if ensureErr != nil {
+					return nil, 0, ensureErr
+				}
+				ensuredCycle = current
+				effectiveStatus = domain.CarpoolTermActive
+				resolved = true
+				break
+			}
+			if !resolved {
+				return nil, 0, fmt.Errorf("read admin carpool terms: %w", errCarpoolCycleBoundaryMoved)
+			}
+		}
+		out[i].Status = effectiveStatus
+		cyclesForDeadline, listErr := r.ListTermCycles(ctx, termID)
 		if listErr != nil {
 			return nil, 0, listErr
 		}
-		if len(cycles) == 1 {
-			current := cycles[0]
-			out[i].CurrentCycle = &current
+		out[i].NextNaturalResetAt = domain.CarpoolNextNaturalResetAt(effectiveStatus, out[i].ExpiresAt, termProjectionAt, cyclesForDeadline)
+		if effectiveStatus == domain.CarpoolTermActive && ensuredCycle != nil && !termProjectionAt.Before(ensuredCycle.StartsAt) && termProjectionAt.Before(ensuredCycle.EndsAt) {
+			active := domain.CarpoolCycleActive
+			cycles, _, listErr := r.ListAdminCycles(ctx, domain.CarpoolCycleFilters{Page: 1, PageSize: 1, TermID: &termID, State: active})
+			if listErr != nil {
+				return nil, 0, listErr
+			}
+			if len(cycles) == 1 && cycles[0].ID == ensuredCycle.ID {
+				current := cycles[0]
+				out[i].CurrentCycle = &current
+			}
 		}
 	}
 	return out, total, nil

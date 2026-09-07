@@ -289,8 +289,15 @@ func (s *CarpoolService) Preview(ctx context.Context, userID, planID int64, star
 	if takeover != nil {
 		quantized := takeover.Quantized()
 		takeover = &quantized
+		if takeover.NextNaturalResetAt != nil {
+			value := takeover.NextNaturalResetAt.UTC()
+			takeover.NextNaturalResetAt = &value
+		}
 		if takeover.CurrentBoostBalanceUSD.IsNegative() || takeover.CurrentManualBalanceUSD.IsNegative() {
 			return nil, infraerrors.BadRequest("CARPOOL_TAKEOVER_BUCKET_INVALID", "takeover boost and manual balances cannot be negative")
+		}
+		if !takeover.OrdinaryBalanceTransferUSD.IsZero() {
+			return nil, infraerrors.BadRequest("CARPOOL_ORDINARY_BALANCE_READ_ONLY", "ordinary balance is read-only during carpool takeover")
 		}
 		if takeover.HistoricalUsedUSD != nil && takeover.HistoricalUsedUSD.IsNegative() {
 			return nil, fmt.Errorf("historical_used_usd cannot be negative")
@@ -309,21 +316,28 @@ func (s *CarpoolService) Preview(ctx context.Context, userID, planID int64, star
 		return nil, err
 	}
 	snapshot := plan.Snapshot()
+	expiresAt := start.Add(time.Duration(snapshot.DurationDays) * 24 * time.Hour)
 	if takeover != nil && (takeover.BoostUsed < 0 || takeover.BoostUsed > snapshot.BoostCount) {
 		return nil, fmt.Errorf("invalid boost_used")
 	}
-	preview := &domain.CarpoolTermPreview{CalculatedAt: now, Mode: mode, Plan: snapshot, StartsAt: start, ExpiresAt: start.Add(time.Duration(snapshot.DurationDays) * 24 * time.Hour), Warnings: []string{}, OrdinaryBalanceDeductionUSD: decimal.Zero}
-	if takeover != nil {
-		finalNet := takeover.CurrentBaseBalanceUSD.Add(takeover.CurrentBoostBalanceUSD).Add(takeover.CurrentManualBalanceUSD)
-		if takeover.OrdinaryBalanceTransferUSD.IsNegative() || takeover.OrdinaryBalanceTransferUSD.GreaterThan(decimal.Max(finalNet, decimal.Zero)) {
-			return nil, fmt.Errorf("ordinary balance transfer exceeds final takeover balance")
+	if takeover != nil && takeover.NextNaturalResetAt != nil {
+		deadline := *takeover.NextNaturalResetAt
+		if snapshot.EffectiveResetMode() != domain.CarpoolResetModeRolling || now.Before(start) || !now.Before(expiresAt) ||
+			!deadline.After(now) || deadline.After(now.Add(time.Duration(snapshot.CycleDays)*24*time.Hour)) {
+			return nil, ErrCarpoolInvalidNaturalReset
 		}
-		preview.OrdinaryBalanceDeductionUSD = takeover.OrdinaryBalanceTransferUSD
+	}
+	preview := &domain.CarpoolTermPreview{CalculatedAt: now, Mode: mode, Plan: snapshot, StartsAt: start, ExpiresAt: expiresAt, Warnings: []string{}, OrdinaryBalanceDeductionUSD: decimal.Zero}
+	if takeover != nil {
 		if takeover.HistoryComplete && (takeover.HistoricalUsedUSD == nil || takeover.StatisticsSince == nil) {
 			return nil, fmt.Errorf("complete takeover history requires historical fields")
 		}
 	}
-	for _, spec := range domain.BuildCarpoolCycles(start, snapshot) {
+	var takeoverDeadline *time.Time
+	if takeover != nil {
+		takeoverDeadline = takeover.NextNaturalResetAt
+	}
+	for _, spec := range domain.BuildCarpoolOpeningCycles(start, now, snapshot, takeoverDeadline) {
 		action := "scheduled"
 		if !now.Before(spec.EndsAt) {
 			action = "missed"
@@ -335,6 +349,10 @@ func (s *CarpoolService) Preview(ctx context.Context, userID, planID int64, star
 			}
 		}
 		preview.Cycles = append(preview.Cycles, domain.CarpoolPreviewCycle{CycleNo: spec.CycleNo, StartsAt: spec.StartsAt, EndsAt: spec.EndsAt, BaseQuotaUSD: spec.BaseQuotaUSD, InitialAction: action})
+		if preview.NextNaturalResetAt == nil && now.Before(expiresAt) && spec.EndsAt.Before(expiresAt) && (now.Before(spec.StartsAt) || now.Before(spec.EndsAt)) {
+			deadline := spec.EndsAt
+			preview.NextNaturalResetAt = &deadline
+		}
 	}
 	return preview, nil
 }
@@ -368,7 +386,8 @@ func (s *CarpoolService) Renew(ctx context.Context, termID, actorID int64, input
 }
 
 func adminTermFrom(term *domain.CarpoolTerm, cycles []domain.CarpoolCycle) *domain.CarpoolAdminTerm {
-	result := &domain.CarpoolAdminTerm{ID: term.ID, UserID: term.UserID, ScopeID: term.ScopeID, GroupID: term.GroupID, PlanID: term.PlanID, PlanSnapshot: term.PlanSnapshot, StartsAt: term.StartsAt, ExpiresAt: term.ExpiresAt, Status: term.Status, BoostUsed: term.BoostUsed, BoostRemaining: term.PlanSnapshot.BoostCount - term.BoostUsed, HistoryComplete: term.HistoryComplete, StatisticsSince: term.StatisticsSince, Payments: term.OperationPayments, CreatedAt: term.CreatedAt}
+	term.PlanSnapshot.NormalizeResetMode()
+	result := &domain.CarpoolAdminTerm{ID: term.ID, UserID: term.UserID, ScopeID: term.ScopeID, GroupID: term.GroupID, PlanID: term.PlanID, PlanSnapshot: term.PlanSnapshot, StartsAt: term.StartsAt, ExpiresAt: term.ExpiresAt, Status: term.Status, BoostUsed: term.BoostUsed, BoostRemaining: term.PlanSnapshot.BoostCount - term.BoostUsed, HistoryComplete: term.HistoryComplete, StatisticsSince: term.StatisticsSince, Payments: term.OperationPayments, CreatedAt: term.CreatedAt, NextNaturalResetAt: domain.CarpoolProjectedNextNaturalResetAt(term.Status, term.ExpiresAt, cycles)}
 	for _, cycle := range cycles {
 		adminCycle := adminCycleFrom(term.UserID, cycle)
 		result.Cycles = append(result.Cycles, adminCycle)

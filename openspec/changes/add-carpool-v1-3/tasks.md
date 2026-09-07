@@ -2,7 +2,19 @@
 
 Only mark complete after the main agent inspects the actual diff and evidence.
 
-## Current v1.4 Acceptance (2026-09-06)
+## Current Rolling Refill Acceptance (2026-09-07)
+
+Direct Sol-worker coordination; no Trellis workflow. Authority:
+[current architecture](../../../sub2api-carpool-architecture.md).
+
+- [x] R1: Architecture and API contract updated before implementation; ownership separated and existing dirty work inspected.
+- [x] R2: New 28-day terms use on-demand rolling periods, full final-short-period quota, consistent pending/active/expired next-refill projections. Director inspected source and real PG run 20260907T093726Z-63154.
+- [x] R3: Special success moves the natural deadline once, including zero grants; old fixed boundaries, failure and replay cannot grant or move it again. Real PG run 20260907T093726Z-63154 passed consecutive, zero/replay, cap, race and rollback cases.
+- [x] R4: Real PostgreSQL tests prove admission/settlement, natural/reset races, downtime, expiry and ledger/ordinary-balance conservation. Director inspected runs 20260907T093726Z-63154 (11 main cases plus 4 receipt subcases) and 20260907T094833Z-65125 (8 regression cases); relevant Go unit tests also pass.
+- [x] R5: Continuous member timeline and admin opening/renewal/takeover workflows agree with server projections; frontend typecheck, lint, build and 77 tests across 9 focused files pass. Runtime browser acceptance remains R6.
+- [x] R6: Current-source isolated runtime passes HTTP and desktop/mobile browser acceptance; director inspected user desktop/390px, admin overview, real synthetic UI opening and renewal preview. Source/image evidence and synthetic-reset limits are recorded in [local acceptance](../../../validation/rolling-reset/evidence/acceptance.md). No production changes.
+
+## Historical v1.4 Acceptance (2026-09-06)
 
 - [x] A1: New three-tier previews/openings/renewals have four7-day cycles, exact28-day expiry and base totals2200/2800/4400; boundary tests pass.
 - [x] A2: Three10% boosts per term, four-way concurrent exhaustion, exact replay and expiry/renewal regressions; ordinary balance unchanged.

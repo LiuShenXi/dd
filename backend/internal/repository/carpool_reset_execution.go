@@ -161,6 +161,10 @@ func (r *CarpoolResetRepository) ExecuteResetBatch(ctx context.Context, batchID 
 			}
 			return nil, ensureErr
 		}
+		targetWindows = append(targetWindows, resetTargetWindow{
+			TermID: term.ID, TermStartsAt: term.StartsAt, TermExpiresAt: term.ExpiresAt,
+			CycleStartsAt: cycle.StartsAt, CycleEndsAt: cycle.EndsAt,
+		})
 		grant := cycle.BaseQuotaUSD.Sub(cycle.BaseBalanceUSD).Round(8)
 		if grant.IsNegative() {
 			grant = decimal.Zero
@@ -174,13 +178,19 @@ func (r *CarpoolResetRepository) ExecuteResetBatch(ctx context.Context, batchID 
 				return nil, err
 			}
 		}
+		if term.ResetMode == domain.CarpoolResetModeRolling {
+			nextDeadline := now.Add(7 * 24 * time.Hour)
+			if nextDeadline.After(term.ExpiresAt) {
+				nextDeadline = term.ExpiresAt
+			}
+			if _, err = tx.ExecContext(ctx, `UPDATE carpool_cycles SET ends_at=$1,updated_at=$2,revision=revision+1 WHERE id=$3 AND term_id=$4`, nextDeadline, now, cycle.ID, term.ID); err != nil {
+				return nil, err
+			}
+			cycle.EndsAt = nextDeadline
+		}
 		if _, err = tx.ExecContext(ctx, `INSERT INTO carpool_reset_targets(batch_id,term_id,cycle_id,status,granted_usd,executed_at) VALUES($1,$2,$3,'succeeded',$4,$5)`, batch.ID, term.ID, cycle.ID, grant.StringFixed(8), now); err != nil {
 			return nil, err
 		}
-		targetWindows = append(targetWindows, resetTargetWindow{
-			TermID: term.ID, TermStartsAt: term.StartsAt, TermExpiresAt: term.ExpiresAt,
-			CycleStartsAt: cycle.StartsAt, CycleEndsAt: cycle.EndsAt,
-		})
 	}
 	completedAt, err := r.resetDatabaseNowTx(ctx, tx)
 	if err != nil {
@@ -222,6 +232,7 @@ type lockedResetTerm struct {
 	UserID    int64
 	StartsAt  time.Time
 	ExpiresAt time.Time
+	ResetMode string
 }
 
 type resetTargetWindow struct {
@@ -319,14 +330,14 @@ func (r *CarpoolResetRepository) rescheduleResetBatchAfterRollback(ctx context.C
 }
 
 func lockResetTermsAndCyclesTx(ctx context.Context, tx *sql.Tx, scopeID int64) ([]lockedResetTerm, error) {
-	rows, err := tx.QueryContext(ctx, `SELECT id,user_id,starts_at,expires_at FROM carpool_terms WHERE scope_id=$1 AND status IN ('pending','active') ORDER BY id FOR UPDATE`, scopeID)
+	rows, err := tx.QueryContext(ctx, `SELECT id,user_id,starts_at,expires_at,COALESCE(plan_snapshot->>'reset_mode','fixed') FROM carpool_terms WHERE scope_id=$1 AND status IN ('pending','active') ORDER BY id FOR UPDATE`, scopeID)
 	if err != nil {
 		return nil, err
 	}
 	terms := make([]lockedResetTerm, 0)
 	for rows.Next() {
 		var term lockedResetTerm
-		if err := rows.Scan(&term.ID, &term.UserID, &term.StartsAt, &term.ExpiresAt); err != nil {
+		if err := rows.Scan(&term.ID, &term.UserID, &term.StartsAt, &term.ExpiresAt, &term.ResetMode); err != nil {
 			_ = rows.Close()
 			return nil, err
 		}

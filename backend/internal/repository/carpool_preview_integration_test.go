@@ -33,8 +33,11 @@ func TestCarpoolPreview_ValidatesTargetUserAndLatestEnabledPlan(t *testing.T) {
 	require.Equal(t, plans[0].ID, preview.Plan.PlanID)
 	require.Equal(t, 28, preview.Plan.DurationDays)
 	require.Equal(t, 2, preview.Plan.BoostCount)
+	require.Equal(t, domain.CarpoolResetModeRolling, preview.Plan.ResetMode)
 	require.Equal(t, preview.StartsAt.Add(28*24*time.Hour), preview.ExpiresAt)
-	require.Len(t, preview.Cycles, 4)
+	require.Len(t, preview.Cycles, 1)
+	require.NotNil(t, preview.NextNaturalResetAt)
+	require.Equal(t, preview.StartsAt.Add(7*24*time.Hour), *preview.NextNaturalResetAt)
 	for index, cycle := range preview.Cycles {
 		require.Equal(t, index+1, cycle.CycleNo)
 		require.Equal(t, 7*24*time.Hour, cycle.EndsAt.Sub(cycle.StartsAt))
@@ -47,6 +50,8 @@ func TestCarpoolPreview_ValidatesTargetUserAndLatestEnabledPlan(t *testing.T) {
 	negativeHistoricalUsage := decimal.RequireFromString("-0.00000001")
 	_, err = carpoolService.Preview(ctx, user.ID, plans[0].ID, nil, "takeover", &domain.CarpoolTakeoverInput{HistoricalUsedUSD: &negativeHistoricalUsage})
 	require.Error(t, err)
+	_, err = carpoolService.Preview(ctx, user.ID, plans[0].ID, nil, "takeover", &domain.CarpoolTakeoverInput{OrdinaryBalanceTransferUSD: decimal.RequireFromString("0.00000001")})
+	require.ErrorContains(t, err, "ordinary balance is read-only")
 
 	_, err = carpoolService.Preview(ctx, user.ID+9_000_000_000, plans[0].ID, nil, "new", nil)
 	require.ErrorIs(t, err, service.ErrCarpoolNotFound)
@@ -105,7 +110,10 @@ func TestCarpoolPlanVersionAndRenewalUseFixedCurrentRules(t *testing.T) {
 	require.Equal(t, renewed.StartsAt.Add(28*24*time.Hour), renewed.ExpiresAt)
 	require.Equal(t, 28, renewed.PlanSnapshot.DurationDays)
 	require.Equal(t, 3, renewed.PlanSnapshot.BoostCount)
-	require.Len(t, renewed.Cycles, 4)
+	require.Equal(t, domain.CarpoolResetModeRolling, renewed.PlanSnapshot.ResetMode)
+	require.Len(t, renewed.Cycles, 1)
+	require.NotNil(t, renewed.NextNaturalResetAt)
+	require.Equal(t, renewed.StartsAt.Add(7*24*time.Hour), *renewed.NextNaturalResetAt)
 
 	storedLegacy, err := repo.GetTerm(ctx, legacyTerm.ID)
 	require.NoError(t, err)
@@ -154,7 +162,7 @@ func TestCarpoolPlanVersionAndRenewalUseFixedCurrentRules(t *testing.T) {
 	require.Equal(t, upgraded.StartsAt.Add(28*24*time.Hour), upgraded.ExpiresAt)
 	require.Equal(t, userID, upgraded.UserID)
 	require.Equal(t, groupID, upgraded.GroupID)
-	require.Len(t, upgraded.Cycles, 4)
+	require.Len(t, upgraded.Cycles, 1)
 }
 
 func TestCarpoolCreateTermRejectsSupersededPlan(t *testing.T) {

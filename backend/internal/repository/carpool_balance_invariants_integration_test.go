@@ -13,6 +13,34 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestCarpoolTakeoverRejectsOrdinaryBalanceTransferWithoutMutation(t *testing.T) {
+	ctx := context.Background()
+	repo, userID, groupID, planID := newSyntheticCarpoolTermDependencies(t)
+	var before string
+	require.NoError(t, integrationDB.QueryRowContext(ctx, `SELECT balance::text FROM users WHERE id=$1`, userID).Scan(&before))
+
+	term, cycles, err := repo.CreateTerm(ctx, domain.CreateCarpoolTermParams{
+		UserID:  userID,
+		ScopeID: domain.CarpoolGlobalScopeID,
+		GroupID: groupID,
+		PlanID:  planID,
+		ActorID: userID,
+		Mode:    "takeover",
+		Takeover: &domain.CarpoolTakeoverInput{
+			CurrentBaseBalanceUSD:      decimal.RequireFromString("10.00000000"),
+			OrdinaryBalanceTransferUSD: decimal.RequireFromString("1.00000000"),
+		},
+		Operation: carpoolTestOperation("open_term", userID),
+	})
+	require.ErrorContains(t, err, "ordinary balance is read-only")
+	require.Nil(t, term)
+	require.Nil(t, cycles)
+
+	var after string
+	require.NoError(t, integrationDB.QueryRowContext(ctx, `SELECT balance::text FROM users WHERE id=$1`, userID).Scan(&after))
+	require.Equal(t, before, after)
+}
+
 func TestCarpoolTakeoverClosure_PreservesNetDebtInBaseOnly(t *testing.T) {
 	ctx := context.Background()
 	repo, userID, groupID, planID := newSyntheticCarpoolTermDependencies(t)

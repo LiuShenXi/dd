@@ -1,4 +1,25 @@
-# Implementation Design and Ownership (v1.4)
+# Implementation Design and Ownership
+
+## Rolling Refill Revision (2026-09-07)
+
+The user approved replacing fixed four-week grants with rolling seven-day refill
+deadlines while preserving the exact 28-day membership expiry. The current
+authority is [repository architecture](../../../sub2api-carpool-architecture.md).
+Read it before implementation. Its rule, transaction, API, UI and acceptance
+contracts supersede the fixed-cycle and historical workflow instructions below.
+
+This revision uses directly coordinated GPT-5.6 Sol workers, without Trellis.
+Carpool has not launched and no real carpool cycle records require conversion.
+Preserve existing uncommitted changes. Implement and validate locally; no remote
+deployment or ordinary-balance migration is authorized.
+
+Retain internal accounting period IDs and immutable admission identities.
+Special reset extends the active period end to the earlier of effective reset
+time + seven days and membership expiry, without changing its start. Create
+later natural periods on demand and grant full quota even in the last short
+period. Expose a separate nullable next_natural_reset_at; expiry is not a refill.
+
+## Preserved v1.4 Design
 
 ## Current Revision
 

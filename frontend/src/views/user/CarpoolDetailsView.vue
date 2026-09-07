@@ -152,8 +152,24 @@
               </div>
 
               <div class="relative">
-                <div class="grid h-3 gap-px overflow-hidden rounded-full bg-gray-200 p-px dark:bg-dark-600" :style="{ gridTemplateColumns: timelineColumns }" data-testid="carpool-time-rail">
+                <div
+                  class="grid h-3 gap-px overflow-hidden rounded-full bg-gray-200 p-px dark:bg-dark-600"
+                  :style="{ gridTemplateColumns: isRolling ? '1fr' : timelineColumns }"
+                  data-testid="carpool-time-rail"
+                >
                   <div
+                    v-if="isRolling"
+                    class="relative min-w-0 overflow-hidden rounded-full bg-gray-50 dark:bg-dark-800"
+                    :aria-label="t('carpool.membershipProgress')"
+                  >
+                    <div
+                      data-testid="carpool-membership-fill"
+                      class="absolute inset-y-0 left-0 bg-primary-500 transition-[width] duration-300 motion-reduce:transition-none dark:bg-primary-600"
+                      :style="{ width: `${membershipProgress * 100}%` }"
+                    />
+                  </div>
+                  <div
+                    v-else
                     v-for="cycle in details.term.cycles"
                     :key="cycle.cycle_no"
                     class="relative min-w-0 overflow-hidden first:rounded-l-full last:rounded-r-full bg-gray-50 dark:bg-dark-800"
@@ -178,15 +194,28 @@
                   </span>
                 </div>
               </div>
-              <div data-testid="carpool-cycle-labels" class="mt-2 grid gap-px" :style="{ gridTemplateColumns: timelineColumns }" aria-hidden="true">
+              <div v-if="!isRolling" data-testid="carpool-cycle-labels" class="mt-2 grid gap-px" :style="{ gridTemplateColumns: timelineColumns }" aria-hidden="true">
                 <span v-for="cycle in details.term.cycles" :key="`label:${cycle.cycle_no}`" class="text-center font-mono text-[10px] leading-3 tabular-nums text-gray-400 dark:text-gray-500">
                   {{ cycle.cycle_no }}
                 </span>
               </div>
             </div>
-            <p v-if="currentCycle && currentCycleRemaining" class="mt-3 text-sm font-medium text-primary-700 dark:text-primary-300">
-              {{ t('carpool.cycleRemaining', { cycle: currentCycle.cycle_no, time: formatCountdown(currentCycleRemaining) }) }}
-            </p>
+            <dl class="mt-4 grid gap-x-6 gap-y-3 border-y border-gray-100 py-3 text-sm sm:grid-cols-2 dark:border-dark-700">
+              <div data-testid="carpool-next-natural-refill">
+                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('carpool.nextNaturalRefill') }}</dt>
+                <dd v-if="nextNaturalReset" class="mt-1 text-gray-900 dark:text-white">
+                  <span class="font-medium">{{ formatDate(nextNaturalReset) }}</span>
+                  <span v-if="naturalResetCountdown" class="mt-0.5 block font-mono text-xs tabular-nums text-primary-700 dark:text-primary-300">
+                    {{ t('carpool.refillRemaining', { time: formatCountdown(naturalResetCountdown) }) }}
+                  </span>
+                </dd>
+                <dd v-else class="mt-1 text-gray-600 dark:text-gray-300">{{ t('carpool.noNaturalRefill') }}</dd>
+              </div>
+              <div data-testid="carpool-membership-expiry">
+                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ t('carpool.membershipExpiry') }}</dt>
+                <dd class="mt-1 font-medium text-gray-900 dark:text-white">{{ formatDate(details.term.expires_at) }}</dd>
+              </div>
+            </dl>
           </div>
 
           <div class="mt-6">
@@ -248,7 +277,7 @@ import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores/app'
 import { useCarpoolStore } from '@/stores/carpool'
 import { useServerClock } from '@/composables/useServerClock'
-import { countdownParts, cycleGridTemplate, cycleProgress, formatCarpoolAmount, formatCarpoolTargetAmount, termEventPosition, type CountdownParts } from '@/utils/carpool'
+import { countdownParts, cycleGridTemplate, cycleProgress, formatCarpoolAmount, formatCarpoolTargetAmount, nextNaturalResetAt, termEventPosition, timeRangeProgress, type CountdownParts } from '@/utils/carpool'
 import type { CarpoolResetEvent, CarpoolUserCycle } from '@/types/carpool'
 
 const { t, locale } = useI18n()
@@ -263,9 +292,17 @@ const measuredTimelineWidth = ref(0)
 const resetHistoryExpanded = ref(false)
 let timelineResizeObserver: ResizeObserver | null = null
 
-const currentCycle = computed(() => details.value?.term?.cycles.find((cycle) => cycle.cycle_no === details.value?.term?.current_cycle_no) ?? null)
-const currentCycleRemaining = computed(() => countdownParts(currentCycle.value?.ends_at ?? null, nowMs.value))
 const resetCountdown = computed(() => countdownParts(details.value?.reset_window.scheduled_at ?? null, nowMs.value))
+const isRolling = computed(() => details.value?.term?.reset_mode === 'rolling')
+const membershipProgress = computed(() => {
+  const term = details.value?.term
+  return term ? timeRangeProgress(term.starts_at, term.expires_at, nowMs.value) : 0
+})
+const nextNaturalReset = computed(() => details.value?.term ? nextNaturalResetAt(details.value.term) : null)
+const naturalResetCountdown = computed(() => {
+  const target = nextNaturalReset.value
+  return target && Date.parse(target) > nowMs.value ? countdownParts(target, nowMs.value) : null
+})
 const timelineColumns = computed(() => cycleGridTemplate(details.value?.term?.cycles ?? []) || '1fr')
 const resetAnnotations = computed(() => {
   const term = details.value?.term
@@ -432,10 +469,7 @@ async function loadDetails() {
     if (!store.isCurrentDetails(result)) return
     loadError.value = false
     sync(result.server_now)
-    const activeBoundary = result.term?.cycles.find((cycle) => cycle.cycle_no === result.term?.current_cycle_no)?.ends_at
-    if (boundaryRefreshKey?.startsWith('cycle:') && !boundaryRefreshKey.endsWith(activeBoundary ?? '')) boundaryRefreshKey = null
-    const scheduledBoundary = result.reset_window.status === 'scheduled' ? result.reset_window.scheduled_at : null
-    if (boundaryRefreshKey?.startsWith('reset:') && !boundaryRefreshKey.endsWith(scheduledBoundary ?? '')) boundaryRefreshKey = null
+    if (boundaryRefreshKey && !refreshBoundaryKeys(result).includes(boundaryRefreshKey)) boundaryRefreshKey = null
   } catch (error) {
     if (!store.isCurrentDetailsError(error)) return
     loadError.value = true
@@ -444,10 +478,25 @@ async function loadDetails() {
   }
 }
 
+function refreshBoundaryKeys(result: NonNullable<typeof details.value>): string[] {
+  const term = result.term
+  if (!term) return []
+  const keys: string[] = []
+  const natural = nextNaturalResetAt(term)
+  const cycleEnd = term.cycles.find((cycle) => cycle.cycle_no === term.current_cycle_no)?.ends_at
+  const resetAt = result.reset_window.status === 'scheduled' ? result.reset_window.scheduled_at : null
+  if (natural) keys.push(`natural:${natural}`)
+  if (cycleEnd) keys.push(`cycle:${cycleEnd}`)
+  if (resetAt) keys.push(`reset:${resetAt}`)
+  if (term.status === 'pending') keys.push(`term-start:${term.starts_at}`)
+  if (term.status === 'active' || term.status === 'pending') keys.push(`term:${term.expires_at}`)
+  return keys
+}
+
 watch(nowMs, () => {
-  const boundary = currentCycle.value?.ends_at
-  const resetAt = details.value?.reset_window.status === 'scheduled' ? details.value.reset_window.scheduled_at : null
-  const dueKey = boundary && Date.parse(boundary) <= nowMs.value ? `cycle:${boundary}` : resetAt && Date.parse(resetAt) <= nowMs.value ? `reset:${resetAt}` : null
+  const dueKey = details.value
+    ? refreshBoundaryKeys(details.value).find((key) => Date.parse(key.slice(key.indexOf(':') + 1)) <= nowMs.value) ?? null
+    : null
   if (dueKey && boundaryRefreshKey !== dueKey && !store.detailsLoading) {
     boundaryRefreshKey = dueKey
     void loadDetails()

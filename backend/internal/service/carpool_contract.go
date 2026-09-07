@@ -20,6 +20,7 @@ var (
 	ErrCarpoolIdempotencyConflict = infraerrors.Conflict("CARPOOL_IDEMPOTENCY_CONFLICT", "idempotency key was used with a different payload")
 	ErrCarpoolAdmissionReplay     = infraerrors.Conflict("CARPOOL_ADMISSION_REPLAY", "billing admission identity has already been used")
 	ErrCarpoolInvalidRelationship = infraerrors.Forbidden("CARPOOL_RELATIONSHIP_INVALID", "carpool user, key, group, term, and cycle relationship is invalid")
+	ErrCarpoolInvalidNaturalReset = infraerrors.BadRequest("CARPOOL_NATURAL_RESET_INVALID", "takeover next natural reset deadline is invalid")
 )
 
 type CarpoolRepositoryAPI interface {

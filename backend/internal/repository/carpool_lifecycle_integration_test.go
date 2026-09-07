@@ -29,30 +29,25 @@ func TestCarpoolLifecycle_MaintenanceAfterTwoWeekDowntimeGrantsOnlyCurrentCycle(
 		Operation: carpoolTestOperation("open_term", userID),
 	})
 	require.NoError(t, err)
-	require.Len(t, cycles, 4)
+	require.Len(t, cycles, 1)
+	require.Equal(t, domain.CarpoolResetModeRolling, term.PlanSnapshot.ResetMode)
 
 	now := carpoolDatabaseNow(t, ctx)
 	termStart := now.Add(-15 * 24 * time.Hour)
-	moveLifecycleTerm(t, ctx, term, cycles, termStart, domain.CarpoolTermActive, map[int]string{
-		1: domain.CarpoolCycleActive,
-		2: domain.CarpoolCycleScheduled,
-		3: domain.CarpoolCycleScheduled,
-		4: domain.CarpoolCycleScheduled,
-	})
+	require.NoError(t, moveSingleRollingLifecycleTerm(ctx, term, cycles[0], termStart, domain.CarpoolTermActive))
 
 	require.NoError(t, repo.MaintainCycles(ctx, now, 200))
 	assertLifecycleCycleStates(t, ctx, term.ID, []string{
 		domain.CarpoolCycleClosed,
 		domain.CarpoolCycleMissed,
 		domain.CarpoolCycleActive,
-		domain.CarpoolCycleScheduled,
 	})
-	assertLifecycleInitialGrantCounts(t, ctx, term.ID, []int{1, 0, 1, 0})
+	assertLifecycleInitialGrantCounts(t, ctx, term.ID, []int{1, 0, 1})
 
 	var ledgerRowsBefore int
 	require.NoError(t, integrationDB.QueryRowContext(ctx, `SELECT COUNT(*) FROM carpool_ledger WHERE term_id=$1`, term.ID).Scan(&ledgerRowsBefore))
 	require.NoError(t, repo.MaintainCycles(ctx, now, 200))
-	assertLifecycleInitialGrantCounts(t, ctx, term.ID, []int{1, 0, 1, 0})
+	assertLifecycleInitialGrantCounts(t, ctx, term.ID, []int{1, 0, 1})
 	var ledgerRowsAfter int
 	require.NoError(t, integrationDB.QueryRowContext(ctx, `SELECT COUNT(*) FROM carpool_ledger WHERE term_id=$1`, term.ID).Scan(&ledgerRowsAfter))
 	require.Equal(t, ledgerRowsBefore, ledgerRowsAfter, "repeated maintenance must not add grants or close entries")
@@ -70,19 +65,23 @@ func TestCarpoolLifecycle_MaintenanceAfterTwoWeekDowntimeGrantsOnlyCurrentCycle(
 		Operation: carpoolTestOperation("open_term", futureUserID),
 	})
 	require.NoError(t, err)
-	require.Len(t, futureCycles, 4)
+	require.Len(t, futureCycles, 1)
 	require.NoError(t, futureRepo.MaintainCycles(ctx, now, 200))
 
 	storedFuture, err := futureRepo.GetTerm(ctx, futureTerm.ID)
 	require.NoError(t, err)
 	require.Equal(t, domain.CarpoolTermPending, storedFuture.Status)
+	futureDetails, err := futureRepo.GetUserDetails(ctx, futureUserID)
+	require.NoError(t, err)
+	require.Nil(t, futureDetails.Quota)
+	require.NotNil(t, futureDetails.Term)
+	require.Equal(t, domain.CarpoolResetModeRolling, futureDetails.Term.ResetMode)
+	require.NotNil(t, futureDetails.Term.NextNaturalResetAt)
+	require.Equal(t, futureStart.Add(7*24*time.Hour).UTC(), futureDetails.Term.NextNaturalResetAt.UTC())
 	assertLifecycleCycleStates(t, ctx, futureTerm.ID, []string{
 		domain.CarpoolCycleScheduled,
-		domain.CarpoolCycleScheduled,
-		domain.CarpoolCycleScheduled,
-		domain.CarpoolCycleScheduled,
 	})
-	assertLifecycleInitialGrantCounts(t, ctx, futureTerm.ID, []int{0, 0, 0, 0})
+	assertLifecycleInitialGrantCounts(t, ctx, futureTerm.ID, []int{0})
 }
 
 func TestCarpoolLifecycle_BoostReplaySurvivesExpiryAndRenewal(t *testing.T) {
@@ -98,7 +97,7 @@ func TestCarpoolLifecycle_BoostReplaySurvivesExpiryAndRenewal(t *testing.T) {
 		Operation: carpoolTestOperation("open_term", userID),
 	})
 	require.NoError(t, err)
-	require.Len(t, cycles, 4)
+	require.Len(t, cycles, 1)
 
 	carpoolService := service.NewCarpoolService(repo)
 	boostKey := uuid.NewString()
@@ -108,12 +107,7 @@ func TestCarpoolLifecycle_BoostReplaySurvivesExpiryAndRenewal(t *testing.T) {
 
 	now := carpoolDatabaseNow(t, ctx)
 	expiredStart := now.Add(-28*24*time.Hour - time.Minute)
-	moveLifecycleTerm(t, ctx, term, cycles, expiredStart, domain.CarpoolTermActive, map[int]string{
-		1: domain.CarpoolCycleActive,
-		2: domain.CarpoolCycleScheduled,
-		3: domain.CarpoolCycleScheduled,
-		4: domain.CarpoolCycleScheduled,
-	})
+	require.NoError(t, moveSingleRollingLifecycleTerm(ctx, term, cycles[0], expiredStart, domain.CarpoolTermActive))
 	require.NoError(t, repo.MaintainCycles(ctx, now, 200))
 
 	afterExpiry, err := carpoolService.ClaimBoost(ctx, userID, boostKey)
@@ -151,7 +145,7 @@ func TestCarpoolLifecycle_FourConcurrentBoostClaimsGrantExactlyTwoAndRefreshQuot
 		Operation: carpoolTestOperation("open_term", userID),
 	})
 	require.NoError(t, err)
-	require.Len(t, cycles, 4)
+	require.Len(t, cycles, 1)
 	require.Equal(t, 2, term.PlanSnapshot.BoostCount)
 
 	var ordinaryBefore string
@@ -291,11 +285,14 @@ func TestCarpoolLifecycle_UserDetailsCrossRenewalUsageAndResetCount(t *testing.T
 	require.True(t, decimal.RequireFromString("543.25000000").Equal(details.Quota.AvailableUSD))
 }
 
-func TestCarpoolLifecycle_UnresolvedReceiptsHoldClosingUntilOriginalCycleSettles(t *testing.T) {
+func TestCarpoolRolling_UnresolvedReceiptsHoldClosingUntilOriginalCycleSettles(t *testing.T) {
 	for _, status := range []string{"admitted", "usage_known", "settling", "reconcile_required"} {
 		t.Run(status, func(t *testing.T) {
 			ctx := context.Background()
 			fixture := newCarpoolBillingReconciliationFixture(t, nil, nil)
+			var resetMode string
+			require.NoError(t, integrationDB.QueryRowContext(ctx, `SELECT plan_snapshot->>'reset_mode' FROM carpool_terms WHERE id=$1`, fixture.termID).Scan(&resetMode))
+			require.Equal(t, domain.CarpoolResetModeRolling, resetMode)
 			now := carpoolDatabaseNow(t, ctx)
 			originalStart := now.Add(-2 * time.Hour)
 			originalEnd := now.Add(-time.Hour)
@@ -377,28 +374,13 @@ func TestCarpoolLifecycle_UnresolvedReceiptsHoldClosingUntilOriginalCycleSettles
 	}
 }
 
-func moveLifecycleTerm(t *testing.T, ctx context.Context, term *domain.CarpoolTerm, cycles []domain.CarpoolCycle, startsAt time.Time, status string, states map[int]string) {
-	t.Helper()
-	specs := domain.BuildCarpoolCycles(startsAt, term.PlanSnapshot)
-	require.Len(t, specs, len(cycles))
-	_, err := integrationDB.ExecContext(ctx, `UPDATE carpool_terms SET starts_at=$1,expires_at=$2,status=$3,updated_at=NOW() WHERE id=$4`, startsAt, startsAt.Add(time.Duration(term.PlanSnapshot.DurationDays)*24*time.Hour), status, term.ID)
-	require.NoError(t, err)
-	for i := range cycles {
-		state := states[cycles[i].CycleNo]
-		require.NotEmpty(t, state)
-		var activatedAt any
-		if state == domain.CarpoolCycleActive {
-			activatedAt = specs[i].StartsAt
-		}
-		_, err = integrationDB.ExecContext(ctx, `
-			UPDATE carpool_cycles
-			SET starts_at=$1,ends_at=$2,state=$3,
-				activated_at=$4,
-				closed_at=NULL,updated_at=NOW()
-			WHERE id=$5
-		`, specs[i].StartsAt, specs[i].EndsAt, state, activatedAt, cycles[i].ID)
-		require.NoError(t, err)
+func moveSingleRollingLifecycleTerm(ctx context.Context, term *domain.CarpoolTerm, cycle domain.CarpoolCycle, startsAt time.Time, status string) error {
+	expiresAt := startsAt.Add(time.Duration(term.PlanSnapshot.DurationDays) * 24 * time.Hour)
+	if _, err := integrationDB.ExecContext(ctx, `UPDATE carpool_terms SET starts_at=$1,expires_at=$2,status=$3,updated_at=NOW() WHERE id=$4`, startsAt, expiresAt, status, term.ID); err != nil {
+		return err
 	}
+	_, err := integrationDB.ExecContext(ctx, `UPDATE carpool_cycles SET starts_at=$1,ends_at=$2,state='active',activated_at=$1,closed_at=NULL,updated_at=NOW() WHERE id=$3`, startsAt, startsAt.Add(7*24*time.Hour), cycle.ID)
+	return err
 }
 
 func assertLifecycleCycleStates(t *testing.T, ctx context.Context, termID int64, expected []string) {

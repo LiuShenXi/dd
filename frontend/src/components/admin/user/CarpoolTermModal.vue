@@ -15,9 +15,10 @@
           </div>
           <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 dark:bg-dark-700 dark:text-gray-200">{{ termStatus(relevantTerm.status) }}</span>
         </div>
-        <div class="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+        <div class="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-5">
           <div><p class="text-xs text-gray-500">{{ t('admin.carpool.columns.currentCycle') }}</p><p class="mt-1 font-mono text-gray-900 dark:text-white">{{ relevantTerm.current_cycle?.cycle_no ?? '-' }}</p></div>
           <div><p class="text-xs text-gray-500">{{ t('admin.carpool.columns.availableUsd') }}</p><p class="mt-1 font-mono text-gray-900 dark:text-white">${{ money(relevantTerm.current_cycle?.available_usd) }}</p></div>
+          <div data-testid="admin-carpool-next-refill"><p class="text-xs text-gray-500">{{ t('admin.carpool.columns.nextGrant') }}</p><p class="mt-1 text-xs font-medium text-gray-900 dark:text-white">{{ relevantNextNaturalReset ? formatDate(relevantNextNaturalReset) : t('admin.carpool.noNaturalRefill') }}</p></div>
           <div><p class="text-xs text-gray-500">{{ t('admin.carpool.columns.boosts') }}</p><p class="mt-1 font-mono text-gray-900 dark:text-white">{{ relevantTerm.boost_remaining }}/{{ relevantTerm.plan_snapshot.boost_count }}</p></div>
           <div><p class="text-xs text-gray-500">{{ t('admin.carpool.columns.netPaidCny') }}</p><p class="mt-1 font-mono text-gray-900 dark:text-white">¥{{ money(relevantTerm.payment_net_cny) }}</p></div>
         </div>
@@ -66,6 +67,11 @@
             <label class="flex items-center gap-2 self-end pb-2 text-sm text-gray-700 dark:text-gray-200"><input v-model="takeover.history_complete" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600" />{{ t('admin.carpool.takeover.historyComplete') }}</label>
             <label v-if="takeover.history_complete" class="block"><span class="input-label">{{ t('admin.carpool.takeover.historicalUsed') }}</span><input v-model="takeover.historical_used_usd" type="number" min="0" step="0.00000001" class="input" required /></label>
             <label v-if="takeover.history_complete" class="block"><span class="input-label">{{ t('admin.carpool.takeover.statisticsSince') }}</span><input v-model="takeover.statistics_since" type="datetime-local" class="input" required /></label>
+            <label v-if="selectedPlan?.reset_mode === 'rolling'" class="block">
+              <span class="input-label">{{ t('admin.carpool.takeover.nextNaturalRefill') }}</span>
+              <input v-model="takeover.next_natural_reset_at" type="datetime-local" class="input" />
+              <span class="input-hint">{{ t('admin.carpool.takeover.nextNaturalRefillHint') }}</span>
+            </label>
           </div>
         </div>
 
@@ -92,6 +98,11 @@
             <h4 class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('admin.carpool.preview.title') }}</h4>
             <span class="text-xs text-gray-500">{{ t('admin.carpool.preview.serverCalculated', { date: formatDate(preview.calculated_at) }) }}</span>
           </div>
+          <dl class="mt-3 grid gap-3 border-y border-gray-100 py-3 text-xs sm:grid-cols-3 dark:border-dark-700">
+            <div><dt class="text-gray-500">{{ t('admin.carpool.preview.membershipPeriod') }}</dt><dd class="mt-1 font-medium text-gray-900 dark:text-white">{{ formatDate(preview.starts_at) }} - {{ formatDate(preview.expires_at) }}</dd></div>
+            <div><dt class="text-gray-500">{{ t('admin.carpool.preview.weeklyQuota') }}</dt><dd class="mt-1 font-mono font-medium text-gray-900 dark:text-white">${{ money(preview.plan.weekly_quota_usd) }}</dd></div>
+            <div data-testid="admin-carpool-preview-next-refill"><dt class="text-gray-500">{{ t('admin.carpool.columns.nextGrant') }}</dt><dd class="mt-1 font-medium text-gray-900 dark:text-white">{{ previewNextNaturalReset ? formatDate(previewNextNaturalReset) : t('admin.carpool.noNaturalRefill') }}</dd></div>
+          </dl>
           <div class="mt-3 overflow-x-auto">
             <table class="min-w-full text-left text-xs">
               <thead class="text-gray-500"><tr><th class="px-2 py-2">{{ t('admin.carpool.columns.cycle') }}</th><th class="px-2 py-2">{{ t('admin.carpool.columns.period') }}</th><th class="px-2 py-2">{{ t('admin.carpool.columns.baseQuotaUsd') }}</th><th class="px-2 py-2">{{ t('admin.carpool.columns.action') }}</th></tr></thead>
@@ -122,7 +133,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Select from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { adminAPI } from '@/api/admin'
-import { formatCarpoolAmount } from '@/utils/carpool'
+import { adminNextNaturalResetAt, formatCarpoolAmount, previewNextNaturalResetAt } from '@/utils/carpool'
 import type { AdminUser, Group } from '@/types'
 import type { CarpoolAdminTerm, CarpoolOpeningMode, CarpoolPaymentInput, CarpoolPlan, CarpoolPreview, CarpoolPreviewRequest, CarpoolTakeoverInput } from '@/types/carpool'
 
@@ -152,16 +163,18 @@ let previewGeneration = 0
 let submitGeneration = 0
 const paymentAmountDirty = ref(false)
 
-const takeover = reactive<Record<'current_base_balance_usd' | 'current_boost_balance_usd' | 'current_manual_balance_usd' | 'ordinary_balance_transfer_usd' | 'historical_used_usd' | 'statistics_since', string> & { boost_used: number; history_complete: boolean }>({
-  current_base_balance_usd: '0', current_boost_balance_usd: '0', current_manual_balance_usd: '0', ordinary_balance_transfer_usd: '0', historical_used_usd: '0', statistics_since: '', boost_used: 0, history_complete: false,
+const takeover = reactive<Record<'current_base_balance_usd' | 'current_boost_balance_usd' | 'current_manual_balance_usd' | 'historical_used_usd' | 'statistics_since' | 'next_natural_reset_at', string> & { boost_used: number; history_complete: boolean }>({
+  current_base_balance_usd: '0', current_boost_balance_usd: '0', current_manual_balance_usd: '0', historical_used_usd: '0', statistics_since: '', next_natural_reset_at: '', boost_used: 0, history_complete: false,
 })
 const payment = reactive({ amount_cny: '', paid_at: '', channel: 'manual', external_order_no: '', notes: '' })
 
 const relevantTerm = computed(() => terms.value.find((term) => term.status === 'active' || term.status === 'pending') ?? terms.value[0] ?? null)
+const relevantNextNaturalReset = computed(() => relevantTerm.value ? adminNextNaturalResetAt(relevantTerm.value) : null)
 const enabledPlans = computed(() => plans.value.filter((plan) => plan.enabled))
 const planOptions = computed(() => enabledPlans.value.map((plan) => ({ value: plan.plan_id, label: `${plan.name} · ¥${money(plan.list_price_cny)} · $${money(plan.weekly_quota_usd)}/7d` })))
 const groupOptions = computed(() => groups.value.filter((group) => group.subscription_type === 'carpool' && group.platform === 'openai' && group.status === 'active').map((group) => ({ value: group.id, label: group.name })))
 const selectedPlan = computed(() => plans.value.find((plan) => plan.plan_id === selectedPlanId.value) ?? null)
+const previewNextNaturalReset = computed(() => preview.value ? previewNextNaturalResetAt(preview.value) : null)
 const takeoverBoostUsedValid = computed(() => openingMode.value !== 'takeover' || (
   Number.isInteger(takeover.boost_used)
   && takeover.boost_used >= 0
@@ -174,7 +187,6 @@ const takeoverBalanceFields = computed(() => [
   { key: 'current_base_balance_usd' as const, label: t('admin.carpool.takeover.baseBalance') },
   { key: 'current_boost_balance_usd' as const, label: t('admin.carpool.takeover.boostBalance') },
   { key: 'current_manual_balance_usd' as const, label: t('admin.carpool.takeover.manualBalance') },
-  { key: 'ordinary_balance_transfer_usd' as const, label: t('admin.carpool.takeover.transfer') },
 ])
 
 function createKey() { return typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `carpool-admin-${Date.now()}-${Math.random().toString(36).slice(2)}` }
@@ -194,17 +206,17 @@ function takeoverInput(): CarpoolTakeoverInput | null {
     current_base_balance_usd: String(takeover.current_base_balance_usd),
     current_boost_balance_usd: String(takeover.current_boost_balance_usd),
     current_manual_balance_usd: String(takeover.current_manual_balance_usd),
-    ordinary_balance_transfer_usd: takeover.ordinary_balance_transfer_usd === '' ? null : String(takeover.ordinary_balance_transfer_usd),
     boost_used: takeover.boost_used,
     history_complete: takeover.history_complete,
     historical_used_usd: takeover.history_complete ? String(takeover.historical_used_usd) : null,
     statistics_since: takeover.history_complete ? shanghaiInstant(takeover.statistics_since) : null,
+    ...(takeover.next_natural_reset_at ? { next_natural_reset_at: shanghaiInstant(takeover.next_natural_reset_at) } : {}),
   }
 }
 
 function resetForm() {
   preview.value = null; submitError.value = ''; formMode.value = relevantTerm.value ? 'view' : 'open'; openingMode.value = 'new'; startsAtLocal.value = ''; notes.value = ''; recordPayment.value = false; operationKey = createKey()
-  Object.assign(takeover, { current_base_balance_usd: '0', current_boost_balance_usd: '0', current_manual_balance_usd: '0', ordinary_balance_transfer_usd: '0', historical_used_usd: '0', statistics_since: '', boost_used: 0, history_complete: false })
+  Object.assign(takeover, { current_base_balance_usd: '0', current_boost_balance_usd: '0', current_manual_balance_usd: '0', historical_used_usd: '0', statistics_since: '', next_natural_reset_at: '', boost_used: 0, history_complete: false })
   Object.assign(payment, { amount_cny: '', paid_at: '', channel: 'manual', external_order_no: '', notes: '' })
   paymentAmountDirty.value = false
   const defaultPlan = enabledPlans.value[0]
