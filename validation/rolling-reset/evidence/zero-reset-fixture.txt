@@ -3,8 +3,7 @@ DO
 INSERT 0 1
 UPDATE 1
 COMMIT
-       evidence_kind       | proves_scheduling |                                  email                                   |         starts_at          |         expires_at         | next_natural_reset_at  | granted_usd |          executed_at          
+       evidence_kind       | proves_scheduling |                                  email                                   |         starts_at          |         expires_at         | next_natural_reset_at  | granted_usd |          executed_at
 ---------------------------+-------------------+--------------------------------------------------------------------------+----------------------------+----------------------------+------------------------+-------------+-------------------------------
  synthetic-browser-fixture | f                 | rolling-reset-active_reset_marker-1788774575290-531a67f5@example.invalid | 2026-09-02 09:49:35.304+00 | 2026-09-30 09:49:35.304+00 | 2026-09-14 09:49:52+00 |  0.00000000 | 2026-09-07 09:49:52.254092+00
 (1 row)
-

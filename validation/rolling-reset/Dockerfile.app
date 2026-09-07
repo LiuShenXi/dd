@@ -8,4 +8,3 @@ RUN mkdir -p /app/data && chown 1000:1000 /app/data
 USER 1000:1000
 EXPOSE 8080
 ENTRYPOINT ["/app/sub2api"]
-
