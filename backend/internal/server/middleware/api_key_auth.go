@@ -429,7 +429,14 @@ func abortIfAPIKeyGroupNotAllowed(c *gin.Context, apiKey *service.APIKey) bool {
 }
 
 func validateAPIKeyGroupAllowed(apiKey *service.APIKey) bool {
-	if apiKey == nil || apiKey.GroupID == nil || apiKey.User == nil || apiKey.Group == nil {
+	if apiKey == nil || apiKey.User == nil {
+		return true
+	}
+	// Ungrouped keys must not bypass an explicit user group allowlist.
+	if apiKey.GroupID == nil {
+		return !apiKey.User.RestrictPublicGroups
+	}
+	if apiKey.Group == nil {
 		return true
 	}
 	group := apiKey.Group

@@ -149,6 +149,8 @@ func resetGlobalResetState(t *testing.T) {
 		DELETE FROM carpool_reset_qualifications WHERE scope_id=1;
 		DELETE FROM carpool_reset_targets
 		  WHERE batch_id IN (SELECT id FROM carpool_reset_batches WHERE scope_id=1);
+		DELETE FROM carpool_cycle_carryovers
+		  WHERE reset_batch_id IN (SELECT id FROM carpool_reset_batches WHERE scope_id=1);
 		DELETE FROM carpool_reset_credits;
 		DELETE FROM carpool_reset_account_states;
 		DELETE FROM carpool_reset_batches WHERE scope_id=1;

@@ -17,9 +17,12 @@ import (
 )
 
 type CarpoolService struct {
-	repo           CarpoolRepositoryAPI
-	resetReader    CarpoolResetWindowReader
-	billingApplier UsageBillingRepository
+	repo            CarpoolRepositoryAPI
+	resetReader     CarpoolResetWindowReader
+	billingApplier  UsageBillingRepository
+	authInvalidator interface {
+		InvalidateReleaseAuthCache(context.Context, []int64, []int64) error
+	}
 
 	mu                   sync.Mutex
 	cancel               context.CancelFunc
@@ -48,6 +51,20 @@ func (s *CarpoolService) SetResetWindowReader(reader CarpoolResetWindowReader) {
 
 func (s *CarpoolService) SetUsageBillingApplier(applier UsageBillingRepository) {
 	s.billingApplier = applier
+}
+
+func (s *CarpoolService) SetAuthInvalidator(invalidator interface {
+	InvalidateReleaseAuthCache(context.Context, []int64, []int64) error
+}) {
+	s.authInvalidator = invalidator
+}
+
+func (s *CarpoolService) refreshMembershipAuth(ctx context.Context, userID int64) error {
+	if s.authInvalidator == nil {
+		return nil
+	}
+	// Replayed operations also retry this step after a committed mutation.
+	return s.authInvalidator.InvalidateReleaseAuthCache(ctx, []int64{userID}, nil)
 }
 
 func (s *CarpoolService) Start(parent context.Context) {
@@ -316,16 +333,59 @@ func (s *CarpoolService) Preview(ctx context.Context, userID, planID int64, star
 		return nil, err
 	}
 	snapshot := plan.Snapshot()
+	return buildCarpoolPreview(now, start, snapshot, mode, takeover)
+}
+
+func (s *CarpoolService) PreviewRenewal(ctx context.Context, userID, termID, planID int64) (*domain.CarpoolTermPreview, error) {
+	if termID <= 0 || planID < 0 {
+		return nil, infraerrors.BadRequest("CARPOOL_RENEWAL_PREVIEW_INVALID", "invalid renewal preview identity")
+	}
+	previous, err := s.repo.GetTerm(ctx, termID)
+	if err != nil {
+		return nil, err
+	}
+	if previous.UserID != userID || previous.ScopeID != domain.CarpoolGlobalScopeID {
+		return nil, ErrCarpoolInvalidRelationship
+	}
+	inheritOverrides := planID == 0
+	if inheritOverrides {
+		plans, listErr := s.repo.ListPlans(ctx, false)
+		if listErr != nil {
+			return nil, listErr
+		}
+		for _, plan := range plans {
+			if plan.Code == previous.PlanSnapshot.Code {
+				planID = plan.ID
+				break
+			}
+		}
+		if planID == 0 {
+			return nil, ErrCarpoolUnavailable
+		}
+	}
+	plan, err := s.repo.GetPreviewPlan(ctx, userID, planID)
+	if err != nil {
+		return nil, err
+	}
+	snapshot := plan.Snapshot()
+	if inheritOverrides {
+		snapshot = snapshot.WithRenewalOverrides(previous.PlanSnapshot)
+	}
+	now, err := s.repo.DatabaseNow(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return buildCarpoolPreview(now, previous.ExpiresAt, snapshot, "new", nil)
+}
+
+func buildCarpoolPreview(now, start time.Time, snapshot domain.CarpoolPlanSnapshot, mode string, takeover *domain.CarpoolTakeoverInput) (*domain.CarpoolTermPreview, error) {
 	expiresAt := start.Add(time.Duration(snapshot.DurationDays) * 24 * time.Hour)
 	if takeover != nil && (takeover.BoostUsed < 0 || takeover.BoostUsed > snapshot.BoostCount) {
 		return nil, fmt.Errorf("invalid boost_used")
 	}
-	if takeover != nil && takeover.NextNaturalResetAt != nil {
-		deadline := *takeover.NextNaturalResetAt
-		if snapshot.EffectiveResetMode() != domain.CarpoolResetModeRolling || now.Before(start) || !now.Before(expiresAt) ||
-			!deadline.After(now) || deadline.After(now.Add(time.Duration(snapshot.CycleDays)*24*time.Hour)) {
-			return nil, ErrCarpoolInvalidNaturalReset
-		}
+	specs, cycleErr := domain.BuildCarpoolTakeoverCycles(start, now, snapshot, takeover)
+	if cycleErr != nil {
+		return nil, ErrCarpoolInvalidNaturalReset
 	}
 	preview := &domain.CarpoolTermPreview{CalculatedAt: now, Mode: mode, Plan: snapshot, StartsAt: start, ExpiresAt: expiresAt, Warnings: []string{}, OrdinaryBalanceDeductionUSD: decimal.Zero}
 	if takeover != nil {
@@ -333,11 +393,7 @@ func (s *CarpoolService) Preview(ctx context.Context, userID, planID int64, star
 			return nil, fmt.Errorf("complete takeover history requires historical fields")
 		}
 	}
-	var takeoverDeadline *time.Time
-	if takeover != nil {
-		takeoverDeadline = takeover.NextNaturalResetAt
-	}
-	for _, spec := range domain.BuildCarpoolOpeningCycles(start, now, snapshot, takeoverDeadline) {
+	for _, spec := range specs {
 		action := "scheduled"
 		if !now.Before(spec.EndsAt) {
 			action = "missed"
@@ -370,6 +426,9 @@ func (s *CarpoolService) Open(ctx context.Context, userID, actorID int64, input 
 	if err != nil {
 		return nil, err
 	}
+	if err = s.refreshMembershipAuth(ctx, term.UserID); err != nil {
+		return nil, err
+	}
 	return adminTermFrom(term, cycles), nil
 }
 
@@ -380,6 +439,9 @@ func (s *CarpoolService) Renew(ctx context.Context, termID, actorID int64, input
 	}
 	term, cycles, err := s.repo.CreateTerm(ctx, domain.CreateCarpoolTermParams{ScopeID: domain.CarpoolGlobalScopeID, PlanID: input.PlanID, ActorID: actorID, RenewFromTermID: termID, Mode: "new", Notes: input.Notes, Payment: input.Payment, Operation: domain.CarpoolOperation{Kind: "renew_term", ActorID: actorID, Key: key, Fingerprint: fp}})
 	if err != nil {
+		return nil, err
+	}
+	if err = s.refreshMembershipAuth(ctx, term.UserID); err != nil {
 		return nil, err
 	}
 	return adminTermFrom(term, cycles), nil

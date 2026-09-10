@@ -1,0 +1,10 @@
+{
+  "id": "carpool-production-release",
+  "name": "carpool-production-release",
+  "title": "Carpool production rollout with balance-preserving takeover",
+  "status": "in_progress",
+  "dev_type": "fullstack",
+  "priority": "P1",
+  "createdAt": "2026-09-08",
+  "notes": "User approved implementation and production deployment in the current task after reviewing production-release-2026-09-08.md. Preserve all existing work. Trellis scripts are absent; task artifacts maintained directly. Production writes belong to the root agent only."
+}

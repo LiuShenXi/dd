@@ -98,14 +98,37 @@ describe('UserDashboardStats carpool boost', () => {
     wrapper.unmount()
   })
 
-  it('keeps ordinary balance behavior when no active carpool quota exists', async () => {
+  it('keeps ordinary balance behavior for a confirmed non-subscriber', async () => {
     const store = useCarpoolStore()
-    store.details = { ...activeDetails, quota: null }
+    store.details = { ...activeDetails, billing_mode: 'standard', quota: null, term: null }
     const wrapper = mountStats()
     await flushPromises()
 
     expect(wrapper.get('[data-testid="dashboard-funding-label"]').text()).toBe('dashboard.balance')
     expect(wrapper.get('[data-testid="dashboard-funding-amount"]').text()).toBe('$100.00')
+    wrapper.unmount()
+  })
+
+  it.each(['expired', 'terminated', 'pending'] as const)('shows zero for a %s subscription without exposing the retained balance', async (status) => {
+    const store = useCarpoolStore()
+    store.details = { ...activeDetails, billing_mode: 'carpool', quota: null, term: { ...activeDetails.term!, status } }
+    const wrapper = mountStats()
+    await flushPromises()
+    expect(wrapper.get('[data-testid="dashboard-funding-amount"]').text()).toBe('$0.00')
+    expect(wrapper.get('[data-testid="dashboard-funding-label"]').text()).toBe('carpool.availableQuota')
+    expect(wrapper.text()).not.toContain('$100.00')
+    wrapper.unmount()
+  })
+
+  it('keeps an unknown or failed first billing lookup from flashing the retained balance', async () => {
+    const store = useCarpoolStore()
+    const wrapper = mountStats()
+    await flushPromises()
+    expect(wrapper.get('[data-testid="dashboard-funding-amount"]').text()).toBe('--')
+    store.detailsError = true
+    await flushPromises()
+    expect(wrapper.get('[data-testid="dashboard-funding-amount"]').text()).toBe('--')
+    expect(wrapper.text()).not.toContain('$100.00')
     wrapper.unmount()
   })
 

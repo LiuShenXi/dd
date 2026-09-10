@@ -57,7 +57,32 @@ node validation/rolling-reset/seed-fixtures.mjs
 validation/rolling-reset/inject-zero-reset-fixture.sh
 ```
 
-The SQL fixture proves only UI/API projection of a successful zero increment and
-the shifted natural deadline. It does not prove qualification, scheduling,
-cooldown, execution, transactionality or replay; those require the focused real
-PostgreSQL tests.
+The SQL fixture records a closed predecessor and a distinct seven-day successor,
+including balanced expiry/grant ledger entries. It can normalize the original
+zero-reset display fixture only when it has the known synthetic identity and
+initial grant, with no billing requests, consumption or extra balances. Replays
+validate the existing split without creating another cycle. It refuses other
+history and never changes ordinary balances or membership expiry.
+
+This fixture proves UI/API projection only, not qualification, scheduling,
+cooldown or actual reset execution; those require the focused PostgreSQL tests.
+`verify-http.mjs` also asserts the reset predecessor/successor boundary, cycle
+number and seven-day maximum, so old extended-period fixtures fail acceptance.
+
+## Official Global Reset Acceptance
+
+After the current source has been rebuilt at port 38100, back up the synthetic
+database before running `node validation/rolling-reset/verify-official-reset.mjs`.
+This is a mutating acceptance check: it clicks the admin confirmation once and
+immediately resets every effective local test membership. It refuses credentials
+whose source/base URL do not match the synthetic local runtime. Chrome and the
+bundled Codex Playwright runtime are required.
+
+The check verifies authorization and explicit confirmation, cancellation, desktop
+and mobile dialog layout, disabled submission, same-key HTTP replay, global
+target count, numbered history, seven-day deadlines capped at unchanged expiry,
+future/expired exclusion and unchanged ordinary balances. Results and screenshots
+go to `evidence/official-reset-20260908/`. Each deliberate rerun opens another
+cycle. After this real reset, the original fixed one-reset fixture assertions in
+`verify-http.mjs` no longer describe the mutated data; do not normalize the old
+fixture over these newly created history records.

@@ -1,0 +1,52 @@
+[
+  {
+    "name": "active_reset_marker",
+    "status": "active",
+    "cycle": 1,
+    "percent": "100",
+    "available": "550",
+    "desktop_mobile_overflow": false,
+    "reset_annotations": false,
+    "reload": "ok"
+  },
+  {
+    "name": "near_natural_reset",
+    "status": "active",
+    "cycle": 2,
+    "percent": "100",
+    "available": "550",
+    "desktop_mobile_overflow": false,
+    "reset_annotations": false,
+    "reload": "ok"
+  },
+  {
+    "name": "takeover_membership",
+    "status": "active",
+    "cycle": 1,
+    "percent": "56.54545455",
+    "available": "328",
+    "desktop_mobile_overflow": false,
+    "reset_annotations": false,
+    "reload": "ok"
+  },
+  {
+    "name": "future_membership",
+    "status": "pending",
+    "cycle": null,
+    "percent": null,
+    "available": null,
+    "desktop_mobile_overflow": false,
+    "reset_annotations": false,
+    "reload": "ok"
+  },
+  {
+    "name": "expired_membership",
+    "status": "expired",
+    "cycle": null,
+    "percent": null,
+    "available": null,
+    "desktop_mobile_overflow": false,
+    "reset_annotations": false,
+    "reload": "ok"
+  }
+]

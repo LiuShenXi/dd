@@ -11,7 +11,9 @@ import (
 )
 
 type resetRuntimeRepository struct {
-	publishCalls atomic.Int32
+	publishCalls  atomic.Int32
+	officialScope int64
+	officialOp    domain.CarpoolOperation
 }
 
 type resetRuntimeAccountSource struct{ accounts []Account }
@@ -42,6 +44,10 @@ func (r *resetRuntimeRepository) ScheduleResetBatch(context.Context, int64, stri
 }
 func (r *resetRuntimeRepository) ExecuteResetBatch(context.Context, int64, *domain.CarpoolOperation) (*domain.CarpoolResetBatch, error) {
 	return nil, nil
+}
+func (r *resetRuntimeRepository) ExecuteOfficialReset(_ context.Context, scopeID int64, operation domain.CarpoolOperation) (*domain.CarpoolResetBatch, error) {
+	r.officialScope, r.officialOp = scopeID, operation
+	return &domain.CarpoolResetBatch{ScopeID: scopeID, TriggerKind: "official"}, nil
 }
 func (r *resetRuntimeRepository) ListDueResetBatchIDs(context.Context, int) ([]int64, error) {
 	return nil, nil
@@ -96,6 +102,23 @@ func TestProvideCarpoolResetServiceWiresReadersAndHooks(t *testing.T) {
 	hook := quota.observationHook
 	quota.observationMu.RUnlock()
 	require.Same(t, reset, hook)
+}
+
+func TestCarpoolResetService_OfficialRequiresConfirmationAndBuildsOperation(t *testing.T) {
+	repo := &resetRuntimeRepository{}
+	svc := NewCarpoolResetService(repo)
+	_, err := svc.OfficialReset(context.Background(), 7, CarpoolOfficialResetInput{ScopeID: domain.CarpoolGlobalScopeID}, "key")
+	require.ErrorIs(t, err, ErrCarpoolResetInvalid)
+	_, err = svc.OfficialReset(context.Background(), 7, CarpoolOfficialResetInput{ScopeID: 2, Confirmed: true}, "key")
+	require.ErrorIs(t, err, ErrCarpoolResetInvalid)
+
+	batch, err := svc.OfficialReset(context.Background(), 7, CarpoolOfficialResetInput{ScopeID: domain.CarpoolGlobalScopeID, Confirmed: true}, "official-key")
+	require.NoError(t, err)
+	require.EqualValues(t, domain.CarpoolGlobalScopeID, repo.officialScope)
+	require.Equal(t, "reset_official", repo.officialOp.Kind)
+	require.Equal(t, "official-key", repo.officialOp.Key)
+	require.NotEmpty(t, repo.officialOp.Fingerprint)
+	require.Equal(t, "official", batch.TriggerKind)
 }
 
 func TestCarpoolResetServiceSlowObservationDoesNotBlockDueLoop(t *testing.T) {

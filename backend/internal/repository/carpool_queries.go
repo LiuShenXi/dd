@@ -15,14 +15,14 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-const ledgerSelect = `SELECT id,user_id,term_id,cycle_id,event_type,bucket,delta_usd::text,event_key,request_id,api_key_id,reset_batch_id,boost_slot,actor_id,reverses_ledger_id,reason,effective_at,recorded_at FROM carpool_ledger`
+const ledgerSelect = `SELECT id,user_id,term_id,cycle_id,event_type,bucket,delta_usd::text,event_key,request_id,api_key_id,reset_batch_id,boost_slot,actor_id,reverses_ledger_id,reason,effective_at,recorded_at,COALESCE((SELECT u.email FROM users u WHERE u.id=carpool_ledger.user_id),'') FROM carpool_ledger`
 
 func scanLedgerRows(rows *sql.Rows) ([]domain.CarpoolLedgerEntry, error) {
 	out := make([]domain.CarpoolLedgerEntry, 0)
 	for rows.Next() {
 		var entry domain.CarpoolLedgerEntry
 		var delta string
-		if err := rows.Scan(&entry.ID, &entry.UserID, &entry.TermID, &entry.CycleID, &entry.EventType, &entry.Bucket, &delta, &entry.EventKey, &entry.RequestID, &entry.APIKeyID, &entry.ResetBatchID, &entry.BoostSlot, &entry.ActorID, &entry.ReversesLedgerID, &entry.Reason, &entry.EffectiveAt, &entry.RecordedAt); err != nil {
+		if err := rows.Scan(&entry.ID, &entry.UserID, &entry.TermID, &entry.CycleID, &entry.EventType, &entry.Bucket, &delta, &entry.EventKey, &entry.RequestID, &entry.APIKeyID, &entry.ResetBatchID, &entry.BoostSlot, &entry.ActorID, &entry.ReversesLedgerID, &entry.Reason, &entry.EffectiveAt, &entry.RecordedAt, &entry.UserEmail); err != nil {
 			return nil, err
 		}
 		var err error
@@ -36,7 +36,14 @@ func scanLedgerRows(rows *sql.Rows) ([]domain.CarpoolLedgerEntry, error) {
 }
 
 func (r *CarpoolRepository) GetUserDetails(ctx context.Context, userID int64) (*domain.CarpoolUserDetails, error) {
-	details := &domain.CarpoolUserDetails{Timezone: domain.CarpoolTimezone, ResetWindow: domain.CarpoolUserResetWindow{Status: "none"}}
+	details := &domain.CarpoolUserDetails{BillingMode: "standard", Timezone: domain.CarpoolTimezone, ResetWindow: domain.CarpoolUserResetWindow{Status: "none"}}
+	var carpoolBilling bool
+	if err := r.db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM carpool_billing_bindings WHERE user_id=$1) OR EXISTS(SELECT 1 FROM carpool_terms WHERE user_id=$1)`, userID).Scan(&carpoolBilling); err != nil {
+		return nil, err
+	}
+	if carpoolBilling {
+		details.BillingMode = "carpool"
+	}
 	var used string
 	err := r.db.QueryRowContext(ctx, `SELECT COALESCE(SUM(CASE WHEN l.event_type IN ('usage','takeover_historical_usage') AND l.delta_usd < 0 THEN -l.delta_usd WHEN l.reverses_ledger_id IS NOT NULL AND l.delta_usd > 0 AND reversed.event_type IN ('usage','takeover_historical_usage') AND reversed.delta_usd < 0 THEN -l.delta_usd ELSE 0 END),0)::text,COALESCE(BOOL_AND(t.history_complete),TRUE),MIN(t.statistics_since) FROM carpool_terms t LEFT JOIN carpool_ledger l ON l.term_id=t.id LEFT JOIN carpool_ledger reversed ON reversed.id=l.reverses_ledger_id WHERE t.user_id=$1`, userID).Scan(&used, &details.Usage.HistoryComplete, &details.Usage.StatisticsSince)
 	if err != nil {
@@ -101,13 +108,32 @@ func (r *CarpoolRepository) GetUserDetails(ctx context.Context, userID int64) (*
 	if err != nil {
 		return nil, err
 	}
+	if effectiveStatus == domain.CarpoolTermActive {
+		for attempt := 0; attempt < 4 && !hasActiveCarpoolCycleAt(cycles, details.ServerNow); attempt++ {
+			_, details.ServerNow, err = r.ensureCurrentCycleForUserDetails(ctx, term.ID)
+			if err != nil {
+				if errors.Is(err, errCarpoolCycleBoundaryMoved) {
+					continue
+				}
+				return nil, err
+			}
+			cycles, err = r.ListTermCycles(ctx, term.ID)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if !hasActiveCarpoolCycleAt(cycles, details.ServerNow) {
+			return nil, fmt.Errorf("read carpool user details: %w", errCarpoolCycleBoundaryMoved)
+		}
+	}
 	userTerm := &domain.CarpoolUserTerm{Status: effectiveStatus, StartsAt: term.StartsAt, ExpiresAt: term.ExpiresAt, ResetCountBasis: "current_term", ResetEvents: make([]domain.CarpoolUserResetEvent, 0), Cycles: make([]domain.CarpoolUserCycle, 0, len(cycles)), ResetMode: term.PlanSnapshot.EffectiveResetMode(), NextNaturalResetAt: domain.CarpoolNextNaturalResetAt(effectiveStatus, term.ExpiresAt, details.ServerNow, cycles)}
 	for _, cycle := range cycles {
 		userTerm.Cycles = append(userTerm.Cycles, domain.CarpoolUserCycle{CycleNo: cycle.CycleNo, StartsAt: cycle.StartsAt, EndsAt: cycle.EndsAt, Status: cycle.State})
 		if effectiveStatus == domain.CarpoolTermActive && cycle.State == domain.CarpoolCycleActive && !details.ServerNow.Before(cycle.StartsAt) && details.ServerNow.Before(cycle.EndsAt) {
 			n := cycle.CycleNo
 			userTerm.CurrentCycleNo = &n
-			details.Quota = &domain.CarpoolUserQuota{AvailableUSD: cycle.AvailableUSD()}
+			available := cycle.AvailableUSD()
+			details.Quota = &domain.CarpoolUserQuota{AvailableUSD: available, RemainingPercent: carpoolBaseRemainingPercent(cycle, available)}
 		}
 	}
 	resetRows, err := r.db.QueryContext(ctx, `
@@ -140,6 +166,25 @@ func (r *CarpoolRepository) GetUserDetails(ctx context.Context, userID int64) (*
 	userTerm.ResetCount = len(userTerm.ResetEvents)
 	details.Term = userTerm
 	return details, nil
+}
+
+func hasActiveCarpoolCycleAt(cycles []domain.CarpoolCycle, at time.Time) bool {
+	for _, cycle := range cycles {
+		if cycle.State == domain.CarpoolCycleActive && !at.Before(cycle.StartsAt) && at.Before(cycle.EndsAt) {
+			return true
+		}
+	}
+	return false
+}
+
+func carpoolBaseRemainingPercent(cycle domain.CarpoolCycle, available decimal.Decimal) *decimal.Decimal {
+	if !cycle.BaseQuotaUSD.IsPositive() {
+		return nil
+	}
+	numerator := decimal.Min(decimal.Max(cycle.BaseBalanceUSD, decimal.Zero), decimal.Max(available, decimal.Zero))
+	percent := numerator.Div(cycle.BaseQuotaUSD).Mul(decimal.NewFromInt(100))
+	percent = decimal.Min(decimal.NewFromInt(100), decimal.Max(percent, decimal.Zero)).Round(8)
+	return &percent
 }
 
 func (r *CarpoolRepository) ensureCurrentCycleForUserDetails(ctx context.Context, termID int64) (*domain.CarpoolCycle, time.Time, error) {
@@ -215,7 +260,7 @@ func (r *CarpoolRepository) ListAdminTerms(ctx context.Context, filters domain.C
 		return nil, 0, err
 	}
 	args = append(args, filters.PageSize, (filters.Page-1)*filters.PageSize)
-	query := `SELECT t.id,t.user_id,t.scope_id,t.group_id,t.plan_id,t.plan_snapshot::text,t.starts_at,t.expires_at,t.status,t.boost_used,t.history_complete,t.statistics_since,COALESCE(SUM(CASE WHEN p.payment_kind='payment' THEN p.amount_cny ELSE -p.amount_cny END),0)::text,t.created_at FROM carpool_terms t LEFT JOIN carpool_payments p ON p.term_id=t.id WHERE ` + predicate + fmt.Sprintf(` GROUP BY t.id ORDER BY t.starts_at DESC,t.id DESC LIMIT $%d OFFSET $%d`, len(args)-1, len(args))
+	query := `SELECT t.id,t.user_id,t.scope_id,t.group_id,t.plan_id,t.plan_snapshot::text,t.starts_at,t.expires_at,t.status,t.boost_used,t.history_complete,t.statistics_since,COALESCE(SUM(CASE WHEN p.payment_kind='payment' THEN p.amount_cny ELSE -p.amount_cny END),0)::text,t.created_at,COALESCE((SELECT u.email FROM users u WHERE u.id=t.user_id),'') FROM carpool_terms t LEFT JOIN carpool_payments p ON p.term_id=t.id WHERE ` + predicate + fmt.Sprintf(` GROUP BY t.id ORDER BY t.starts_at DESC,t.id DESC LIMIT $%d OFFSET $%d`, len(args)-1, len(args))
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, 0, err
@@ -224,7 +269,7 @@ func (r *CarpoolRepository) ListAdminTerms(ctx context.Context, filters domain.C
 	for rows.Next() {
 		var item domain.CarpoolAdminTerm
 		var snapshot, payment string
-		if err = rows.Scan(&item.ID, &item.UserID, &item.ScopeID, &item.GroupID, &item.PlanID, &snapshot, &item.StartsAt, &item.ExpiresAt, &item.Status, &item.BoostUsed, &item.HistoryComplete, &item.StatisticsSince, &payment, &item.CreatedAt); err != nil {
+		if err = rows.Scan(&item.ID, &item.UserID, &item.ScopeID, &item.GroupID, &item.PlanID, &snapshot, &item.StartsAt, &item.ExpiresAt, &item.Status, &item.BoostUsed, &item.HistoryComplete, &item.StatisticsSince, &payment, &item.CreatedAt, &item.UserEmail); err != nil {
 			return nil, 0, err
 		}
 		if err = json.Unmarshal([]byte(snapshot), &item.PlanSnapshot); err != nil {
@@ -341,7 +386,7 @@ func (r *CarpoolRepository) ListAdminCycles(ctx context.Context, filters domain.
 		return nil, 0, err
 	}
 	args = append(args, filters.PageSize, (filters.Page-1)*filters.PageSize)
-	rows, err := r.db.QueryContext(ctx, `SELECT c.id,c.term_id,t.user_id,c.cycle_no,c.starts_at,c.ends_at,c.base_quota_usd::text,c.base_balance_usd::text,c.boost_balance_usd::text,c.manual_balance_usd::text,GREATEST(0,c.base_balance_usd+c.boost_balance_usd+c.manual_balance_usd)::text,a.initial_granted_usd::text,a.reset_granted_usd::text,a.boost_granted_usd::text,a.adjustment_net_usd::text,a.used_usd::text,a.expired_usd::text,c.state,c.revision FROM carpool_cycles c JOIN carpool_terms t ON t.id=c.term_id LEFT JOIN LATERAL (SELECT COALESCE(SUM(CASE WHEN l.event_type IN ('cycle_initial','takeover_opening','takeover_transfer_funded') AND l.delta_usd > 0 THEN l.delta_usd ELSE 0 END),0) AS initial_granted_usd,COALESCE(SUM(CASE WHEN l.event_type='reset' AND l.delta_usd > 0 THEN l.delta_usd ELSE 0 END),0) AS reset_granted_usd,COALESCE(SUM(CASE WHEN l.event_type='boost' AND l.delta_usd > 0 THEN l.delta_usd ELSE 0 END),0) AS boost_granted_usd,COALESCE(SUM(CASE WHEN l.event_type='adjustment' THEN l.delta_usd ELSE 0 END),0) AS adjustment_net_usd,COALESCE(SUM(CASE WHEN l.event_type='usage' AND l.delta_usd < 0 THEN -l.delta_usd WHEN l.reverses_ledger_id IS NOT NULL AND l.delta_usd > 0 AND reversed.event_type='usage' AND reversed.delta_usd < 0 THEN -l.delta_usd ELSE 0 END),0) AS used_usd,COALESCE(SUM(CASE WHEN l.event_type='expiry' AND l.delta_usd < 0 THEN -l.delta_usd ELSE 0 END),0) AS expired_usd FROM carpool_ledger l LEFT JOIN carpool_ledger reversed ON reversed.id=l.reverses_ledger_id WHERE l.cycle_id=c.id) a ON TRUE WHERE `+predicate+fmt.Sprintf(` ORDER BY c.starts_at DESC,c.id DESC LIMIT $%d OFFSET $%d`, len(args)-1, len(args)), args...)
+	rows, err := r.db.QueryContext(ctx, `SELECT c.id,c.term_id,t.user_id,c.cycle_no,c.starts_at,c.ends_at,c.base_quota_usd::text,c.base_balance_usd::text,c.boost_balance_usd::text,c.manual_balance_usd::text,GREATEST(0,c.base_balance_usd+c.boost_balance_usd+c.manual_balance_usd)::text,a.initial_granted_usd::text,a.reset_granted_usd::text,a.boost_granted_usd::text,a.adjustment_net_usd::text,a.used_usd::text,a.expired_usd::text,c.state,c.revision,COALESCE((SELECT u.email FROM users u WHERE u.id=t.user_id),'') FROM carpool_cycles c JOIN carpool_terms t ON t.id=c.term_id LEFT JOIN LATERAL (SELECT COALESCE(SUM(CASE WHEN l.event_type IN ('cycle_initial','takeover_opening','takeover_transfer_funded') AND l.delta_usd > 0 THEN l.delta_usd ELSE 0 END),0) AS initial_granted_usd,COALESCE(SUM(CASE WHEN l.event_type='reset' AND l.delta_usd > 0 THEN l.delta_usd ELSE 0 END),0) AS reset_granted_usd,COALESCE(SUM(CASE WHEN l.event_type='boost' AND l.delta_usd > 0 THEN l.delta_usd ELSE 0 END),0) AS boost_granted_usd,COALESCE(SUM(CASE WHEN l.event_type IN ('adjustment','reset_carry') THEN l.delta_usd ELSE 0 END),0) AS adjustment_net_usd,COALESCE(SUM(CASE WHEN l.event_type='usage' AND l.delta_usd < 0 THEN -l.delta_usd WHEN l.reverses_ledger_id IS NOT NULL AND l.delta_usd > 0 AND reversed.event_type='usage' AND reversed.delta_usd < 0 THEN -l.delta_usd ELSE 0 END),0) AS used_usd,COALESCE(SUM(CASE WHEN l.event_type='expiry' AND l.delta_usd < 0 THEN -l.delta_usd ELSE 0 END),0) AS expired_usd FROM carpool_ledger l LEFT JOIN carpool_ledger reversed ON reversed.id=l.reverses_ledger_id WHERE l.cycle_id=c.id) a ON TRUE WHERE `+predicate+fmt.Sprintf(` ORDER BY c.starts_at DESC,c.id DESC LIMIT $%d OFFSET $%d`, len(args)-1, len(args)), args...)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -350,7 +395,7 @@ func (r *CarpoolRepository) ListAdminCycles(ctx context.Context, filters domain.
 	for rows.Next() {
 		var item domain.CarpoolAdminCycle
 		var quota, base, boost, manual, available, initial, reset, boostGranted, adjustment, used, expired string
-		if err = rows.Scan(&item.ID, &item.TermID, &item.UserID, &item.CycleNo, &item.StartsAt, &item.EndsAt, &quota, &base, &boost, &manual, &available, &initial, &reset, &boostGranted, &adjustment, &used, &expired, &item.State, &item.Revision); err != nil {
+		if err = rows.Scan(&item.ID, &item.TermID, &item.UserID, &item.CycleNo, &item.StartsAt, &item.EndsAt, &quota, &base, &boost, &manual, &available, &initial, &reset, &boostGranted, &adjustment, &used, &expired, &item.State, &item.Revision, &item.UserEmail); err != nil {
 			return nil, 0, err
 		}
 		for target, raw := range map[*decimal.Decimal]string{&item.BaseQuotaUSD: quota, &item.BaseBalanceUSD: base, &item.BoostBalanceUSD: boost, &item.ManualBalanceUSD: manual, &item.AvailableUSD: available, &item.InitialGrantedUSD: initial, &item.ResetGrantedUSD: reset, &item.BoostGrantedUSD: boostGranted, &item.AdjustmentNetUSD: adjustment, &item.UsedUSD: used, &item.ExpiredUSD: expired} {
@@ -447,7 +492,7 @@ func (r *CarpoolRepository) ListBillingExceptions(ctx context.Context, filters d
 		return nil, 0, err
 	}
 	args = append(args, filters.PageSize, (filters.Page-1)*filters.PageSize)
-	rows, err := r.db.QueryContext(ctx, `SELECT b.id,b.request_id,b.api_key_id,b.user_id,b.group_id,b.term_id,b.cycle_id,b.admitted_at,b.status,b.actual_cost_usd::text,b.retry_count,b.last_error,b.updated_at,b.resolution,b.resolved_at,b.resolved_by,b.resolution_reason FROM carpool_billing_requests b WHERE `+predicate+fmt.Sprintf(` ORDER BY b.updated_at DESC,b.id DESC LIMIT $%d OFFSET $%d`, len(args)-1, len(args)), args...)
+	rows, err := r.db.QueryContext(ctx, `SELECT b.id,b.request_id,b.api_key_id,b.user_id,b.group_id,b.term_id,b.cycle_id,b.admitted_at,b.status,b.actual_cost_usd::text,b.retry_count,b.last_error,b.updated_at,b.resolution,b.resolved_at,b.resolved_by,b.resolution_reason,COALESCE((SELECT u.email FROM users u WHERE u.id=b.user_id),'') FROM carpool_billing_requests b WHERE `+predicate+fmt.Sprintf(` ORDER BY b.updated_at DESC,b.id DESC LIMIT $%d OFFSET $%d`, len(args)-1, len(args)), args...)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -456,7 +501,7 @@ func (r *CarpoolRepository) ListBillingExceptions(ctx context.Context, filters d
 	for rows.Next() {
 		var item domain.CarpoolBillingException
 		var knownCost, lastError, resolution, reason sql.NullString
-		if err = rows.Scan(&item.ID, &item.RequestID, &item.APIKeyID, &item.UserID, &item.GroupID, &item.TermID, &item.CycleID, &item.AdmittedAt, &item.Status, &knownCost, &item.RetryCount, &lastError, &item.UpdatedAt, &resolution, &item.ResolvedAt, &item.ResolvedBy, &reason); err != nil {
+		if err = rows.Scan(&item.ID, &item.RequestID, &item.APIKeyID, &item.UserID, &item.GroupID, &item.TermID, &item.CycleID, &item.AdmittedAt, &item.Status, &knownCost, &item.RetryCount, &lastError, &item.UpdatedAt, &resolution, &item.ResolvedAt, &item.ResolvedBy, &reason, &item.UserEmail); err != nil {
 			return nil, 0, err
 		}
 		if knownCost.Valid {

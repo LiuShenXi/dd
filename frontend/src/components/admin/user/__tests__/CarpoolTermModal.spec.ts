@@ -78,7 +78,7 @@ const user = { id: 42, email: 'synthetic@example.invalid' } as AdminUser
 const stubs = {
   BaseDialog: { props: ['show'], template: '<div v-if="show"><slot /></div>' },
   LoadingSpinner: true,
-  Select: { name: 'Select', props: ['modelValue'], emits: ['update:modelValue'], template: '<span class="select-stub">{{ modelValue }}</span>' },
+  Select: { name: 'Select', props: ['modelValue', 'options'], emits: ['update:modelValue'], template: '<span class="select-stub">{{ modelValue }}</span>' },
   Icon: true,
 }
 
@@ -218,6 +218,76 @@ describe('CarpoolTermModal', () => {
     await flushPromises()
 
     expect(api.previewTerm).toHaveBeenCalledWith(42, { plan_id: 3, starts_at: activeTerm.expires_at, mode: 'new', takeover: null })
+  })
+
+  it.each([{ quota: '450.00000000', days: 28, display: '$450.00' }, { quota: '1000.00000000', days: 28, display: '$1,000.00' }, { quota: '550.00000000', days: 7, display: '$550.00' }])('preserves customized $quota quota and $days days in default renewal and server preview', async ({ quota, days, display }) => {
+    const snapshot = { ...plan, weekly_quota_usd: quota, duration_days: days, weekly_quota_customized: quota !== plan.weekly_quota_usd, duration_customized: days !== plan.duration_days }
+    const term = { ...activeTerm, group_id: 2, plan_snapshot: snapshot }
+    api.getAll.mockResolvedValue([{ id: 2, name: 'Original routing', subscription_type: 'standard', platform: 'openai', status: 'active' }])
+    api.listTerms.mockResolvedValue({ items: [term], total: 1, page: 1, page_size: 20 })
+    api.previewTerm.mockResolvedValue({ calculated_at: term.starts_at, mode: 'new', plan: snapshot, starts_at: term.expires_at, expires_at: '2026-10-06T12:00:00+08:00', cycles: [], warnings: [] })
+    const wrapper = mount(CarpoolTermModal, { props: { show: true, user }, global: { stubs } })
+    await flushPromises()
+    await button(wrapper, 'admin.carpool.actions.renew').trigger('click')
+    expect(wrapper.findComponent({ name: 'Select' }).props('modelValue')).toBe(0)
+    await button(wrapper, 'admin.carpool.preview.action').trigger('click')
+    await flushPromises()
+    expect(api.previewTerm).toHaveBeenCalledWith(42, { plan_id: 0, renew_from_term_id: 9, starts_at: term.expires_at, mode: 'new', takeover: null })
+    expect(wrapper.get('dl').text()).toContain(display)
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(api.renewTerm).toHaveBeenCalledWith(9, { plan_id: 0, notes: null, payment: null }, expect.any(String))
+    expect(api.openTerm).not.toHaveBeenCalled()
+  })
+
+  it('sends an explicit new plan when changing a customized renewal', async () => {
+    api.listTerms.mockResolvedValue({ items: [{ ...activeTerm, plan_snapshot: { ...plan, weekly_quota_usd: '450.00000000', weekly_quota_customized: true } }], total: 1 })
+    api.listPlans.mockResolvedValue([plan, largerPlan])
+    const wrapper = mount(CarpoolTermModal, { props: { show: true, user }, global: { stubs } })
+    await flushPromises()
+    await button(wrapper, 'admin.carpool.actions.renew').trigger('click')
+    await wrapper.findComponent({ name: 'Select' }).vm.$emit('update:modelValue', largerPlan.plan_id)
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(api.renewTerm).toHaveBeenCalledWith(9, { plan_id: largerPlan.plan_id, notes: null, payment: null }, expect.any(String))
+  })
+
+  it('opens former members and new users on the original standard group', async () => {
+    api.getAll.mockResolvedValue([{ id: 2, name: 'Original routing', subscription_type: 'standard', platform: 'openai', status: 'active' }])
+    api.listTerms.mockResolvedValue({ items: [{ ...activeTerm, group_id: 2, status: 'expired' }], total: 1 })
+    const wrapper = mount(CarpoolTermModal, { props: { show: true, user }, global: { stubs } })
+    await flushPromises()
+    await button(wrapper, 'admin.carpool.actions.open').trigger('click')
+    expect(wrapper.findAllComponents({ name: 'Select' })[1].props('modelValue')).toBe(2)
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(api.openTerm).toHaveBeenCalledWith(42, expect.objectContaining({ group_id: 2, plan_id: 3, mode: 'new' }), expect.any(String))
+    api.openTerm.mockClear()
+    api.listTerms.mockResolvedValue({ items: [], total: 0 })
+    await wrapper.setProps({ user: { ...user, id: 43 } })
+    await flushPromises()
+    expect(wrapper.findAllComponents({ name: 'Select' })[1].props('options')).toEqual([{ value: 2, label: 'Original routing' }])
+    expect(wrapper.findAllComponents({ name: 'Select' })[1].props('modelValue')).toBe(2)
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(api.openTerm).toHaveBeenCalledWith(43, expect.objectContaining({ group_id: 2, plan_id: 3, mode: 'new', starts_at: null }), expect.any(String))
+  })
+
+  it('offers only active OpenAI standard or carpool groups for new membership', async () => {
+    api.getAll.mockResolvedValue([
+      { id: 2, name: 'Original routing', subscription_type: 'standard', platform: 'openai', status: 'active' },
+      { id: 8, name: 'Existing carpool', subscription_type: 'carpool', platform: 'openai', status: 'active' },
+      { id: 9, name: 'Inactive', subscription_type: 'standard', platform: 'openai', status: 'inactive' },
+      { id: 10, name: 'Other platform', subscription_type: 'standard', platform: 'anthropic', status: 'active' },
+      { id: 11, name: 'Subscription billing', subscription_type: 'subscription', platform: 'openai', status: 'active' },
+    ])
+    const wrapper = mount(CarpoolTermModal, { props: { show: true, user }, global: { stubs } })
+    await flushPromises()
+    expect(wrapper.findAllComponents({ name: 'Select' })[1].props('options')).toEqual([
+      { value: 2, label: 'Original routing' }, { value: 8, label: 'Existing carpool' },
+    ])
+    expect(zhAdminCarpool.carpool.fields.group).toBe('分组')
+    expect(enAdminCarpool.carpool.fields.group).toBe('Group')
   })
 
   it.each([

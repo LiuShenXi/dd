@@ -24,11 +24,12 @@
         </div>
         <div class="mt-4 flex flex-wrap gap-2">
           <button v-if="relevantTerm.status === 'active'" type="button" class="btn btn-secondary" @click="startRenew">{{ t('admin.carpool.actions.renew') }}</button>
+          <button v-if="relevantTerm.status === 'expired' || relevantTerm.status === 'terminated'" type="button" class="btn btn-secondary" @click="startOpen">{{ t('admin.carpool.actions.open') }}</button>
           <button type="button" class="btn btn-secondary" @click="router.push('/admin/carpool'); emit('close')">{{ t('admin.carpool.actions.openManagement') }}</button>
         </div>
       </section>
 
-      <form v-if="!relevantTerm || formMode === 'renew'" class="space-y-5" @submit.prevent="submit">
+      <form v-if="!relevantTerm || formMode === 'renew' || formMode === 'open'" class="space-y-5" @submit.prevent="submit">
         <div v-if="formMode === 'open'" class="inline-flex rounded-lg bg-gray-100 p-1 dark:bg-dark-700">
           <button v-for="mode in openingModes" :key="mode.value" type="button" class="rounded-md px-3 py-1.5 text-sm font-medium" :class="openingMode === mode.value ? 'bg-white text-gray-900 shadow-sm dark:bg-dark-800 dark:text-white' : 'text-gray-500 dark:text-gray-300'" @click="openingMode = mode.value">
             {{ mode.label }}
@@ -171,17 +172,26 @@ const payment = reactive({ amount_cny: '', paid_at: '', channel: 'manual', exter
 const relevantTerm = computed(() => terms.value.find((term) => term.status === 'active' || term.status === 'pending') ?? terms.value[0] ?? null)
 const relevantNextNaturalReset = computed(() => relevantTerm.value ? adminNextNaturalResetAt(relevantTerm.value) : null)
 const enabledPlans = computed(() => plans.value.filter((plan) => plan.enabled))
-const planOptions = computed(() => enabledPlans.value.map((plan) => ({ value: plan.plan_id, label: `${plan.name} · ¥${money(plan.list_price_cny)} · $${money(plan.weekly_quota_usd)}/7d` })))
-const groupOptions = computed(() => groups.value.filter((group) => group.subscription_type === 'carpool' && group.platform === 'openai' && group.status === 'active').map((group) => ({ value: group.id, label: group.name })))
-const selectedPlan = computed(() => plans.value.find((plan) => plan.plan_id === selectedPlanId.value) ?? null)
+const planOptions = computed(() => {
+  const options = enabledPlans.value.map((plan) => ({ value: plan.plan_id, label: `${plan.name} · ¥${money(plan.list_price_cny)} · $${money(plan.weekly_quota_usd)}/7d` }))
+  const snapshot = relevantTerm.value?.plan_snapshot
+  if (formMode.value !== 'renew' || !snapshot || !(snapshot.weekly_quota_customized || snapshot.duration_customized) || !enabledPlans.value.some((plan) => plan.code === snapshot.code)) return options
+  return [{ value: 0, label: t('admin.carpool.renewal.keepCurrentTerms', { quota: money(snapshot.weekly_quota_usd), days: snapshot.duration_days }) }, ...options]
+})
+const groupOptions = computed(() => groups.value.filter((group) => (
+  group.subscription_type === 'carpool' || group.subscription_type === 'standard'
+) && group.platform === 'openai' && group.status === 'active').map((group) => ({ value: group.id, label: group.name })))
+const selectedPlan = computed(() => selectedPlanId.value === 0
+  ? enabledPlans.value.find((plan) => plan.code === relevantTerm.value?.plan_snapshot.code) ?? null
+  : plans.value.find((plan) => plan.plan_id === selectedPlanId.value) ?? null)
 const previewNextNaturalReset = computed(() => preview.value ? previewNextNaturalResetAt(preview.value) : null)
 const takeoverBoostUsedValid = computed(() => openingMode.value !== 'takeover' || (
   Number.isInteger(takeover.boost_used)
   && takeover.boost_used >= 0
   && takeover.boost_used <= (selectedPlan.value?.boost_count ?? -1)
 ))
-const canPreview = computed(() => !!props.user && !!selectedPlanId.value && takeoverBoostUsedValid.value)
-const canSubmit = computed(() => !!props.user && !!selectedPlanId.value && takeoverBoostUsedValid.value && (formMode.value === 'renew' || !!selectedGroupId.value))
+const canPreview = computed(() => !!props.user && selectedPlanId.value !== null && takeoverBoostUsedValid.value)
+const canSubmit = computed(() => canPreview.value && (formMode.value === 'renew' || !!selectedGroupId.value))
 const openingModes = computed(() => [{ value: 'new' as const, label: t('admin.carpool.modes.new') }, { value: 'takeover' as const, label: t('admin.carpool.modes.takeover') }])
 const takeoverBalanceFields = computed(() => [
   { key: 'current_base_balance_usd' as const, label: t('admin.carpool.takeover.baseBalance') },
@@ -239,10 +249,11 @@ async function load() {
   } catch (error) { if (requestGeneration === loadGeneration) { loadError.value = true; console.error('Failed to load user carpool:', error) } } finally { if (requestGeneration === loadGeneration) loading.value = false }
 }
 
-function startRenew() { formMode.value = 'renew'; const planCode = relevantTerm.value?.plan_snapshot.code; selectedPlanId.value = enabledPlans.value.find((plan) => plan.code === planCode)?.plan_id ?? null; preview.value = null; submitError.value = ''; operationKey = createKey() }
+function startRenew() { formMode.value = 'renew'; const planCode = relevantTerm.value?.plan_snapshot.code; selectedPlanId.value = planOptions.value.some((option) => option.value === 0) ? 0 : enabledPlans.value.find((plan) => plan.code === planCode)?.plan_id ?? null; preview.value = null; submitError.value = ''; operationKey = createKey() }
+function startOpen() { resetForm(); formMode.value = 'open'; selectedGroupId.value = groupOptions.value.find((group) => group.value === relevantTerm.value?.group_id)?.value ?? groupOptions.value[0]?.value ?? null }
 
 async function requestPreview() {
-  if (!props.user || !selectedPlanId.value) return
+  if (!props.user || selectedPlanId.value === null) return
   const requestGeneration = ++previewGeneration
   const userId = props.user.id
   const request = buildPreviewRequest()
@@ -259,13 +270,13 @@ async function requestPreview() {
 }
 
 function buildPreviewRequest(): CarpoolPreviewRequest | null {
-  if (!selectedPlanId.value) return null
+  if (selectedPlanId.value === null) return null
   const renewal = formMode.value === 'renew' && relevantTerm.value
-  return { plan_id: selectedPlanId.value, starts_at: renewal ? relevantTerm.value!.expires_at : shanghaiInstant(startsAtLocal.value), mode: renewal ? 'new' : openingMode.value, takeover: renewal ? null : takeoverInput() }
+  return { plan_id: selectedPlanId.value, starts_at: renewal ? relevantTerm.value!.expires_at : shanghaiInstant(startsAtLocal.value), mode: renewal ? 'new' : openingMode.value, takeover: renewal ? null : takeoverInput(), ...(renewal && selectedPlanId.value === 0 ? { renew_from_term_id: renewal.id } : {}) }
 }
 
 async function submit() {
-  if (!props.user || !selectedPlanId.value || !canSubmit.value) return
+  if (!props.user || selectedPlanId.value === null || !canSubmit.value) return
   const requestGeneration = ++submitGeneration
   const userId = props.user.id
   const requestKey = operationKey

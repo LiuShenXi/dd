@@ -141,6 +141,12 @@ docs/*
 !docs/COMPOSITE_GROUPS.md
 !docs/PLUGIN_DEVELOPMENT.md
 !docs/channel-monitor-v2-safe-defaults.md
+!docs/OPERATIONS.md
+!docs/operations/
+docs/operations/*
+!docs/operations/2026-09-10-migration.md
+!docs/operations/2026-09-10-taiwan-egress.md
+!docs/operations/2026-09-10-dns-incidents.md
 !docs/legal/
 !docs/legal/*.md
 !docs/screenshots/

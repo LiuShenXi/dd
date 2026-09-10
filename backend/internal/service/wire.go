@@ -789,7 +789,9 @@ func ProvideSettingService(settingRepo SettingRepository, groupRepo GroupReposit
 func ProvideCarpoolService(repo CarpoolRepositoryAPI, billingApplier UsageBillingRepository) *CarpoolService {
 	svc := NewCarpoolService(repo)
 	svc.SetUsageBillingApplier(billingApplier)
-	svc.Start(context.Background())
+	if os.Getenv("CARPOOL_BACKGROUND_ENABLED") != "false" {
+		svc.Start(context.Background())
+	}
 	return svc
 }
 
@@ -802,10 +804,12 @@ func ProvideCarpoolResetService(
 ) *CarpoolResetService {
 	svc := NewCarpoolResetService(repo)
 	svc.SetObservationScanner(accountRepo, quota)
-	quota.SetResetObservationHook(svc)
 	announcements.SetCarpoolAudienceReader(svc)
 	carpool.SetResetWindowReader(svc)
-	svc.Start(context.Background())
+	if os.Getenv("CARPOOL_BACKGROUND_ENABLED") != "false" {
+		quota.SetResetObservationHook(svc)
+		svc.Start(context.Background())
+	}
 	return svc
 }
 
@@ -836,10 +840,12 @@ func ProvideAPIKeyService(
 	cfg *config.Config,
 	billingCacheService *BillingCacheService,
 	concurrencyService *ConcurrencyService,
+	carpoolService *CarpoolService,
 ) *APIKeyService {
 	svc := NewAPIKeyService(apiKeyRepo, userRepo, groupRepo, userSubRepo, userGroupRateRepo, cache, cfg)
 	svc.SetRateLimitCacheInvalidator(billingCacheService)
 	svc.SetConcurrencyService(concurrencyService)
+	carpoolService.SetAuthInvalidator(svc)
 	return svc
 }
 

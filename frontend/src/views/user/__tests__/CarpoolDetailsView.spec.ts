@@ -47,7 +47,7 @@ const pendingDetails: CarpoolDetails = {
 
 const activeDetails: CarpoolDetails = {
   ...pendingDetails,
-  quota: { available_usd: '838.00000000' },
+  quota: { available_usd: '838.00000000', remaining_percent: '99.00000000' },
   usage: { total_used_usd: '12.00000000', history_complete: true, statistics_since: '2026-09-01T12:00:00+08:00' },
   term: {
     ...pendingDetails.term!,
@@ -105,7 +105,7 @@ describe('CarpoolDetailsView', () => {
     vi.unstubAllGlobals()
   })
 
-  it('renders a future rolling term as one continuous membership rail', () => {
+  it('renders a future rolling term with unavailable quota instead of a false zero', () => {
     const store = useCarpoolStore()
     store.details = pendingDetails
     vi.spyOn(store, 'fetchDetails').mockResolvedValue(pendingDetails)
@@ -124,13 +124,11 @@ describe('CarpoolDetailsView', () => {
     expect(wrapper.text()).toContain('Not started yet')
     expect(wrapper.text()).toContain('Times shown in Asia/Shanghai')
     expect(wrapper.text()).toContain('Earlier usage history is unavailable')
-    expect(wrapper.get('[data-testid="carpool-time-rail"]').attributes('style')).toContain('1fr')
-    expect(wrapper.findAll('[data-testid="carpool-time-rail"] > div')).toHaveLength(1)
+    expect(wrapper.get('[data-testid="carpool-cycle-quota"]').text()).toContain('Quota unavailable')
+    expect(wrapper.find('[data-testid="carpool-quota-progress"]').exists()).toBe(false)
     expect(wrapper.get('[data-testid="carpool-next-natural-refill"]').text()).toContain('Next natural refill')
     expect(wrapper.get('[data-testid="carpool-next-natural-refill"]').text()).toContain('09/14/2026')
     expect(wrapper.get('[data-testid="carpool-membership-expiry"]').text()).toContain('Fixed membership expiry')
-    expect(wrapper.find('[data-testid="carpool-cycle-labels"]').exists()).toBe(false)
-    expect(wrapper.get('[data-testid="carpool-time-rail"]').text().toLowerCase()).not.toContain('quota')
     expect(wrapper.find('[data-testid="carpool-available-quota"]').exists()).toBe(false)
     wrapper.unmount()
   })
@@ -145,36 +143,11 @@ describe('CarpoolDetailsView', () => {
     expect(quota.text()).toContain('Carpool available quota')
     expect(quota.text()).toContain('$838.00')
     expect(quota.text()).toContain('Separate from ordinary account balance')
-    wrapper.unmount()
-  })
-
-  it('preserves a legacy five-cycle snapshot shape from its actual dates', () => {
-    const legacyCycles = Array.from({ length: 4 }, (_, index) => ({
-      cycle_no: index + 1,
-      starts_at: new Date(Date.parse('2026-09-07T12:00:00+08:00') + index * 7 * 86_400_000).toISOString(),
-      ends_at: new Date(Date.parse('2026-09-07T12:00:00+08:00') + (index + 1) * 7 * 86_400_000).toISOString(),
-      status: 'scheduled' as const,
-    }))
-    const store = useCarpoolStore()
-    store.details = {
-      ...pendingDetails,
-      term: {
-        ...pendingDetails.term!,
-        reset_mode: 'fixed',
-        next_natural_reset_at: undefined,
-        expires_at: '2026-10-07T12:00:00+08:00',
-        reset_count_basis: 'current_term',
-        cycles: [
-          ...legacyCycles,
-          { cycle_no: 5, starts_at: legacyCycles[3].ends_at, ends_at: '2026-10-07T12:00:00+08:00', status: 'scheduled' },
-        ],
-      },
-    }
-    vi.spyOn(store, 'fetchDetails').mockResolvedValue(store.details)
-    const wrapper = mountDetailsView()
-
-    expect(wrapper.get('[data-testid="carpool-time-rail"]').attributes('style')).toContain('7fr 7fr 7fr 7fr 2fr')
-    expect(wrapper.get('[data-testid="carpool-cycle-labels"]').text()).toContain('5')
+    expect(wrapper.get('[data-testid="carpool-cycle-quota"] .text-3xl').text()).toBe('99%')
+    expect(wrapper.get('[data-testid="carpool-cycle-quota"] .text-sm.font-medium.text-gray-500').text()).toBe('remaining')
+    expect(wrapper.get('[data-testid="carpool-quota-progress"]').attributes('aria-valuenow')).toBe('99')
+    expect(wrapper.get('[data-testid="carpool-quota-progress-fill"]').attributes('style')).toContain('width: 99%')
+    expect(wrapper.get('[data-testid="carpool-current-cycle"]').text()).toContain('Current cycle 1')
     wrapper.unmount()
   })
 
@@ -190,187 +163,63 @@ describe('CarpoolDetailsView', () => {
     wrapper.unmount()
   })
 
-  it('keeps nearby target and Shanghai-time pairs together above the rail', () => {
+  it.each([
+    ['0.00000000', '0', 'width: 0%'],
+    ['100.00000000', '100', 'width: 100%'],
+    ['-12.50000000', '0', 'width: 0%'],
+    ['125.50000000', '100', 'width: 100%'],
+  ])('renders a server-owned %s remaining quota boundary', (percent, ariaValue, width) => {
     const store = useCarpoolStore()
-    store.details = activeDetails
-    vi.spyOn(store, 'fetchDetails').mockResolvedValue(activeDetails)
+    store.details = { ...activeDetails, quota: { ...activeDetails.quota!, remaining_percent: percent } }
+    vi.spyOn(store, 'fetchDetails').mockResolvedValue(store.details)
     const wrapper = mountDetailsView()
 
-    const targets = wrapper.get('[data-testid="carpool-reset-targets"]')
-    const times = wrapper.get('[data-testid="carpool-reset-times"]')
-    const rail = wrapper.get('[data-testid="carpool-time-rail"]')
-    expect(targets.text()).toContain('Filled to $700')
-    expect(wrapper.findAll('[data-testid="carpool-reset-marker"]')).toHaveLength(2)
-    expect(wrapper.findAll('[data-testid="carpool-reset-marker"]')[0].attributes('style')).toContain('left:')
-    expect(times.text()).toContain('09/02/2026')
-    expect(times.text()).toContain('09/04/2026')
-    expect(times.text()).toContain('22:00:20')
-    expect(times.element.compareDocumentPosition(rail.element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(wrapper.findAll('.carpool-timeline__annotation').map((annotation) => annotation.attributes('data-annotation-lane'))).toEqual(['0', '0'])
-    expect(wrapper.findAll('.carpool-timeline__leaders path')).toHaveLength(2)
-    expect(wrapper.findAll('[data-testid="carpool-reset-marker"]').every((marker) => marker.text() === '')).toBe(true)
+    expect(wrapper.get('[data-testid="carpool-quota-progress"]').attributes('aria-valuenow')).toBe(ariaValue)
+    expect(wrapper.get('[data-testid="carpool-quota-progress-fill"]').attributes('style')).toContain(width)
     wrapper.unmount()
   })
 
-  it('clamps edge annotations and wraps only when a compact row is full', () => {
+  it.each([null, undefined, '', 'not-a-number'])('treats %s as unavailable quota', (remainingPercent) => {
     const store = useCarpoolStore()
     store.details = {
       ...activeDetails,
-      term: {
-        ...activeDetails.term!,
-        reset_count: 3,
-        reset_events: [
-          { cycle_no: 1, occurred_at: activeDetails.term!.starts_at, target_quota_usd: '700.00000000' },
-          { cycle_no: 1, occurred_at: '2026-09-01T12:01:00+08:00', target_quota_usd: '1234567890.12300000' },
-          { cycle_no: 4, occurred_at: '2026-09-29T11:59:59+08:00', target_quota_usd: '700.00000000' },
-        ],
-      },
+      quota: { ...activeDetails.quota!, remaining_percent: remainingPercent },
     }
     vi.spyOn(store, 'fetchDetails').mockResolvedValue(store.details)
     const wrapper = mountDetailsView()
-    const annotations = wrapper.findAll('.carpool-timeline__annotation')
 
-    expect(annotations).toHaveLength(3)
-    expect(annotations[0].attributes('style')).toContain('left: 0px')
-    expect(annotations[1].attributes('data-annotation-lane')).toBe('0')
-    expect(annotations[1].attributes('style')).toContain('height: 64px')
-    expect(annotations[2].attributes('style')).toContain('left: 192px')
-    expect(annotations[2].attributes('data-annotation-lane')).toBe('1')
-    expect(wrapper.get('[data-testid="carpool-reset-targets"]').text()).toContain('Filled to $1,234,567,890.12')
+    expect(wrapper.get('[data-testid="carpool-cycle-quota"]').text()).toContain('Quota unavailable')
+    expect(wrapper.find('[data-testid="carpool-quota-progress"]').exists()).toBe(false)
     wrapper.unmount()
   })
 
-  it('keeps a sparse-left and dense-right desktop row inside the measured rail', async () => {
-    let resizeCallback: ResizeObserverCallback | undefined
-    class ResizeObserverMock {
-      constructor(callback: ResizeObserverCallback) {
-        resizeCallback = callback
-      }
-
-      observe() {}
-      disconnect() {}
-    }
-    vi.stubGlobal('ResizeObserver', ResizeObserverMock)
+  it.each(['pending', 'expired', 'terminated'] as const)('does not render stale quota for a %s term', (status) => {
     const store = useCarpoolStore()
     store.details = {
       ...activeDetails,
-      term: {
-        ...activeDetails.term!,
-        reset_count: 5,
-        reset_events: [
-          { cycle_no: 1, occurred_at: '2026-09-01T12:00:00+08:00', target_quota_usd: '700.00000000' },
-          { cycle_no: 3, occurred_at: '2026-09-21T12:00:00+08:00', target_quota_usd: '700.00000000' },
-          { cycle_no: 4, occurred_at: '2026-09-23T12:00:00+08:00', target_quota_usd: '700.00000000' },
-          { cycle_no: 4, occurred_at: '2026-09-25T12:00:00+08:00', target_quota_usd: '700.00000000' },
-          { cycle_no: 4, occurred_at: '2026-09-27T12:00:00+08:00', target_quota_usd: '700.00000000' },
-        ],
-      },
+      term: { ...activeDetails.term!, status },
+      quota: { ...activeDetails.quota!, remaining_percent: '99.00000000' },
     }
     vi.spyOn(store, 'fetchDetails').mockResolvedValue(store.details)
     const wrapper = mountDetailsView()
-    await wrapper.vm.$nextTick()
-    expect(resizeCallback).toBeDefined()
 
-    resizeCallback!([{ contentRect: { width: 1120 } } as ResizeObserverEntry], {} as ResizeObserver)
-    await wrapper.vm.$nextTick()
-    const annotations = wrapper.findAll('.carpool-timeline__annotation')
-    const boxes = annotations.map((annotation) => {
-      const style = annotation.attributes('style')
-      return {
-        left: Number(style.match(/left: (-?[\d.]+)px/)?.[1]),
-        width: Number(style.match(/width: ([\d.]+)px/)?.[1]),
-      }
-    })
-
-    expect(annotations).toHaveLength(5)
-    expect(annotations.every((annotation) => annotation.attributes('data-annotation-lane') === '0')).toBe(true)
-    expect(boxes[0].left).toBeGreaterThanOrEqual(0)
-    expect(boxes.at(-1)!.left + boxes.at(-1)!.width).toBeLessThanOrEqual(1120)
-    boxes.slice(1).forEach((box, index) => {
-      expect(box.left).toBeGreaterThanOrEqual(boxes[index].left + boxes[index].width + 10)
-    })
+    expect(wrapper.get('[data-testid="carpool-cycle-quota"]').text()).toContain('Quota unavailable')
+    expect(wrapper.find('[data-testid="carpool-quota-progress"]').exists()).toBe(false)
     wrapper.unmount()
   })
 
-  it('uses the same paired above-rail annotation contract in Chinese', () => {
+  it('removes reset annotations while preserving the current cycle and accounting history', () => {
     const store = useCarpoolStore()
     store.details = activeDetails
     vi.spyOn(store, 'fetchDetails').mockResolvedValue(activeDetails)
     const wrapper = mountDetailsView('zh')
-    const annotations = wrapper.get('[data-testid="carpool-reset-targets"]')
 
-    expect(annotations.text()).toContain('已加满至 $700')
-    expect(annotations.text()).toContain('2026/09/02')
-    expect(annotations.text()).toContain('22:00:20')
-    wrapper.unmount()
-  })
-
-  it('bounds dense history while keeping every exact node and an accessible full disclosure', async () => {
-    const resetEvents = Array.from({ length: 14 }, (_, index) => ({
-      cycle_no: Math.min(4, Math.floor((index * 2 + 1) / 7) + 1),
-      occurred_at: new Date(Date.parse(activeDetails.term!.starts_at) + (index * 2 + 1) * 86_400_000).toISOString(),
-      target_quota_usd: '700.00000000',
-    }))
-    const store = useCarpoolStore()
-    store.details = {
-      ...activeDetails,
-      term: { ...activeDetails.term!, reset_count: resetEvents.length, reset_events: resetEvents },
-    }
-    vi.spyOn(store, 'fetchDetails').mockResolvedValue(store.details)
-    const wrapper = mountDetailsView()
-
-    expect(wrapper.findAll('[data-testid="carpool-reset-marker"]')).toHaveLength(14)
-    expect(wrapper.findAll('.carpool-timeline__annotation')).toHaveLength(2)
-    expect(wrapper.get('[data-testid="carpool-reset-targets"]').attributes('style')).toContain('height: 90px')
-    expect(wrapper.get('[data-testid="carpool-reset-targets"]').text()).toContain('09/26/2026')
-    expect(wrapper.get('[data-testid="carpool-reset-targets"]').text()).toContain('09/28/2026')
-    expect(wrapper.get('[data-testid="carpool-reset-targets"]').text()).not.toContain('09/02/2026')
-    const toggle = wrapper.get('[data-testid="carpool-reset-history-toggle"]')
-    expect(toggle.element.tagName).toBe('BUTTON')
-    expect(toggle.attributes('aria-expanded')).toBe('false')
-    expect(toggle.text()).toContain('Resets this term · 14')
-    expect(wrapper.get('[data-testid="carpool-reset-history"]').isVisible()).toBe(false)
-
-    await toggle.trigger('click')
-    expect(toggle.attributes('aria-expanded')).toBe('true')
-    expect(wrapper.get('[data-testid="carpool-reset-history"]').attributes('style') ?? '').not.toContain('display: none')
-    expect(wrapper.findAll('[data-testid="carpool-reset-history-item"]')).toHaveLength(14)
-    expect(wrapper.get('[data-testid="carpool-reset-history"]').text()).toContain('09/02/2026')
-    expect(wrapper.get('[data-testid="carpool-reset-history"]').text()).toContain('09/28/2026')
-    wrapper.unmount()
-  })
-
-  it('keeps arbitrary dense reset history within a 390px rail', async () => {
-    let resizeCallback: ResizeObserverCallback | undefined
-    class ResizeObserverMock {
-      constructor(callback: ResizeObserverCallback) { resizeCallback = callback }
-      observe() {}
-      disconnect() {}
-    }
-    vi.stubGlobal('ResizeObserver', ResizeObserverMock)
-    const resetEvents = Array.from({ length: 8 }, (_, index) => ({
-      cycle_no: index + 1,
-      occurred_at: new Date(Date.parse(activeDetails.term!.starts_at) + (index + 1) * 2 * 86_400_000).toISOString(),
-      target_quota_usd: `${700 + index}.00000000`,
-    }))
-    const store = useCarpoolStore()
-    store.details = { ...activeDetails, term: { ...activeDetails.term!, reset_count: resetEvents.length, reset_events: resetEvents } }
-    vi.spyOn(store, 'fetchDetails').mockResolvedValue(store.details)
-    const wrapper = mountDetailsView()
-    await wrapper.vm.$nextTick()
-
-    resizeCallback!([{ contentRect: { width: 390 } } as ResizeObserverEntry], {} as ResizeObserver)
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.findAll('[data-testid="carpool-reset-marker"]')).toHaveLength(8)
-    expect(wrapper.findAll('[data-testid="carpool-reset-history-item"]')).toHaveLength(8)
-    wrapper.findAll('.carpool-timeline__annotation').forEach((annotation) => {
-      const style = annotation.attributes('style')
-      const left = Number(style.match(/left: (-?[\d.]+)px/)?.[1])
-      const width = Number(style.match(/width: ([\d.]+)px/)?.[1])
-      expect(left).toBeGreaterThanOrEqual(0)
-      expect(left + width).toBeLessThanOrEqual(390)
-    })
+    expect(wrapper.text()).not.toContain('已加满')
+    expect(wrapper.find('[data-testid="carpool-reset-targets"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="carpool-reset-marker"]').exists()).toBe(false)
+    expect(wrapper.get('[data-testid="carpool-current-cycle"]').text()).toContain('当前第 1 周期')
+    expect(wrapper.text()).toContain('账期记录')
+    expect(wrapper.text()).toContain('第 1 周期')
     wrapper.unmount()
   })
 
@@ -515,11 +364,12 @@ describe('CarpoolDetailsView', () => {
     api.getDetails.mockResolvedValue(activeDetails)
     const wrapper = mountDetailsView()
     await flushPromises()
+    vi.clearAllMocks()
 
     document.dispatchEvent(new Event('visibilitychange'))
     await flushPromises()
 
-    expect(api.getDetails).toHaveBeenCalledTimes(2)
+    expect(api.getDetails).toHaveBeenCalledTimes(1)
     wrapper.unmount()
   })
 

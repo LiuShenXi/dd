@@ -23,7 +23,8 @@ export const useCarpoolStore = defineStore('carpool', () => {
   let latestDetailsError: unknown = null
   let detailsRefreshTimer: ReturnType<typeof setInterval> | null = null
 
-  const availableQuotaUsd = computed(() => details.value?.quota?.available_usd ?? null)
+  const billingMode = computed(() => details.value?.billing_mode ?? (details.value ? (details.value.term || details.value.quota ? 'carpool' : 'standard') : null))
+  const availableQuotaUsd = computed(() => billingMode.value === 'carpool' ? details.value?.quota?.available_usd ?? '0' : null)
 
   function isCurrentDetails(result: CarpoolDetails): boolean {
     return details.value !== null && toRaw(details.value) === result
@@ -137,6 +138,7 @@ export const useCarpoolStore = defineStore('carpool', () => {
     details,
     boosts,
     availableQuotaUsd,
+    billingMode,
     isCurrentDetails,
     isCurrentDetailsError,
     detailsLoading,

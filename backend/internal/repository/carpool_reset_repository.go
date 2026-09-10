@@ -22,7 +22,7 @@ func NewCarpoolResetRepository(db *sql.DB) *CarpoolResetRepository {
 	return &CarpoolResetRepository{db: db, clockSQL: `SELECT clock_timestamp()`}
 }
 
-const resetBatchSelect = `SELECT b.id,b.scope_id,b.status,b.detected_at,b.qualified_at,b.slot_at,b.scheduled_at,b.schedule_revision,b.effective_at,b.completed_at,b.delay_reason,b.announcement_state,b.qualification_source,b.source_event_key_hash,(SELECT COUNT(*) FROM carpool_reset_targets t WHERE t.batch_id=b.id AND t.status='succeeded'),COALESCE((SELECT SUM(t.granted_usd) FROM carpool_reset_targets t WHERE t.batch_id=b.id AND t.status='succeeded'),0)::text FROM carpool_reset_batches b`
+const resetBatchSelect = `SELECT b.id,b.scope_id,b.status,b.detected_at,b.qualified_at,b.slot_at,b.scheduled_at,b.schedule_revision,b.effective_at,b.completed_at,b.delay_reason,b.announcement_state,b.qualification_source,b.source_event_key_hash,(SELECT COUNT(*) FROM carpool_reset_targets t WHERE t.batch_id=b.id AND t.status='succeeded'),COALESCE((SELECT SUM(t.granted_usd) FROM carpool_reset_targets t WHERE t.batch_id=b.id AND t.status='succeeded'),0)::text,COALESCE(b.evidence->>'trigger_kind','card') FROM carpool_reset_batches b`
 
 func scanResetBatch(row carpoolRowScanner) (*domain.CarpoolResetBatch, error) {
 	var batch domain.CarpoolResetBatch
@@ -34,7 +34,7 @@ func scanResetBatch(row carpoolRowScanner) (*domain.CarpoolResetBatch, error) {
 		&qualifiedAt, &slotAt, &scheduledAt, &batch.ScheduleRevision,
 		&effectiveAt, &completedAt, &delayReason, &batch.AnnouncementState,
 		&batch.QualificationSource, &batch.SourceEventKeyHash,
-		&batch.TargetCount, &granted,
+		&batch.TargetCount, &granted, &batch.TriggerKind,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, service.ErrCarpoolNotFound

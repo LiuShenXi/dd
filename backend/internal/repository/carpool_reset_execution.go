@@ -154,43 +154,17 @@ func (r *CarpoolResetRepository) ExecuteResetBatch(ctx context.Context, batchID 
 		if now.Before(term.StartsAt) || !now.Before(term.ExpiresAt) {
 			continue
 		}
-		cycle, ensureErr := ensureCurrentCycleTx(ctx, tx, term.ID, now)
-		if ensureErr != nil {
-			if errors.Is(ensureErr, service.ErrCarpoolUnavailable) {
+		cycle, _, _, applyErr := applyResetToTermTx(ctx, tx, term, batch.ID, now, "qualified special reset")
+		if applyErr != nil {
+			if errors.Is(applyErr, service.ErrCarpoolUnavailable) {
 				continue
 			}
-			return nil, ensureErr
+			return nil, applyErr
 		}
 		targetWindows = append(targetWindows, resetTargetWindow{
 			TermID: term.ID, TermStartsAt: term.StartsAt, TermExpiresAt: term.ExpiresAt,
 			CycleStartsAt: cycle.StartsAt, CycleEndsAt: cycle.EndsAt,
 		})
-		grant := cycle.BaseQuotaUSD.Sub(cycle.BaseBalanceUSD).Round(8)
-		if grant.IsNegative() {
-			grant = decimal.Zero
-		}
-		if grant.IsPositive() {
-			if _, err = tx.ExecContext(ctx, `UPDATE carpool_cycles SET base_balance_usd=base_balance_usd+$1,updated_at=$2,revision=revision+1 WHERE id=$3 AND term_id=$4`, grant.StringFixed(8), now, cycle.ID, term.ID); err != nil {
-				return nil, err
-			}
-			batchIDValue := batch.ID
-			if err = insertLedgerTx(ctx, tx, term.UserID, term.ID, cycle.ID, "reset", domain.CarpoolBucketBase, grant, fmt.Sprintf("reset:%d:%d", batch.ID, cycle.ID), nil, nil, &batchIDValue, nil, nil, nil, "qualified special reset", now); err != nil {
-				return nil, err
-			}
-		}
-		if term.ResetMode == domain.CarpoolResetModeRolling {
-			nextDeadline := now.Add(7 * 24 * time.Hour)
-			if nextDeadline.After(term.ExpiresAt) {
-				nextDeadline = term.ExpiresAt
-			}
-			if _, err = tx.ExecContext(ctx, `UPDATE carpool_cycles SET ends_at=$1,updated_at=$2,revision=revision+1 WHERE id=$3 AND term_id=$4`, nextDeadline, now, cycle.ID, term.ID); err != nil {
-				return nil, err
-			}
-			cycle.EndsAt = nextDeadline
-		}
-		if _, err = tx.ExecContext(ctx, `INSERT INTO carpool_reset_targets(batch_id,term_id,cycle_id,status,granted_usd,executed_at) VALUES($1,$2,$3,'succeeded',$4,$5)`, batch.ID, term.ID, cycle.ID, grant.StringFixed(8), now); err != nil {
-			return nil, err
-		}
 	}
 	completedAt, err := r.resetDatabaseNowTx(ctx, tx)
 	if err != nil {
@@ -225,6 +199,179 @@ func (r *CarpoolResetRepository) ExecuteResetBatch(ctx context.Context, batchID 
 		return nil, err
 	}
 	return batch, nil
+}
+
+func (r *CarpoolResetRepository) ExecuteOfficialReset(ctx context.Context, scopeID int64, operation domain.CarpoolOperation) (_ *domain.CarpoolResetBatch, err error) {
+	if scopeID != domain.CarpoolGlobalScopeID {
+		return nil, service.ErrCarpoolResetInvalid
+	}
+	if err = validateOperation(operation, "reset_official"); err != nil {
+		return nil, err
+	}
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err = lockOperationTx(ctx, tx, operation); err != nil {
+		return nil, err
+	}
+	if _, response, replayed, lookupErr := lookupOperationTx(ctx, tx, operation); lookupErr != nil {
+		return nil, lookupErr
+	} else if replayed {
+		var cached domain.CarpoolResetBatch
+		if err = replayOperationResponse(response, &cached); err != nil {
+			return nil, err
+		}
+		return &cached, nil
+	}
+	if _, _, err = lockResetScopeTx(ctx, tx, scopeID); err != nil {
+		return nil, err
+	}
+	lockedTerms, err := lockResetTermsAndCyclesTx(ctx, tx, scopeID)
+	if err != nil {
+		return nil, err
+	}
+	now, err := r.resetDatabaseNowTx(ctx, tx)
+	if err != nil {
+		return nil, err
+	}
+	batch := &domain.CarpoolResetBatch{
+		ScopeID: scopeID, Status: domain.CarpoolResetStatusCompleted, DetectedAt: now,
+		QualifiedAt: &now, EffectiveAt: &now,
+		AnnouncementState: "pending", TriggerKind: "official",
+		QualificationSource: "administrator", SourceEventKeyHash: operationRequestID(operation),
+	}
+	if err = tx.QueryRowContext(ctx, `INSERT INTO carpool_reset_batches(scope_id,status,detected_at,qualified_at,effective_at,schedule_revision,evidence,announcement_state,qualification_source,source_event_key_hash) VALUES($1,'completed',$2,$2,$2,0,'{"trigger_kind":"official"}'::jsonb,'pending','administrator',$3) RETURNING id`, scopeID, now, batch.SourceEventKeyHash).Scan(&batch.ID); err != nil {
+		return nil, err
+	}
+	for _, term := range lockedTerms {
+		if now.Before(term.StartsAt) || !now.Before(term.ExpiresAt) {
+			continue
+		}
+		_, _, _, applyErr := applyResetToTermTx(ctx, tx, term, batch.ID, now, "official global reset")
+		if applyErr != nil {
+			if errors.Is(applyErr, service.ErrCarpoolUnavailable) {
+				continue
+			}
+			return nil, applyErr
+		}
+	}
+	completedAt, err := r.resetDatabaseNowTx(ctx, tx)
+	if err != nil {
+		return nil, err
+	}
+	if _, err = tx.ExecContext(ctx, `UPDATE carpool_reset_batches SET completed_at=$1,updated_at=$1 WHERE id=$2`, completedAt, batch.ID); err != nil {
+		return nil, err
+	}
+	batch, err = getResetBatchTx(ctx, tx, batch.ID, false)
+	if err != nil {
+		return nil, err
+	}
+	if err = enqueueResetAnnouncementTx(ctx, tx, batch, "completed", completedAt); err != nil {
+		return nil, err
+	}
+	if err = recordOperationTx(ctx, tx, operation, "reset_batch", batch.ID, batch); err != nil {
+		return nil, err
+	}
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+	return batch, nil
+}
+
+func applyResetToTermTx(ctx context.Context, tx *sql.Tx, term lockedResetTerm, batchID int64, now time.Time, reason string) (*domain.CarpoolCycle, *domain.CarpoolCycle, decimal.Decimal, error) {
+	cycle, err := ensureCurrentCycleTx(ctx, tx, term.ID, now)
+	if err != nil {
+		return nil, nil, decimal.Zero, err
+	}
+	grant := cycle.BaseQuotaUSD.Sub(cycle.BaseBalanceUSD).Round(8)
+	if term.ResetMode == domain.CarpoolResetModeRolling {
+		grant = cycle.BaseQuotaUSD.Sub(decimal.Max(cycle.BaseBalanceUSD, decimal.Zero)).Round(8)
+	}
+	if grant.IsNegative() {
+		grant = decimal.Zero
+	}
+	targetCycle := cycle
+	if term.ResetMode == domain.CarpoolResetModeRolling {
+		targetCycle, err = advanceRollingCycleForSpecialResetTx(ctx, tx, term, cycle, batchID, now, reason)
+		if err != nil {
+			return nil, nil, decimal.Zero, err
+		}
+	} else if grant.IsPositive() {
+		if _, err = tx.ExecContext(ctx, `UPDATE carpool_cycles SET base_balance_usd=base_balance_usd+$1,updated_at=$2,revision=revision+1 WHERE id=$3 AND term_id=$4`, grant.StringFixed(8), now, cycle.ID, term.ID); err != nil {
+			return nil, nil, decimal.Zero, err
+		}
+		batchIDValue := batchID
+		if err = insertLedgerTx(ctx, tx, term.UserID, term.ID, cycle.ID, "reset", domain.CarpoolBucketBase, grant, fmt.Sprintf("reset:%d:%d", batchID, cycle.ID), nil, nil, &batchIDValue, nil, nil, nil, reason, now); err != nil {
+			return nil, nil, decimal.Zero, err
+		}
+	}
+	if _, err = tx.ExecContext(ctx, `INSERT INTO carpool_reset_targets(batch_id,term_id,cycle_id,status,granted_usd,executed_at) VALUES($1,$2,$3,'succeeded',$4,$5)`, batchID, term.ID, targetCycle.ID, grant.StringFixed(8), now); err != nil {
+		return nil, nil, decimal.Zero, err
+	}
+	return cycle, targetCycle, grant, nil
+}
+
+func advanceRollingCycleForSpecialResetTx(ctx context.Context, tx *sql.Tx, term lockedResetTerm, current *domain.CarpoolCycle, batchID int64, now time.Time, reason string) (*domain.CarpoolCycle, error) {
+	endsAt := now.Add(7 * 24 * time.Hour)
+	if endsAt.After(term.ExpiresAt) {
+		endsAt = term.ExpiresAt
+	}
+	if !now.Before(endsAt) {
+		return nil, service.ErrCarpoolUnavailable
+	}
+	var unresolved int
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM carpool_billing_requests WHERE cycle_id=$1 AND status IN ('admitted','usage_known','settling','reconcile_required')`, current.ID).Scan(&unresolved); err != nil {
+		return nil, err
+	}
+	deferred := unresolved > 0
+	boost, manual := current.BoostBalanceUSD, current.ManualBalanceUSD
+	if deferred {
+		boost, manual = decimal.Zero, decimal.Zero
+	}
+	res, err := tx.ExecContext(ctx, `UPDATE carpool_cycles SET ends_at=$1,boost_balance_usd=CASE WHEN $2 THEN boost_balance_usd ELSE 0 END,manual_balance_usd=CASE WHEN $2 THEN manual_balance_usd ELSE 0 END,state='closing',updated_at=$1,revision=revision+1 WHERE id=$3 AND term_id=$4 AND state='active'`, now, deferred, current.ID, term.ID)
+	if err != nil {
+		return nil, err
+	}
+	if affected, _ := res.RowsAffected(); affected != 1 {
+		return nil, service.ErrCarpoolUnavailable
+	}
+	next := &domain.CarpoolCycle{
+		TermID: term.ID, CycleNo: current.CycleNo + 1, StartsAt: now, EndsAt: endsAt,
+		BaseQuotaUSD: current.BaseQuotaUSD, BaseBalanceUSD: current.BaseQuotaUSD,
+		BoostBalanceUSD: boost, ManualBalanceUSD: manual,
+		State: domain.CarpoolCycleActive,
+	}
+	if err := tx.QueryRowContext(ctx, `INSERT INTO carpool_cycles(term_id,cycle_no,starts_at,ends_at,base_quota_usd,base_balance_usd,boost_balance_usd,manual_balance_usd,state,activated_at) VALUES($1,$2,$3,$4,$5,$5,$6,$7,'active',$3) RETURNING id`, term.ID, next.CycleNo, now, endsAt, next.BaseQuotaUSD.StringFixed(8), next.BoostBalanceUSD.StringFixed(8), next.ManualBalanceUSD.StringFixed(8)).Scan(&next.ID); err != nil {
+		return nil, err
+	}
+	if _, err := tx.ExecContext(ctx, `INSERT INTO carpool_cycle_carryovers(source_cycle_id,initial_target_cycle_id,reset_batch_id,expires_at,status) VALUES($1,$2,$3,$4,$5)`, current.ID, next.ID, batchID, endsAt, map[bool]string{true: "pending", false: "completed"}[deferred]); err != nil {
+		return nil, err
+	}
+	batchIDValue := batchID
+	if err := insertLedgerTx(ctx, tx, term.UserID, term.ID, next.ID, "reset", domain.CarpoolBucketBase, next.BaseQuotaUSD, fmt.Sprintf("reset:%d:%d", batchID, next.ID), nil, nil, &batchIDValue, nil, nil, nil, reason+" successor", now); err != nil {
+		return nil, err
+	}
+	if deferred {
+		return next, nil
+	}
+	for _, carry := range []struct {
+		bucket string
+		amount decimal.Decimal
+	}{{domain.CarpoolBucketBoost, current.BoostBalanceUSD}, {domain.CarpoolBucketManual, current.ManualBalanceUSD}} {
+		if carry.amount.IsZero() {
+			continue
+		}
+		prefix := fmt.Sprintf("reset_carry:%d:%d:%s", batchID, current.ID, carry.bucket)
+		if err := insertLedgerTx(ctx, tx, term.UserID, term.ID, current.ID, "reset_carry", carry.bucket, carry.amount.Neg(), prefix+":out", nil, nil, &batchIDValue, nil, nil, nil, "special reset balance transfer out", now); err != nil {
+			return nil, err
+		}
+		if err := insertLedgerTx(ctx, tx, term.UserID, term.ID, next.ID, "reset_carry", carry.bucket, carry.amount, prefix+":in", nil, nil, &batchIDValue, nil, nil, nil, "special reset balance transfer in", now); err != nil {
+			return nil, err
+		}
+	}
+	return next, nil
 }
 
 type lockedResetTerm struct {

@@ -86,6 +86,22 @@ func (h *CarpoolResetHandler) Execute(c *gin.Context) {
 	response.Success(c, batch)
 }
 
+func (h *CarpoolResetHandler) Official(c *gin.Context) {
+	key, ok := operationKey(c)
+	if !ok {
+		return
+	}
+	var input service.CarpoolOfficialResetInput
+	if !bindJSON(c, &input) {
+		return
+	}
+	batch, err := h.service.OfficialReset(c.Request.Context(), getAdminIDFromContext(c), input, key)
+	if response.ErrorFrom(c, err) {
+		return
+	}
+	response.Success(c, batch)
+}
+
 func (h *CarpoolResetHandler) Observations(c *gin.Context) {
 	page, pageSize := response.ParsePagination(c)
 	items, total, err := h.service.ListObservations(c.Request.Context(), domain.CarpoolResetObservationFilters{Page: page, PageSize: pageSize})

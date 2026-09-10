@@ -1,0 +1,70 @@
+{
+  "verified_at": "2026-09-08T03:51:46.246Z",
+  "batch_id": 2,
+  "target_count": 5,
+  "effective_at": "2026-09-08T11:51:43.616811+08:00",
+  "authorization_checks": 4,
+  "cancel_no_mutation": true,
+  "in_flight_disabled": true,
+  "request_replay_once": true,
+  "ordinary_balances_unchanged": true,
+  "desktop_mobile_dialog": true,
+  "changes": [
+    {
+      "term_id": 7,
+      "affected": false,
+      "old_cycle": null,
+      "new_cycle": null,
+      "expiry_unchanged": true
+    },
+    {
+      "term_id": 3,
+      "affected": false,
+      "old_cycle": null,
+      "new_cycle": null,
+      "expiry_unchanged": true
+    },
+    {
+      "term_id": 8,
+      "affected": true,
+      "old_cycle": 1,
+      "new_cycle": 2,
+      "expiry_unchanged": true
+    },
+    {
+      "term_id": 6,
+      "affected": true,
+      "old_cycle": 1,
+      "new_cycle": 2,
+      "expiry_unchanged": true
+    },
+    {
+      "term_id": 1,
+      "affected": true,
+      "old_cycle": 2,
+      "new_cycle": 3,
+      "expiry_unchanged": true
+    },
+    {
+      "term_id": 2,
+      "affected": true,
+      "old_cycle": 2,
+      "new_cycle": 3,
+      "expiry_unchanged": true
+    },
+    {
+      "term_id": 4,
+      "affected": true,
+      "old_cycle": 4,
+      "new_cycle": 5,
+      "expiry_unchanged": true
+    },
+    {
+      "term_id": 5,
+      "affected": false,
+      "old_cycle": null,
+      "new_cycle": null,
+      "expiry_unchanged": true
+    }
+  ]
+}

@@ -13,11 +13,13 @@ Carpool has not launched and no real carpool cycle records require conversion.
 Preserve existing uncommitted changes. Implement and validate locally; no remote
 deployment or ordinary-balance migration is authorized.
 
-Retain internal accounting period IDs and immutable admission identities.
-Special reset extends the active period end to the earlier of effective reset
-time + seven days and membership expiry, without changing its start. Create
-later natural periods on demand and grant full quota even in the last short
-period. Expose a separate nullable next_natural_reset_at; expiry is not a refill.
+2026-09-08 follow-up: both natural and successful special resets create a new
+actual period and increment cycle_no exactly once. Retain old accounting IDs and
+immutable admission identities for delayed settlement, conserving boost/manual
+balances across special reset. The successor ends at the earlier of effective
+reset time + seven days and membership expiry. Replace filled-to annotations
+with a current-cycle remaining quota percentage and simple progress bar. Keep
+actual history and separate next_natural_reset_at; expiry is not a refill.
 
 ## Preserved v1.4 Design
 
@@ -58,6 +60,14 @@ All subagents use `gpt-5.6-sol`, `high`, and `fork_turns=none` or short context.
 A and B agree a typed CarpoolBillingSnapshot (term/cycle/admitted_at) and eligibility/admit/persist/recovery methods before implementation. A publishes administrator/user DTO contracts for C early. All API paths remain under `/api/v1`; architecture section 9.4 defines required endpoints. Every administrator write requires stable idempotency key plus payload consistency. User identity only comes from auth, not user/term/cycle parameters. C never invents endpoint response shapes without confirming A's contract.
 
 ## Precise Reset Scheduling
+
+The following scheduling rules now apply to reset-card qualifications only.
+Administrator-confirmed official global resets use the immediate endpoint in the
+API contract: scope 1, all effective memberships, atomic successor creation,
+request-key replay protection, no official-event deduplication and no schedule
+window/cooldown. Preserve the pending card batch and card cooldown state. Completed
+batch history distinguishes `trigger_kind=official` from `card`; no official
+event reference is required. See the 2026-09-08 architecture decision.
 
 For a NEW qualification, start at today's Shanghai 22:00 and advance while slot_at <= database_now. For each slot compute due_at=max(slot_at,last_successful_reset_at+48h); use that day only if due_at < slot_at+1 minute. Store slot_at and scheduled_at=due_at. Already scheduled execution never applies the new-qualification comparison; it requires now>=scheduled_at, now>=last_success+48h, and now in [slot,slot+1 minute). Preserve seconds, e.g. prior 22:00:20 success allows two days later 22:00:20. Missed minutes reschedule and correct announcements; only successful committed execution advances cooldown.
 

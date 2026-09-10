@@ -11,7 +11,7 @@
         </div>
         <div>
           <p data-testid="dashboard-funding-label" class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ fundingLabel }}</p>
-          <p data-testid="dashboard-funding-amount" class="text-xl font-bold text-emerald-600 dark:text-emerald-400">${{ formatBalance(displayedAvailableAmount) }}</p>
+          <p data-testid="dashboard-funding-amount" class="text-xl font-bold text-emerald-600 dark:text-emerald-400">{{ displayedAvailableAmount === null ? '--' : `$${formatBalance(displayedAvailableAmount)}` }}</p>
           <p class="text-xs text-gray-500 dark:text-gray-400">{{ fundingHint }}</p>
         </div>
       </div>
@@ -297,10 +297,11 @@ const boostHelpText = computed(() => t('carpool.boost.help', {
   total: carpoolStore.boosts?.total ?? 0,
   amount: formatCarpoolAmount(carpoolStore.boosts?.amount_usd),
 }))
-const usingCarpoolQuota = computed(() => carpoolStore.availableQuotaUsd !== null)
-const displayedAvailableAmount = computed(() => usingCarpoolQuota.value ? parseCarpoolAmount(carpoolStore.availableQuotaUsd) : props.balance)
+const usingCarpoolQuota = computed(() => carpoolStore.billingMode === 'carpool')
+const displayedAvailableAmount = computed(() => usingCarpoolQuota.value ? parseCarpoolAmount(carpoolStore.availableQuotaUsd) : carpoolStore.billingMode === 'standard' ? props.balance : null)
 const fundingLabel = computed(() => usingCarpoolQuota.value ? t('carpool.availableQuota') : t('dashboard.balance'))
 const fundingHint = computed(() => {
+  if (carpoolStore.billingMode === null) return t(carpoolStore.detailsError ? 'carpool.loadFailed' : 'common.loading')
   if (!usingCarpoolQuota.value) return t('common.available')
   return carpoolStore.detailsError ? t('carpool.quotaStale') : t('carpool.quotaIndependent')
 })

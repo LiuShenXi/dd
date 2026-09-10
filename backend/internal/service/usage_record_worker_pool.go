@@ -113,6 +113,7 @@ type UsageRecordWorkerPool struct {
 	autoScaleCancel       context.CancelFunc
 	lifecycleWg           sync.WaitGroup
 	stopOnce              sync.Once
+	pendingTasks          atomic.Int64
 }
 
 // NewUsageRecordWorkerPool 从配置构建使用量记录池。
@@ -161,15 +162,22 @@ func (p *UsageRecordWorkerPool) Submit(task UsageRecordTask) UsageRecordSubmitMo
 		p.logDrop("stopped")
 		return UsageRecordSubmitModeDroppedStopped
 	}
+	// Count before submitting: a worker may start before TrySubmit returns.
+	p.pendingTasks.Add(1)
+	countedTask := func(ctx context.Context) {
+		defer p.pendingTasks.Add(-1)
+		task(ctx)
+	}
 
 	_, ok := p.pool.TrySubmit(func() {
-		p.execute(task)
+		p.execute(countedTask)
 	})
 	if ok {
 		return UsageRecordSubmitModeEnqueued
 	}
 
 	if p.pool.Stopped() {
+		p.pendingTasks.Add(-1)
 		p.droppedPoolStopped.Add(1)
 		p.logDrop("stopped")
 		return UsageRecordSubmitModeDroppedStopped
@@ -178,19 +186,28 @@ func (p *UsageRecordWorkerPool) Submit(task UsageRecordTask) UsageRecordSubmitMo
 	switch p.overflowPolicy {
 	case config.UsageRecordOverflowPolicySync:
 		p.syncFallback.Add(1)
-		p.execute(task)
+		p.execute(countedTask)
 		return UsageRecordSubmitModeSync
 	case config.UsageRecordOverflowPolicySample:
 		if p.shouldSyncFallback() {
 			p.syncFallback.Add(1)
-			p.execute(task)
+			p.execute(countedTask)
 			return UsageRecordSubmitModeSync
 		}
 	}
 
 	p.droppedQueueFull.Add(1)
+	p.pendingTasks.Add(-1)
 	p.logDrop("full")
 	return UsageRecordSubmitModeDropped
+}
+
+// PendingTasks includes queued, running and inline fallback usage work.
+func (p *UsageRecordWorkerPool) PendingTasks() int64 {
+	if p == nil {
+		return 0
+	}
+	return p.pendingTasks.Load()
 }
 
 // Stats 返回当前池状态与计数器。

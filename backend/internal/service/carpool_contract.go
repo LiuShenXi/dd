@@ -20,6 +20,8 @@ var (
 	ErrCarpoolIdempotencyConflict = infraerrors.Conflict("CARPOOL_IDEMPOTENCY_CONFLICT", "idempotency key was used with a different payload")
 	ErrCarpoolAdmissionReplay     = infraerrors.Conflict("CARPOOL_ADMISSION_REPLAY", "billing admission identity has already been used")
 	ErrCarpoolInvalidRelationship = infraerrors.Forbidden("CARPOOL_RELATIONSHIP_INVALID", "carpool user, key, group, term, and cycle relationship is invalid")
+	ErrCarpoolOpeningBalance      = infraerrors.Conflict("CARPOOL_OPENING_BALANCE_REQUIRES_MIGRATION", "Existing balance requires the reviewed migration process before opening this subscription")
+	ErrCarpoolOpeningKeyGroup     = infraerrors.Conflict("CARPOOL_OPENING_KEY_GROUP_CONFLICT", "All existing user API keys must belong to the selected group before opening this subscription")
 	ErrCarpoolInvalidNaturalReset = infraerrors.BadRequest("CARPOOL_NATURAL_RESET_INVALID", "takeover next natural reset deadline is invalid")
 )
 

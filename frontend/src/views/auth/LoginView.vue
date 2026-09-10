@@ -1,5 +1,5 @@
 <template>
-  <AuthLayout>
+  <AuthLayout water-train>
     <div class="space-y-6">
       <!-- Title -->
       <div class="text-center">

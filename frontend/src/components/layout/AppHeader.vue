@@ -73,7 +73,7 @@
             />
           </svg>
           <span data-testid="header-funding-amount" class="text-sm font-semibold text-primary-700 dark:text-primary-300">
-            {{ formatHeaderMoney(headerAvailableAmount) }}
+            {{ headerFundingText }}
           </span>
           <span
             v-if="usingCarpoolQuota"
@@ -83,7 +83,7 @@
             {{ t('carpool.quotaBadge') }}<template v-if="carpoolStore.detailsError"> · {{ t('carpool.quotaStaleShort') }}</template>
           </span>
           <span
-            v-if="!usingCarpoolQuota && frozenBalance > 0"
+            v-if="usingOrdinaryBalance && frozenBalance > 0"
             class="rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-200"
           >
             {{ balanceFrozenLabel }}
@@ -93,20 +93,16 @@
           >
             <div class="flex items-center justify-between">
               <span data-testid="header-funding-label" class="text-gray-500 dark:text-dark-400">{{ fundingAvailableText }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ formatHeaderMoney(headerAvailableAmount) }}</span>
-            </div>
-            <div v-if="usingCarpoolQuota" class="mt-2 flex items-center justify-between">
-              <span class="text-gray-500 dark:text-dark-400">{{ ordinaryBalanceText }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ formatHeaderMoney(ordinaryAvailableBalance) }}</span>
+              <span class="font-medium text-gray-900 dark:text-white">{{ headerFundingText }}</span>
             </div>
             <p v-if="usingCarpoolQuota && carpoolStore.detailsError" class="mt-2 text-amber-700 dark:text-amber-300">
               {{ t('carpool.quotaStale') }}
             </p>
-            <div v-if="frozenBalance > 0" class="mt-2 flex items-center justify-between">
+            <div v-if="usingOrdinaryBalance && frozenBalance > 0" class="mt-2 flex items-center justify-between">
               <span class="text-gray-500 dark:text-dark-400">{{ balanceFrozenText }}</span>
               <span class="font-medium text-amber-700 dark:text-amber-200">{{ formatHeaderMoney(frozenBalance) }}</span>
             </div>
-            <div v-if="!usingCarpoolQuota" class="mt-2 border-t border-gray-100 pt-2 dark:border-dark-700">
+            <div v-if="usingOrdinaryBalance" class="mt-2 border-t border-gray-100 pt-2 dark:border-dark-700">
               <div class="flex items-center justify-between">
                 <span class="text-gray-500 dark:text-dark-400">{{ balanceTotalText }}</span>
                 <span class="font-semibold text-gray-900 dark:text-white">{{ formatHeaderMoney(totalBalance) }}</span>
@@ -159,15 +155,12 @@
                   {{ fundingAvailableText }}
                 </div>
                 <div class="text-sm font-semibold text-primary-600 dark:text-primary-400">
-                  {{ formatHeaderMoney(headerAvailableAmount) }}
-                </div>
-                <div v-if="usingCarpoolQuota" class="mt-1 text-xs text-gray-500 dark:text-dark-400">
-                  {{ ordinaryBalanceText }} {{ formatHeaderMoney(ordinaryAvailableBalance) }}
+                  {{ headerFundingText }}
                 </div>
                 <div v-if="usingCarpoolQuota && carpoolStore.detailsError" class="mt-1 text-xs text-amber-600 dark:text-amber-300">
                   {{ t('carpool.quotaStale') }}
                 </div>
-                <div v-if="frozenBalance > 0" class="mt-1 text-xs text-amber-600 dark:text-amber-300">
+                <div v-if="usingOrdinaryBalance && frozenBalance > 0" class="mt-1 text-xs text-amber-600 dark:text-amber-300">
                   {{ balanceFrozenText }} {{ formatHeaderMoney(frozenBalance) }}
                 </div>
               </div>
@@ -303,13 +296,14 @@ const avatarUrl = computed(() => user.value?.avatar_url?.trim() || '')
 const ordinaryAvailableBalance = computed(() => Number(user.value?.balance || 0))
 const frozenBalance = computed(() => Number(user.value?.frozen_balance || 0))
 const totalBalance = computed(() => ordinaryAvailableBalance.value + frozenBalance.value)
-const usingCarpoolQuota = computed(() => carpoolStore.availableQuotaUsd !== null)
-const headerAvailableAmount = computed(() => usingCarpoolQuota.value ? parseCarpoolAmount(carpoolStore.availableQuotaUsd) : ordinaryAvailableBalance.value)
+const usingOrdinaryBalance = computed(() => user.value?.role === 'admin' || carpoolStore.billingMode === 'standard')
+const usingCarpoolQuota = computed(() => !usingOrdinaryBalance.value && carpoolStore.billingMode === 'carpool')
+const headerAvailableAmount = computed(() => usingCarpoolQuota.value ? parseCarpoolAmount(carpoolStore.availableQuotaUsd) : usingOrdinaryBalance.value ? ordinaryAvailableBalance.value : null)
+const headerFundingText = computed(() => headerAvailableAmount.value === null ? '--' : formatHeaderMoney(headerAvailableAmount.value))
 const balanceAvailableText = computed(() => t('common.availableBalance') === 'common.availableBalance' ? '可用余额' : t('common.availableBalance'))
 const balanceFrozenText = computed(() => t('common.frozenBalance') === 'common.frozenBalance' ? '冻结金额' : t('common.frozenBalance'))
 const balanceTotalText = computed(() => t('common.totalBalance') === 'common.totalBalance' ? '总余额' : t('common.totalBalance'))
-const fundingAvailableText = computed(() => usingCarpoolQuota.value ? t('carpool.availableQuota') : balanceAvailableText.value)
-const ordinaryBalanceText = computed(() => t('carpool.ordinaryBalance'))
+const fundingAvailableText = computed(() => usingCarpoolQuota.value ? t('carpool.availableQuota') : usingOrdinaryBalance.value ? balanceAvailableText.value : t(carpoolStore.detailsError ? 'carpool.loadFailed' : 'common.loading'))
 const balanceFrozenLabel = computed(() => `${balanceFrozenText.value} ${formatHeaderMoney(frozenBalance.value)}`)
 
 // 只在标准模式的管理员下显示新手引导按钮

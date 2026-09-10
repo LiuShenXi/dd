@@ -3,11 +3,13 @@ package server
 import (
 	"context"
 	"log"
+	"os"
 	"sync/atomic"
 	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/Wei-Shaw/sub2api/internal/handler"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/releasedrain"
 	middleware2 "github.com/Wei-Shaw/sub2api/internal/server/middleware"
 	"github.com/Wei-Shaw/sub2api/internal/server/routes"
 	"github.com/Wei-Shaw/sub2api/internal/service"
@@ -36,7 +38,10 @@ func SetupRouter(
 	compositeResolver *service.CompositeRouteResolver,
 	cfg *config.Config,
 	redisClient *redis.Client,
+	usagePool *service.UsageRecordWorkerPool,
 ) *gin.Engine {
+	drain := releasedrain.New(os.Getenv("RELEASE_DRAIN_START_HELD") == "true", 2048, usagePool.PendingTasks)
+	r.Use(middleware2.ReleaseDrain(drain, 120*time.Second))
 	middleware2.SetIngressRejectRecorder(opsService)
 	// 缓存 iframe 页面的 origin 列表，用于动态注入 CSP frame-src
 	var cachedFrameOrigins atomic.Pointer[[]string]
@@ -90,6 +95,7 @@ func SetupRouter(
 	}
 
 	// 注册路由
+	registerReleaseRoutes(r, drain, adminAuth, auditLog, apiKeyService)
 	registerRoutes(r, handlers, jwtAuth, optionalJWTAuth, adminAuth, apiKeyAuth, auditLog, stepUpAuth, apiKeyService, subscriptionService, opsService, settingService, compositeResolver, cfg, redisClient)
 
 	return r

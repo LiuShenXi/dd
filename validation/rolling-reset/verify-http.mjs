@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url'
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const credentials = JSON.parse(await readFile(join(scriptDir, '.runtime/app-credentials.private.json'), 'utf8'))
 const fixtures = JSON.parse(await readFile(join(scriptDir, '.runtime/browser-fixtures.private.json'), 'utf8'))
-const evidencePath = join(scriptDir, 'evidence/runtime-fixtures.json')
-const evidence = JSON.parse(await readFile(evidencePath, 'utf8'))
+const evidence = JSON.parse(await readFile(join(scriptDir, 'evidence/runtime-fixtures.json'), 'utf8'))
+const evidencePath = join(scriptDir, 'evidence/successor-20260908/http-fixture-verification.json')
 const baseURL = credentials.base_url.replace(/\/$/, '')
 
 async function request(path, { method = 'GET', token, body } = {}) {
@@ -60,12 +60,22 @@ for (const fixture of fixtures.users) {
   }
   if (fixture.name === 'near_natural_reset') {
     const remaining = new Date(details.term.next_natural_reset_at).getTime() - new Date(details.server_now).getTime()
-    if (remaining <= 0 || remaining > 2 * 60 * 60 * 1000) throw new Error('near natural reset fixture is outside its two-hour window')
+    if (remaining <= 0 || remaining > 7 * 24 * 60 * 60 * 1000) throw new Error('natural reset fixture has no valid current seven-day window')
   }
   if (fixture.name === 'active_reset_marker') {
     if (details.term.reset_count !== 1 || details.term.reset_events.length !== 1) throw new Error('zero-grant reset event is missing from user projection')
     if (new Date(details.term.expires_at).getTime() !== new Date(expected.expires_at).getTime()) throw new Error('special reset changed membership expiry')
     if (new Date(details.term.next_natural_reset_at).getTime() === new Date(expected.next_natural_reset_at).getTime()) throw new Error('special reset did not move natural deadline')
+    const event = details.term.reset_events[0]
+    const successor = details.term.cycles.find((cycle) => cycle.cycle_no === event.cycle_no)
+    const predecessor = details.term.cycles.find((cycle) => cycle.cycle_no === event.cycle_no - 1)
+    if (!successor || !predecessor || details.term.current_cycle_no < event.cycle_no) throw new Error('successful reset has no numbered successor and predecessor history')
+    if (Date.parse(predecessor.ends_at) !== Date.parse(event.occurred_at) || Date.parse(successor.starts_at) !== Date.parse(event.occurred_at)) throw new Error('reset must end predecessor and start successor at its effective timestamp')
+    if (!['closed', 'closing'].includes(predecessor.status)) throw new Error('reset predecessor is still active')
+    for (const cycle of details.term.cycles) {
+      const length = Date.parse(cycle.ends_at) - Date.parse(cycle.starts_at)
+      if (length < 0 || length > 7 * 24 * 60 * 60 * 1000) throw new Error('reset fixture contains an extended period longer than seven days')
+    }
   }
 
   results.push({
@@ -79,6 +89,8 @@ for (const fixture of fixtures.users) {
     reset_mode: details.term.reset_mode,
     reset_count: details.term.reset_count,
     reset_event_count: details.term.reset_events.length,
+    current_cycle_no: details.term.current_cycle_no,
+    cycles: details.term.cycles,
     available_usd: details.quota?.available_usd ?? null,
   })
 }

@@ -2,6 +2,20 @@
 
 Only mark complete after the main agent inspects the actual diff and evidence.
 
+## Official Global Reset Acceptance (2026-09-08)
+
+- [x] O1: Document immediate confirmed scope-wide reset, request-only replay protection and independent card scheduling before code.
+- [x] O2: Director inspected 7 official/shared PostgreSQL cases in run 20260908T034920Z-5983 and 12 card/carry regressions in 20260908T035010Z-6146. Confirmation unit/package compilation passed; independent review has no remaining blockers.
+- [x] O3: Admin confirmation, cancel, submitting/retry states and source/effective-time labels pass 20 focused tests, full frontend suite, typecheck, lint and build. Director inspected retry-key retention and success rotation tests.
+- [x] O4: Director reviewed source and verified actual local HTTP/browser confirmation: 5 effective members advance once, 2 future and 1 expired terms excluded, replay/cancel/authorization/ordinary balances/expiry/history correct. Desktop/mobile screenshots inspected. See [official reset acceptance](../../../validation/rolling-reset/evidence/official-reset-20260908/acceptance.md).
+
+## Reset Successor Acceptance (2026-09-08)
+
+- [x] S1: Architecture updated before implementation: successful natural/special resets each open a numbered successor; 28-day expiry remains fixed; user page removes filled-to annotations.
+- [x] S2: Success, zero increment, replay, failure, coincident natural boundary and more than five periods pass real PostgreSQL checks. Director inspected all 7 passing cases in run 20260908T022827Z-90678.
+- [x] S3: Pending receipts settle against original periods; carried boost/manual value is conserved across multiple special resets and cannot revive after natural or term expiry. Director inspected runs 20260908T023006Z-91064 and 20260908T023052Z-91186, 16 top-level cases total, and independent review.
+- [x] S4: Percentage projection, current cycle, unavailable states and annotation removal pass 23 frontend tests, typecheck/lint/build and independent desktop/mobile real HTTP acceptance. See [successor acceptance](../../../validation/rolling-reset/evidence/successor-20260908/acceptance.md).
+
 ## Current Rolling Refill Acceptance (2026-09-07)
 
 Direct Sol-worker coordination; no Trellis workflow. Authority:

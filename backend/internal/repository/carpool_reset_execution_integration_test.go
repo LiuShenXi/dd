@@ -61,8 +61,13 @@ func TestCarpoolResetExecution_PreciseCooldownAndFinalTimestamps(t *testing.T) {
 	require.Equal(t, 1, completed.TargetCount)
 	require.True(t, completed.GrantedUSD.Equal(decimal.RequireFromString("450")))
 
-	base := resetCycleBaseBalance(t, member.cycleID)
-	require.True(t, base.Equal(member.baseQuotaUSD))
+	cycles, err := NewCarpoolRepository(integrationDB).ListTermCycles(ctx, member.termID)
+	require.NoError(t, err)
+	require.Len(t, cycles, 2)
+	require.Equal(t, domain.CarpoolCycleClosing, cycles[0].State)
+	require.True(t, member.baseBefore.Equal(cycles[0].BaseBalanceUSD))
+	require.Equal(t, domain.CarpoolCycleActive, cycles[1].State)
+	require.True(t, member.baseQuotaUSD.Equal(cycles[1].BaseBalanceUSD))
 	var storedLast time.Time
 	var pendingBatchID *int64
 	require.NoError(t, integrationDB.QueryRowContext(ctx, `SELECT last_successful_reset_at,pending_batch_id FROM carpool_reset_scope_states WHERE scope_id=$1`, scopeID).Scan(&storedLast, &pendingBatchID))
@@ -85,22 +90,28 @@ func TestCarpoolResetExecution_ConsecutiveRollingSuccessesMoveDeadlineKeepExpiry
 	firstRepo.clockSQL = resetClockSQL(*firstBatch.ScheduledAt)
 	first, err := firstRepo.ExecuteResetBatch(ctx, firstBatch.ID, nil)
 	require.NoError(t, err)
-	_, _, firstEnd, firstExpiry := resetCycleWindow(t, member)
+	cycles, err := NewCarpoolRepository(integrationDB).ListTermCycles(ctx, member.termID)
+	require.NoError(t, err)
+	require.Len(t, cycles, 2)
+	firstEnd, firstExpiry := cycles[1].EndsAt, originalExpiry
 	require.Equal(t, originalExpiry, firstExpiry)
 	require.Equal(t, first.EffectiveAt.Add(7*24*time.Hour), firstEnd)
 	sameCycle, err := NewCarpoolRepository(integrationDB).EnsureCurrentCycle(ctx, member.termID, originalEnd.Add(time.Hour))
 	require.NoError(t, err)
-	require.Equal(t, originalID, sameCycle.ID, "the obsolete fixed boundary must not create or grant a period")
-	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_cycles WHERE term_id=$1`, member.termID))
+	require.Equal(t, cycles[1].ID, sameCycle.ID, "the obsolete fixed boundary must not create or grant a period")
+	require.Equal(t, 2, resetRowCount(t, `SELECT COUNT(*) FROM carpool_cycles WHERE term_id=$1`, member.termID))
 
 	secondRepo := resetRepositoryAt(firstEnd.Add(-6 * 24 * time.Hour))
 	secondBatch := registerResetQualification(t, secondRepo, scopeID, member.userID)
 	secondRepo.clockSQL = resetClockSQL(*secondBatch.ScheduledAt)
 	second, err := secondRepo.ExecuteResetBatch(ctx, secondBatch.ID, nil)
 	require.NoError(t, err)
-	currentID, currentStart, currentEnd, currentExpiry := resetCycleWindow(t, member)
-	require.Equal(t, originalID, currentID)
-	require.Equal(t, originalStart, currentStart)
+	cycles, err = NewCarpoolRepository(integrationDB).ListTermCycles(ctx, member.termID)
+	require.NoError(t, err)
+	require.Len(t, cycles, 3)
+	currentID, currentStart, currentEnd, currentExpiry := cycles[2].ID, cycles[2].StartsAt, cycles[2].EndsAt, originalExpiry
+	require.NotEqual(t, originalID, currentID)
+	require.NotEqual(t, originalStart, currentStart)
 	require.Equal(t, originalExpiry, currentExpiry)
 	require.Equal(t, second.EffectiveAt.Add(7*24*time.Hour), currentEnd)
 	require.True(t, currentEnd.After(firstEnd))
@@ -120,16 +131,22 @@ func TestCarpoolResetExecution_RollingZeroGrantReplayMovesDeadlineOnce(t *testin
 	completed, err := repo.ExecuteResetBatch(ctx, batch.ID, &op)
 	require.NoError(t, err)
 	require.True(t, completed.GrantedUSD.IsZero())
-	_, _, shiftedEnd, _ := resetCycleWindow(t, member)
+	cycles, err := NewCarpoolRepository(integrationDB).ListTermCycles(ctx, member.termID)
+	require.NoError(t, err)
+	require.Len(t, cycles, 2)
+	shiftedEnd := cycles[1].EndsAt
 	require.Equal(t, completed.EffectiveAt.Add(7*24*time.Hour), shiftedEnd)
 	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_reset_targets WHERE batch_id=$1 AND granted_usd=0`, batch.ID))
-	require.Zero(t, resetRowCount(t, `SELECT COUNT(*) FROM carpool_ledger WHERE reset_batch_id=$1 AND event_type='reset'`, batch.ID))
+	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_ledger WHERE reset_batch_id=$1 AND event_type='reset'`, batch.ID))
 
 	repo.clockSQL = resetClockSQL(shiftedEnd.Add(-time.Hour))
 	replayed, err := repo.ExecuteResetBatch(ctx, batch.ID, &op)
 	require.NoError(t, err)
 	require.Equal(t, completed.ID, replayed.ID)
-	_, _, replayEnd, _ := resetCycleWindow(t, member)
+	cycles, err = NewCarpoolRepository(integrationDB).ListTermCycles(ctx, member.termID)
+	require.NoError(t, err)
+	require.Len(t, cycles, 2)
+	replayEnd := cycles[1].EndsAt
 	require.Equal(t, shiftedEnd, replayEnd)
 }
 
@@ -153,14 +170,17 @@ func TestCarpoolResetExecution_RollingDay27SuccessCapsAtExpiry(t *testing.T) {
 	completed, err := repo.ExecuteResetBatch(ctx, batch.ID, nil)
 	require.NoError(t, err)
 	require.Equal(t, domain.CarpoolResetStatusCompleted, completed.Status)
-	_, cycleStart, cycleEnd, storedExpiry := resetCycleWindow(t, member)
-	require.Equal(t, slotAt.Add(-time.Hour), cycleStart)
+	cycles, err := NewCarpoolRepository(integrationDB).ListTermCycles(ctx, member.termID)
+	require.NoError(t, err)
+	require.Len(t, cycles, 2)
+	cycleStart, cycleEnd, storedExpiry := cycles[1].StartsAt, cycles[1].EndsAt, expiresAt
+	require.Equal(t, slotAt, cycleStart)
 	require.Equal(t, expiresAt, cycleEnd)
 	require.Equal(t, expiresAt, storedExpiry)
 	require.Nil(t, domain.CarpoolNextNaturalResetAt(domain.CarpoolTermActive, storedExpiry, *completed.EffectiveAt, []domain.CarpoolCycle{{StartsAt: cycleStart, EndsAt: cycleEnd, State: domain.CarpoolCycleActive}}))
 	_, err = NewCarpoolRepository(integrationDB).EnsureCurrentCycle(ctx, member.termID, storedExpiry)
 	require.ErrorIs(t, err, service.ErrCarpoolUnavailable)
-	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_cycles WHERE term_id=$1`, member.termID))
+	require.Equal(t, 2, resetRowCount(t, `SELECT COUNT(*) FROM carpool_cycles WHERE term_id=$1`, member.termID))
 }
 
 func TestCarpoolResetExecution_RollingNaturalBoundaryRaceGrantsOnce(t *testing.T) {
@@ -197,14 +217,16 @@ func TestCarpoolResetExecution_RollingNaturalBoundaryRaceGrantsOnce(t *testing.T
 
 	cycles, err := cycleRepo.ListTermCycles(ctx, member.termID)
 	require.NoError(t, err)
-	require.Len(t, cycles, 2)
+	require.Len(t, cycles, 3)
 	require.Equal(t, domain.CarpoolCycleClosing, cycles[0].State)
-	require.Equal(t, domain.CarpoolCycleActive, cycles[1].State)
-	require.Equal(t, slotAt, cycles[1].StartsAt)
-	require.True(t, decimal.RequireFromString("550").Equal(cycles[1].BaseBalanceUSD))
+	require.Equal(t, domain.CarpoolCycleClosing, cycles[1].State)
+	require.Equal(t, cycles[1].StartsAt, cycles[1].EndsAt)
+	require.Equal(t, domain.CarpoolCycleActive, cycles[2].State)
+	require.Equal(t, slotAt, cycles[2].StartsAt)
+	require.True(t, decimal.RequireFromString("550").Equal(cycles[2].BaseBalanceUSD))
 	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_ledger WHERE cycle_id=$1 AND event_type='cycle_initial'`, cycles[1].ID))
-	require.Zero(t, resetRowCount(t, `SELECT COUNT(*) FROM carpool_ledger WHERE reset_batch_id=$1 AND event_type='reset'`, batch.ID))
-	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_reset_targets WHERE batch_id=$1 AND cycle_id=$2 AND granted_usd=0`, batch.ID, cycles[1].ID))
+	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_ledger WHERE reset_batch_id=$1 AND event_type='reset'`, batch.ID))
+	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_reset_targets WHERE batch_id=$1 AND cycle_id=$2 AND granted_usd=0`, batch.ID, cycles[2].ID))
 	_, _, _, storedExpiry := resetCycleWindow(t, member)
 	require.Equal(t, originalExpiry, storedExpiry)
 }
@@ -410,12 +432,58 @@ func TestCarpoolResetExecution_AllOrNothingRetryIncludesZeroGrantCycleFive(t *te
 	require.Equal(t, domain.CarpoolResetStatusCompleted, completed.Status)
 	require.Equal(t, 2, completed.TargetCount)
 	require.True(t, completed.GrantedUSD.Equal(decimal.RequireFromString("100")))
-	require.True(t, resetCycleBaseBalance(t, needsGrant.cycleID).Equal(needsGrant.baseQuotaUSD))
-	require.True(t, resetCycleBaseBalance(t, zeroGrant.cycleID).Equal(zeroGrant.baseQuotaUSD))
-	_, _, rollingEndAfterSuccess, _ := resetCycleWindow(t, needsGrant)
+	needCycles, err := NewCarpoolRepository(integrationDB).ListTermCycles(ctx, needsGrant.termID)
+	require.NoError(t, err)
+	zeroCycles, err := NewCarpoolRepository(integrationDB).ListTermCycles(ctx, zeroGrant.termID)
+	require.NoError(t, err)
+	require.Len(t, needCycles, 2)
+	require.Len(t, zeroCycles, 1, "legacy fixed snapshots still refill in place")
+	require.True(t, needCycles[1].BaseBalanceUSD.Equal(needsGrant.baseQuotaUSD))
+	require.True(t, zeroCycles[0].BaseBalanceUSD.Equal(zeroGrant.baseQuotaUSD))
+	rollingEndAfterSuccess := needCycles[1].EndsAt
 	require.Equal(t, completed.EffectiveAt.Add(7*24*time.Hour), rollingEndAfterSuccess)
 	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_reset_targets WHERE batch_id=$1 AND term_id=$2 AND granted_usd=0`, batch.ID, zeroGrant.termID))
 	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_ledger WHERE reset_batch_id=$1 AND event_type='reset'`, batch.ID))
+}
+
+func TestCarpoolResetExecution_RollingCycleNumberCanExceedFive(t *testing.T) {
+	ctx := context.Background()
+	databaseNow := carpoolDatabaseNow(t, ctx)
+	slotAt, _ := service.NextCarpoolResetSchedule(databaseNow, nil)
+	scopeID := nextResetIntegrationScopeID()
+	member := createResetExecutionMember(t, scopeID, slotAt, 1,
+		decimal.RequireFromString("550"), decimal.RequireFromString("550"))
+	_, err := integrationDB.ExecContext(ctx, `UPDATE carpool_cycles SET cycle_no=5 WHERE id=$1`, member.cycleID)
+	require.NoError(t, err)
+
+	repo := resetRepositoryAt(slotAt.Add(-time.Hour))
+	batch := registerResetQualification(t, repo, scopeID, member.userID)
+	repo.clockSQL = resetClockSQL(*batch.ScheduledAt)
+	_, err = repo.ExecuteResetBatch(ctx, batch.ID, nil)
+	require.NoError(t, err)
+
+	cycles, err := NewCarpoolRepository(integrationDB).ListTermCycles(ctx, member.termID)
+	require.NoError(t, err)
+	require.Len(t, cycles, 2)
+	require.Equal(t, 5, cycles[0].CycleNo)
+	require.Equal(t, 6, cycles[1].CycleNo)
+	require.Equal(t, domain.CarpoolCycleActive, cycles[1].State)
+}
+
+func TestCarpoolResetExecution_RollingNegativeBaseGrantMatchesSuccessor(t *testing.T) {
+	ctx := context.Background()
+	databaseNow := carpoolDatabaseNow(t, ctx)
+	slotAt, _ := service.NextCarpoolResetSchedule(databaseNow, nil)
+	scopeID := nextResetIntegrationScopeID()
+	member := createResetExecutionMember(t, scopeID, slotAt, 1,
+		decimal.RequireFromString("550"), decimal.RequireFromString("-10"))
+	repo := resetRepositoryAt(slotAt.Add(-time.Hour))
+	batch := registerResetQualification(t, repo, scopeID, member.userID)
+	repo.clockSQL = resetClockSQL(*batch.ScheduledAt)
+	completed, err := repo.ExecuteResetBatch(ctx, batch.ID, nil)
+	require.NoError(t, err)
+	require.True(t, decimal.RequireFromString("550").Equal(completed.GrantedUSD))
+	require.Equal(t, 1, resetRowCount(t, `SELECT COUNT(*) FROM carpool_ledger WHERE reset_batch_id=$1 AND event_type='reset' AND delta_usd=550`, batch.ID))
 }
 
 func nextResetIntegrationScopeID() int64 {

@@ -9,7 +9,7 @@ const state = vi.hoisted(() => ({
     isSimpleMode: false,
     logout: vi.fn(),
   },
-  carpool: { availableQuotaUsd: null as string | null, detailsError: false },
+  carpool: { availableQuotaUsd: null as string | null, billingMode: 'standard' as 'standard' | 'carpool' | null, detailsError: false },
 }))
 
 vi.mock('vue-router', () => ({
@@ -47,25 +47,29 @@ describe('AppHeader carpool funding presentation', () => {
   beforeEach(() => {
     state.auth.user.balance = 25
     state.auth.user.frozen_balance = 5
+    state.auth.user.role = 'user'
     state.carpool.availableQuotaUsd = null
+    state.carpool.billingMode = 'standard'
     state.carpool.detailsError = false
   })
 
   it('shows carpool quota as a separate source without adding ordinary balance', () => {
     state.carpool.availableQuotaUsd = '838.00000000'
+    state.carpool.billingMode = 'carpool'
     const wrapper = mountHeader()
 
     expect(wrapper.get('[data-testid="header-funding-label"]').text()).toBe('carpool.availableQuota')
     expect(wrapper.get('[data-testid="header-funding-amount"]').text()).toBe('$838.00')
     expect(wrapper.get('[data-testid="header-carpool-badge"]').text()).toBe('carpool.quotaBadge')
-    expect(wrapper.text()).toContain('carpool.ordinaryBalance')
-    expect(wrapper.text()).toContain('$25.00')
+    expect(wrapper.text()).not.toContain('carpool.ordinaryBalance')
+    expect(wrapper.text()).not.toContain('$25.00')
     expect(wrapper.text()).not.toContain('$863.00')
     wrapper.unmount()
   })
 
   it('keeps the last known carpool quota visible with an explicit stale label', () => {
     state.carpool.availableQuotaUsd = '838.00000000'
+    state.carpool.billingMode = 'carpool'
     state.carpool.detailsError = true
     const wrapper = mountHeader()
 
@@ -82,5 +86,31 @@ describe('AppHeader carpool funding presentation', () => {
     expect(wrapper.get('[data-testid="header-funding-amount"]').text()).toBe('$25.00')
     expect(wrapper.text()).toContain('$30.00')
     wrapper.unmount()
+  })
+
+  it.each([false, true])('never exposes the retained balance while billing mode is unknown, error=%s', (error) => {
+    state.carpool.billingMode = null
+    state.carpool.detailsError = error
+    const wrapper = mountHeader()
+    expect(wrapper.get('[data-testid="header-funding-amount"]').text()).toBe('--')
+    expect(wrapper.text()).not.toContain('$25.00')
+    expect(wrapper.text()).not.toContain('$30.00')
+    wrapper.unmount()
+  })
+
+  it('shows zero after expiry and keeps the administrator on ordinary billing', () => {
+    state.carpool.billingMode = 'carpool'
+    state.carpool.availableQuotaUsd = '0'
+    const member = mountHeader()
+    expect(member.get('[data-testid="header-funding-amount"]').text()).toBe('$0.00')
+    expect(member.text()).not.toContain('$25.00')
+    member.unmount()
+
+    state.auth.user.role = 'admin'
+    state.carpool.billingMode = null
+    const admin = mountHeader()
+    expect(admin.get('[data-testid="header-funding-amount"]').text()).toBe('$25.00')
+    expect(admin.text()).toContain('$30.00')
+    admin.unmount()
   })
 })

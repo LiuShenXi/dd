@@ -2,6 +2,7 @@ package domain
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -34,21 +35,49 @@ const (
 )
 
 type CarpoolPlanSnapshot struct {
-	PlanID         int64           `json:"plan_id"`
-	Code           string          `json:"code"`
-	Name           string          `json:"name"`
-	Version        int             `json:"version"`
-	ListPriceCNY   decimal.Decimal `json:"list_price_cny"`
-	WeeklyQuotaUSD decimal.Decimal `json:"weekly_quota_usd"`
-	Cycle5QuotaUSD decimal.Decimal `json:"cycle_5_quota_usd"`
-	DurationDays   int             `json:"duration_days"`
-	CycleDays      int             `json:"cycle_days"`
-	BoostRatio     decimal.Decimal `json:"boost_ratio"`
-	BoostAmountUSD decimal.Decimal `json:"boost_amount_usd"`
-	BoostCount     int             `json:"boost_count"`
-	RoundingMode   string          `json:"rounding_mode"`
-	Enabled        bool            `json:"enabled"`
-	ResetMode      string          `json:"reset_mode"`
+	PlanID                int64           `json:"plan_id"`
+	Code                  string          `json:"code"`
+	Name                  string          `json:"name"`
+	Version               int             `json:"version"`
+	ListPriceCNY          decimal.Decimal `json:"list_price_cny"`
+	WeeklyQuotaUSD        decimal.Decimal `json:"weekly_quota_usd"`
+	Cycle5QuotaUSD        decimal.Decimal `json:"cycle_5_quota_usd"`
+	DurationDays          int             `json:"duration_days"`
+	CycleDays             int             `json:"cycle_days"`
+	BoostRatio            decimal.Decimal `json:"boost_ratio"`
+	BoostAmountUSD        decimal.Decimal `json:"boost_amount_usd"`
+	BoostCount            int             `json:"boost_count"`
+	RoundingMode          string          `json:"rounding_mode"`
+	Enabled               bool            `json:"enabled"`
+	ResetMode             string          `json:"reset_mode"`
+	WeeklyQuotaCustomized bool            `json:"weekly_quota_customized,omitempty"`
+	DurationCustomized    bool            `json:"duration_customized,omitempty"`
+}
+
+// Overrides belong to the member snapshot, never to the shared plan version.
+func (s CarpoolPlanSnapshot) WithWeeklyQuotaOverride(quota decimal.Decimal) CarpoolPlanSnapshot {
+	s.WeeklyQuotaCustomized = true
+	s.WeeklyQuotaUSD = quota.Round(8)
+	s.Cycle5QuotaUSD = s.WeeklyQuotaUSD.Mul(decimal.NewFromInt(2)).Div(decimal.NewFromInt(7)).Round(0)
+	s.BoostAmountUSD = s.WeeklyQuotaUSD.Mul(s.BoostRatio).Round(8)
+	return s
+}
+
+func (s CarpoolPlanSnapshot) WithDurationOverride(durationDays int) CarpoolPlanSnapshot {
+	s.DurationCustomized = true
+	s.DurationDays = durationDays
+	s.ResetMode = resetModeForNewSnapshot(durationDays)
+	return s
+}
+
+func (s CarpoolPlanSnapshot) WithRenewalOverrides(previous CarpoolPlanSnapshot) CarpoolPlanSnapshot {
+	if previous.WeeklyQuotaCustomized {
+		s = s.WithWeeklyQuotaOverride(previous.WeeklyQuotaUSD)
+	}
+	if previous.DurationCustomized {
+		s = s.WithDurationOverride(previous.DurationDays)
+	}
+	return s
 }
 
 func (s CarpoolPlanSnapshot) EffectiveResetMode() string {
@@ -182,6 +211,53 @@ func BuildCarpoolOpeningCycles(startsAt, at time.Time, snapshot CarpoolPlanSnaps
 	return specs
 }
 
+// A takeover anchor records a known current period without inventing earlier
+// cycles or changing the membership's registration-based expiry.
+func BuildCarpoolTakeoverCycles(startsAt, at time.Time, snapshot CarpoolPlanSnapshot, takeover *CarpoolTakeoverInput) ([]CarpoolCycleSpec, error) {
+	var deadline *time.Time
+	if takeover != nil {
+		deadline = takeover.NextNaturalResetAt
+	}
+	period := time.Duration(snapshot.CycleDays) * 24 * time.Hour
+	expiresAt := startsAt.Add(time.Duration(snapshot.DurationDays) * 24 * time.Hour)
+	if takeover == nil || takeover.CurrentCycleStartsAt == nil {
+		if deadline != nil && (snapshot.EffectiveResetMode() != CarpoolResetModeRolling || at.Before(startsAt) || !at.Before(expiresAt) ||
+			!deadline.After(at) || deadline.After(at.Add(period))) {
+			return nil, fmt.Errorf("invalid takeover next natural reset deadline")
+		}
+		return BuildCarpoolOpeningCycles(startsAt, at, snapshot, deadline), nil
+	}
+	anchor := takeover.CurrentCycleStartsAt.UTC()
+	end := anchor.Add(period)
+	if end.After(expiresAt) {
+		end = expiresAt
+	}
+	if period <= 0 || anchor.Before(startsAt) || anchor.After(at) || !at.Before(end) {
+		return nil, fmt.Errorf("takeover current cycle must cover the takeover instant within the term")
+	}
+	if deadline != nil {
+		requested := deadline.UTC()
+		if requested.After(expiresAt) {
+			requested = expiresAt
+		}
+		if !requested.Equal(end) {
+			return nil, fmt.Errorf("takeover deadline must match the anchored current cycle end")
+		}
+	}
+	specs := []CarpoolCycleSpec{{CycleNo: 1, StartsAt: anchor, EndsAt: end, BaseQuotaUSD: snapshot.WeeklyQuotaUSD.Round(8)}}
+	if snapshot.EffectiveResetMode() == CarpoolResetModeFixed {
+		for end.Before(expiresAt) {
+			start := end
+			end = start.Add(period)
+			if end.After(expiresAt) {
+				end = expiresAt
+			}
+			specs = append(specs, CarpoolCycleSpec{CycleNo: len(specs) + 1, StartsAt: start, EndsAt: end, BaseQuotaUSD: snapshot.WeeklyQuotaUSD.Round(8)})
+		}
+	}
+	return specs, nil
+}
+
 type CarpoolTerm struct {
 	ID                int64
 	UserID            int64
@@ -252,6 +328,7 @@ type CarpoolUsageDebit struct {
 type CarpoolLedgerEntry struct {
 	ID               int64           `json:"id"`
 	UserID           int64           `json:"user_id"`
+	UserEmail        string          `json:"user_email,omitempty"`
 	TermID           int64           `json:"term_id"`
 	CycleID          int64           `json:"cycle_id"`
 	EventType        string          `json:"event_type"`
@@ -279,6 +356,7 @@ type CarpoolTakeoverInput struct {
 	BoostUsed                  int              `json:"boost_used"`
 	HistoryComplete            bool             `json:"history_complete"`
 	NextNaturalResetAt         *time.Time       `json:"next_natural_reset_at"`
+	CurrentCycleStartsAt       *time.Time       `json:"current_cycle_starts_at,omitempty"`
 }
 
 func (t CarpoolTakeoverInput) Quantized() CarpoolTakeoverInput {
@@ -286,6 +364,10 @@ func (t CarpoolTakeoverInput) Quantized() CarpoolTakeoverInput {
 	t.CurrentBoostBalanceUSD = t.CurrentBoostBalanceUSD.Round(8)
 	t.CurrentManualBalanceUSD = t.CurrentManualBalanceUSD.Round(8)
 	t.OrdinaryBalanceTransferUSD = t.OrdinaryBalanceTransferUSD.Round(8)
+	if t.CurrentCycleStartsAt != nil {
+		value := t.CurrentCycleStartsAt.UTC()
+		t.CurrentCycleStartsAt = &value
+	}
 	if t.HistoricalUsedUSD != nil {
 		value := t.HistoricalUsedUSD.Round(8)
 		t.HistoricalUsedUSD = &value
@@ -377,7 +459,8 @@ type CarpoolUserResetEvent struct {
 }
 
 type CarpoolUserQuota struct {
-	AvailableUSD decimal.Decimal `json:"available_usd"`
+	AvailableUSD     decimal.Decimal  `json:"available_usd"`
+	RemainingPercent *decimal.Decimal `json:"remaining_percent"`
 }
 
 type CarpoolUserResetWindow struct {
@@ -389,6 +472,7 @@ type CarpoolUserResetWindow struct {
 }
 
 type CarpoolUserDetails struct {
+	BillingMode string                 `json:"billing_mode"`
 	ServerNow   time.Time              `json:"server_now"`
 	Timezone    string                 `json:"timezone"`
 	Usage       CarpoolUserUsage       `json:"usage"`
@@ -400,6 +484,7 @@ type CarpoolUserDetails struct {
 type CarpoolAdminTerm struct {
 	ID                 int64               `json:"id"`
 	UserID             int64               `json:"user_id"`
+	UserEmail          string              `json:"user_email,omitempty"`
 	ScopeID            int64               `json:"scope_id"`
 	GroupID            int64               `json:"group_id"`
 	PlanID             int64               `json:"plan_id"`
@@ -423,6 +508,7 @@ type CarpoolAdminCycle struct {
 	ID                int64           `json:"id"`
 	TermID            int64           `json:"term_id"`
 	UserID            int64           `json:"user_id"`
+	UserEmail         string          `json:"user_email,omitempty"`
 	CycleNo           int             `json:"cycle_no"`
 	StartsAt          time.Time       `json:"starts_at"`
 	EndsAt            time.Time       `json:"ends_at"`
@@ -467,6 +553,7 @@ type CarpoolBillingException struct {
 	RequestID                   string           `json:"request_id"`
 	APIKeyID                    int64            `json:"api_key_id"`
 	UserID                      int64            `json:"user_id"`
+	UserEmail                   string           `json:"user_email,omitempty"`
 	GroupID                     int64            `json:"group_id"`
 	TermID                      int64            `json:"term_id"`
 	CycleID                     int64            `json:"cycle_id"`

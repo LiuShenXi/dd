@@ -201,7 +201,8 @@ func (r *CarpoolRepository) CreateTerm(ctx context.Context, params domain.Create
 	}
 
 	var plan *domain.CarpoolPlan
-	if renewalSource != nil && params.PlanID == 0 {
+	inheritRenewalOverrides := renewalSource != nil && params.PlanID == 0
+	if inheritRenewalOverrides {
 		plan, err = scanCarpoolPlan(tx.QueryRowContext(ctx, `SELECT id,code,name,list_price_cny::text,weekly_quota_usd::text,duration_days,cycle_days,boost_ratio::text,boost_count,enabled,version FROM carpool_plans WHERE code=$1 ORDER BY version DESC,id DESC LIMIT 1 FOR SHARE`, renewalSource.PlanSnapshot.Code))
 	} else {
 		plan, err = getPlanTx(ctx, tx, params.PlanID)
@@ -213,7 +214,7 @@ func (r *CarpoolRepository) CreateTerm(ctx context.Context, params domain.Create
 		return nil, nil, service.ErrCarpoolUnavailable
 	}
 	params.PlanID = plan.ID
-	if err = validateCarpoolUserGroupTx(ctx, tx, params.UserID, params.GroupID); err != nil {
+	if err = prepareCarpoolUserGroupTx(ctx, tx, params); err != nil {
 		return nil, nil, err
 	}
 	if _, err = tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1, 0))`, fmt.Sprintf("carpool:%d:%d", params.UserID, params.ScopeID)); err != nil {
@@ -221,6 +222,9 @@ func (r *CarpoolRepository) CreateTerm(ctx context.Context, params domain.Create
 	}
 
 	snapshot := plan.Snapshot()
+	if inheritRenewalOverrides {
+		snapshot = snapshot.WithRenewalOverrides(renewalSource.PlanSnapshot)
+	}
 	expiresAt := startsAt.Add(time.Duration(snapshot.DurationDays) * 24 * time.Hour)
 	var overlapID int64
 	err = tx.QueryRowContext(ctx, `SELECT id FROM carpool_terms WHERE user_id=$1 AND scope_id=$2 AND status <> 'terminated' AND starts_at < $4 AND expires_at > $3 LIMIT 1 FOR UPDATE`, params.UserID, params.ScopeID, startsAt, expiresAt).Scan(&overlapID)
@@ -238,12 +242,9 @@ func (r *CarpoolRepository) CreateTerm(ctx context.Context, params domain.Create
 	if !now.Before(expiresAt) {
 		status = domain.CarpoolTermExpired
 	}
-	if params.Takeover != nil && params.Takeover.NextNaturalResetAt != nil {
-		deadline := *params.Takeover.NextNaturalResetAt
-		if snapshot.EffectiveResetMode() != domain.CarpoolResetModeRolling || status != domain.CarpoolTermActive ||
-			!deadline.After(now) || deadline.After(now.Add(time.Duration(snapshot.CycleDays)*24*time.Hour)) {
-			return nil, nil, service.ErrCarpoolInvalidNaturalReset
-		}
+	specs, cycleErr := domain.BuildCarpoolTakeoverCycles(startsAt, now, snapshot, params.Takeover)
+	if cycleErr != nil {
+		return nil, nil, service.ErrCarpoolInvalidNaturalReset
 	}
 	historyComplete := params.Mode != "takeover"
 	boostUsed := 0
@@ -279,11 +280,6 @@ func (r *CarpoolRepository) CreateTerm(ctx context.Context, params domain.Create
 		return nil, nil, err
 	}
 
-	var nextNaturalResetAt *time.Time
-	if params.Takeover != nil {
-		nextNaturalResetAt = params.Takeover.NextNaturalResetAt
-	}
-	specs := domain.BuildCarpoolOpeningCycles(startsAt, now, snapshot, nextNaturalResetAt)
 	cycles := make([]domain.CarpoolCycle, 0, len(specs))
 	for _, spec := range specs {
 		state := domain.CarpoolCycleScheduled
@@ -371,9 +367,102 @@ func validateLatestEnabledPlanTx(ctx context.Context, tx *sql.Tx, plan *domain.C
 	return nil
 }
 
+const carpoolEffectiveGroupTypeSQL = `CASE WHEN b.user_id IS NOT NULL THEN CASE WHEN g.subscription_type='standard' AND g.platform='openai' AND b.group_id=g.id THEN 'carpool' ELSE '' END ELSE g.subscription_type END`
+
+func prepareCarpoolUserGroupTx(ctx context.Context, tx *sql.Tx, params domain.CreateCarpoolTermParams) error {
+	var groupType, platform, groupStatus string
+	err := tx.QueryRowContext(ctx, `SELECT subscription_type,platform,status FROM groups WHERE id=$1 AND deleted_at IS NULL FOR SHARE`, params.GroupID).Scan(&groupType, &platform, &groupStatus)
+	if errors.Is(err, sql.ErrNoRows) {
+		return service.ErrCarpoolInvalidRelationship
+	}
+	if err != nil {
+		return err
+	}
+	if groupType != service.SubscriptionTypeStandard {
+		return validateCarpoolUserGroupTx(ctx, tx, params.UserID, params.GroupID)
+	}
+	if platform != service.PlatformOpenAI || groupStatus != service.StatusActive {
+		return service.ErrCarpoolInvalidRelationship
+	}
+	var userStatus, balance, frozen string
+	err = tx.QueryRowContext(ctx, `SELECT status,balance::text,COALESCE(frozen_balance,0)::text FROM users WHERE id=$1 AND deleted_at IS NULL FOR UPDATE`, params.UserID).Scan(&userStatus, &balance, &frozen)
+	if errors.Is(err, sql.ErrNoRows) {
+		return service.ErrCarpoolInvalidRelationship
+	}
+	if err != nil {
+		return err
+	}
+	if userStatus != service.StatusActive {
+		return service.ErrCarpoolInvalidRelationship
+	}
+	var boundGroupID int64
+	err = tx.QueryRowContext(ctx, `SELECT group_id FROM carpool_billing_bindings WHERE user_id=$1 FOR UPDATE`, params.UserID).Scan(&boundGroupID)
+	firstBinding := errors.Is(err, sql.ErrNoRows)
+	if err != nil && !firstBinding {
+		return err
+	}
+	if !firstBinding && boundGroupID != params.GroupID {
+		return service.ErrCarpoolInvalidRelationship
+	}
+	if firstBinding {
+		if params.Operation.Kind == "renew_term" {
+			return service.ErrCarpoolInvalidRelationship
+		}
+		ordinary, parseErr := decimal.NewFromString(balance)
+		if parseErr != nil {
+			return parseErr
+		}
+		reserved, parseErr := decimal.NewFromString(frozen)
+		if parseErr != nil {
+			return parseErr
+		}
+		if !ordinary.IsZero() || !reserved.IsZero() {
+			return service.ErrCarpoolOpeningBalance
+		}
+	}
+	// Lock every existing Key without changing its identity, group, quota, or status.
+	rows, err := tx.QueryContext(ctx, `SELECT group_id FROM api_keys WHERE user_id=$1 AND deleted_at IS NULL ORDER BY id FOR UPDATE`, params.UserID)
+	if err != nil {
+		return err
+	}
+	for rows.Next() {
+		var keyGroup sql.NullInt64
+		if err = rows.Scan(&keyGroup); err != nil {
+			rows.Close()
+			return err
+		}
+		if !keyGroup.Valid || keyGroup.Int64 != params.GroupID {
+			rows.Close()
+			return service.ErrCarpoolOpeningKeyGroup
+		}
+	}
+	err = rows.Err()
+	rows.Close()
+	if err != nil {
+		return err
+	}
+	if firstBinding {
+		if _, err = tx.ExecContext(ctx, `INSERT INTO carpool_billing_bindings(user_id,group_id) VALUES($1,$2)`, params.UserID, params.GroupID); err != nil {
+			return err
+		}
+	}
+	if _, err = tx.ExecContext(ctx, `UPDATE users SET restrict_public_groups=TRUE,updated_at=clock_timestamp() WHERE id=$1 AND NOT restrict_public_groups`, params.UserID); err != nil {
+		return err
+	}
+	if _, err = tx.ExecContext(ctx, `DELETE FROM user_allowed_groups WHERE user_id=$1 AND group_id<>$2`, params.UserID, params.GroupID); err != nil {
+		return err
+	}
+	if _, err = tx.ExecContext(ctx, `INSERT INTO user_allowed_groups(user_id,group_id) VALUES($1,$2) ON CONFLICT DO NOTHING`, params.UserID, params.GroupID); err != nil {
+		return err
+	}
+	// These permission changes are not all covered by the legacy invalidation triggers.
+	_, err = tx.ExecContext(ctx, `INSERT INTO auth_cache_invalidation_outbox(cache_key) SELECT encode(sha256(convert_to(key,'UTF8')),'hex') FROM api_keys WHERE user_id=$1 AND deleted_at IS NULL`, params.UserID)
+	return err
+}
+
 func validateCarpoolUserGroupTx(ctx context.Context, tx *sql.Tx, userID, groupID int64) error {
 	var groupType string
-	err := tx.QueryRowContext(ctx, `SELECT g.subscription_type FROM users u CROSS JOIN groups g WHERE u.id=$1 AND u.deleted_at IS NULL AND g.id=$2 AND g.deleted_at IS NULL`, userID, groupID).Scan(&groupType)
+	err := tx.QueryRowContext(ctx, `SELECT `+carpoolEffectiveGroupTypeSQL+` FROM users u CROSS JOIN groups g LEFT JOIN carpool_billing_bindings b ON b.user_id=u.id WHERE u.id=$1 AND u.deleted_at IS NULL AND g.id=$2 AND g.deleted_at IS NULL`, userID, groupID).Scan(&groupType)
 	if errors.Is(err, sql.ErrNoRows) {
 		return service.ErrCarpoolInvalidRelationship
 	}
@@ -665,7 +754,7 @@ func (r *CarpoolRepository) admitOnce(ctx context.Context, userID, apiKeyID, gro
 	}
 	var keyUser, keyGroup int64
 	var groupType string
-	if err = tx.QueryRowContext(ctx, `SELECT k.user_id,k.group_id,g.subscription_type FROM api_keys k JOIN groups g ON g.id=k.group_id AND g.deleted_at IS NULL WHERE k.id=$1 AND k.deleted_at IS NULL`, apiKeyID).Scan(&keyUser, &keyGroup, &groupType); err != nil {
+	if err = tx.QueryRowContext(ctx, `SELECT k.user_id,k.group_id,`+carpoolEffectiveGroupTypeSQL+` FROM api_keys k JOIN groups g ON g.id=k.group_id AND g.deleted_at IS NULL LEFT JOIN carpool_billing_bindings b ON b.user_id=k.user_id WHERE k.id=$1 AND k.deleted_at IS NULL`, apiKeyID).Scan(&keyUser, &keyGroup, &groupType); err != nil {
 		return nil, service.ErrCarpoolInvalidRelationship
 	}
 	if keyUser != userID || keyGroup != groupID || !strings.EqualFold(groupType, "carpool") {
@@ -698,7 +787,7 @@ func (r *CarpoolRepository) admitOnce(ctx context.Context, userID, apiKeyID, gro
 	var keyStatus, userStatus, groupStatus string
 	var keyExpiresAt, window5hStart, window1dStart, window7dStart *time.Time
 	var quota, quotaUsed, rateLimit5h, rateLimit1d, rateLimit7d, usage5h, usage1d, usage7d float64
-	if err = tx.QueryRowContext(ctx, `SELECT k.user_id,k.group_id,k.status,k.expires_at,k.quota,k.quota_used,k.rate_limit_5h,k.rate_limit_1d,k.rate_limit_7d,k.usage_5h,k.usage_1d,k.usage_7d,k.window_5h_start,k.window_1d_start,k.window_7d_start,u.status,g.status,g.subscription_type FROM api_keys k JOIN users u ON u.id=k.user_id AND u.deleted_at IS NULL JOIN groups g ON g.id=k.group_id AND g.deleted_at IS NULL WHERE k.id=$1 AND k.deleted_at IS NULL FOR SHARE OF k,u,g`, apiKeyID).Scan(
+	if err = tx.QueryRowContext(ctx, `SELECT k.user_id,k.group_id,k.status,k.expires_at,k.quota,k.quota_used,k.rate_limit_5h,k.rate_limit_1d,k.rate_limit_7d,k.usage_5h,k.usage_1d,k.usage_7d,k.window_5h_start,k.window_1d_start,k.window_7d_start,u.status,g.status,`+carpoolEffectiveGroupTypeSQL+` FROM api_keys k JOIN users u ON u.id=k.user_id AND u.deleted_at IS NULL JOIN groups g ON g.id=k.group_id AND g.deleted_at IS NULL LEFT JOIN carpool_billing_bindings b ON b.user_id=k.user_id WHERE k.id=$1 AND k.deleted_at IS NULL FOR SHARE OF k,u,g`, apiKeyID).Scan(
 		&keyUser, &keyGroup, &keyStatus, &keyExpiresAt, &quota, &quotaUsed,
 		&rateLimit5h, &rateLimit1d, &rateLimit7d, &usage5h, &usage1d, &usage7d,
 		&window5hStart, &window1dStart, &window7dStart, &userStatus, &groupStatus, &groupType,

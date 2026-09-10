@@ -38,6 +38,44 @@ func TestUsageRecordWorkerPool_SubmitEnqueued(t *testing.T) {
 	}, time.Second, 10*time.Millisecond)
 }
 
+func TestUsageRecordWorkerPool_PendingIncludesQueueAndSyncFallback(t *testing.T) {
+	pool := NewUsageRecordWorkerPoolWithOptions(UsageRecordWorkerPoolOptions{
+		WorkerCount: 1, QueueSize: 1, TaskTimeout: time.Second,
+		OverflowPolicy: config.UsageRecordOverflowPolicySync,
+	})
+	t.Cleanup(pool.Stop)
+	block, started := make(chan struct{}), make(chan struct{})
+	pool.Submit(func(context.Context) { close(started); <-block })
+	<-started
+	require.Equal(t, int64(1), pool.PendingTasks())
+	pool.Submit(func(context.Context) {})
+	require.Equal(t, int64(2), pool.PendingTasks())
+	mode := pool.Submit(func(context.Context) { require.Equal(t, int64(3), pool.PendingTasks()) })
+	require.Equal(t, UsageRecordSubmitModeSync, mode)
+	require.Equal(t, int64(2), pool.PendingTasks())
+	close(block)
+	require.Eventually(t, func() bool { return pool.PendingTasks() == 0 }, time.Second, time.Millisecond)
+}
+
+func TestUsageRecordWorkerPool_PendingClearedAfterPanicAndDrop(t *testing.T) {
+	pool := NewUsageRecordWorkerPoolWithOptions(UsageRecordWorkerPoolOptions{
+		WorkerCount: 1, QueueSize: 1, TaskTimeout: time.Second,
+		OverflowPolicy: config.UsageRecordOverflowPolicyDrop,
+	})
+	t.Cleanup(pool.Stop)
+	block, started := make(chan struct{}), make(chan struct{})
+	pool.Submit(func(context.Context) { close(started); <-block; panic("test panic") })
+	<-started
+	pool.Submit(func(context.Context) {})
+	require.Equal(t, UsageRecordSubmitModeDropped, pool.Submit(func(context.Context) {}))
+	require.Equal(t, int64(2), pool.PendingTasks())
+	close(block)
+	require.Eventually(t, func() bool { return pool.PendingTasks() == 0 }, time.Second, time.Millisecond)
+	pool.Stop()
+	require.Equal(t, UsageRecordSubmitModeDroppedStopped, pool.Submit(func(context.Context) {}))
+	require.Zero(t, pool.PendingTasks())
+}
+
 func TestUsageRecordWorkerPool_OverflowDrop(t *testing.T) {
 	pool := NewUsageRecordWorkerPoolWithOptions(UsageRecordWorkerPoolOptions{
 		WorkerCount:           1,

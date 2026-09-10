@@ -81,6 +81,9 @@ describe('carpool admin API', () => {
     await carpoolAdminAPI.registerResetQualification(qualification, 'register-key')
     expect(post).toHaveBeenLastCalledWith('/admin/carpool/reset-batches', qualification, { headers: { 'Idempotency-Key': 'register-key' } })
 
+    await carpoolAdminAPI.executeOfficialReset('official-key')
+    expect(post).toHaveBeenLastCalledWith('/admin/carpool/reset-batches/official', { scope_id: 1, confirmed: true }, { headers: { 'Idempotency-Key': 'official-key' } })
+
     await carpoolAdminAPI.scheduleResetBatch(12, 'reviewed', 'schedule-key')
     expect(post).toHaveBeenLastCalledWith('/admin/carpool/reset-batches/12/schedule', { reason: 'reviewed' }, { headers: { 'Idempotency-Key': 'schedule-key' } })
 

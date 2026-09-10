@@ -36,6 +36,7 @@ export interface CarpoolResetEvent {
 
 export interface CarpoolUserQuota {
   available_usd: DecimalString
+  remaining_percent?: DecimalString | null
 }
 
 export interface CarpoolResetWindow {
@@ -47,6 +48,7 @@ export interface CarpoolResetWindow {
 }
 
 export interface CarpoolDetails {
+  billing_mode?: 'carpool' | 'standard'
   server_now: string
   timezone: 'Asia/Shanghai' | string
   quota: CarpoolUserQuota | null
@@ -80,6 +82,8 @@ export interface CarpoolPlan {
   cycle_days: number
   reset_mode?: CarpoolResetMode
   boost_ratio: DecimalString
+  weekly_quota_customized?: boolean
+  duration_customized?: boolean
   boost_amount_usd: DecimalString
   boost_count: number
   rounding_mode: string
@@ -107,10 +111,12 @@ export interface CarpoolTakeoverInput {
   statistics_since?: string | null
   next_natural_reset_at?: string | null
   ordinary_balance_transfer_usd?: DecimalString | null
+  current_cycle_starts_at?: string | null
 }
 
 export interface CarpoolPreviewRequest {
   plan_id: number
+  renew_from_term_id?: number
   starts_at: string | null
   mode: CarpoolOpeningMode
   takeover: CarpoolTakeoverInput | null
@@ -153,6 +159,7 @@ export interface CarpoolAdminCycle {
   id: number
   term_id: number
   user_id: number
+  user_email?: string
   cycle_no: number
   starts_at: string
   ends_at: string
@@ -174,6 +181,7 @@ export interface CarpoolAdminCycle {
 export interface CarpoolAdminTerm {
   id: number
   user_id: number
+  user_email?: string
   scope_id: number
   group_id: number
   plan_id: number
@@ -227,6 +235,7 @@ export interface CarpoolBillingException {
   request_id: string
   api_key_id: number
   user_id: number
+  user_email?: string
   group_id: number
   term_id: number
   cycle_id: number
@@ -254,6 +263,7 @@ export interface CarpoolBillingReconcileRequest {
 export interface CarpoolResetBatch {
   id: number
   scope_id: number
+  trigger_kind?: 'official' | 'card'
   status: string
   detected_at?: string | null
   qualified_at?: string | null

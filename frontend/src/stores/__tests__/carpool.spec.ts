@@ -53,6 +53,29 @@ describe('carpool store idempotency', () => {
     expect(claimBoost.mock.calls[0][0]).toBe(claimBoost.mock.calls[1][0])
   })
 
+  it('retains carpool billing through expiry, missing terms and refresh failure', async () => {
+    const active = details('838.00000000')
+    getDetails.mockResolvedValueOnce(active)
+      .mockResolvedValueOnce({ ...active, billing_mode: 'carpool', quota: null, term: { ...active.term!, status: 'expired' } })
+      .mockResolvedValueOnce({ ...active, billing_mode: 'carpool', quota: null, term: null })
+      .mockRejectedValueOnce(new Error('network'))
+    const store = useCarpoolStore()
+    store.setIdentity(101)
+    expect(store.billingMode).toBeNull()
+    await store.fetchDetails()
+    expect(store.billingMode).toBe('carpool')
+    await store.fetchDetails()
+    expect(store.availableQuotaUsd).toBe('0')
+    await store.fetchDetails()
+    expect(store.billingMode).toBe('carpool')
+    expect(store.availableQuotaUsd).toBe('0')
+    await expect(store.fetchDetails()).rejects.toThrow('network')
+    expect(store.availableQuotaUsd).toBe('0')
+    store.setIdentity(202)
+    expect(store.billingMode).toBeNull()
+    expect(store.availableQuotaUsd).toBeNull()
+  })
+
   it('does not let a completed request from the previous identity refill the next user cache', async () => {
     let resolveFirst: ((value: CarpoolDetails) => void) | undefined
     getDetails.mockReturnValue(new Promise((resolve) => { resolveFirst = resolve }))

@@ -45,6 +45,7 @@ type GatewayHandler struct {
 	antigravityGatewayService *service.AntigravityGatewayService
 	userService               *service.UserService
 	billingCacheService       *service.BillingCacheService
+	carpoolService            *service.CarpoolService
 	usageService              *service.UsageService
 	apiKeyService             *service.APIKeyService
 	usageRecordWorkerPool     *service.UsageRecordWorkerPool
@@ -1783,6 +1784,10 @@ func (h *GatewayHandler) usageQuotaLimited(c *gin.Context, ctx context.Context, 
 
 // usageUnrestricted 处理 unrestricted 模式的响应（向后兼容）
 func (h *GatewayHandler) usageUnrestricted(c *gin.Context, ctx context.Context, apiKey *service.APIKey, subject middleware2.AuthSubject, usageData gin.H, dailyUsage any, modelStats any) {
+	if apiKey.Group != nil && apiKey.Group.IsCarpoolType() {
+		h.usageCarpool(c, ctx, apiKey, subject.UserID, usageData, dailyUsage, modelStats)
+		return
+	}
 	// 订阅模式
 	if apiKey.Group != nil && apiKey.Group.IsSubscriptionType() {
 		resp := gin.H{
@@ -1836,6 +1841,55 @@ func (h *GatewayHandler) usageUnrestricted(c *gin.Context, ctx context.Context, 
 		"remaining": latestUser.Balance,
 		"unit":      "USD",
 		"balance":   latestUser.Balance,
+	}
+	if usageData != nil {
+		resp["usage"] = usageData
+	}
+	if dailyUsage != nil {
+		resp["daily_usage"] = dailyUsage
+	}
+	if modelStats != nil {
+		resp["model_stats"] = modelStats
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+func (h *GatewayHandler) usageCarpool(c *gin.Context, ctx context.Context, apiKey *service.APIKey, userID int64, usageData gin.H, dailyUsage any, modelStats any) {
+	if h.carpoolService == nil {
+		h.errorResponse(c, http.StatusServiceUnavailable, "api_error", "Carpool quota is unavailable")
+		return
+	}
+	details, err := h.carpoolService.Details(ctx, userID)
+	if err != nil || details == nil {
+		h.errorResponse(c, http.StatusServiceUnavailable, "api_error", "Failed to get carpool quota")
+		return
+	}
+
+	status := "not_opened"
+	remaining := float64(0)
+	if term := details.Term; term != nil {
+		status = term.Status
+		if status == domain.CarpoolTermActive {
+			switch {
+			case !details.ServerNow.Before(term.ExpiresAt):
+				status = domain.CarpoolTermExpired
+			case details.ServerNow.Before(term.StartsAt):
+				status = "scheduled"
+			case details.Quota == nil:
+				status = "unavailable"
+			case !details.Quota.AvailableUSD.IsPositive():
+				status = "quota_exhausted"
+			default:
+				remaining = details.Quota.AvailableUSD.InexactFloat64()
+			}
+		}
+	}
+	resp := gin.H{
+		"mode": "unrestricted", "billing_type": "carpool", "isValid": status == domain.CarpoolTermActive,
+		"status": status, "planName": apiKey.Group.Name, "remaining": remaining, "unit": "USD", "carpool": details,
+	}
+	if details.Term != nil {
+		resp["expires_at"] = details.Term.ExpiresAt
 	}
 	if usageData != nil {
 		resp["usage"] = usageData

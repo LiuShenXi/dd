@@ -32,6 +32,7 @@ type CarpoolResetBatch struct {
 	AnnouncementState   string          `json:"announcement_state"`
 	TargetCount         int             `json:"target_count"`
 	GrantedUSD          decimal.Decimal `json:"granted_usd"`
+	TriggerKind         string          `json:"trigger_kind"`
 	QualificationSource string          `json:"-"`
 	SourceEventKeyHash  string          `json:"-"`
 }

@@ -1,0 +1,29 @@
+{
+  "id": "prompt-policy-enforcement",
+  "name": "prompt-policy-enforcement",
+  "title": "提示词风控迭代：同步阻断、可靠留痕与监控复核",
+  "description": "Design an incremental upgrade of the existing OpenAI Moderation and Qwen3Guard pipeline, with policy decisions, durable evidence, administrator review and measurable rollout gates.",
+  "status": "planning",
+  "priority": "P1",
+  "creator": "shenxi",
+  "assignee": null,
+  "createdAt": "2026-09-08",
+  "completedAt": null,
+  "branch": null,
+  "commit": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "backend/internal/securityaudit",
+    "backend/internal/service/content_moderation.go",
+    "frontend/src/features/prompt-audit"
+  ],
+  "notes": "Design proposal only. No implementation or deployment started. Existing carpool work is unrelated. Local .trellis/scripts is absent; planning artifacts were created manually without changing Trellis tooling or active-task state.",
+  "meta": {
+    "planning_stage": "proposal_for_review",
+    "source_head": "35b42bb2b217f87059111bb5ef026c6beb93f192",
+    "implementation_authorized": false,
+    "production_verified": false
+  }
+}

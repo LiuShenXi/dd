@@ -70,6 +70,12 @@ const messages: Record<string, string> = {
   'home.switchToLight': 'Light',
   'home.switchToDark': 'Dark',
   'home.footer.allRightsReserved': 'All rights reserved.',
+  'carpool.inProgress': 'Active subscription',
+  'carpool.termExpired': 'Expired',
+  'carpool.termTerminated': 'Terminated',
+  'carpool.termScheduled': 'Not started yet',
+  'carpool.noTerm': 'No carpool term',
+  'carpool.quotaUnavailable': 'Quota unavailable',
 }
 
 vi.mock('vue-i18n', async () => {
@@ -229,6 +235,41 @@ describe('KeyUsageView daily detail', () => {
     expect(requestUrl).toContain('start_date=2026-07-13')
     expect(requestUrl).toContain('end_date=2026-07-13')
 
+    wrapper.unmount()
+  })
+
+  it.each([
+    ['expired', 'Expired'], ['terminated', 'Terminated'], ['scheduled', 'Not started yet'],
+    ['not_opened', 'No carpool term'], ['quota_exhausted', 'Quota unavailable'], ['unavailable', 'Quota unavailable'],
+  ])('renders a %s carpool key as invalid without any ordinary balance fallback', async (status, label) => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ mode: 'unrestricted', billing_type: 'carpool', planName: 'Original shared group', status, isValid: false, remaining: 0, unit: 'USD', balance: 432.12 }),
+    } as Response)
+    const wrapper = mount(KeyUsageView, { global: { stubs: { RouterLink: { template: '<a><slot /></a>' }, LocaleSwitcher: true, Icon: true } } })
+    await wrapper.find('input').setValue('sk-test-key')
+    await wrapper.find('input').trigger('keydown.enter')
+    await flushPromises()
+    const badge = wrapper.get('[data-testid="key-usage-status"]')
+    expect(badge.text()).toContain(label)
+    expect(badge.find('.bg-rose-500').exists()).toBe(true)
+    expect(badge.find('.bg-emerald-500').exists()).toBe(false)
+    expect(wrapper.text()).toContain('$0.00')
+    expect(wrapper.text()).not.toContain('$432.12')
+    wrapper.unmount()
+  })
+
+  it('requires both active status and server validity for a carpool success indicator', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ mode: 'unrestricted', billing_type: 'carpool', planName: 'Original shared group', status: 'active', isValid: false, remaining: 0 }),
+    } as Response)
+    const wrapper = mount(KeyUsageView, { global: { stubs: { RouterLink: { template: '<a><slot /></a>' }, LocaleSwitcher: true, Icon: true } } })
+    await wrapper.find('input').setValue('sk-test-key')
+    await wrapper.find('input').trigger('keydown.enter')
+    await flushPromises()
+    expect(wrapper.get('[data-testid="key-usage-status"]').find('.bg-rose-500').exists()).toBe(true)
+    expect(wrapper.get('[data-testid="key-usage-status"]').text()).toContain('Quota unavailable')
     wrapper.unmount()
   })
 })

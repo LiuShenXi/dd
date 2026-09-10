@@ -1,0 +1,4 @@
+{"file":".trellis/tasks/09-08-prompt-policy-enforcement/prd.md","reason":"Proposed scope and R01-R10 acceptance contract; confirm the latest plan before implementation."}
+{"file":".trellis/tasks/09-08-prompt-policy-enforcement/design.md","reason":"Strict profile, persistence, recovery, policy mapping and evidence access contracts."}
+{"file":".trellis/tasks/09-08-prompt-policy-enforcement/research/baseline.md","reason":"Current source evidence and historical specification discrepancies."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Shared event schema and backend/frontend trust boundary checks."}

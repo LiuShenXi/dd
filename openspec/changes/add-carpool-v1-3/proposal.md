@@ -9,6 +9,12 @@ never moves. This applies even to zero-increment success, but not to failures or
 idempotent replays. The last valid natural period receives full base quota, and
 expiry itself never grants quota.
 
+2026-09-08 follow-up: successful natural and special resets each start a new
+actual numbered cycle. Success with no added quota still advances once; failed
+or replayed resets do not. The user page replaces filled-to annotations with a
+simple green remaining-quota percentage bar, while keeping current cycle,
+actual period history, next natural reset and fixed membership expiry.
+
 Read [the current architecture](../../../sub2api-carpool-architecture.md) for
 complete rules, preserved boost/ordinary-balance behavior, API contracts and
 acceptance. There is no live carpool-cycle migration because this feature has

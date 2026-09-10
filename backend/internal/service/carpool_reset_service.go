@@ -24,6 +24,7 @@ type CarpoolResetRepositoryAPI interface {
 	RegisterResetQualification(context.Context, int64, string, string, domain.CarpoolOperation) (*domain.CarpoolResetBatch, error)
 	ScheduleResetBatch(context.Context, int64, string, domain.CarpoolOperation) (*domain.CarpoolResetBatch, error)
 	ExecuteResetBatch(context.Context, int64, *domain.CarpoolOperation) (*domain.CarpoolResetBatch, error)
+	ExecuteOfficialReset(context.Context, int64, domain.CarpoolOperation) (*domain.CarpoolResetBatch, error)
 	ListDueResetBatchIDs(context.Context, int) ([]int64, error)
 	ListResetObservations(context.Context, domain.CarpoolResetObservationFilters) ([]domain.CarpoolResetObservation, int64, error)
 	RecordResetObservation(context.Context, domain.CarpoolResetObservationInput) (*domain.CarpoolResetObservationResult, error)
@@ -86,6 +87,11 @@ type CarpoolResetScheduleInput struct {
 	Reason string `json:"reason"`
 }
 
+type CarpoolOfficialResetInput struct {
+	ScopeID   int64 `json:"scope_id"`
+	Confirmed bool  `json:"confirmed"`
+}
+
 func (s *CarpoolResetService) ListBatches(ctx context.Context, filters domain.CarpoolResetBatchFilters) ([]domain.CarpoolResetBatch, int64, error) {
 	return s.repo.ListResetBatches(ctx, filters)
 }
@@ -128,6 +134,17 @@ func (s *CarpoolResetService) Execute(ctx context.Context, batchID, actorID int6
 	}
 	operation := &domain.CarpoolOperation{Kind: "reset_execute", ActorID: actorID, Key: key, Fingerprint: fingerprint}
 	return s.repo.ExecuteResetBatch(ctx, batchID, operation)
+}
+
+func (s *CarpoolResetService) OfficialReset(ctx context.Context, actorID int64, input CarpoolOfficialResetInput, key string) (*domain.CarpoolResetBatch, error) {
+	if actorID <= 0 || input.ScopeID != domain.CarpoolGlobalScopeID || !input.Confirmed || strings.TrimSpace(key) == "" {
+		return nil, ErrCarpoolResetInvalid
+	}
+	fingerprint, err := carpoolFingerprint("reset_official", actorID, input.ScopeID, input)
+	if err != nil {
+		return nil, err
+	}
+	return s.repo.ExecuteOfficialReset(ctx, input.ScopeID, domain.CarpoolOperation{Kind: "reset_official", ActorID: actorID, Key: key, Fingerprint: fingerprint})
 }
 
 func (s *CarpoolResetService) UserResetWindow(ctx context.Context, userID int64, now time.Time) (domain.CarpoolUserResetWindow, error) {

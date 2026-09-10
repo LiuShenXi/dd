@@ -472,6 +472,9 @@ func (s *APIKeyService) Create(ctx context.Context, userID int64, req CreateAPIK
 	if err != nil {
 		return nil, fmt.Errorf("get user: %w", err)
 	}
+	if req.GroupID == nil && user.RestrictPublicGroups {
+		return nil, ErrGroupNotAllowed
+	}
 
 	// 验证 IP 白名单格式
 	if len(req.IPWhitelist) > 0 {

@@ -753,7 +753,9 @@ func closeCarpoolCycle(ctx context.Context, db *sql.DB, cycleID int64, now time.
 	}
 	defer func() { _ = tx.Rollback() }()
 	var userID int64
-	if err = tx.QueryRowContext(ctx, `SELECT user_id FROM carpool_terms WHERE id=$1 FOR UPDATE`, termID).Scan(&userID); err != nil {
+	var termStatus string
+	var termExpiresAt time.Time
+	if err = tx.QueryRowContext(ctx, `SELECT user_id,status,expires_at FROM carpool_terms WHERE id=$1 FOR UPDATE`, termID).Scan(&userID, &termStatus, &termExpiresAt); err != nil {
 		return err
 	}
 	cycle, err := scanCarpoolCycle(tx.QueryRowContext(ctx, cycleSelect+` WHERE id=$1 AND term_id=$2 FOR UPDATE`, cycleID, termID))
@@ -786,6 +788,64 @@ func closeCarpoolCycle(ctx context.Context, db *sql.DB, cycleID int64, now time.
 			if err = insertLedgerTx(ctx, tx, userID, termID, cycleID, "debt_offset", domain.CarpoolBucketBase, offset, prefix+":base", nil, nil, nil, nil, nil, nil, "normalize buckets before cycle close", now); err != nil {
 				return err
 			}
+		}
+	}
+	var carryTargetID, carryBatchID int64
+	var carryExpiresAt time.Time
+	var carryStatus string
+	carryErr := tx.QueryRowContext(ctx, `SELECT initial_target_cycle_id,reset_batch_id,expires_at,status FROM carpool_cycle_carryovers WHERE source_cycle_id=$1 FOR UPDATE`, cycleID).Scan(&carryTargetID, &carryBatchID, &carryExpiresAt, &carryStatus)
+	if carryErr != nil && !errors.Is(carryErr, sql.ErrNoRows) {
+		return carryErr
+	}
+	if carryErr == nil && carryStatus == "pending" {
+		// Follow consecutive special-reset successors. A natural successor has no
+		// carryover edge and therefore ends the carried balance at its boundary.
+		for {
+			var targetState string
+			var targetEndsAt time.Time
+			if err = tx.QueryRowContext(ctx, `SELECT state,ends_at FROM carpool_cycles WHERE id=$1 AND term_id=$2 FOR UPDATE`, carryTargetID, termID).Scan(&targetState, &targetEndsAt); err != nil {
+				return err
+			}
+			carryExpiresAt = targetEndsAt
+			if targetState == domain.CarpoolCycleActive && now.Before(targetEndsAt) {
+				break
+			}
+			var nextTargetID int64
+			if nextErr := tx.QueryRowContext(ctx, `SELECT initial_target_cycle_id FROM carpool_cycle_carryovers WHERE source_cycle_id=$1`, carryTargetID).Scan(&nextTargetID); nextErr != nil {
+				if !errors.Is(nextErr, sql.ErrNoRows) {
+					return nextErr
+				}
+				carryTargetID = 0
+				break
+			}
+			carryTargetID = nextTargetID
+		}
+		if carryTargetID != 0 && termStatus != domain.CarpoolTermTerminated && now.Before(termExpiresAt) && now.Before(carryExpiresAt) {
+			if _, err = tx.ExecContext(ctx, `UPDATE carpool_cycles SET boost_balance_usd=boost_balance_usd+$1,manual_balance_usd=manual_balance_usd+$2,updated_at=NOW(),revision=revision+1 WHERE id=$3 AND term_id=$4 AND state='active'`, boost.StringFixed(8), manual.StringFixed(8), carryTargetID, termID); err != nil {
+				return err
+			}
+			batchIDValue := carryBatchID
+			for _, part := range []struct {
+				name  string
+				value decimal.Decimal
+			}{{domain.CarpoolBucketBoost, boost}, {domain.CarpoolBucketManual, manual}} {
+				if part.value.IsZero() {
+					continue
+				}
+				prefix := fmt.Sprintf("reset_carry:%d:%d:%s", carryBatchID, cycleID, part.name)
+				if err = insertLedgerTx(ctx, tx, userID, termID, cycleID, "reset_carry", part.name, part.value.Neg(), prefix+":out", nil, nil, &batchIDValue, nil, nil, nil, "deferred special reset balance transfer out", now); err != nil {
+					return err
+				}
+				if err = insertLedgerTx(ctx, tx, userID, termID, carryTargetID, "reset_carry", part.name, part.value, prefix+":in", nil, nil, &batchIDValue, nil, nil, nil, "deferred special reset balance transfer in", now); err != nil {
+					return err
+				}
+			}
+			boost, manual = decimal.Zero, decimal.Zero
+			if _, err = tx.ExecContext(ctx, `UPDATE carpool_cycle_carryovers SET status='completed',completed_at=$2 WHERE source_cycle_id=$1 AND status='pending'`, cycleID, now); err != nil {
+				return err
+			}
+		} else if _, err = tx.ExecContext(ctx, `UPDATE carpool_cycle_carryovers SET status='expired',completed_at=$2 WHERE source_cycle_id=$1 AND status='pending'`, cycleID, now); err != nil {
+			return err
 		}
 	}
 	for _, part := range []struct {

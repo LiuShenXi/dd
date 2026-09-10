@@ -16,10 +16,11 @@ type CarpoolHandler struct{ service *service.CarpoolService }
 func NewCarpoolHandler(s *service.CarpoolService) *CarpoolHandler { return &CarpoolHandler{service: s} }
 
 type carpoolPreviewRequest struct {
-	PlanID   int64                        `json:"plan_id" binding:"required"`
-	StartsAt *time.Time                   `json:"starts_at"`
-	Mode     string                       `json:"mode"`
-	Takeover *domain.CarpoolTakeoverInput `json:"takeover"`
+	PlanID          int64                        `json:"plan_id" binding:"gte=0"`
+	RenewFromTermID int64                        `json:"renew_from_term_id" binding:"omitempty,gt=0"`
+	StartsAt        *time.Time                   `json:"starts_at"`
+	Mode            string                       `json:"mode"`
+	Takeover        *domain.CarpoolTakeoverInput `json:"takeover"`
 }
 type carpoolOpenRequest service.CarpoolOpenInput
 
@@ -67,7 +68,21 @@ func (h *CarpoolHandler) Preview(c *gin.Context) {
 	if !bindJSON(c, &req) {
 		return
 	}
-	result, err := h.service.Preview(c.Request.Context(), userID, req.PlanID, req.StartsAt, req.Mode, req.Takeover)
+	var result *domain.CarpoolTermPreview
+	var err error
+	if req.RenewFromTermID > 0 {
+		if (req.Mode != "" && req.Mode != "new") || req.Takeover != nil {
+			response.BadRequest(c, "Renewal preview does not accept takeover details")
+			return
+		}
+		result, err = h.service.PreviewRenewal(c.Request.Context(), userID, req.RenewFromTermID, req.PlanID)
+	} else {
+		if req.PlanID <= 0 {
+			response.BadRequest(c, "plan_id is required for opening preview")
+			return
+		}
+		result, err = h.service.Preview(c.Request.Context(), userID, req.PlanID, req.StartsAt, req.Mode, req.Takeover)
+	}
 	if response.ErrorFrom(c, err) {
 		return
 	}

@@ -151,6 +151,7 @@ func registerCarpoolRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		carpool.POST("/billing-exceptions/:id/reconcile", h.Admin.Carpool.ReconcileBillingException)
 		carpool.GET("/reset-batches", h.Admin.CarpoolReset.Batches)
 		carpool.POST("/reset-batches", h.Admin.CarpoolReset.Register)
+		carpool.POST("/reset-batches/official", h.Admin.CarpoolReset.Official)
 		carpool.POST("/reset-batches/:id/schedule", h.Admin.CarpoolReset.Schedule)
 		carpool.POST("/reset-batches/:id/execute", h.Admin.CarpoolReset.Execute)
 		carpool.GET("/reset-observations", h.Admin.CarpoolReset.Observations)

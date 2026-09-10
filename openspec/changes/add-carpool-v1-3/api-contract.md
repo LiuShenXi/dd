@@ -20,6 +20,21 @@ promised grants. A successful special reset atomically updates available base
 quota and the natural deadline without changing membership expiry. All existing
 identity, decimal-string, replay, receipt and ledger contracts remain in force.
 
+2026-09-08: each successful natural or special reset opens a successor actual
+cycle and increments `cycle_no` once. `term.current_cycle_no` and `term.cycles`
+reflect these records. Failure and replay never add another cycle. Membership
+expiry remains fixed; original request admissions retain their original IDs.
+`quota.remaining_percent: decimal string | null` is a server-owned percentage
+of the current weekly base quota remaining, clamped to 0..100. The numerator is
+max(0, min(base balance, net available quota)), so negative manual debt cannot
+advertise unspendable base. Nonpositive denominator yields null. This does not
+change total `available_usd`, expose internal buckets or include ordinary balance.
+The client renders a simple remaining-quota bar and removes filled-to historical
+annotations. Missing/null percentage means unavailable, not exhausted.
+Administrator cycle `adjustment_net_usd` includes paired system `reset_carry`
+transfers as well as manual adjustments, so source/target audit totals reconcile
+without counting carried value as a new grant.
+
 `takeover.next_natural_reset_at` is an optional explicit timestamp, valid only
 for rolling takeover with an active period, later than calculation time and no
 more than seven days later. Period coverage is capped at membership expiry.
@@ -59,7 +74,7 @@ User identity comes only from the authenticated subject. These endpoints accept 
 {
   "server_now": "2026-09-05T13:00:00+08:00",
   "timezone": "Asia/Shanghai",
-  "quota": { "available_usd": "576.55000000" },
+  "quota": { "available_usd": "576.55000000", "remaining_percent": "82.36428571" },
   "usage": {
     "total_used_usd": "123.45000000",
     "history_complete": true,
@@ -87,13 +102,13 @@ User identity comes only from the authenticated subject. These endpoints accept 
 }
 ```
 
-`term` is null when there is no current or nearest relevant term. The example abbreviates cycles; new terms return four contiguous7-day entries and expiry28days after start. Legacy terms return their actual persisted cycles/dates.
+`term` is null when there is no current or nearest relevant term. New terms initially return one actual cycle and expire 28 days after start. Later natural and special resets append actual cycles. Legacy terms return their actual persisted cycles/dates.
 
-`quota` is null for no active covered term/current cycle, including pending/expired. An active term exposes only `available_usd`, including string zero when exhausted. Compute max(0,base+boost+manual) on the server after activation; never add ordinary balance. Dashboard/header share this projection and refetch after claims, boundaries and visibility. Query failure is not a successful null response.
+`quota` is null for no active covered term/current cycle, including pending/expired. An active term exposes `available_usd` and `remaining_percent`, including string zero when exhausted. Compute available USD as max(0,base+boost+manual) on the server after activation; never add ordinary balance. Dashboard/header share this projection and refetch after claims, boundaries and visibility. Query failure is not a successful null response.
 
 `reset_count_basis` is `current_term`. `term.reset_events` is an array (never null), ordered by actual execution time with stable tie order. Each item is `{ "cycle_no": 1, "occurred_at": "2026-09-06T22:00:20+08:00", "target_quota_usd": "700.00000000" }`. Read only succeeded targets joined to completed batches and the selected user's matching term/cycle. Time is target.executed_at, not scheduled/detected time; target is immutable cycle.base_quota_usd, not granted delta/current balance. Include zero-grant successes. Reset count agrees with successful participation; pending/failed/foreign records are excluded.
 
-`reset_window.status` remains `none|scheduled|executing|delayed|completed`. No internal IDs, plan configuration, bucket breakdown, payments, actor notes, upstream evidence or raw ledgers are exposed. The two approved amount projections above replace the prior blanket time-only restriction. Reset annotations never alter time progress.
+`reset_window.status` remains `none|scheduled|executing|delayed|completed`. No internal IDs, plan configuration, bucket breakdown, payments, actor notes, upstream evidence or raw ledgers are exposed. The approved amount and percentage projections above replace the prior blanket time-only restriction. Historical reset events remain available for compatibility; the user page no longer renders filled-to annotations.
 
 ### `GET /user/carpool/boosts`
 
@@ -246,13 +261,29 @@ Accepts `page`, `page_size`, optional `scope_id` and `status`. Returns `{items,t
 
 ### `POST /admin/carpool/reset-batches`
 
-This is explicit administrator registration of a locally confirmed qualification, including the source architecture's direct upstream reset with no card event. It is not an immediate quota reset.
+This is explicit administrator registration of a locally confirmed reset-card qualification. Direct official resets use the immediate endpoint below.
 
 ```json
 {"scope_id":1,"confirmed":true,"source_event_key":"operator-event-reference","reason":"documented qualification evidence"}
 ```
 
 `confirmed` must be true. `source_event_key` and nonblank `reason` are required; event identity is unique within scope, so different retry keys cannot register the same external event twice. The frontend asks for the reference and reason, not an upstream credential or raw card ID. This endpoint joins the scope's existing pending window without delaying it, or creates/schedules one qualification and a publication event. Returns the admin batch projection above. Automatic complete card observations use the same scheduler, not this HTTP handler.
+
+### `POST /admin/carpool/reset-batches/official`
+
+Body `{"scope_id":1,"confirmed":true}` plus `Idempotency-Key`. Administrator only;
+explicit confirmation is required. Atomically reset all currently effective
+memberships immediately, without card window/cooldown checks. Keep pending card
+batches and their cooldown state unchanged. Expired/terminated/future terms and
+ordinary balances are untouched. Successful rolling targets each open a numbered
+successor, including zero top-up targets; membership expiry remains fixed.
+Return the completed batch projection with `trigger_kind:"official"`,
+`effective_at`, `target_count` and `granted_usd`. All batch projections also expose
+`trigger_kind` (`card|official`). No official-event reference or deduplication is
+performed: the same request key replays once, a new deliberate key executes anew.
+The UI retains the key after uncertain errors, disables pending submissions and
+requires confirmation before submission. A zero-target batch is a valid audited
+completion with target_count zero.
 
 ### `POST /admin/carpool/reset-batches/:id/schedule`
 

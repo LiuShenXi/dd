@@ -141,6 +141,15 @@ export async function registerResetQualification(
   return data
 }
 
+export async function executeOfficialReset(key: string): Promise<CarpoolResetBatch> {
+  const { data } = await apiClient.post<CarpoolResetBatch>(
+    '/admin/carpool/reset-batches/official',
+    { scope_id: 1, confirmed: true },
+    { headers: idempotencyHeaders(key) }
+  )
+  return data
+}
+
 export async function scheduleResetBatch(batchId: number, reason: string, key: string): Promise<CarpoolResetBatch> {
   const { data } = await apiClient.post<CarpoolResetBatch>(
     `/admin/carpool/reset-batches/${batchId}/schedule`,
@@ -190,6 +199,7 @@ export const carpoolAdminAPI = {
   adjustCycle,
   listResetBatches,
   registerResetQualification,
+  executeOfficialReset,
   scheduleResetBatch,
   executeResetBatch,
   listResetObservations,

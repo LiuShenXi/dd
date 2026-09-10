@@ -124,7 +124,7 @@ func (r *apiKeyRepository) GetByKey(ctx context.Context, key string) (*service.A
 		}
 		return nil, err
 	}
-	return apiKeyEntityToService(m), nil
+	return r.projectCarpoolBilling(ctx, apiKeyEntityToService(m))
 }
 
 func (r *apiKeyRepository) GetByKeyForAuth(ctx context.Context, key string) (*service.APIKey, error) {
@@ -239,7 +239,35 @@ func (r *apiKeyRepository) GetByKeyForAuth(ctx context.Context, key string) (*se
 		}
 		return nil, err
 	}
-	return apiKeyEntityToService(m), nil
+	return r.projectCarpoolBilling(ctx, apiKeyEntityToService(m))
+}
+
+func (r *apiKeyRepository) projectCarpoolBilling(ctx context.Context, key *service.APIKey) (*service.APIKey, error) {
+	rows, err := r.sql.QueryContext(ctx, `SELECT group_id FROM carpool_billing_bindings WHERE user_id=$1`, key.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("load carpool billing binding: %w", err)
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		if err := rows.Err(); err != nil {
+			return nil, fmt.Errorf("read carpool billing binding: %w", err)
+		}
+		return key, nil
+	}
+	var groupID int64
+	if err := rows.Scan(&groupID); err != nil {
+		return nil, fmt.Errorf("read carpool billing binding: %w", err)
+	}
+	if key.GroupID == nil || *key.GroupID != groupID || key.Group == nil || key.Group.ID != groupID ||
+		key.Group.Platform != service.PlatformOpenAI || key.Group.SubscriptionType != service.SubscriptionTypeStandard {
+		return nil, service.ErrCarpoolInvalidRelationship
+	}
+	// A persistent per-user binding selects billing only; shared routing and
+	// administrator group configuration remain unchanged, even after expiry.
+	projectedGroup := *key.Group
+	projectedGroup.SubscriptionType = service.SubscriptionTypeCarpool
+	key.Group = &projectedGroup
+	return key, nil
 }
 
 func (r *apiKeyRepository) Update(ctx context.Context, key *service.APIKey, fields service.APIKeyUpdateFields) error {

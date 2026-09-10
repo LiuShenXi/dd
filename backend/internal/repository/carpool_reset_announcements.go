@@ -44,6 +44,9 @@ func resetAnnouncementCopy(batch *domain.CarpoolResetBatch, eventKind string, no
 		if batch.CompletedAt == nil {
 			return "", "", errors.New("completed reset announcement requires completed_at")
 		}
+		if batch.TriggerKind == "official" {
+			return "官方拼车重置完成", fmt.Sprintf("官方全局重置已完成，仅适用于重置生效时已生效且未到期的拼车会员。\n\n实际时间：%s（北京时间）", batch.CompletedAt.In(location).Format("2006-01-02 15:04:05")), nil
+		}
 		return "拼车重置完成", fmt.Sprintf("本次拼车额度重置已完成。\n\n实际时间：%s（北京时间）", batch.CompletedAt.In(location).Format("2006-01-02 15:04:05")), nil
 	default:
 		return "", "", fmt.Errorf("unsupported reset announcement event %q", eventKind)
@@ -112,7 +115,7 @@ func (r *CarpoolResetRepository) publishResetAnnouncement(ctx context.Context, o
 	defer func() { _ = tx.Rollback() }()
 	var batch domain.CarpoolResetBatch
 	var scheduledAt, completedAt sql.NullTime
-	if err = tx.QueryRowContext(ctx, `SELECT scope_id,status,schedule_revision,scheduled_at,completed_at FROM carpool_reset_batches WHERE id=$1 FOR UPDATE`, batchID).Scan(&batch.ScopeID, &batch.Status, &batch.ScheduleRevision, &scheduledAt, &completedAt); err != nil {
+	if err = tx.QueryRowContext(ctx, `SELECT scope_id,status,schedule_revision,scheduled_at,completed_at,COALESCE(evidence->>'trigger_kind','card') FROM carpool_reset_batches WHERE id=$1 FOR UPDATE`, batchID).Scan(&batch.ScopeID, &batch.Status, &batch.ScheduleRevision, &scheduledAt, &completedAt, &batch.TriggerKind); err != nil {
 		return false, err
 	}
 	batch.ID = batchID

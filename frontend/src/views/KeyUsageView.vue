@@ -5,7 +5,7 @@
       <nav class="mx-auto flex max-w-6xl items-center justify-between">
         <router-link to="/home" class="flex items-center gap-3">
           <div class="h-10 w-10 overflow-hidden rounded-xl shadow-md">
-            <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
+            <img :src="siteLogo || '/water-train-logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
           <span class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ siteName }}</span>
         </router-link>
@@ -155,7 +155,7 @@
         <!-- Result Content -->
         <div v-else-if="resultData" class="space-y-6">
           <!-- Status Badge -->
-          <div v-if="statusInfo" class="fade-up flex items-center justify-center mb-2">
+          <div v-if="statusInfo" data-testid="key-usage-status" class="fade-up flex items-center justify-center mb-2">
             <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-dark-700 dark:bg-dark-900/90">
               <span
                 class="w-2.5 h-2.5 rounded-full pulse-dot"
@@ -425,13 +425,14 @@ import Icon from '@/components/icons/Icon.vue'
 import { buildGatewayUrl } from '@/api/client'
 import { formatDateLocalInput } from '@/utils/format'
 import { sanitizeUrl } from '@/utils/url'
+import { DEFAULT_SITE_NAME } from '@/utils/branding'
 
 const { t, locale } = useI18n()
 const appStore = useAppStore()
 
 // ==================== Site Settings (same as HomeView) ====================
 
-const siteName = computed(() => appStore.cachedPublicSettings?.site_name || appStore.siteName || 'Sub2API')
+const siteName = computed(() => appStore.cachedPublicSettings?.site_name || appStore.siteName || DEFAULT_SITE_NAME)
 const siteLogo = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 const docUrl = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.doc_url || appStore.docUrl || ''))
 const githubUrl = 'https://github.com/Wei-Shaw/sub2api'
@@ -586,6 +587,23 @@ const statusInfo = computed(() => {
   const data = resultData.value
   if (!data) return null
 
+  if (data.billing_type === 'carpool') {
+    const statusMap: Record<string, string> = {
+      active: t('carpool.inProgress'),
+      expired: t('carpool.termExpired'),
+      terminated: t('carpool.termTerminated'),
+      scheduled: t('carpool.termScheduled'),
+      not_opened: t('carpool.noTerm'),
+      unavailable: t('carpool.quotaUnavailable'),
+      quota_exhausted: t('carpool.quotaUnavailable'),
+    }
+    return {
+      label: data.planName || t('carpool.quotaBadge'),
+      statusText: data.status === 'active' && data.isValid !== true ? t('carpool.quotaUnavailable') : statusMap[data.status] || t('carpool.quotaUnavailable'),
+      isActive: data.isValid === true && data.status === 'active',
+    }
+  }
+
   if (data.mode === 'quota_limited') {
     const isValid = data.isValid !== false
     const statusMap: Record<string, string> = {
@@ -633,7 +651,7 @@ const ringItems = computed<RingItem[]>(() => {
       }
     }
   } else {
-    if (data.subscription) {
+    if (data.billing_type !== 'carpool' && data.subscription) {
       const sub = data.subscription
       const limits = [
         { label: t('keyUsage.limitDaily'), usage: sub.daily_usage_usd, limit: sub.daily_limit_usd },
@@ -647,7 +665,7 @@ const ringItems = computed<RingItem[]>(() => {
         }
       }
     }
-    if (!data.subscription && data.balance != null) {
+    if (data.billing_type !== 'carpool' && !data.subscription && data.balance != null) {
       items.push({ title: t('keyUsage.walletBalance'), pct: 0, amount: usd(data.balance), isBalance: true, iconType: 'dollar' })
     }
   }
@@ -731,7 +749,13 @@ const detailRows = computed<DetailRow[]>(() => {
       label: t('keyUsage.subscriptionType'), value: data.planName || t('keyUsage.walletBalance'), valueClass: '',
     })
 
-    if (data.subscription) {
+    if (data.billing_type === 'carpool' && data.expires_at) {
+      rows.push({
+        iconBg: 'bg-amber-500/10', iconColor: 'text-amber-500', iconSvg: ICON_CALENDAR,
+        label: t('carpool.membershipExpiry'), value: formatDate(data.expires_at), valueClass: '',
+      })
+    }
+    if (data.billing_type !== 'carpool' && data.subscription) {
       const sub = data.subscription
       if (sub.daily_limit_usd > 0) {
         const pct = (sub.daily_usage_usd / sub.daily_limit_usd) * 100

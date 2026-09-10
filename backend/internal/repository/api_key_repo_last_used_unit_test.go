@@ -31,6 +31,8 @@ func newAPIKeyRepoSQLite(t *testing.T) (*apiKeyRepository, *dbent.Client) {
 	drv := entsql.OpenDB(dialect.SQLite, db)
 	client := enttest.NewClient(t, enttest.WithOptions(dbent.Driver(drv)))
 	t.Cleanup(func() { _ = client.Close() })
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS carpool_billing_bindings (user_id INTEGER PRIMARY KEY REFERENCES users(id), group_id INTEGER NOT NULL REFERENCES groups(id))`)
+	require.NoError(t, err)
 
 	return &apiKeyRepository{client: client, sql: db}, client
 }

@@ -1,0 +1,4 @@
+{"file":".trellis/tasks/09-08-prompt-policy-enforcement/prd.md","reason":"Verify R01-R10 without treating model signals as policy certainty."}
+{"file":".trellis/tasks/09-08-prompt-policy-enforcement/design.md","reason":"Verify fault handling, durable admission, recovery, encryption and compatibility."}
+{"file":".trellis/tasks/09-08-prompt-policy-enforcement/implement.md","reason":"Acceptance matrix A01-A16 and phase exit gates."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Verify schema, provenance and API/UI consistency across boundaries."}
