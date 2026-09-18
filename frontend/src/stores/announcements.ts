@@ -147,15 +147,18 @@ export const useAnnouncementStore = defineStore('announcements', () => {
     const requestGeneration = generation
     try {
       loading.value = true
-      await Promise.all(unread.map((a) => announcementsAPI.markRead(a.id)))
+      const results = await Promise.allSettled(unread.map(async (a) => {
+        await announcementsAPI.markRead(a.id)
+        if (requestGeneration !== generation) return
+        const current = announcements.value.find((item) => item.id === a.id)
+        if (current) current.read_at = new Date().toISOString()
+        lastUnreadCount = unreadCount.value
+      }))
       if (requestGeneration !== generation) return
-      announcements.value.forEach((a) => {
-        if (!a.read_at) {
-          a.read_at = new Date().toISOString()
-        }
-      })
-      lastUnreadCount = 0
+      const failure = results.find((result) => result.status === 'rejected')
+      if (failure) throw failure.reason
     } catch (err: any) {
+      if (requestGeneration !== generation) return
       console.error('Failed to mark all as read:', err)
       throw err
     } finally {
