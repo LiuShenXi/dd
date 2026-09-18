@@ -344,6 +344,8 @@ func (s *OpenAIGatewayService) CodexSentinelRefresh(c *gin.Context) {
 		c.AbortWithStatus(400)
 		return
 	}
+	var previousCaptured, captured time.Time
+	var previousVersion string
 	reply := func(code int, status, reason string, retry int, version string) {
 		body := gin.H{"status": status, "account_id": in.AccountID, "model": in.Model}
 		if reason != "" {
@@ -355,9 +357,14 @@ func (s *OpenAIGatewayService) CodexSentinelRefresh(c *gin.Context) {
 		if version != "" {
 			body["ticket_version"] = version
 		}
-		if status == "refreshed" {
+		if status == "refreshed" || status == "renewed" {
 			body["persisted"] = true
 			body["ready"] = true
+		}
+		if status == "renewed" {
+			body["previous_ticket_version"] = previousVersion
+			body["captured_at_unix_ms"] = captured.UnixMilli()
+			body["previous_captured_at_unix_ms"] = previousCaptured.UnixMilli()
 		}
 		c.JSON(code, body)
 	}
@@ -386,6 +393,8 @@ func (s *OpenAIGatewayService) CodexSentinelRefresh(c *gin.Context) {
 	expectedCaptured := time.Time{}
 	if current := s.lookupOpenAICodexTicket(account, in.Model); current != nil {
 		expectedCaptured = current.CapturedAt
+		previousCaptured = current.CapturedAt
+		previousVersion = codexTicketVersion(current)
 	}
 	sentinel.mu.Lock()
 	// Anomaly requests must reference an event from this process, not a made-up
@@ -447,12 +456,14 @@ func (s *OpenAIGatewayService) CodexSentinelRefresh(c *gin.Context) {
 		return
 	}
 	version := codexTicketVersion(ticket)
-	if version == in.ExpectedVersion {
-		reply(503, "failed", "unchanged", 30, "")
+	captured = ticket.CapturedAt
+	renewed := version == previousVersion
+	if renewed && (previousCaptured.UnixMilli() <= 0 || captured.UnixMilli() <= previousCaptured.UnixMilli()) {
+		reply(503, "failed", "recapture_unverified", 30, "")
 		return
 	}
 	persisted, err := s.accountRepo.GetByID(ctx, in.AccountID)
-	if err != nil || codexTicketVersion(parseOpenAICodexTicketExtra(persisted, in.Model)) != version {
+	if err != nil || !codexTicketGenerationMatches(parseOpenAICodexTicketExtra(persisted, in.Model), ticket) {
 		reply(503, "failed", "persistence_unverified", 30, "")
 		return
 	}
@@ -465,7 +476,7 @@ func (s *OpenAIGatewayService) CodexSentinelRefresh(c *gin.Context) {
 		return
 	}
 	cached, err := s.schedulerSnapshot.cache.GetAccount(ctx, in.AccountID)
-	if err != nil || cached == nil || codexTicketVersion(parseOpenAICodexTicketExtra(cached, in.Model)) != version {
+	if err != nil || !codexTicketGenerationMatches(parseOpenAICodexTicketExtra(cached, in.Model), ticket) {
 		reply(503, "failed", "cache_unverified", 30, "")
 		return
 	}
@@ -473,7 +484,17 @@ func (s *OpenAIGatewayService) CodexSentinelRefresh(c *gin.Context) {
 		reply(503, "failed", "expired", 30, "")
 		return
 	}
-	reply(200, "refreshed", "", 0, version)
+	if renewed {
+		reply(200, "renewed", "", 0, version)
+	} else {
+		reply(200, "refreshed", "", 0, version)
+	}
+}
+
+// Matching only the blob cannot prove persistence of a same-blob renewal.
+func codexTicketGenerationMatches(actual, expected *openAICodexTicket) bool {
+	return actual != nil && expected != nil && actual.State == expected.State &&
+		actual.CapturedAt.Equal(expected.CapturedAt) && actual.ExpiresAt.Equal(expected.ExpiresAt)
 }
 
 func parseOpenAICodexTicketExtra(account *Account, model string) *openAICodexTicket {

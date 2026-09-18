@@ -212,7 +212,7 @@ func TestCodexSentinelRefreshPersistenceCacheAndRedaction(t *testing.T) {
 	require.Len(t, upstream.requests, 1)
 }
 func TestCodexSentinelFailurePreservesOldTicket(t *testing.T) {
-	for _, failure := range []string{"upstream", "persist", "unchanged", "unverified", "cache"} {
+	for _, failure := range []string{"upstream", "persist", "unverified", "cache"} {
 		t.Run(failure, func(t *testing.T) {
 			svc, repo, upstream := sentinelFixture(t)
 			old := &openAICodexTicket{State: openAICodexTicketStatePrefix + strings.Repeat("C", 292-len(openAICodexTicketStatePrefix)), Length: 292, Model: "gpt-6-astra", CapturedAt: time.Now().Add(-time.Minute), ExpiresAt: time.Now().Add(time.Hour)}
@@ -223,8 +223,6 @@ func TestCodexSentinelFailurePreservesOldTicket(t *testing.T) {
 				upstream.err = errors.New("synthetic secret must not escape")
 			case "persist":
 				repo.persistErr = errors.New("synthetic database credential")
-			case "unchanged":
-				upstream.resp.Header.Set(openAICodexTurnStateHeader, old.State)
 			case "unverified":
 				repo.ignoreSave = true
 			case "cache":
@@ -235,7 +233,7 @@ func TestCodexSentinelFailurePreservesOldTicket(t *testing.T) {
 			require.Equal(t, "failed", result["status"])
 			require.NotContains(t, raw, "secret")
 			require.NotContains(t, raw, old.State)
-			if failure == "upstream" || failure == "persist" || failure == "unchanged" {
+			if failure == "upstream" || failure == "persist" {
 				require.Same(t, old, svc.lookupOpenAICodexTicket(repo.account, "gpt-6-astra"))
 			}
 		})

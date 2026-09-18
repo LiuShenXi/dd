@@ -1,0 +1,17 @@
+{
+  "passed": false,
+  "scope": "one native refresh; no user generation replay or packet capture",
+  "account_id": 2,
+  "model": "gpt-5.6-sol",
+  "harvest_proxy": "US-static-car8",
+  "proxy_endpoint_verified": true,
+  "http_status": 429,
+  "refresh_status": "cooldown",
+  "reason": null,
+  "persisted": false,
+  "ready": true,
+  "version_changed": false,
+  "remaining_seconds": 582,
+  "elapsed_seconds": 0.007,
+  "time": 1789759182.3238816
+}

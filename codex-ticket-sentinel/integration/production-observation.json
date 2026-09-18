@@ -1,0 +1,85 @@
+{
+  "time": 1789759208.2419016,
+  "enabled": true,
+  "latest_event_seq": 0,
+  "targets": [
+    {
+      "account_id": 2,
+      "model": "gpt-6-astra",
+      "eligible": true,
+      "ready": true,
+      "captured_at": "2026-09-19T03:00:48.139087033+08:00",
+      "expires_at": "2026-09-19T04:00:48.139087033+08:00",
+      "remaining_seconds": 2442
+    },
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "eligible": true,
+      "ready": true,
+      "captured_at": "2026-09-19T02:29:24.792467902+08:00",
+      "expires_at": "2026-09-19T03:29:24.792467902+08:00",
+      "remaining_seconds": 558
+    }
+  ],
+  "sidecar_attempts": [
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "started_at": 1789759164.3960874,
+      "outcome": "failed"
+    }
+  ],
+  "collector_logs": [
+    {
+      "probed": 3
+    },
+    {
+      "probed": 3
+    },
+    {
+      "probed": 3
+    },
+    {
+      "probed": 3
+    },
+    {
+      "probed": 3
+    },
+    {
+      "probed": 4
+    },
+    {
+      "probed": 4
+    },
+    {
+      "probed": 4
+    },
+    {
+      "probed": 4
+    },
+    {
+      "probed": 4
+    }
+  ],
+  "containers": [
+    {
+      "name": "sub2api-green",
+      "running": true,
+      "health": "healthy",
+      "oom": false,
+      "restarts": 0
+    },
+    {
+      "name": "sub2api-ticket-sentinel-sentinel-1",
+      "running": true,
+      "health": "healthy",
+      "oom": false,
+      "restarts": 0
+    }
+  ],
+  "memory": [
+    "sub2api-green 136.5MiB / 384MiB",
+    "sub2api-ticket-sentinel-sentinel-1 32.69MiB / 64MiB"
+  ]
+}

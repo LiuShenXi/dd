@@ -54,6 +54,24 @@ class StateTests(unittest.TestCase):
         self.assertIsNone(self.store.claim())
         self.assertEqual(self.store.meta('cursor'), '1')
 
+    def test_renewal_completes_job_without_claiming_a_changed_blob(self):
+        self.signal()
+        job = self.store.claim()
+        self.assertEqual(self.store.finish(job, {'status': 'renewed', 'persisted': True, 'ready': True}), 'renewed')
+        self.assertEqual(self.store.summary()['pending'], 0)
+        self.assertEqual(self.store.summary()['inflight'], 0)
+
+    def test_renewal_cannot_erase_a_later_observation_of_same_blob(self):
+        self.signal()
+        job = self.store.claim()
+        self.signal(seq=2)
+        self.store.finish(job, {'status': 'renewed', 'persisted': True, 'ready': True})
+        self.assertEqual(self.store.summary()['pending'], 1)
+        self.assertIsNone(self.store.claim())
+        self.now += self.cfg.cooldown_seconds + 1
+        next_job = self.store.claim()
+        self.assertEqual(next_job['event_id'], 'instance-1:2')
+
     def test_ineligible_and_nonallowlisted_events_do_not_refresh(self):
         self.store.ingest(snapshot(events=[event()], seq=1, eligible=False))
         self.assertIsNone(self.store.claim())

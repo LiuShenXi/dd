@@ -1,0 +1,12 @@
+{
+  "built_utc": "2026-09-18T19:30:14.063398+00:00",
+  "binary_sha256": "e5389041a93d6cf7938e8181aee9181aac60f25e40c49cf68b387e3dfcd2d4d4",
+  "bytes": 29978784,
+  "target": "linux/amd64 CGO_ENABLED=0",
+  "source_bridge": "build-tag sentineldiagnostic; no production logic changed by diagnostic task",
+  "unit_tests": "go test -tags sentineldiagnostic ./internal/service -run ^TestCodexTicketDiagnostic -count=1: PASS",
+  "runtime_default": "production runtime image, --network none, no env: not_configured, exit 0",
+  "runtime_missing_file": "production runtime image, --network none, missing private file: invalid_private_file, exit 1",
+  "remote_operations": "none",
+  "real_upstream_requests": "none"
+}

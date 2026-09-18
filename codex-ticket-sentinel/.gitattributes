@@ -1,2 +1,3 @@
 # Unified diff context requires its leading space before original indentation.
-integration/*.patch -whitespace
+integration/*.patch -text -whitespace
+deploy/*.sh text eol=lf

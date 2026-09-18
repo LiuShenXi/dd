@@ -564,10 +564,8 @@ func (s *OpenAIGatewayService) collectOpenAICodexTicket(ctx context.Context, acc
 		if ctx.Err() != nil || !s.openAICodexTicketEnabledContext(ctx) {
 			return nil, errCodexTicketCollection
 		}
-		old := s.lookupOpenAICodexTicket(account, model)
-		if old != nil && old.State == state {
-			return nil, errCodexTicketCollection
-		}
+		// A successful observation renews our local TTL even when the opaque
+		// upstream state is unchanged. Its bytes do not encode a local lease.
 		now := time.Now()
 		ticket := &openAICodexTicket{AccountID: account.ID, Model: model, State: state, Length: len(state), CapturedAt: now, ExpiresAt: now.Add(time.Duration(cfg.TTLSeconds) * time.Second), Attempts: 1}
 		if err := s.persistOpenAICodexTicket(ctx, account, ticket); err != nil {

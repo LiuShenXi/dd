@@ -1,5 +1,7 @@
 # Codex ticket sentinel
 
+生产状态及操作命令见 [DEPLOYMENT.md](DEPLOYMENT.md)。服务已部署，真实续票尚未验证成功；详见其中的验证边界。
+
 A Python standard-library controller that polls a restricted Sub2API interface,
 persists its scheduling state in SQLite, and requests targeted ticket refreshes.
 Sub2API owns OAuth, harvesting through the configured proxy, ticket storage and
@@ -12,6 +14,14 @@ The controller reacts to 312-length turn state, terminal upstream model mismatch
 and missing or expiring tickets. Ticket length is an operational signal, not a
 quality or revocation guarantee. Refreshes affect subsequent requests; business
 requests are never replayed.
+
+For availability, run Sub2API with
+`GATEWAY_OPENAI_CODEX_TICKET_FAIL_CLOSED=false`: inject a valid ticket when one
+exists, and forward normally when collection has not produced a usable ticket.
+This setting does not create a ticket or guarantee upstream quality. A valid
+292 observed again with identical bytes renews the native local lease; the
+controller requires the newly persisted and cache-visible capture timestamp
+before acknowledging a `renewed` result.
 
 This feature requires the companion Sub2API integration patch and a new Sub2API
 image. The previously deployed compatible image alone does not expose the full

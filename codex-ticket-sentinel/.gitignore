@@ -4,5 +4,6 @@ __pycache__/
 *.sqlite-*
 state/
 private/
+/integration/codex-ticket-diagnostic-linux-*
 !tests/
 !tests/**

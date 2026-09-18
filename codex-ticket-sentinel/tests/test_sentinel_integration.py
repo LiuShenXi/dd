@@ -138,6 +138,32 @@ class HTTPIntegrationTests(unittest.TestCase):
                 with self.assertRaisesRegex(s.SentinelError, '^control_response_too_large$'):
                     s.Client(replace(self.cfg, base_url=url)).status(0)
 
+    def test_renewal_requires_verified_recent_new_capture_of_same_blob(self):
+        now_ms = int(time.time() * 1000)
+        job = {'account_id': 2, 'model': MODEL, 'reason': 'expiry',
+               'expected_ticket_version': OLD, 'event_id': 'periodic'}
+        valid = {'status': 'renewed', 'account_id': 2, 'model': MODEL,
+                 'ticket_version': OLD, 'previous_ticket_version': OLD,
+                 'persisted': True, 'ready': True,
+                 'captured_at_unix_ms': now_ms, 'previous_captured_at_unix_ms': now_ms - 3000000}
+        with backend(lambda h: reply(h, valid)) as (url, _):
+            client = s.Client(replace(self.cfg, base_url=url))
+            self.assertEqual(client.refresh(job)['status'], 'renewed')
+            self.assertEqual(client.refresh({**job, 'reason': 'missing', 'expected_ticket_version': ''})['status'], 'renewed')
+            with self.assertRaisesRegex(s.SentinelError, '^refresh_unverified$'):
+                client.refresh({**job, 'expected_ticket_version': ''})
+        for delta in ({'previous_ticket_version': NEW}, {'ticket_version': NEW},
+                      {'captured_at_unix_ms': now_ms - 3000000}, {'captured_at_unix_ms': now_ms + 300000},
+                      {'previous_captured_at_unix_ms': 0}, {'captured_at_unix_ms': True},
+                      {'captured_at_unix_ms': None}, {'persisted': False}, {'ready': False}):
+            with self.subTest(delta=delta):
+                with backend(lambda h: reply(h, {**valid, **delta})) as (url, _):
+                    with self.assertRaisesRegex(s.SentinelError, '^refresh_unverified$'):
+                        s.Client(replace(self.cfg, base_url=url)).refresh(job)
+        with backend(lambda h: reply(h, valid, 503)) as (url, _):
+            with self.assertRaisesRegex(s.SentinelError, '^refresh_unverified$'):
+                s.Client(replace(self.cfg, base_url=url)).refresh(job)
+
     def test_terminal_events_refresh_then_duplicate_snapshot_is_noop(self):
         for kind in ('model_mismatch', 'turn_state_312'):
             with self.subTest(kind=kind):

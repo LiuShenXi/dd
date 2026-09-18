@@ -1,0 +1,17 @@
+{
+  "source": "observed SSH verify_refresh.py output during this deployment",
+  "account_id": 2,
+  "model": "gpt-6-astra",
+  "proxy": "US-static-car8",
+  "proxy_endpoint_verified": true,
+  "attempt_count": 2,
+  "both_http_status": 503,
+  "both_status": "failed",
+  "both_reason": "collection_failed",
+  "both_version_changed": false,
+  "both_old_ticket_ready": true,
+  "last_time_unix": 1789759124.2738235,
+  "last_elapsed_seconds": 1.157,
+  "new_persisted_ticket_verified": false,
+  "failure_cause_further_classified": false
+}

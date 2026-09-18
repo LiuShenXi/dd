@@ -216,17 +216,28 @@ class Client:
         return validate_status(data)
 
     def refresh(self, job):
-        _, result = self.call('refresh', {k: job[k] for k in
+        http_status, result = self.call('refresh', {k: job[k] for k in
             ('account_id', 'model', 'reason', 'expected_ticket_version', 'event_id')})
-        allowed = {'refreshed', 'stale', 'disabled', 'ineligible', 'cooldown', 'failed'}
+        allowed = {'refreshed', 'renewed', 'stale', 'disabled', 'ineligible', 'cooldown', 'failed'}
         if result.get('status') not in allowed:
             raise SentinelError('refresh_invalid_result')
-        if result['status'] == 'refreshed' and (result.get('persisted') is not True or result.get('ready') is not True
+        if result['status'] in ('refreshed', 'renewed') and (http_status != 200
+                or result.get('persisted') is not True or result.get('ready') is not True
                 or type(result.get('account_id')) is not int or result['account_id'] != job['account_id']
                 or result.get('model') != job['model']
-                or not isinstance(result.get('ticket_version'), str) or not re.fullmatch('[a-f0-9]{64}', result['ticket_version'])
-                or result['ticket_version'] == job['expected_ticket_version']):
+                or not isinstance(result.get('ticket_version'), str) or not re.fullmatch('[a-f0-9]{64}', result['ticket_version'])):
             raise SentinelError('refresh_unverified')
+        if result['status'] == 'refreshed' and result['ticket_version'] == job['expected_ticket_version']:
+            raise SentinelError('refresh_unverified')
+        if result['status'] == 'renewed':
+            captured, previous = result.get('captured_at_unix_ms'), result.get('previous_captured_at_unix_ms')
+            expected = job['expected_ticket_version']
+            if (type(captured) is not int or type(previous) is not int or not captured > previous > 0
+                    or abs(captured - time.time() * 1000) > 120000
+                    or result.get('previous_ticket_version') != result['ticket_version']
+                    or (expected and result['ticket_version'] != expected)
+                    or (not expected and job['reason'] != 'missing')):
+                raise SentinelError('refresh_unverified')
         return result
 
 
@@ -301,7 +312,12 @@ class Store:
     def enqueue(self, account, model, version, reason, event_id, now):
         old = self.db.execute('SELECT * FROM jobs WHERE account_id=? AND model=?', (account, model)).fetchone()
         if old and old['expected_ticket_version'] == version:
-            if REASONS[reason] > REASONS[old['reason']]:
+            # Ingest processes real events in sequence order. After a same-blob
+            # renewal only the newest event has the relevant send timestamp;
+            # its kind must not lose to an older event's priority. Periodic
+            # expiry/missing checks still cannot replace a real observation.
+            if (REASONS[reason] > REASONS[old['reason']] or
+                    (reason in ('model_mismatch', 'turn_state_312') and event_id != old['event_id'])):
                 self.db.execute('UPDATE jobs SET reason=?,event_id=? WHERE account_id=? AND model=?',
                                 (reason, event_id, account, model))
             return
@@ -369,14 +385,19 @@ class Store:
 
     def finish(self, job, result):
         outcome = result.get('status', 'failed')
-        success = outcome == 'refreshed' and result.get('persisted') is True and result.get('ready') is True
-        if outcome == 'refreshed' and not success:
+        success = outcome in ('refreshed', 'renewed') and result.get('persisted') is True and result.get('ready') is True
+        if outcome in ('refreshed', 'renewed') and not success:
             outcome = 'failed'
         with self.db:
             self.db.execute('UPDATE attempts SET outcome=? WHERE id=?', (outcome, job['attempt_id']))
             if success or outcome in ('stale', 'disabled', 'ineligible'):
-                self.db.execute('DELETE FROM jobs WHERE account_id=? AND model=? AND expected_ticket_version=?',
-                                (job['account_id'], job['model'], job['expected_ticket_version']))
+                self.db.execute('DELETE FROM jobs WHERE account_id=? AND model=? AND expected_ticket_version=? AND event_id=?',
+                                (job['account_id'], job['model'], job['expected_ticket_version'], job['event_id']))
+                # A later observation may use a reissued identical blob. Keep
+                # its event id for the server's timestamp guard instead of
+                # letting completion of the older attempt erase that signal.
+                self.db.execute("UPDATE jobs SET status='pending',next_at=?,lease_until=0 WHERE account_id=? AND model=? AND expected_ticket_version=? AND event_id!=? AND status='inflight'",
+                                (self.clock() + self.cfg.cooldown_seconds, job['account_id'], job['model'], job['expected_ticket_version'], job['event_id']))
             else:
                 failures = min(job['failures'] + 1, 16)
                 retry = result.get('retry_after_seconds', 0)

@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "active_slot": "green",
+  "image_tag": "sub2api:carpool-sentinel-0.2.6-6031d82f1",
+  "image_id": "sha256:93c0d8269550780e674479796ef6f417bc74e961cfab0692889dd112009d9ded",
+  "source_commit": "6031d82f1d1081ac74ff58aba80b3cf2c2c0628b",
+  "version": "0.2.6-carpool-sentinel-20260919",
+  "sidecar_image": "codex-ticket-sentinel:20260919-v1",
+  "health": 200,
+  "unauthenticated_models": 401,
+  "migrations": 297,
+  "ticket_enabled": true,
+  "targets": [
+    {
+      "account_id": 2,
+      "model": "gpt-6-astra",
+      "eligible": true,
+      "ready": true,
+      "ticket_version": "9d0c6678d0c5fcdb7a5443e890c326ff10213953d28b0709c45adf68bcda2b26",
+      "expires_at": "2026-09-19T04:00:48.139087033+08:00",
+      "captured_at": "2026-09-19T03:00:48.139087033+08:00",
+      "remaining_seconds": 2437
+    },
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "eligible": true,
+      "ready": true,
+      "ticket_version": "f1b42d1ad91c47880bb78acbfbf54f3a0a584b035dd109c287ed1107ad0dbeef",
+      "expires_at": "2026-09-19T03:29:24.792467902+08:00",
+      "captured_at": "2026-09-19T02:29:24.792467902+08:00",
+      "remaining_seconds": 553
+    }
+  ],
+  "sidecar": {
+    "running": true,
+    "updated_at": 1789759210.7357037,
+    "control_error": null,
+    "pending": 1,
+    "inflight": 0,
+    "last_poll_at": 1789759210.7341208,
+    "event_gaps": 0,
+    "enabled": true
+  },
+  "old_stopped": true,
+  "restart_count": 0,
+  "public_version_verified": true,
+  "public_frontend_assets_verified": 3,
+  "time": 1789759211.394486
+}

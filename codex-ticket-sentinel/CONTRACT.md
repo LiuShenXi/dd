@@ -22,6 +22,20 @@ Reasons: `turn_state_312`, `model_mismatch`, `expiry`, `missing`. HTTP request t
 {"status":"refreshed","account_id":2,"model":"gpt-6-astra","ticket_version":"new-sha256","persisted":true,"ready":true}
 ```
 
-`status=stale` (HTTP 200) means expected version no longer matches and no collection was performed; `status=disabled`/`ineligible` (HTTP 200) means no collection was performed. `status=cooldown` (HTTP 429) includes integer `retry_after_seconds`. Failed or unchanged collection returns `status=failed`, `reason` as a fixed safe code, and `retry_after_seconds` (HTTP 503). Native singleflight also deduplicates regular collector probes. A server-side cooldown of at least 30 seconds applies independently of the sidecar. Preserve existing valid tickets on all unsuccessful attempts. Never replay business requests. On successful save use native account repository merge/cache propagation and verify persisted version; report propagation uncertainty honestly.
+If a new native harvest returns the same valid blob, preserve the native
+collector's renewal semantics and return `status=renewed` after verifying the
+new capture/expiry generation in both database and cache. This does not claim
+the blob changed. The response additionally contains `previous_ticket_version`
+(equal to `ticket_version`) and integer `captured_at_unix_ms` and
+`previous_captured_at_unix_ms`, with capture time strictly advancing. The
+controller requires the new capture within 120 seconds of its clock, all target
+and persistence checks, and an unchanged expected hash. An empty expected hash
+is permitted only for a missing/expired job; the returned previous hash still
+must equal the reissued blob hash. The old blob can have expired locally before
+this successful reissue. A local TTL remains a local policy, not an upstream
+expiry guarantee. Later observations of an identical blob remain queued and
+are checked against their real send timestamp by Sub2API.
+
+`status=stale` (HTTP 200) means the expected version no longer matches or the observation predates the current capture generation, and no collection was performed; `status=disabled`/`ineligible` (HTTP 200) means no collection was performed. `status=cooldown` (HTTP 429) includes integer `retry_after_seconds`. Failed collection or an unverified capture generation returns `status=failed`, `reason` as a fixed safe code, and `retry_after_seconds` (HTTP 503). Native singleflight also deduplicates regular collector probes. A server-side cooldown of at least 30 seconds applies independently of the sidecar. Preserve existing valid tickets on all unsuccessful attempts. Never replay business requests. On successful save use native account repository merge/cache propagation and verify persisted version; report propagation uncertainty honestly.
 
 Proposed Sub2API configuration: `CODEX_SENTINEL_TOKEN_FILE`, `CODEX_SENTINEL_ACCOUNT_IDS=2`, `CODEX_SENTINEL_MODELS=gpt-6-astra,gpt-5.6-sol`. Presence of a valid private token file and nonempty allowlists enables the integration; the live global ticket switch still controls behavior. Routes return 404 when integration is unconfigured. The sidecar does not need a listener; it polls the authenticated interface and persists jobs/cursor in SQLite.

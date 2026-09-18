@@ -56,6 +56,11 @@ environment files. Keep all private files out of source archives and images.
    `CODEX_SENTINEL_TOKEN_FILE=/run/secrets/codex-sentinel-token`,
    `CODEX_SENTINEL_ACCOUNT_IDS=2`, and
    `CODEX_SENTINEL_MODELS=gpt-6-astra,gpt-5.6-sol`.
+   Set `GATEWAY_OPENAI_CODEX_TICKET_FAIL_CLOSED=false` so missing or expired
+   tickets do not block scheduling or forwarding. Keep the ticket master switch
+   off during an upgrade from a slot that still fails closed, and enable it only
+   after verifying the new slot's policy. A rollback to that older slot must
+   disable the master switch again before restoring traffic.
    Mount the shared dedicated token file read-only at the configured path.
    Maintain the existing US-static-car8 harvest proxy in Sub2API; the sidecar
    config does not replace or supply proxy credentials.
@@ -77,8 +82,10 @@ environment files. Keep all private files out of source archives and images.
 5. Verify the new Sub2API interface returns protocol version 1, expected target
    allowlists and eligible metadata. Use a private helper that reads the token
    file; do not use `curl -H` with a token expanded into process arguments.
-   Start with one bounded, authorized refresh through Sub2API. Confirm a new
-   persisted version and readiness without printing ticket values. For this
+   Start with one bounded, authorized refresh through Sub2API. Confirm either a
+   new persisted version (`refreshed`) or a freshly captured and persisted lease
+   for the same blob (`renewed`), with cache visibility and readiness, without
+   printing ticket values. For this
    bounded operator check, `reason=expiry` accepts a current matching version
    even before its expiry window; the server does not infer genuine expiry from
    that label. Collection or database-write failures retain the old valid ticket.
