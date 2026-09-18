@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "proxy_id": 3,
+  "proxy_name": "US-static-car8",
+  "seeded_account_id": 2,
+  "seeded_models": [
+    "gpt-6-astra",
+    "gpt-5.6-sol"
+  ],
+  "ticket_length": 292,
+  "ttl_seconds": 3600,
+  "refresh_before_seconds": 600,
+  "fail_closed": true,
+  "application_restarted": false,
+  "other_settings_unchanged": true,
+  "health": 200,
+  "unauthenticated_models": 401,
+  "time": "2026-09-18T17:42:52.312562+00:00"
+}

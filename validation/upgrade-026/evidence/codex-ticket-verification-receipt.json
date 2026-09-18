@@ -1,0 +1,283 @@
+{
+  "enabled": true,
+  "proxy_configured": true,
+  "accounts": [
+    {
+      "id": 2,
+      "name": "\u4e8c\u53f7\u8f66",
+      "status": "active",
+      "schedulable": true,
+      "codex_turn_tickets": [
+        {
+          "model": "gpt-6-astra",
+          "length": 292,
+          "ready": true,
+          "remaining_seconds": 3312,
+          "blocked": false,
+          "expires_at": "2026-09-18T18:39:17.575701Z"
+        },
+        {
+          "model": "gpt-5.6-sol",
+          "length": 292,
+          "ready": true,
+          "remaining_seconds": 3315,
+          "blocked": false,
+          "expires_at": "2026-09-18T18:39:21.093417Z"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "\u4e94\u53f7\u8f66",
+      "status": "active",
+      "schedulable": false,
+      "codex_turn_tickets": [
+        {
+          "model": "gpt-6-astra",
+          "ready": false,
+          "remaining_seconds": 0,
+          "blocked": true
+        },
+        {
+          "model": "gpt-5.6-sol",
+          "ready": false,
+          "remaining_seconds": 0,
+          "blocked": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "\u516d\u53f7\u8f66",
+      "status": "active",
+      "schedulable": false,
+      "codex_turn_tickets": [
+        {
+          "model": "gpt-6-astra",
+          "ready": false,
+          "remaining_seconds": 0,
+          "blocked": true
+        },
+        {
+          "model": "gpt-5.6-sol",
+          "ready": false,
+          "remaining_seconds": 0,
+          "blocked": true
+        }
+      ]
+    }
+  ],
+  "persisted_tickets": [
+    {
+      "id": 2,
+      "model": "gpt-5.6-sol",
+      "length": 292,
+      "valid_now": true,
+      "expires_at": "2026-09-18T18:39:21.093417+00:00",
+      "captured_at": "2026-09-18T17:39:21.093417+00:00"
+    },
+    {
+      "id": 2,
+      "model": "gpt-6-astra",
+      "length": 292,
+      "valid_now": true,
+      "expires_at": "2026-09-18T18:39:17.575701+00:00",
+      "captured_at": "2026-09-18T17:39:17.575701+00:00"
+    }
+  ],
+  "ticket_events": [
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-5.6-sol",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe cycle",
+      "probed": 4
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-5.6-sol",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-6-astra",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-6-astra",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-5.6-sol",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe cycle",
+      "probed": 4
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-5.6-sol",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-6-astra",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-6-astra",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-5.6-sol",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe cycle",
+      "probed": 4
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-5.6-sol",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-6-astra",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-6-astra",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-5.6-sol",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe cycle",
+      "probed": 4
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-5.6-sol",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-6-astra",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-5.6-sol",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-6-astra",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe cycle",
+      "probed": 4
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-5.6-sol",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-6-astra",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-6-astra",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-5.6-sol",
+      "http": 200,
+      "len": 312
+    },
+    {
+      "message": "probe cycle",
+      "probed": 4
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-6-astra",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 6,
+      "model": "gpt-5.6-sol",
+      "http": 400,
+      "len": 0
+    },
+    {
+      "message": "probe miss",
+      "account_id": 5,
+      "model": "gpt-6-astra",
+      "http": 200,
+      "len": 312
+    }
+  ],
+  "time": "2026-09-18T17:44:05.244065+00:00"
+}
