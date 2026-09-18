@@ -1,0 +1,29 @@
+{
+  "checked_utc": "2026-09-18T19:41:04.998898+00:00",
+  "scope": "BWH proxy registry and cached geographic metadata only",
+  "account_id": 2,
+  "model": "gpt-6-astra",
+  "proxies": [
+    {
+      "id": 1,
+      "name": "TW-static-pro20x",
+      "status": "active",
+      "cached_country_code": null
+    },
+    {
+      "id": 2,
+      "name": "TW-static-car7",
+      "status": "active",
+      "cached_country_code": null
+    },
+    {
+      "id": 3,
+      "name": "US-static-car8",
+      "status": "active",
+      "cached_country_code": null
+    }
+  ],
+  "additional_native_probe_count": 0,
+  "reason": "No other configured US-named proxy; existing US-static-car8 excluded from repeated comparison",
+  "settings_changed": false
+}

@@ -1,0 +1,63 @@
+{
+  "passed": true,
+  "active_slot": "blue",
+  "image_tag": "sub2api:carpool-sentinel-0.2.6-f8f099c1d",
+  "image_id": "sha256:234015582b37f19d813b9b9182ff1b75be41520d8f7265460f7da01597ac3052",
+  "source_commit": "f8f099c1d2851d1cfe7416e7f41a5108d529079c",
+  "version": "0.2.6-carpool-sentinel-r2-20260919",
+  "sidecar_image": "codex-ticket-sentinel:20260919-v2",
+  "health": 200,
+  "unauthenticated_models": 401,
+  "migrations": 297,
+  "ticket_enabled": true,
+  "ticket_fail_closed": false,
+  "targets": [
+    {
+      "account_id": 2,
+      "model": "gpt-6-astra",
+      "eligible": true,
+      "ready": true,
+      "ticket_version": "9d0c6678d0c5fcdb7a5443e890c326ff10213953d28b0709c45adf68bcda2b26",
+      "expires_at": "2026-09-19T04:00:48.139087033+08:00",
+      "captured_at": "2026-09-19T03:00:48.139087033+08:00",
+      "remaining_seconds": 242
+    },
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "eligible": true,
+      "ready": false,
+      "ticket_version": "",
+      "remaining_seconds": 0
+    }
+  ],
+  "admin_ticket_summaries": [
+    {
+      "model": "gpt-6-astra",
+      "ready": true,
+      "blocked": false,
+      "remaining_seconds": 242
+    },
+    {
+      "model": "gpt-5.6-sol",
+      "ready": false,
+      "blocked": false,
+      "remaining_seconds": 0
+    }
+  ],
+  "sidecar": {
+    "running": true,
+    "updated_at": 1789761404.6821785,
+    "control_error": null,
+    "pending": 2,
+    "inflight": 0,
+    "last_poll_at": 1789761404.6800916,
+    "event_gaps": 0,
+    "enabled": true
+  },
+  "old_stopped": true,
+  "restart_count": 0,
+  "public_version_verified": true,
+  "public_frontend_assets_verified": 3,
+  "time": 1789761406.2713711
+}

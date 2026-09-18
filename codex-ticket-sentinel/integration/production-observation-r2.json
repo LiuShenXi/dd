@@ -1,0 +1,104 @@
+{
+  "time": 1789761427.594045,
+  "enabled": true,
+  "latest_event_seq": 0,
+  "targets": [
+    {
+      "account_id": 2,
+      "model": "gpt-6-astra",
+      "eligible": true,
+      "ready": true,
+      "captured_at": "2026-09-19T03:00:48.139087033+08:00",
+      "expires_at": "2026-09-19T04:00:48.139087033+08:00",
+      "remaining_seconds": 222
+    },
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "eligible": true,
+      "ready": false,
+      "remaining_seconds": 0
+    }
+  ],
+  "sidecar_attempts": [
+    {
+      "account_id": 2,
+      "model": "gpt-6-astra",
+      "started_at": 1789761398.579733,
+      "outcome": "failed"
+    },
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "started_at": 1789759828.8101304,
+      "outcome": "failed"
+    },
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "started_at": 1789759766.4234693,
+      "outcome": "failed"
+    },
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "started_at": 1789759593.2881944,
+      "outcome": "failed"
+    },
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "started_at": 1789759349.6953816,
+      "outcome": "failed"
+    },
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "started_at": 1789759226.8168268,
+      "outcome": "failed"
+    },
+    {
+      "account_id": 2,
+      "model": "gpt-5.6-sol",
+      "started_at": 1789759164.3960874,
+      "outcome": "failed"
+    }
+  ],
+  "collector_logs": [
+    {
+      "account_id": 5,
+      "model": "gpt-6-astra",
+      "length": 292,
+      "mode": "continuous"
+    },
+    {
+      "probed": 5
+    },
+    {
+      "probed": 4
+    },
+    {
+      "probed": 4
+    }
+  ],
+  "containers": [
+    {
+      "name": "sub2api-blue",
+      "running": true,
+      "health": "healthy",
+      "oom": false,
+      "restarts": 0
+    },
+    {
+      "name": "sub2api-ticket-sentinel-sentinel-1",
+      "running": true,
+      "health": "healthy",
+      "oom": false,
+      "restarts": 0
+    }
+  ],
+  "memory": [
+    "sub2api-blue 107.2MiB / 384MiB",
+    "sub2api-ticket-sentinel-sentinel-1 33.35MiB / 64MiB"
+  ]
+}

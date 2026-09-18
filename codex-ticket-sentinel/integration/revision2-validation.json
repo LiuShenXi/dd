@@ -1,0 +1,18 @@
+{
+  "source_commit": "f8f099c1d2851d1cfe7416e7f41a5108d529079c",
+  "controller_source_sha256": "207ed23eaf96fcd84b3a553a5205d1dfce8b24a9b43ab141a2b9c406b99513f5",
+  "controller_image_local_id": "sha256:2f08b478450e21682e9b8e7c8dbf6af430965878368cef31f24dbf948fb0220e",
+  "controller_image_tag": "codex-ticket-sentinel:20260919-v2",
+  "controller_tests": {
+    "windows": 34,
+    "linux_real_v2_image": 34,
+    "passed": true,
+    "linux_scope": "only tests directory mounted; /app/sentinel.py from actual v2 image; network none; read-only root"
+  },
+  "go_tests": "PASS focused sentinel, native ticket renewal, fail-open missing/expired Astra/Sol; scheduler and header paths",
+  "patch_sha256": "c10dee7194c2d8a8b409a72c5c8317ed8d6179484e55750fef3f53c6e42414e6",
+  "patch_reverse_apply_check": "PASS",
+  "runtime_acceptance": "PASS exact final image on fresh isolated PG/Redis; resources cleaned",
+  "deployment": "PASS readiness, protected business fingerprints, 297 migrations, resolved blocked=false",
+  "recorded_utc": "2026-09-18T19:57:17.651525+00:00"
+}
