@@ -64,4 +64,44 @@ describe('mark all announcements read', () => {
     expect(store.announcements[0].read_at).toBeTruthy()
     expect(store.announcements[1].read_at).toBeFalsy()
   })
+
+  it('ignores old batch success and failure after switching identities', async () => {
+    const store = useAnnouncementStore()
+    store.setIdentity(101)
+    store.announcements = [announcement(1), announcement(2)]
+    let finish!: () => void
+    let fail!: (error: Error) => void
+    markRead.mockImplementation((id: number) => id === 1
+      ? new Promise<void>(resolve => { finish = resolve })
+      : new Promise<void>((_, reject) => { fail = reject }))
+    const result = store.markAllAsRead()
+
+    store.setIdentity(202)
+    store.announcements = [announcement(1), announcement(2)]
+    store.loading = true
+    finish()
+    await flushPromises()
+    expect(store.announcements.every(item => !item.read_at)).toBe(true)
+    fail(new Error('old session failure'))
+    await expect(result).resolves.toBeUndefined()
+    expect(store.announcements.every(item => !item.read_at)).toBe(true)
+    expect(store.loading).toBe(true)
+    expect(console.error).not.toHaveBeenCalled()
+  })
+
+  it('updates only submitted IDs in a refreshed same-session list', async () => {
+    const store = useAnnouncementStore()
+    store.setIdentity(101)
+    store.announcements = [announcement(1)]
+    let finish!: () => void
+    markRead.mockImplementation(() => new Promise<void>(resolve => { finish = resolve }))
+    const result = store.markAllAsRead()
+
+    store.announcements = [announcement(1), announcement(2)]
+    finish()
+    await result
+    expect(store.announcements[0].read_at).toBeTruthy()
+    expect(store.announcements[1].read_at).toBeFalsy()
+    expect(store.unreadCount).toBe(1)
+  })
 })

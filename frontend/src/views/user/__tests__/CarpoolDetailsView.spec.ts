@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { flushPromises, mount } from '@vue/test-utils'
+import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 import CarpoolDetailsView from '@/views/user/CarpoolDetailsView.vue'
@@ -7,6 +7,9 @@ import { useCarpoolStore } from '@/stores/carpool'
 import en from '@/i18n/locales/en/carpool'
 import zh from '@/i18n/locales/zh/carpool'
 import type { CarpoolBoostStatus, CarpoolDetails } from '@/types/carpool'
+
+const SystemDateTimeFormat = Intl.DateTimeFormat
+enableAutoUnmount(afterEach)
 
 const api = vi.hoisted(() => ({ getDetails: vi.fn(), getBoosts: vi.fn(), claimBoost: vi.fn() }))
 vi.mock('@/api/carpool', () => ({ carpoolAPI: api }))
@@ -95,6 +98,8 @@ describe('CarpoolDetailsView', () => {
     vi.setSystemTime(new Date('2026-09-06T04:00:00Z'))
     setActivePinia(createPinia())
     vi.clearAllMocks()
+    // Keep the browser locale deterministic across Windows and Linux runners.
+    vi.spyOn(Intl, 'DateTimeFormat').mockImplementation((locales, options) => new SystemDateTimeFormat(locales ?? 'en-US', options))
     api.getDetails.mockResolvedValue(pendingDetails)
   })
 

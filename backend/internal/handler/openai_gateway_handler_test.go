@@ -3062,6 +3062,9 @@ func runOpenAIResponsesWebSocketUsageLogCase(t *testing.T, tc openAIResponsesWSU
 			SubscriptionType: service.SubscriptionTypeCarpool,
 			RateMultiplier:   1,
 		}
+		if tc.group != nil {
+			apiKey.Group.ModelAllowlist = tc.group.ModelAllowlist
+		}
 	} else if tc.group != nil {
 		apiKey.Group = tc.group
 	}

@@ -152,7 +152,7 @@ func openAIForwardResultHasKnownBillableUsage(result *OpenAIForwardResult) bool 
 	}
 	usage := result.Usage
 	if usage.InputTokens < 0 || usage.OutputTokens < 0 || usage.CacheCreationInputTokens < 0 ||
-		usage.CacheReadInputTokens < 0 || usage.ImageInputTokens < 0 || usage.ImageOutputTokens < 0 ||
+		usage.CacheReadInputTokens < 0 || usage.ImageInputTokens < 0 || usage.ImageCacheReadTokens < 0 || usage.ImageOutputTokens < 0 ||
 		result.ImageCount < 0 || result.VideoCount < 0 || result.WebSearchCalls < 0 || result.SearchCount < 0 {
 		return false
 	}
@@ -161,7 +161,7 @@ func openAIForwardResultHasKnownBillableUsage(result *OpenAIForwardResult) bool 
 		return false
 	}
 	return usage.InputTokens > 0 || usage.OutputTokens > 0 || usage.CacheCreationInputTokens > 0 ||
-		usage.CacheReadInputTokens > 0 || usage.ImageInputTokens > 0 || usage.ImageOutputTokens > 0 ||
+		usage.CacheReadInputTokens > 0 || usage.ImageInputTokens > 0 || usage.ImageCacheReadTokens > 0 || usage.ImageOutputTokens > 0 ||
 		result.ImageCount > 0 || result.VideoCount > 0 || result.WebSearchCalls > 0 || result.SearchCount > 0 ||
 		result.AudioUsage != nil
 }

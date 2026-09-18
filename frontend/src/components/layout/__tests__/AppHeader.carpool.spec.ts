@@ -27,7 +27,10 @@ vi.mock('@/stores', () => ({
 }))
 vi.mock('@/stores/adminSettings', () => ({ useAdminSettingsStore: () => ({ customMenuItems: [] }) }))
 vi.mock('@/stores/carpool', () => ({ useCarpoolStore: () => state.carpool }))
-vi.mock('@/utils/featureFlags', () => ({ FeatureFlags: { modelPlaza: 'modelPlaza' }, isFeatureFlagEnabled: () => false }))
+vi.mock('@/utils/featureFlags', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/utils/featureFlags')>(),
+  isFeatureFlagEnabled: () => false,
+}))
 
 function mountHeader() {
   return mount(AppHeader, {

@@ -1,9 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { enableAutoUnmount, flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import CarpoolView from '@/views/admin/CarpoolView.vue'
 import enAdminCarpool from '@/i18n/locales/en/admin/carpool'
 import zhAdminCarpool from '@/i18n/locales/zh/admin/carpool'
 import type { CarpoolAdminTerm, CarpoolLedgerEntry, CarpoolPaymentRecord, CarpoolPlan, CarpoolResetBatch, CarpoolResetObservation } from '@/types/carpool'
+
+const SystemDateTimeFormat = Intl.DateTimeFormat
+enableAutoUnmount(afterEach)
+afterEach(() => { vi.restoreAllMocks() })
 
 const api = vi.hoisted(() => ({
   listPlans: vi.fn(), listTerms: vi.fn(), listCycles: vi.fn(), listLedger: vi.fn(), listBillingExceptions: vi.fn(),
@@ -69,6 +73,8 @@ async function mountResetsView() {
 describe('CarpoolView async identity guards', () => {
   beforeEach(() => {
     vi.resetAllMocks()
+    // Keep the browser locale deterministic across Windows and Linux runners.
+    vi.spyOn(Intl, 'DateTimeFormat').mockImplementation((locales, options) => new SystemDateTimeFormat(locales ?? 'en-US', options))
     i18nTranslations.clear()
     listUsers.mockResolvedValue({ items: [], total: 0, page: 1, page_size: 20 })
     api.listPlans.mockResolvedValue([plan])

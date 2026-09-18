@@ -1,5 +1,15 @@
-import { describe, it, expect, vi } from 'vitest'
-import { mount, type VueWrapper } from '@vue/test-utils'
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
+import { enableAutoUnmount, mount, type VueWrapper } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
+
+vi.mock('@/api/carpool', () => ({
+  carpoolAPI: {
+    getBoosts: vi.fn().mockResolvedValue({ eligible: false, remaining: 0, total: 0, amount_usd: '0', unavailable_reason: 'no_active_term' }),
+  },
+}))
+
+enableAutoUnmount(afterEach)
+beforeEach(() => { setActivePinia(createPinia()) })
 
 // t() 回显 key；带参数时附上 JSON，便于断言计数
 vi.mock('vue-i18n', async () => {

@@ -180,6 +180,28 @@ func TestOpenAIResponsesWebSocket_CarpoolTwoTurnsUseFreshDurableSnapshots(t *tes
 	}
 }
 
+func TestOpenAIResponsesWebSocket_CarpoolModelAllowlistRejectsBeforeSecondAdmission(t *testing.T) {
+	for _, mode := range []string{service.OpenAIWSIngressModeDedicated, service.OpenAIWSIngressModePassthrough} {
+		t.Run(mode, func(t *testing.T) {
+			billing := &carpoolWSBillingStub{canonicalStart: time.Date(2026, 9, 6, 11, 0, 0, 123456000, time.UTC)}
+			billingRepo := &carpoolWSUsageBillingRepoStub{}
+			runOpenAIResponsesWebSocketUsageLogCase(t, openAIResponsesWSUsageLogCase{
+				firstPayload:  `{"type":"response.create","model":"gpt-5.1","input":"turn one"}`,
+				secondPayload: `{"type":"response.create","model":"gpt-4.1","input":"blocked turn"}`,
+				ingressMode:   mode, carpoolBilling: billing, usageBillingRepo: billingRepo,
+				group: wsAllowlistGroup(true, "gpt-5.1"), secondTurnCloseExpected: true,
+			})
+			admitCalls, requestIDs, snapshots, persisted, marked, _ := billing.state()
+			require.Equal(t, 1, admitCalls, "BeforeRequest must reject the model before BeforeTurn can admit it")
+			require.Len(t, requestIDs, 1)
+			require.Len(t, snapshots, 1)
+			require.Equal(t, snapshots, persisted)
+			require.Empty(t, marked, "a rejected turn must not create an unsettled carpool receipt")
+			require.Len(t, billingRepo.appliedCommands(), 1)
+		})
+	}
+}
+
 func TestOpenAIResponsesWebSocketV2Passthrough_CarpoolSecondTurnAdmissionFailureDoesNotReachUpstream(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 

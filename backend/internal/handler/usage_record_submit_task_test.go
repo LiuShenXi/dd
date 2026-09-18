@@ -73,6 +73,31 @@ func TestOpenAIGatewayHandlerSubmitUsageRecordTask_CarpoolPanicIsNotRequeued(t *
 	require.Equal(t, snapshot, billing.markedSnapshot)
 }
 
+func TestOpenAIGatewayHandlerSubmitOpenAIUsageRecordTask_CarpoolDisconnectKeepsSnapshot(t *testing.T) {
+	pool := newUsageRecordTestPool(t)
+	h := &OpenAIGatewayHandler{usageRecordWorkerPool: pool}
+	snapshot := &domain.CarpoolBillingSnapshot{
+		BillingRequestID: 2, RequestID: "carpool:client-disconnected", UserID: 3,
+		APIKeyID: 4, GroupID: 5, TermID: 6, CycleID: 7, AdmittedAt: time.Now().UTC(),
+	}
+	parent, cancel := context.WithCancel(service.ContextWithCarpoolBillingSnapshot(context.Background(), snapshot))
+	cancel()
+	for _, imageCount := range []int{0, 1} {
+		calls := 0
+		h.submitOpenAIUsageRecordTask(parent, &service.OpenAIForwardResult{
+			ClientDisconnect: true, ImageCount: imageCount, Usage: service.OpenAIUsage{OutputTokens: 10},
+		}, func(ctx context.Context) {
+			calls++
+			require.NoError(t, ctx.Err(), "client cancellation must not cancel known usage settlement")
+			actual, ok := service.CarpoolBillingSnapshotFromContext(ctx)
+			require.True(t, ok)
+			require.Equal(t, snapshot, actual)
+		})
+		require.Equal(t, 1, calls, "partial known usage must settle synchronously exactly once")
+	}
+	require.Zero(t, pool.Stats().SubmittedTasks, "text and mandatory image usage must both preserve synchronous carpool settlement")
+}
+
 func TestGatewayHandlerSubmitUsageRecordTask_WithPool(t *testing.T) {
 	pool := newUsageRecordTestPool(t)
 	h := &GatewayHandler{usageRecordWorkerPool: pool}

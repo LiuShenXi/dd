@@ -158,12 +158,14 @@ func TestOpenAIForwardResultHasKnownBillableUsageRejectsMalformedUnits(t *testin
 		{name: "zero", result: &OpenAIForwardResult{}},
 		{name: "negative tokens", result: &OpenAIForwardResult{Usage: OpenAIUsage{InputTokens: -1}}},
 		{name: "negative tokens with positive output", result: &OpenAIForwardResult{Usage: OpenAIUsage{InputTokens: -1, OutputTokens: 1}}},
+		{name: "negative image cache with positive output", result: &OpenAIForwardResult{Usage: OpenAIUsage{ImageCacheReadTokens: -1, OutputTokens: 1}}},
 		{name: "negative media count with positive tokens", result: &OpenAIForwardResult{Usage: OpenAIUsage{InputTokens: 1}, ImageCount: -1}},
 		{name: "zero audio units", result: &OpenAIForwardResult{AudioUsage: &AudioUsage{Mode: "tts"}}},
 		{name: "negative audio units", result: &OpenAIForwardResult{AudioUsage: &AudioUsage{Mode: "stt", DurationOrUnits: -1}}},
 		{name: "nan audio units", result: &OpenAIForwardResult{AudioUsage: &AudioUsage{Mode: "tts", DurationOrUnits: math.NaN()}}},
 		{name: "infinite audio units", result: &OpenAIForwardResult{AudioUsage: &AudioUsage{Mode: "tts", DurationOrUnits: math.Inf(1)}}},
 		{name: "positive tokens", result: &OpenAIForwardResult{Usage: OpenAIUsage{OutputTokens: 1}}, known: true},
+		{name: "positive image cache tokens", result: &OpenAIForwardResult{Usage: OpenAIUsage{ImageCacheReadTokens: 1}}, known: true},
 		{name: "positive media count", result: &OpenAIForwardResult{ImageCount: 1}, known: true},
 		{name: "positive audio units", result: &OpenAIForwardResult{AudioUsage: &AudioUsage{Mode: "realtime", DurationOrUnits: 0.25}}, known: true},
 	}
@@ -171,6 +173,72 @@ func TestOpenAIForwardResultHasKnownBillableUsageRejectsMalformedUnits(t *testin
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			require.Equal(t, tt.known, openAIForwardResultHasKnownBillableUsage(tt.result))
+		})
+	}
+}
+
+func TestOpenAIGatewayServiceRecordUsage_CarpoolImageCacheUsage(t *testing.T) {
+	for _, malformed := range []bool{false, true} {
+		name := "known usage preserves discounted cost in durable settlement"
+		if malformed {
+			name = "negative image cache cannot persist or debit"
+		}
+		t.Run(name, func(t *testing.T) {
+			usageRepo := &openAIRecordUsageLogRepoStub{inserted: true}
+			billingRepo := &openAIRecordUsageBillingRepoStub{}
+			userRepo := &openAIRecordUsageUserRepoStub{}
+			svc := newOpenAIRecordUsageServiceWithBillingRepoForTest(usageRepo, billingRepo, userRepo, &openAIRecordUsageSubRepoStub{}, nil)
+			svc.billingService = NewBillingService(svc.cfg, &PricingService{pricingData: map[string]*LiteLLMModelPricing{
+				"gpt-image-2.5-flare": {
+					InputCostPerToken: 5e-6, InputCostPerImageToken: 8e-6,
+					CacheReadInputTokenCost: 1.25e-6, CacheReadInputImageTokenCost: 2e-6,
+					OutputCostPerImageToken: 30e-6,
+				},
+			}})
+			carpoolBilling := &openAIRecordUsageCarpoolBillingStub{}
+			svc.billingCacheService.SetCarpoolGatewayBilling(carpoolBilling)
+			snapshot := &domain.CarpoolBillingSnapshot{
+				BillingRequestID: 15, RequestID: "carpool:image-cache", UserID: 1, APIKeyID: 2,
+				GroupID: 33, TermID: 4, CycleID: 5, AdmittedAt: time.Now().UTC(),
+			}
+			groupID := snapshot.GroupID
+			usage, ok := codexDirectImagesUsage([]byte(`{"usage":{"input_tokens":100,"input_tokens_details":{"text_tokens":20,"image_tokens":80,"cached_tokens":50,"cached_tokens_details":{"text_tokens":10,"image_tokens":40}},"output_tokens":200}}`))
+			require.True(t, ok)
+			if malformed {
+				usage.ImageCacheReadTokens = -1
+			}
+			err := svc.RecordUsage(ContextWithCarpoolBillingSnapshot(context.Background(), snapshot), &OpenAIRecordUsageInput{
+				Result: &OpenAIForwardResult{RequestID: "upstream-image-cache", Model: "gpt-image-2.5-flare", Usage: usage},
+				APIKey: &APIKey{ID: snapshot.APIKeyID, UserID: snapshot.UserID, GroupID: &groupID, Group: &Group{
+					ID: groupID, Platform: PlatformOpenAI, SubscriptionType: SubscriptionTypeCarpool, RateMultiplier: 0.8,
+				}},
+				User: &User{ID: snapshot.UserID}, Account: &Account{ID: 6, Type: AccountTypeAPIKey},
+			})
+			if malformed {
+				require.ErrorIs(t, err, ErrCarpoolUsageUnknown)
+				require.Nil(t, carpoolBilling.persistedSnapshot)
+				require.Empty(t, carpoolBilling.persistedPayload)
+				require.Zero(t, billingRepo.calls)
+				require.Zero(t, usageRepo.calls)
+			} else {
+				require.NoError(t, err)
+				expectedCost := decimal.RequireFromString("0.00517000")
+				require.Equal(t, snapshot, carpoolBilling.persistedSnapshot)
+				require.True(t, expectedCost.Equal(carpoolBilling.persistedCost))
+				receipt, decodeErr := DecodeCarpoolUsageBillingReceipt(carpoolBilling.persistedPayload)
+				require.NoError(t, decodeErr)
+				require.Equal(t, snapshot, receipt.CarpoolSnapshot)
+				require.True(t, expectedCost.Equal(receipt.CarpoolCost))
+				require.Equal(t, 1, billingRepo.calls)
+				require.True(t, expectedCost.Equal(billingRepo.lastCmd.CarpoolCost))
+				require.Zero(t, billingRepo.lastCmd.BalanceCost)
+				require.Zero(t, billingRepo.lastCmd.SubscriptionCost)
+				require.Equal(t, 1, usageRepo.calls)
+				require.Equal(t, 40, usageRepo.lastLog.ImageSizeBreakdown["image_cache_read_tokens"])
+				require.InDelta(t, 10*1.25e-6+40*2e-6, usageRepo.lastLog.CacheReadCost, 1e-12)
+				require.InDelta(t, 0.00517, usageRepo.lastLog.ActualCost, 1e-12)
+			}
+			require.Zero(t, userRepo.deductCalls, "carpool usage must never fall back to ordinary balance")
 		})
 	}
 }
