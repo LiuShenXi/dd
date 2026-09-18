@@ -1,0 +1,1345 @@
+diff --git a/backend/internal/handler/openai_codex_sentinel_handler.go b/backend/internal/handler/openai_codex_sentinel_handler.go
+new file mode 100644
+index 000000000..5cd31b238
+--- /dev/null
++++ b/backend/internal/handler/openai_codex_sentinel_handler.go
+@@ -0,0 +1,10 @@
++package handler
++
++import "github.com/gin-gonic/gin"
++
++func (h *OpenAIGatewayHandler) CodexSentinelStatus(c *gin.Context) {
++	h.gatewayService.CodexSentinelStatus(c)
++}
++func (h *OpenAIGatewayHandler) CodexSentinelRefresh(c *gin.Context) {
++	h.gatewayService.CodexSentinelRefresh(c)
++}
+diff --git a/backend/internal/server/routes/gateway.go b/backend/internal/server/routes/gateway.go
+index bd6e5e7eb..4c9314745 100644
+--- a/backend/internal/server/routes/gateway.go
++++ b/backend/internal/server/routes/gateway.go
+@@ -29,6 +29,8 @@ func RegisterGatewayRoutes(
+ 	compositeResolver *service.CompositeRouteResolver,
+ 	cfg *config.Config,
+ ) {
++	r.GET("/internal/codex-sentinel/status", h.OpenAIGateway.CodexSentinelStatus)
++	r.POST("/internal/codex-sentinel/refresh", h.OpenAIGateway.CodexSentinelRefresh)
+ 	bodyLimit := middleware.RequestBodyLimit(cfg.Gateway.MaxBodySize)
+ 	textBodyLimit := middleware.RequestBodyLimit(cfg.Gateway.TextMaxBodySize)
+ 	clientRequestID := middleware.ClientRequestID()
+diff --git a/backend/internal/service/openai_codex_sentinel.go b/backend/internal/service/openai_codex_sentinel.go
+new file mode 100644
+index 000000000..3ece78e53
+--- /dev/null
++++ b/backend/internal/service/openai_codex_sentinel.go
+@@ -0,0 +1,496 @@
++package service
++
++import (
++	"context"
++	"crypto/rand"
++	"crypto/sha256"
++	"crypto/subtle"
++	"encoding/hex"
++	"encoding/json"
++	"errors"
++	"io"
++	"net/http"
++	"os"
++	"runtime"
++	"strconv"
++	"strings"
++	"sync"
++	"sync/atomic"
++	"time"
++
++	"github.com/gin-gonic/gin"
++)
++
++const codexSentinelCapacity = 1024
++const codexSentinelCooldown = 30 * time.Second
++
++type codexSentinelEvent struct {
++	Seq                   uint64    `json:"seq"`
++	AccountID             int64     `json:"account_id"`
++	Model                 string    `json:"model"`
++	Kind                  string    `json:"kind"`
++	ExpectedTicketVersion string    `json:"expected_ticket_version"`
++	ActualModel           string    `json:"actual_model,omitempty"`
++	ObservedAt            time.Time `json:"observed_at"`
++	sentAt                time.Time
++}
++type codexSentinelTarget struct {
++	AccountID        int64      `json:"account_id"`
++	Model            string     `json:"model"`
++	Eligible         bool       `json:"eligible"`
++	Ready            bool       `json:"ready"`
++	TicketVersion    string     `json:"ticket_version"`
++	ExpiresAt        *time.Time `json:"expires_at,omitempty"`
++	CapturedAt       *time.Time `json:"captured_at,omitempty"`
++	RemainingSeconds int64      `json:"remaining_seconds"`
++}
++type codexSentinel struct {
++	tokenHash   [32]byte
++	instance    string
++	accounts    []int64
++	models      []string
++	allowed     map[string]bool
++	enabled     atomic.Bool
++	mu          sync.Mutex
++	events      [codexSentinelCapacity]codexSentinelEvent
++	seq         uint64
++	nextAttempt map[string]time.Time
++}
++
++// Configuration is read once. Any missing or malformed input fails closed.
++func newCodexSentinelFromEnv() *codexSentinel {
++	path := strings.TrimSpace(os.Getenv("CODEX_SENTINEL_TOKEN_FILE"))
++	if path == "" {
++		return nil
++	}
++	file, err := os.Open(path) // #nosec G703 -- Path is a trusted administrator environment setting, never request input; file type, permissions and bounded size are checked below.
++	if err != nil {
++		return nil
++	}
++	defer func() { _ = file.Close() }()
++	info, err := file.Stat()
++	if err != nil || !info.Mode().IsRegular() || info.Size() > 4096 || (runtime.GOOS != "windows" && info.Mode().Perm()&0077 != 0) {
++		return nil
++	}
++	raw, err := io.ReadAll(io.LimitReader(file, 4097))
++	if err != nil || len(raw) > 4096 {
++		return nil
++	}
++	token := strings.TrimSpace(string(raw))
++	// 32 random bytes encoded as hex/base64 are the supported deployment format.
++	if len(token) < 43 || len(token) > 256 || strings.ContainsAny(token, " \t\r\n") {
++		return nil
++	}
++	s := &codexSentinel{tokenHash: sha256.Sum256([]byte(token)), allowed: make(map[string]bool), nextAttempt: make(map[string]time.Time)}
++	ids := strings.Split(os.Getenv("CODEX_SENTINEL_ACCOUNT_IDS"), ",")
++	models := strings.Split(os.Getenv("CODEX_SENTINEL_MODELS"), ",")
++	if len(ids) > 32 || len(models) > 8 {
++		return nil
++	}
++	seen := make(map[int64]bool)
++	for _, raw := range ids {
++		id, err := strconv.ParseInt(strings.TrimSpace(raw), 10, 64)
++		if err != nil || id <= 0 {
++			return nil
++		}
++		if !seen[id] {
++			s.accounts = append(s.accounts, id)
++			seen[id] = true
++		}
++	}
++	seenModels := make(map[string]bool)
++	for _, raw := range models {
++		model := normalizeOpenAICodexTicketModel(raw)
++		if model == "" || len(model) > 200 {
++			return nil
++		}
++		for _, c := range model {
++			if (c < 'a' || c > 'z') && (c < '0' || c > '9') && c != '-' && c != '.' && c != '_' {
++				return nil
++			}
++		}
++		if !seenModels[model] {
++			s.models = append(s.models, model)
++			seenModels[model] = true
++		}
++	}
++	for _, id := range s.accounts {
++		for _, model := range s.models {
++			s.allowed[openAICodexTicketKey(id, model)] = true
++		}
++	}
++	nonce := make([]byte, 16)
++	if _, err = rand.Read(nonce); err != nil {
++		return nil
++	}
++	s.instance = hex.EncodeToString(nonce)
++	return s
++}
++
++func (s *OpenAIGatewayService) codexSentinelAuthorize(c *gin.Context) *codexSentinel {
++	if s == nil || s.codexSentinel == nil {
++		c.AbortWithStatus(http.StatusNotFound)
++		return nil
++	}
++	auth := c.GetHeader("Authorization")
++	if !strings.HasPrefix(auth, "Bearer ") || len(auth) > 263 {
++		c.AbortWithStatus(http.StatusUnauthorized)
++		return nil
++	}
++	digest := sha256.Sum256([]byte(strings.TrimPrefix(auth, "Bearer ")))
++	if subtle.ConstantTimeCompare(digest[:], s.codexSentinel.tokenHash[:]) != 1 {
++		c.AbortWithStatus(http.StatusUnauthorized)
++		return nil
++	}
++	c.Header("Cache-Control", "no-store")
++	return s.codexSentinel
++}
++
++func codexTicketVersion(ticket *openAICodexTicket) string {
++	if ticket == nil {
++		return ""
++	}
++	digest := sha256.Sum256([]byte(ticket.State))
++	return hex.EncodeToString(digest[:])
++}
++func (s *OpenAIGatewayService) sentinelEligible(ctx context.Context, a *Account, model string) bool {
++	return a != nil && s.codexSentinel.allowed[openAICodexTicketKey(a.ID, model)] && isOpenAICodexTicketAccount(a) && a.IsSchedulable() && s.openAICodexTicketGatedModel(model) && s.openAICodexTicketHarvestProxyURLContext(ctx) != ""
++}
++func (s *OpenAIGatewayService) sentinelVersion(a *Account, model string) string {
++	ticket := s.lookupOpenAICodexTicket(a, model)
++	if !ticket.valid(time.Now(), s.openAICodexTicketConfig().TargetLength) {
++		return ""
++	}
++	return codexTicketVersion(ticket)
++}
++
++func (s *OpenAIGatewayService) CodexSentinelStatus(c *gin.Context) {
++	sentinel := s.codexSentinelAuthorize(c)
++	if sentinel == nil {
++		return
++	}
++	after := uint64(0)
++	if raw := c.Query("after"); raw != "" {
++		var err error
++		after, err = strconv.ParseUint(raw, 10, 64)
++		if err != nil {
++			c.AbortWithStatus(400)
++			return
++		}
++	}
++	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
++	defer cancel()
++	enabled := s.openAICodexTicketEnabledContext(ctx)
++	sentinel.enabled.Store(enabled)
++	events, latest, oldest := sentinel.snapshot(after)
++	targets := make([]codexSentinelTarget, 0, len(sentinel.allowed))
++	for _, id := range sentinel.accounts {
++		var account *Account
++		if s.accountRepo != nil {
++			account, _ = s.accountRepo.GetByID(ctx, id)
++		}
++		for _, model := range sentinel.models {
++			t := codexSentinelTarget{AccountID: id, Model: model, Eligible: s.sentinelEligible(ctx, account, model)}
++			if enabled && t.Eligible {
++				ticket := s.lookupOpenAICodexTicket(account, model)
++				if ticket.valid(time.Now(), s.openAICodexTicketConfig().TargetLength) {
++					t.Ready = true
++					t.TicketVersion = codexTicketVersion(ticket)
++					t.ExpiresAt = &ticket.ExpiresAt
++					t.CapturedAt = &ticket.CapturedAt
++					t.RemainingSeconds = int64(time.Until(ticket.ExpiresAt).Seconds())
++				}
++			}
++			targets = append(targets, t)
++		}
++	}
++	dropped := uint64(0)
++	if oldest > after && oldest-after > 1 {
++		dropped = oldest - after - 1
++	}
++	c.JSON(200, gin.H{"protocol_version": 1, "instance_id": sentinel.instance, "enabled": enabled, "latest_seq": latest, "oldest_seq": oldest, "events": events, "targets": targets, "dropped_events": dropped})
++}
++func (s *codexSentinel) snapshot(after uint64) ([]codexSentinelEvent, uint64, uint64) {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	oldest := uint64(1)
++	if s.seq >= codexSentinelCapacity {
++		oldest = s.seq - codexSentinelCapacity + 1
++	}
++	if s.seq == 0 {
++		oldest = 1
++	}
++	events := make([]codexSentinelEvent, 0)
++	start := oldest
++	if after >= start {
++		if after >= s.seq {
++			return events, s.seq, oldest
++		}
++		start = after + 1
++	}
++	for i := start; i <= s.seq; i++ {
++		events = append(events, s.events[(i-1)%codexSentinelCapacity])
++	}
++	return events, s.seq, oldest
++}
++
++// Observations retain only a ticket digest and routing metadata, never the blob.
++// The timestamp belongs to the outbound attempt, so a late completion cannot
++// refresh a ticket that has already been recaptured (even if its blob is equal).
++type codexSentinelObservation struct {
++	sentinel       *codexSentinel
++	accountID      int64
++	model, version string
++	sentAt         time.Time
++}
++
++func (s *OpenAIGatewayService) sentinelObservation(account *Account, model string, h http.Header) *codexSentinelObservation {
++	sentinel := s.codexSentinel
++	model = normalizeOpenAICodexTicketModel(model)
++	if sentinel == nil || account == nil || !sentinel.enabled.Load() || !sentinel.allowed[openAICodexTicketKey(account.ID, model)] {
++		return nil
++	}
++	state := strings.TrimSpace(h.Get(openAICodexTurnStateHeader))
++	if len(state) != 292 || !strings.HasPrefix(state, openAICodexTicketStatePrefix) {
++		return nil
++	}
++	digest := sha256.Sum256([]byte(state))
++	return &codexSentinelObservation{sentinel: sentinel, accountID: account.ID, model: model, version: hex.EncodeToString(digest[:]), sentAt: time.Now()}
++}
++func (o *codexSentinelObservation) forModel(model string) *codexSentinelObservation {
++	if o == nil {
++		return nil
++	}
++	copy := *o
++	copy.model = normalizeOpenAICodexTicketModel(model)
++	// Keep the physical handshake timestamp for reused WS connections.
++	return &copy
++}
++func (o *codexSentinelObservation) emit(kind, actual string) {
++	if o == nil || !o.sentinel.enabled.Load() || !o.sentinel.allowed[openAICodexTicketKey(o.accountID, o.model)] {
++		return
++	}
++	s := o.sentinel
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	s.seq++
++	s.events[(s.seq-1)%codexSentinelCapacity] = codexSentinelEvent{Seq: s.seq, AccountID: o.accountID, Model: o.model, Kind: kind, ExpectedTicketVersion: o.version, ActualModel: normalizeObservedUpstreamResponseModel(actual), ObservedAt: time.Now().UTC(), sentAt: o.sentAt}
++}
++func (o *codexSentinelObservation) completed(actual string) {
++	if o != nil && actual != "" && !strings.EqualFold(o.model, strings.TrimSpace(actual)) {
++		o.emit("model_mismatch", actual)
++	}
++}
++func (o *codexSentinelObservation) header(h http.Header) {
++	if o != nil && len(strings.TrimSpace(h.Get(openAICodexTurnStateHeader))) == 312 {
++		o.emit("turn_state_312", "")
++	}
++}
++
++type codexSentinelObservationKey struct{}
++
++func (s *OpenAIGatewayService) bindSentinelRequest(c *gin.Context, req *http.Request, account *Account, model string) *http.Request {
++	observation := s.sentinelObservation(account, model, req.Header)
++	if c != nil {
++		observer := upstreamResponseModelObserverFromContext(c)
++		if observer == nil {
++			observer = beginUpstreamResponseModelObservation(c)
++		}
++		observer.codexSentinel = observation
++	}
++	return req.WithContext(context.WithValue(req.Context(), codexSentinelObservationKey{}, observation))
++}
++func sentinelRequestObservation(req *http.Request) *codexSentinelObservation {
++	if req == nil {
++		return nil
++	}
++	o, _ := req.Context().Value(codexSentinelObservationKey{}).(*codexSentinelObservation)
++	return o
++}
++func (s *OpenAIGatewayService) sentinelHandshake(account *Account, model string) func(http.Header) *codexSentinelObservation {
++	return func(request http.Header) *codexSentinelObservation {
++		return s.sentinelObservation(account, model, request)
++	}
++}
++
++type codexSentinelRefreshRequest struct {
++	AccountID       int64  `json:"account_id"`
++	Model           string `json:"model"`
++	Reason          string `json:"reason"`
++	ExpectedVersion string `json:"expected_ticket_version"`
++	EventID         string `json:"event_id"`
++}
++
++func (s *OpenAIGatewayService) CodexSentinelRefresh(c *gin.Context) {
++	sentinel := s.codexSentinelAuthorize(c)
++	if sentinel == nil {
++		return
++	}
++	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 8192)
++	decoder := json.NewDecoder(c.Request.Body)
++	decoder.DisallowUnknownFields()
++	var in codexSentinelRefreshRequest
++	if decoder.Decode(&in) != nil || decoder.Decode(new(any)) != io.EOF || len(in.ExpectedVersion) > 64 || len(in.EventID) > 100 {
++		c.AbortWithStatus(400)
++		return
++	}
++	if in.Model != normalizeOpenAICodexTicketModel(in.Model) {
++		c.AbortWithStatus(400)
++		return
++	}
++	switch in.Reason {
++	case "turn_state_312", "model_mismatch", "expiry", "missing":
++	default:
++		c.AbortWithStatus(400)
++		return
++	}
++	reply := func(code int, status, reason string, retry int, version string) {
++		body := gin.H{"status": status, "account_id": in.AccountID, "model": in.Model}
++		if reason != "" {
++			body["reason"] = reason
++		}
++		if retry > 0 {
++			body["retry_after_seconds"] = retry
++		}
++		if version != "" {
++			body["ticket_version"] = version
++		}
++		if status == "refreshed" {
++			body["persisted"] = true
++			body["ready"] = true
++		}
++		c.JSON(code, body)
++	}
++	ctx, cancel := context.WithTimeout(c.Request.Context(), 25*time.Second)
++	defer cancel()
++	enabled := s.openAICodexTicketEnabledContext(ctx)
++	sentinel.enabled.Store(enabled)
++	if !enabled {
++		reply(200, "disabled", "", 0, "")
++		return
++	}
++	key := openAICodexTicketKey(in.AccountID, in.Model)
++	if !sentinel.allowed[key] || s.accountRepo == nil {
++		reply(200, "ineligible", "", 0, "")
++		return
++	}
++	account, err := s.accountRepo.GetByID(ctx, in.AccountID)
++	if err != nil || !s.sentinelEligible(ctx, account, in.Model) {
++		reply(200, "ineligible", "", 0, "")
++		return
++	}
++	if s.sentinelVersion(account, in.Model) != in.ExpectedVersion {
++		reply(200, "stale", "", 0, "")
++		return
++	}
++	expectedCaptured := time.Time{}
++	if current := s.lookupOpenAICodexTicket(account, in.Model); current != nil {
++		expectedCaptured = current.CapturedAt
++	}
++	sentinel.mu.Lock()
++	// Anomaly requests must reference an event from this process, not a made-up
++	// timestamp. Expired ring entries are safely stale and never trigger a probe.
++	stale := false
++	if in.Reason == "turn_state_312" || in.Reason == "model_mismatch" {
++		prefix := sentinel.instance + ":"
++		seq, parseErr := strconv.ParseUint(strings.TrimPrefix(in.EventID, prefix), 10, 64)
++		if !strings.HasPrefix(in.EventID, prefix) || parseErr != nil || seq == 0 || seq > sentinel.seq || sentinel.seq-seq >= codexSentinelCapacity {
++			stale = true
++		} else {
++			event := sentinel.events[(seq-1)%codexSentinelCapacity]
++			ticket := s.lookupOpenAICodexTicket(account, in.Model)
++			stale = event.AccountID != in.AccountID || event.Model != in.Model || event.Kind != in.Reason || event.ExpectedTicketVersion != in.ExpectedVersion || ticket != nil && ticket.CapturedAt.After(event.sentAt)
++		}
++	}
++	if stale {
++		sentinel.mu.Unlock()
++		reply(200, "stale", "", 0, "")
++		return
++	}
++	now := time.Now()
++	next := sentinel.nextAttempt[key]
++	if now.Before(next) {
++		retry := int(time.Until(next).Seconds()) + 1
++		sentinel.mu.Unlock()
++		reply(429, "cooldown", "", retry, "")
++		return
++	}
++	sentinel.nextAttempt[key] = now.Add(codexSentinelCooldown)
++	sentinel.mu.Unlock()
++	ticket, err := s.collectOpenAICodexTicket(ctx, account, in.Model, func() error {
++		// Recheck inside singleflight immediately before collection: a native
++		// harvester may have won between the HTTP validation and acquiring this key.
++		latest, readErr := s.accountRepo.GetByID(ctx, in.AccountID)
++		if readErr != nil {
++			return errCodexTicketCollection
++		}
++		if !s.sentinelEligible(ctx, latest, in.Model) {
++			return errCodexTicketStale
++		}
++		current := s.lookupOpenAICodexTicket(latest, in.Model)
++		if s.sentinelVersion(latest, in.Model) != in.ExpectedVersion || current != nil && current.CapturedAt.After(expectedCaptured) {
++			return errCodexTicketStale
++		}
++		return nil
++	})
++	if errors.Is(err, errCodexTicketStale) {
++		reply(200, "stale", "", 0, "")
++		return
++	}
++	if err != nil || ticket == nil {
++		reply(503, "failed", "collection_failed", 30, "")
++		return
++	}
++	if !s.openAICodexTicketEnabledContext(ctx) {
++		sentinel.enabled.Store(false)
++		reply(200, "disabled", "", 0, "")
++		return
++	}
++	version := codexTicketVersion(ticket)
++	if version == in.ExpectedVersion {
++		reply(503, "failed", "unchanged", 30, "")
++		return
++	}
++	persisted, err := s.accountRepo.GetByID(ctx, in.AccountID)
++	if err != nil || codexTicketVersion(parseOpenAICodexTicketExtra(persisted, in.Model)) != version {
++		reply(503, "failed", "persistence_unverified", 30, "")
++		return
++	}
++	if s.schedulerSnapshot == nil || s.schedulerSnapshot.cache == nil {
++		reply(503, "failed", "cache_unavailable", 30, "")
++		return
++	}
++	if err = s.schedulerSnapshot.UpdateAccountInCache(ctx, persisted); err != nil {
++		reply(503, "failed", "cache_update_failed", 30, "")
++		return
++	}
++	cached, err := s.schedulerSnapshot.cache.GetAccount(ctx, in.AccountID)
++	if err != nil || cached == nil || codexTicketVersion(parseOpenAICodexTicketExtra(cached, in.Model)) != version {
++		reply(503, "failed", "cache_unverified", 30, "")
++		return
++	}
++	if !ticket.valid(time.Now(), s.openAICodexTicketConfig().TargetLength) {
++		reply(503, "failed", "expired", 30, "")
++		return
++	}
++	reply(200, "refreshed", "", 0, version)
++}
++
++func parseOpenAICodexTicketExtra(account *Account, model string) *openAICodexTicket {
++	if account == nil {
++		return nil
++	}
++	return parseOpenAICodexTicketFromAny(account.ID, model, account.Extra[openAICodexTicketExtraKey(model)])
++}
++
++var errCodexTicketCollection = errors.New("codex ticket collection failed")
++var errCodexTicketStale = errors.New("codex ticket version changed")
++
++func (s *OpenAIGatewayService) codexSentinelWSHeadersFactory(account *Account, model string) func(context.Context, http.Header) (http.Header, error) {
++	return func(ctx context.Context, headers http.Header) (http.Header, error) {
++		if err := s.applyOpenAICodexTicket(ctx, account, model, headers); err != nil {
++			return nil, err
++		}
++		return s.refreshOpenAIAgentIdentityHeaders(ctx, account, headers)
++	}
++}
+diff --git a/backend/internal/service/openai_codex_sentinel_test.go b/backend/internal/service/openai_codex_sentinel_test.go
+new file mode 100644
+index 000000000..bdcea29fa
+--- /dev/null
++++ b/backend/internal/service/openai_codex_sentinel_test.go
+@@ -0,0 +1,384 @@
++package service
++
++import (
++	"context"
++	"crypto/sha256"
++	"encoding/json"
++	"errors"
++	"io"
++	"net/http"
++	"net/http/httptest"
++	"os"
++	"path/filepath"
++	"strings"
++	"sync"
++	"sync/atomic"
++	"testing"
++	"time"
++
++	"github.com/Wei-Shaw/sub2api/internal/config"
++	"github.com/gin-gonic/gin"
++	"github.com/stretchr/testify/require"
++)
++
++const sentinelTestToken = "test-only-not-a-secret-0123456789abcdef0123456789abcdef"
++
++type sentinelTestRepo struct {
++	AccountRepository
++	mu         sync.Mutex
++	account    *Account
++	persistErr error
++	ignoreSave bool
++	writes     int
++}
++
++func (r *sentinelTestRepo) GetByID(context.Context, int64) (*Account, error) {
++	r.mu.Lock()
++	defer r.mu.Unlock()
++	a := *r.account
++	a.Extra = make(map[string]any)
++	for k, v := range r.account.Extra {
++		a.Extra[k] = v
++	}
++	return &a, nil
++}
++func (r *sentinelTestRepo) UpdateExtra(_ context.Context, _ int64, extra map[string]any) error {
++	r.mu.Lock()
++	defer r.mu.Unlock()
++	r.writes++
++	if r.persistErr != nil {
++		return r.persistErr
++	}
++	if !r.ignoreSave {
++		for k, v := range extra {
++			r.account.Extra[k] = v
++		}
++	}
++	return nil
++}
++
++type sentinelTestCache struct {
++	SchedulerCache
++	account *Account
++	err     error
++}
++
++func (r *sentinelTestCache) SetAccount(_ context.Context, a *Account) error {
++	if r.err != nil {
++		return r.err
++	}
++	r.account = a
++	return nil
++}
++func (r *sentinelTestCache) GetAccount(context.Context, int64) (*Account, error) {
++	return r.account, r.err
++}
++
++func sentinelFixture(t *testing.T) (*OpenAIGatewayService, *sentinelTestRepo, *httpUpstreamRecorder) {
++	t.Helper()
++	gin.SetMode(gin.TestMode)
++	upstream := &httpUpstreamRecorder{resp: &http.Response{StatusCode: 200, Header: http.Header{http.CanonicalHeaderKey(openAICodexTurnStateHeader): {fakeCodexTicketState(292)}}, Body: io.NopCloser(strings.NewReader(""))}}
++	svc := ticketTestService(t, config.OpenAICodexTicketConfig{Enabled: true, HarvestProxyURL: "http://harvest.invalid", FailClosed: true}, upstream)
++	account := ticketTestAccount(2)
++	account.Status = StatusActive
++	account.Schedulable = true
++	account.Extra = map[string]any{}
++	repo := &sentinelTestRepo{account: account}
++	svc.accountRepo = repo
++	sentinel := &codexSentinel{instance: "test-instance", tokenHash: sha256.Sum256([]byte(sentinelTestToken)), accounts: []int64{2}, models: []string{"gpt-6-astra"}, allowed: map[string]bool{openAICodexTicketKey(2, "gpt-6-astra"): true}, nextAttempt: make(map[string]time.Time)}
++	sentinel.enabled.Store(true)
++	svc.codexSentinel = sentinel
++	svc.schedulerSnapshot = &SchedulerSnapshotService{cache: &sentinelTestCache{}}
++	return svc, repo, upstream
++}
++func sentinelRequest(t *testing.T, svc *OpenAIGatewayService, method, body, token string) (int, map[string]any, string) {
++	t.Helper()
++	w := httptest.NewRecorder()
++	c, _ := gin.CreateTestContext(w)
++	c.Request = httptest.NewRequest(method, "/internal/codex-sentinel/status?after=0", strings.NewReader(body))
++	if token != "" {
++		c.Request.Header.Set("Authorization", "Bearer "+token)
++	}
++	if method == "GET" {
++		svc.CodexSentinelStatus(c)
++	} else {
++		svc.CodexSentinelRefresh(c)
++	}
++	result := map[string]any{}
++	if w.Body.Len() > 0 {
++		require.NoError(t, json.Unmarshal(w.Body.Bytes(), &result))
++	}
++	return w.Code, result, w.Body.String()
++}
++func sentinelRefreshBody(version, reason, eventID string) string {
++	raw, _ := json.Marshal(codexSentinelRefreshRequest{AccountID: 2, Model: "gpt-6-astra", ExpectedVersion: version, Reason: reason, EventID: eventID})
++	return string(raw)
++}
++func TestCodexSentinelAuthAndBoundedBody(t *testing.T) {
++	svc, _, upstream := sentinelFixture(t)
++	for _, token := range []string{"", "wrong-token"} {
++		code, _, _ := sentinelRequest(t, svc, "GET", "", token)
++		require.Equal(t, 401, code)
++	}
++	code, _, _ := sentinelRequest(t, svc, "POST", strings.Repeat("x", 8193), sentinelTestToken)
++	require.Equal(t, 400, code)
++	svc.codexSentinel = nil
++	code, _, _ = sentinelRequest(t, svc, "GET", "", sentinelTestToken)
++	require.Equal(t, 404, code)
++	require.Empty(t, upstream.requests)
++}
++func TestCodexSentinelConfigurationFailsClosed(t *testing.T) {
++	t.Setenv("CODEX_SENTINEL_TOKEN_FILE", "")
++	require.Nil(t, newCodexSentinelFromEnv())
++	path := filepath.Join(t.TempDir(), "token")
++	require.NoError(t, os.WriteFile(path, []byte(sentinelTestToken), 0600))
++	t.Setenv("CODEX_SENTINEL_TOKEN_FILE", path)
++	t.Setenv("CODEX_SENTINEL_ACCOUNT_IDS", "2")
++	t.Setenv("CODEX_SENTINEL_MODELS", "gpt-6-astra,gpt-5.6-sol")
++	require.NotNil(t, newCodexSentinelFromEnv())
++	t.Setenv("CODEX_SENTINEL_ACCOUNT_IDS", "0")
++	require.Nil(t, newCodexSentinelFromEnv())
++	t.Setenv("CODEX_SENTINEL_ACCOUNT_IDS", "2")
++	require.NoError(t, os.WriteFile(path, []byte("weak"), 0600))
++	require.Nil(t, newCodexSentinelFromEnv())
++}
++func TestCodexSentinelOnlyOriginalCompletedModelTriggers(t *testing.T) {
++	svc, repo, _ := sentinelFixture(t)
++	h := http.Header{}
++	h.Set(openAICodexTurnStateHeader, fakeCodexTicketState(292))
++	o := svc.sentinelObservation(repo.account, "gpt-6-astra", h)
++	observer := &upstreamResponseModelObserver{codexSentinel: o}
++	payload := []byte(`{"response":{"model":"gpt-5.6-luna"}}`)
++	observer.ObserveOpenAI(payload, "response.created")
++	observer.ObserveOpenAI(payload, "response.failed")
++	observer.ObserveOpenAI(payload, "response.incomplete")
++	events, _, _ := svc.codexSentinel.snapshot(0)
++	require.Empty(t, events)
++	observer.ObserveOpenAI(payload, "response.completed")
++	events, _, _ = svc.codexSentinel.snapshot(0)
++	require.Len(t, events, 1)
++	require.Equal(t, "gpt-5.6-luna", events[0].ActualModel)
++	require.Equal(t, o.version, events[0].ExpectedTicketVersion)
++	h.Set(openAICodexTurnStateHeader, fakeCodexTicketState(312))
++	o.header(h)
++	events, _, _ = svc.codexSentinel.snapshot(0)
++	require.Len(t, events, 2)
++	require.Equal(t, "turn_state_312", events[1].Kind)
++	svc.codexSentinel.enabled.Store(false)
++	o.completed("gpt-5.6-sol")
++	events, _, _ = svc.codexSentinel.snapshot(0)
++	require.Len(t, events, 2)
++}
++func TestCodexSentinelRingBoundAndCursor(t *testing.T) {
++	svc, repo, _ := sentinelFixture(t)
++	h := http.Header{}
++	h.Set(openAICodexTurnStateHeader, fakeCodexTicketState(292))
++	o := svc.sentinelObservation(repo.account, "gpt-6-astra", h)
++	for i := 0; i < codexSentinelCapacity+8; i++ {
++		o.completed("gpt-5.6-luna")
++	}
++	events, latest, oldest := svc.codexSentinel.snapshot(0)
++	require.Len(t, events, 1024)
++	require.Equal(t, uint64(1032), latest)
++	require.Equal(t, uint64(9), oldest)
++	events, _, _ = svc.codexSentinel.snapshot(1031)
++	require.Len(t, events, 1)
++	events, _, _ = svc.codexSentinel.snapshot(^uint64(0))
++	require.Empty(t, events)
++}
++func TestCodexSentinelRefreshPersistenceCacheAndRedaction(t *testing.T) {
++	svc, repo, upstream := sentinelFixture(t)
++	code, result, raw := sentinelRequest(t, svc, "POST", sentinelRefreshBody("", "missing", ""), sentinelTestToken)
++	require.Equal(t, 200, code)
++	require.Equal(t, "refreshed", result["status"])
++	require.Equal(t, true, result["persisted"])
++	require.Equal(t, 1, repo.writes)
++	require.Len(t, upstream.requests, 1)
++	require.NotContains(t, raw, fakeCodexTicketState(292))
++	require.NotContains(t, raw, "access_token")
++	code, status, raw := sentinelRequest(t, svc, "GET", "", sentinelTestToken)
++	require.Equal(t, 200, code)
++	require.Equal(t, true, status["enabled"])
++	require.NotContains(t, raw, fakeCodexTicketState(292))
++	require.NotContains(t, raw, sentinelTestToken)
++	code, result, _ = sentinelRequest(t, svc, "POST", sentinelRefreshBody("", "missing", ""), sentinelTestToken)
++	require.Equal(t, 200, code)
++	require.Equal(t, "stale", result["status"])
++	require.Len(t, upstream.requests, 1)
++	version := svc.sentinelVersion(repo.account, "gpt-6-astra")
++	code, result, _ = sentinelRequest(t, svc, "POST", sentinelRefreshBody(version, "expiry", ""), sentinelTestToken)
++	require.Equal(t, 429, code)
++	require.Equal(t, "cooldown", result["status"])
++	require.Len(t, upstream.requests, 1)
++}
++func TestCodexSentinelFailurePreservesOldTicket(t *testing.T) {
++	for _, failure := range []string{"upstream", "persist", "unchanged", "unverified", "cache"} {
++		t.Run(failure, func(t *testing.T) {
++			svc, repo, upstream := sentinelFixture(t)
++			old := &openAICodexTicket{State: openAICodexTicketStatePrefix + strings.Repeat("C", 292-len(openAICodexTicketStatePrefix)), Length: 292, Model: "gpt-6-astra", CapturedAt: time.Now().Add(-time.Minute), ExpiresAt: time.Now().Add(time.Hour)}
++			svc.storeOpenAICodexTicket(context.Background(), repo.account, old)
++			version := codexTicketVersion(old)
++			switch failure {
++			case "upstream":
++				upstream.err = errors.New("synthetic secret must not escape")
++			case "persist":
++				repo.persistErr = errors.New("synthetic database credential")
++			case "unchanged":
++				upstream.resp.Header.Set(openAICodexTurnStateHeader, old.State)
++			case "unverified":
++				repo.ignoreSave = true
++			case "cache":
++				svc.schedulerSnapshot.cache = &sentinelTestCache{err: errors.New("cache secret")}
++			}
++			code, result, raw := sentinelRequest(t, svc, "POST", sentinelRefreshBody(version, "expiry", ""), sentinelTestToken)
++			require.Equal(t, 503, code)
++			require.Equal(t, "failed", result["status"])
++			require.NotContains(t, raw, "secret")
++			require.NotContains(t, raw, old.State)
++			if failure == "upstream" || failure == "persist" || failure == "unchanged" {
++				require.Same(t, old, svc.lookupOpenAICodexTicket(repo.account, "gpt-6-astra"))
++			}
++		})
++	}
++}
++func TestCodexSentinelStaleEventAndMasterOffNeverCollect(t *testing.T) {
++	svc, repo, upstream := sentinelFixture(t)
++	old := &openAICodexTicket{State: fakeCodexTicketState(292), Length: 292, Model: "gpt-6-astra", CapturedAt: time.Now().Add(-time.Minute), ExpiresAt: time.Now().Add(time.Hour)}
++	svc.storeOpenAICodexTicket(context.Background(), repo.account, old)
++	h := http.Header{}
++	h.Set(openAICodexTurnStateHeader, old.State)
++	o := svc.sentinelObservation(repo.account, "gpt-6-astra", h)
++	o.completed("gpt-5.6-luna")
++	// Same digest but recaptured since this request started is still stale.
++	newer := *old
++	newer.CapturedAt = time.Now().Add(time.Second)
++	svc.storeOpenAICodexTicket(context.Background(), repo.account, &newer)
++	code, result, _ := sentinelRequest(t, svc, "POST", sentinelRefreshBody(codexTicketVersion(old), "model_mismatch", "test-instance:1"), sentinelTestToken)
++	require.Equal(t, 200, code)
++	require.Equal(t, "stale", result["status"])
++	svc.cfg.Gateway.OpenAICodexTicket.Enabled = false
++	code, result, _ = sentinelRequest(t, svc, "POST", sentinelRefreshBody(codexTicketVersion(old), "expiry", ""), sentinelTestToken)
++	require.Equal(t, 200, code)
++	require.Equal(t, "disabled", result["status"])
++	require.Empty(t, upstream.requests)
++}
++func TestCodexSentinelWSReconnectReplaces312AndKeepsProvenance(t *testing.T) {
++	svc, repo, _ := sentinelFixture(t)
++	account := repo.account
++	factory := svc.codexSentinelWSHeadersFactory(account, "gpt-6-astra")
++	old := &openAICodexTicket{State: fakeCodexTicketState(292), Length: 292, Model: "gpt-6-astra", CapturedAt: time.Now(), ExpiresAt: time.Now().Add(time.Hour)}
++	svc.storeOpenAICodexTicket(context.Background(), account, old)
++	h := http.Header{}
++	h.Set(openAICodexTurnStateHeader, fakeCodexTicketState(312))
++	first, err := factory(context.Background(), h.Clone())
++	require.NoError(t, err)
++	require.Equal(t, old.State, first.Get(openAICodexTurnStateHeader))
++	observation := svc.sentinelObservation(account, "gpt-6-astra", first)
++	replacement := *old
++	replacement.State = openAICodexTicketStatePrefix + strings.Repeat("C", 292-len(openAICodexTicketStatePrefix))
++	replacement.CapturedAt = time.Now()
++	svc.storeOpenAICodexTicket(context.Background(), account, &replacement)
++	second, err := factory(context.Background(), h.Clone())
++	require.NoError(t, err)
++	require.Equal(t, replacement.State, second.Get(openAICodexTurnStateHeader))
++	require.Equal(t, codexTicketVersion(old), observation.forModel("gpt-6-astra").version)
++	require.Equal(t, observation.sentAt, observation.forModel("gpt-6-astra").sentAt)
++}
++
++type sentinelBlockingUpstream struct {
++	HTTPUpstream
++	started chan struct{}
++	release chan struct{}
++	count   atomic.Int64
++}
++
++func (u *sentinelBlockingUpstream) Do(req *http.Request, _ string, _ int64, _ int) (*http.Response, error) {
++	if u.count.Add(1) == 1 {
++		close(u.started)
++	}
++	select {
++	case <-req.Context().Done():
++		return nil, req.Context().Err()
++	case <-u.release:
++	}
++	h := http.Header{}
++	h.Set(openAICodexTurnStateHeader, fakeCodexTicketState(292))
++	return &http.Response{StatusCode: 200, Header: h, Body: io.NopCloser(strings.NewReader(""))}, nil
++}
++func TestCodexSentinelConcurrentRefreshBoundedAndNativeSingleflight(t *testing.T) {
++	svc, repo, _ := sentinelFixture(t)
++	upstream := &sentinelBlockingUpstream{started: make(chan struct{}), release: make(chan struct{})}
++	svc.httpUpstream = upstream
++	nativeDone := make(chan struct{})
++	go func() {
++		defer close(nativeDone)
++		svc.probeOnceOpenAICodexTicket(context.Background(), repo.account, "gpt-6-astra")
++	}()
++	select {
++	case <-upstream.started:
++	case <-time.After(5 * time.Second):
++		t.Fatal("native collector did not start")
++	}
++	refreshed := make(chan int, 1)
++	go func() {
++		code, _, _ := sentinelRequest(t, svc, "POST", sentinelRefreshBody("", "missing", ""), sentinelTestToken)
++		refreshed <- code
++	}()
++	// Observe the server-side admission, not a timing guess about goroutine order.
++	require.Eventually(t, func() bool {
++		svc.codexSentinel.mu.Lock()
++		defer svc.codexSentinel.mu.Unlock()
++		return !svc.codexSentinel.nextAttempt[openAICodexTicketKey(2, "gpt-6-astra")].IsZero()
++	}, time.Second, time.Millisecond)
++	code, result, _ := sentinelRequest(t, svc, "POST", sentinelRefreshBody("", "missing", ""), sentinelTestToken)
++	require.Equal(t, 429, code)
++	require.Equal(t, "cooldown", result["status"])
++	close(upstream.release)
++	select {
++	case code = <-refreshed:
++		require.Equal(t, 200, code)
++	case <-time.After(5 * time.Second):
++		t.Fatal("refresh did not finish")
++	}
++	<-nativeDone
++	require.Equal(t, int64(1), upstream.count.Load())
++	require.Equal(t, 1, repo.writes)
++}
++func TestCodexSentinelHTTPObservesSentVersionAndUnmappedCompleted(t *testing.T) {
++	svc, repo, upstream := sentinelFixture(t)
++	state := fakeCodexTicketState(292)
++	h := http.Header{}
++	h.Set(openAICodexTurnStateHeader, state)
++	upstream.resp.Header.Set(openAICodexTurnStateHeader, fakeCodexTicketState(312))
++	req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, "https://upstream.invalid", strings.NewReader(`{"model":"gpt-6-astra"}`))
++	require.NoError(t, err)
++	req.Header = h
++	c, _ := gin.CreateTestContext(httptest.NewRecorder())
++	bound := svc.bindSentinelRequest(c, req, repo.account, "gpt-6-astra")
++	originalVersion := sentinelRequestObservation(bound).version
++	// A newer cache value must not relabel the old request/response event.
++	svc.storeOpenAICodexTicket(context.Background(), repo.account, &openAICodexTicket{Model: "gpt-6-astra", State: openAICodexTicketStatePrefix + strings.Repeat("C", 292-len(openAICodexTicketStatePrefix)), Length: 292, CapturedAt: time.Now(), ExpiresAt: time.Now().Add(time.Hour)})
++	response, err := svc.doOpenAIUpstream(bound, "", repo.account)
++	require.NoError(t, err)
++	require.NoError(t, response.Body.Close())
++	observeOpenAISSEBody(upstreamResponseModelObserverFromContext(c), "data: {\"type\":\"response.created\",\"response\":{\"model\":\"gpt-5.6-sol\"}}\n\ndata: {\"type\":\"response.completed\",\"response\":{\"model\":\"gpt-5.6-luna\"}}\n\n")
++	events, _, _ := svc.codexSentinel.snapshot(0)
++	require.Len(t, events, 2)
++	require.Equal(t, "turn_state_312", events[0].Kind)
++	require.Equal(t, "gpt-5.6-luna", events[1].ActualModel)
++	for _, e := range events {
++		require.Equal(t, originalVersion, e.ExpectedTicketVersion)
++	}
++}
++func TestCodexSentinelIneligibleAndCanceledNeverCollect(t *testing.T) {
++	svc, repo, upstream := sentinelFixture(t)
++	repo.account.Schedulable = false
++	code, result, _ := sentinelRequest(t, svc, "POST", sentinelRefreshBody("", "missing", ""), sentinelTestToken)
++	require.Equal(t, 200, code)
++	require.Equal(t, "ineligible", result["status"])
++	ctx, cancel := context.WithCancel(context.Background())
++	cancel()
++	_, err := svc.collectOpenAICodexTicket(ctx, repo.account, "gpt-6-astra")
++	require.Error(t, err)
++	require.Empty(t, upstream.requests)
++}
+diff --git a/backend/internal/service/openai_codex_ticket.go b/backend/internal/service/openai_codex_ticket.go
+index cc455b32f..29c01e5bd 100644
+--- a/backend/internal/service/openai_codex_ticket.go
++++ b/backend/internal/service/openai_codex_ticket.go
+@@ -157,10 +157,14 @@ func (s *OpenAIGatewayService) openAICodexTicketEnabledContext(ctx context.Conte
+ 		return false
+ 	}
+ 	fallback := s.cfg != nil && s.cfg.Gateway.OpenAICodexTicket.Enabled
++	enabled := fallback
+ 	if s.settingService != nil {
+-		return s.settingService.GetOpenAICodexTicketEnabled(ctx, fallback)
++		enabled = s.settingService.GetOpenAICodexTicketEnabled(ctx, fallback)
+ 	}
+-	return fallback
++	if s.codexSentinel != nil {
++		s.codexSentinel.enabled.Store(enabled)
++	}
++	return enabled
+ }
+ 
+ func (s *OpenAIGatewayService) openAICodexTicketHarvestProxyURL() string {
+@@ -263,27 +267,27 @@ func parseOpenAICodexTicketFromAny(accountID int64, model string, raw any) *open
+ }
+ 
+ func (s *OpenAIGatewayService) storeOpenAICodexTicket(ctx context.Context, account *Account, ticket *openAICodexTicket) {
++	_ = s.persistOpenAICodexTicket(ctx, account, ticket)
++}
++
++func (s *OpenAIGatewayService) persistOpenAICodexTicket(ctx context.Context, account *Account, ticket *openAICodexTicket) error {
+ 	if s == nil || account == nil || ticket == nil || account.ID <= 0 {
+-		return
++		return errCodexTicketCollection
+ 	}
+ 	model := normalizeOpenAICodexTicketModel(ticket.Model)
+ 	ticket.Model = model
+ 	ticket.AccountID = account.ID
+-	s.openaiCodexTickets.Store(openAICodexTicketKey(account.ID, model), ticket)
+-	if s.accountRepo == nil {
+-		return
+-	}
+-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+-	defer cancel()
+-	if err := s.accountRepo.UpdateExtra(ctx, account.ID, map[string]any{
+-		openAICodexTicketExtraKey(model): ticket,
+-	}); err != nil {
+-		logger.L().Warn("openai_codex_ticket persist failed",
+-			zap.Int64("account_id", account.ID),
+-			zap.String("model", model),
+-			zap.Error(err),
+-		)
++	// Never replace a usable in-process ticket before its replacement is saved.
++	if s.accountRepo != nil {
++		persistCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
++		defer cancel()
++		if err := s.accountRepo.UpdateExtra(persistCtx, account.ID, map[string]any{openAICodexTicketExtraKey(model): ticket}); err != nil {
++			logger.L().Warn("openai_codex_ticket persist failed", zap.Int64("account_id", account.ID), zap.String("model", model))
++			return errCodexTicketCollection
++		}
+ 	}
++	s.openaiCodexTickets.Store(openAICodexTicketKey(account.ID, model), ticket)
++	return nil
+ }
+ 
+ // applyOpenAICodexTicket 在出站请求上覆盖 x-codex-turn-state。
+@@ -529,52 +533,59 @@ func (s *OpenAIGatewayService) refreshOpenAICodexTickets(ctx context.Context) {
+ // gAAAAA 前缀）就落库；否则记 Info miss，交给下个周期重试。同一 key 并发去重，避免上一发还没
+ // 回来又叠一发。
+ func (s *OpenAIGatewayService) probeOnceOpenAICodexTicket(ctx context.Context, account *Account, model string) {
++	_, _ = s.collectOpenAICodexTicket(ctx, account, model)
++}
++
++func (s *OpenAIGatewayService) collectOpenAICodexTicket(ctx context.Context, account *Account, model string, guards ...func() error) (*openAICodexTicket, error) {
+ 	if s == nil || !isOpenAICodexTicketAccount(account) || ctx.Err() != nil || !s.openAICodexTicketEnabledContext(ctx) {
+-		return
++		return nil, errCodexTicketCollection
+ 	}
+ 	cfg := s.openAICodexTicketConfig()
+ 	proxyURL := s.openAICodexTicketHarvestProxyURLContext(ctx)
+ 	if proxyURL == "" || s.httpUpstream == nil || ctx.Err() != nil {
+-		return
++		return nil, errCodexTicketCollection
+ 	}
+ 	key := openAICodexTicketKey(account.ID, model)
+-	_, _, _ = s.openaiCodexTicketFlight.Do(key, func() (any, error) {
++	result := s.openaiCodexTicketFlight.DoChan(key, func() (any, error) {
++		for _, guard := range guards {
++			if err := guard(); err != nil {
++				return nil, err
++			}
++		}
+ 		token, _, err := s.GetAccessToken(ctx, account)
+ 		if err != nil || strings.TrimSpace(token) == "" {
+-			logger.L().Info("openai_codex_ticket probe miss",
+-				zap.Int64("account_id", account.ID), zap.String("model", model),
+-				zap.String("reason", "token"), zap.Error(err))
+-			return nil, nil
++			return nil, errCodexTicketCollection
++		}
++		state, status, err := s.fireOpenAICodexTicketProbe(ctx, account, token, model, proxyURL, time.Duration(cfg.HarvestAttemptTimeoutSeconds)*time.Second)
++		if err != nil || status != http.StatusOK || len(state) != cfg.TargetLength || !strings.HasPrefix(state, openAICodexTicketStatePrefix) {
++			return nil, errCodexTicketCollection
+ 		}
+-		state, status, perr := s.fireOpenAICodexTicketProbe(ctx, account, token, model, proxyURL, time.Duration(cfg.HarvestAttemptTimeoutSeconds)*time.Second)
+-		if perr != nil {
+-			logger.L().Info("openai_codex_ticket probe miss",
+-				zap.Int64("account_id", account.ID), zap.String("model", model),
+-				zap.String("reason", "error"), zap.Error(perr))
+-			return nil, nil
++		// A master switch change during a probe prevents committing its result.
++		if ctx.Err() != nil || !s.openAICodexTicketEnabledContext(ctx) {
++			return nil, errCodexTicketCollection
+ 		}
+-		if status != http.StatusOK || state == "" || len(state) != cfg.TargetLength || !strings.HasPrefix(state, openAICodexTicketStatePrefix) {
+-			logger.L().Info("openai_codex_ticket probe miss",
+-				zap.Int64("account_id", account.ID), zap.String("model", model),
+-				zap.Int("http", status), zap.Int("len", len(state)))
+-			return nil, nil
++		old := s.lookupOpenAICodexTicket(account, model)
++		if old != nil && old.State == state {
++			return nil, errCodexTicketCollection
+ 		}
+ 		now := time.Now()
+-		ticket := &openAICodexTicket{
+-			AccountID:  account.ID,
+-			Model:      model,
+-			State:      state,
+-			Length:     len(state),
+-			CapturedAt: now,
+-			ExpiresAt:  now.Add(time.Duration(cfg.TTLSeconds) * time.Second),
+-			Attempts:   1,
++		ticket := &openAICodexTicket{AccountID: account.ID, Model: model, State: state, Length: len(state), CapturedAt: now, ExpiresAt: now.Add(time.Duration(cfg.TTLSeconds) * time.Second), Attempts: 1}
++		if err := s.persistOpenAICodexTicket(ctx, account, ticket); err != nil {
++			return nil, err
+ 		}
+-		s.storeOpenAICodexTicket(ctx, account, ticket)
+-		logger.L().Info("openai_codex_ticket harvested",
+-			zap.Int64("account_id", account.ID), zap.String("model", model),
+-			zap.Int("length", ticket.Length), zap.String("mode", "continuous"))
+-		return nil, nil
++		logger.L().Info("openai_codex_ticket harvested", zap.Int64("account_id", account.ID), zap.String("model", model), zap.Int("length", ticket.Length), zap.String("mode", "continuous"))
++		return ticket, nil
+ 	})
++	select {
++	case <-ctx.Done():
++		return nil, errCodexTicketCollection
++	case result := <-result:
++		if result.Err != nil {
++			return nil, result.Err
++		}
++		ticket, _ := result.Val.(*openAICodexTicket)
++		return ticket, nil
++	}
+ }
+ 
+ // IsOpenAICodexTicketExtraKey identifies server-managed ticket material.
+diff --git a/backend/internal/service/openai_gateway_forward.go b/backend/internal/service/openai_gateway_forward.go
+index 7106f62d4..57b611cdb 100644
+--- a/backend/internal/service/openai_gateway_forward.go
++++ b/backend/internal/service/openai_gateway_forward.go
+@@ -1446,6 +1446,7 @@ func (s *OpenAIGatewayService) buildUpstreamRequest(ctx context.Context, c *gin.
+ 	if err := s.applyOpenAICodexTicket(ctx, account, extractOpenAICodexTicketModel(body), req.Header); err != nil {
+ 		return nil, err
+ 	}
++	req = s.bindSentinelRequest(c, req, account, extractOpenAICodexTicketModel(body))
+ 	if account.UsesOpenAICodexProtocol() {
+ 		compatMessagesBridge := isOpenAICompatMessagesBridgeContext(c) || isOpenAICompatMessagesBridgeBody(body)
+ 		// 清除客户端透传的 session 头，后续用隔离后的值重新设置，防止跨用户会话碰撞。
+diff --git a/backend/internal/service/openai_gateway_messages.go b/backend/internal/service/openai_gateway_messages.go
+index 54af82133..e5ef1095e 100644
+--- a/backend/internal/service/openai_gateway_messages.go
++++ b/backend/internal/service/openai_gateway_messages.go
+@@ -386,6 +386,7 @@ func (s *OpenAIGatewayService) ForwardAsAnthropic(
+ 	if err := s.applyOpenAICodexTicket(ctx, account, upstreamModel, upstreamReq.Header); err != nil {
+ 		return nil, err
+ 	}
++	upstreamReq = s.bindSentinelRequest(c, upstreamReq, account, upstreamModel)
+ 
+ 	// 7. Send request
+ 	proxyURL := ""
+diff --git a/backend/internal/service/openai_gateway_passthrough.go b/backend/internal/service/openai_gateway_passthrough.go
+index 5aa6403f5..df13f7da8 100644
+--- a/backend/internal/service/openai_gateway_passthrough.go
++++ b/backend/internal/service/openai_gateway_passthrough.go
+@@ -634,6 +634,7 @@ func (s *OpenAIGatewayService) buildUpstreamRequestOpenAIPassthrough(
+ 	if err := s.applyOpenAICodexTicket(ctx, account, extractOpenAICodexTicketModel(body), req.Header); err != nil {
+ 		return nil, err
+ 	}
++	req = s.bindSentinelRequest(c, req, account, extractOpenAICodexTicketModel(body))
+ 
+ 	// 覆盖入站鉴权残留，并注入上游认证
+ 	req.Header.Del("authorization")
+diff --git a/backend/internal/service/openai_gateway_service.go b/backend/internal/service/openai_gateway_service.go
+index bbc1f2b63..f26ca5423 100644
+--- a/backend/internal/service/openai_gateway_service.go
++++ b/backend/internal/service/openai_gateway_service.go
+@@ -515,6 +515,7 @@ type OpenAIGatewayService struct {
+ 	openaiCodexTicketCancel      context.CancelFunc
+ 	openaiCodexTicketDone        chan struct{}
+ 	openaiCodexTicketStopped     bool
++	codexSentinel                *codexSentinel
+ }
+ 
+ // NewOpenAIGatewayService creates a new OpenAIGatewayService
+@@ -592,6 +593,7 @@ func NewOpenAIGatewayService(
+ 		openAITokenProvider.SetAccountRuntimeBlocker(svc)
+ 	}
+ 	svc.logOpenAIWSModeBootstrap()
++	svc.codexSentinel = newCodexSentinelFromEnv()
+ 	svc.StartOpenAICodexTicketHarvester()
+ 	return svc
+ }
+diff --git a/backend/internal/service/openai_plugin_transport.go b/backend/internal/service/openai_plugin_transport.go
+index 82b8d359e..6dd5c244a 100644
+--- a/backend/internal/service/openai_plugin_transport.go
++++ b/backend/internal/service/openai_plugin_transport.go
+@@ -8,7 +8,12 @@ func (s *OpenAIGatewayService) SetPluginManager(manager *PluginManager) {
+ 
+ // doOpenAIUpstream 只在 OpenAI OAuth 能力绑定已启用时把真实请求交给插件。
+ // 插件返回标准 http.Response，响应解析、错误映射、SSE 和计费仍由现有核心链处理。
+-func (s *OpenAIGatewayService) doOpenAIUpstream(request *http.Request, proxyURL string, account *Account) (*http.Response, error) {
++func (s *OpenAIGatewayService) doOpenAIUpstream(request *http.Request, proxyURL string, account *Account) (response *http.Response, err error) {
++	defer func() {
++		if response != nil {
++			sentinelRequestObservation(request).header(response.Header)
++		}
++	}()
+ 	if s.pluginManager != nil {
+ 		response, handled, err := s.pluginManager.RoundTripOpenAIOAuth(request.Context(), request, proxyURL, account)
+ 		if handled {
+diff --git a/backend/internal/service/openai_ws_forwarder_ingress.go b/backend/internal/service/openai_ws_forwarder_ingress.go
+index ca6135352..909a60f18 100644
+--- a/backend/internal/service/openai_ws_forwarder_ingress.go
++++ b/backend/internal/service/openai_ws_forwarder_ingress.go
+@@ -789,12 +789,11 @@ func (s *OpenAIGatewayService) ProxyResponsesWebSocketFromClient(
+ 		return fmt.Errorf("build ws headers: %w", buildHdrErr)
+ 	}
+ 	baseAcquireReq := openAIWSAcquireRequest{
+-		Account: account,
+-		WSURL:   wsURL,
+-		Headers: wsHeaders,
+-		HeadersFactory: func(factoryCtx context.Context, headers http.Header) (http.Header, error) {
+-			return s.refreshOpenAIAgentIdentityHeaders(factoryCtx, account, headers)
+-		},
++		Account:           account,
++		WSURL:             wsURL,
++		Headers:           wsHeaders,
++		HeadersFactory:    s.codexSentinelWSHeadersFactory(account, firstRoutingFields[0].String()),
++		SentinelHandshake: s.sentinelHandshake(account, firstRoutingFields[0].String()),
+ 		ProxyURL: func() string {
+ 			if account.ProxyID != nil && account.Proxy != nil {
+ 				return account.Proxy.URL()
+@@ -1010,6 +1009,7 @@ func (s *OpenAIGatewayService) ProxyResponsesWebSocketFromClient(
+ 				mappedModelBytes = []byte(mappedModel)
+ 			}
+ 		}
++		responseModelObserver.codexSentinel = lease.conn.sentinelObservation.forModel(mappedModel)
+ 		for {
+ 			upstreamMessage, readErr := lease.ReadMessageWithContextTimeout(ctx, s.openAIWSReadTimeout())
+ 			if readErr != nil {
+@@ -1883,6 +1883,8 @@ func (s *OpenAIGatewayService) ProxyResponsesWebSocketFromClient(
+ 			return parseErr
+ 		}
+ 		nextRoutingFields := gjson.GetManyBytes(nextPayload.payloadRaw, "model", "service_tier")
++		baseAcquireReq.HeadersFactory = s.codexSentinelWSHeadersFactory(account, nextRoutingFields[0].String())
++		baseAcquireReq.SentinelHandshake = s.sentinelHandshake(account, nextRoutingFields[0].String())
+ 		if nextPayload.promptCacheKey != "" {
+ 			// ingress 会话在整个客户端 WS 生命周期内复用同一上游连接；
+ 			// prompt_cache_key 对握手头的更新仅在未来需要重新建连时生效。
+diff --git a/backend/internal/service/openai_ws_forwarder_v2.go b/backend/internal/service/openai_ws_forwarder_v2.go
+index facff98ff..84215c17e 100644
+--- a/backend/internal/service/openai_ws_forwarder_v2.go
++++ b/backend/internal/service/openai_ws_forwarder_v2.go
+@@ -203,14 +203,13 @@ func (s *OpenAIGatewayService) forwardOpenAIWSV2(
+ 	defer acquireCancel()
+ 
+ 	lease, err := s.getOpenAIWSConnPool().Acquire(acquireCtx, openAIWSAcquireRequest{
+-		Account: account,
+-		WSURL:   wsURL,
+-		Headers: wsHeaders,
+-		HeadersFactory: func(factoryCtx context.Context, headers http.Header) (http.Header, error) {
+-			return s.refreshOpenAIAgentIdentityHeaders(factoryCtx, account, headers)
+-		},
+-		PreferredConnID: preferredConnID,
+-		ForceNewConn:    forceNewConn,
++		Account:           account,
++		WSURL:             wsURL,
++		Headers:           wsHeaders,
++		HeadersFactory:    s.codexSentinelWSHeadersFactory(account, mappedModel),
++		SentinelHandshake: s.sentinelHandshake(account, mappedModel),
++		PreferredConnID:   preferredConnID,
++		ForceNewConn:      forceNewConn,
+ 		ProxyURL: func() string {
+ 			if account.ProxyID != nil && account.Proxy != nil {
+ 				return account.Proxy.URL()
+@@ -311,6 +310,7 @@ func (s *OpenAIGatewayService) forwardOpenAIWSV2(
+ 		}
+ 	}
+ 
++	responseModelObserver.codexSentinel = lease.conn.sentinelObservation.forModel(mappedModel)
+ 	handshakeTurnState := strings.TrimSpace(lease.HandshakeHeader(openAIWSTurnStateHeader))
+ 	logOpenAIWSModeDebug(
+ 		"handshake account_id=%d conn_id=%s has_turn_state=%v turn_state_len=%d",
+diff --git a/backend/internal/service/openai_ws_http_bridge.go b/backend/internal/service/openai_ws_http_bridge.go
+index 780e58c86..f0024f183 100644
+--- a/backend/internal/service/openai_ws_http_bridge.go
++++ b/backend/internal/service/openai_ws_http_bridge.go
+@@ -546,6 +546,7 @@ func (s *OpenAIGatewayService) proxyOpenAIWSHTTPBridgeTurn(
+ 		if buildErr != nil {
+ 			return nil, buildErr
+ 		}
++		responseModelObserver.codexSentinel = sentinelRequestObservation(upstreamReq)
+ 		resp, err = s.doOpenAIUpstream(upstreamReq, proxyURL, account)
+ 		if err != nil {
+ 			if turn == 1 {
+diff --git a/backend/internal/service/openai_ws_pool.go b/backend/internal/service/openai_ws_pool.go
+index b632bba52..521cdf6fe 100644
+--- a/backend/internal/service/openai_ws_pool.go
++++ b/backend/internal/service/openai_ws_pool.go
+@@ -74,9 +74,10 @@ type openAIWSAcquireRequest struct {
+ 	// HeadersFactory is evaluated inside dialConn. It exists so credentials
+ 	// whose authorization is per-dial (Agent Identity) are never cached in
+ 	// lastAcquire or delayed prewarm state.
+-	HeadersFactory  func(context.Context, http.Header) (http.Header, error)
+-	ProxyURL        string
+-	PreferredConnID string
++	HeadersFactory    func(context.Context, http.Header) (http.Header, error)
++	SentinelHandshake func(http.Header) *codexSentinelObservation
++	ProxyURL          string
++	PreferredConnID   string
+ 	// ForceNewConn: 强制本次获取新连接（避免复用导致连接内续链状态互相污染）。
+ 	ForceNewConn bool
+ 	// ForcePreferredConn: 强制本次只使用 PreferredConnID，禁止漂移到其它连接。
+@@ -283,6 +284,7 @@ type openAIWSConn struct {
+ 	ws openAIWSClientConn
+ 
+ 	handshakeHeaders       http.Header
++	sentinelObservation    *codexSentinelObservation
+ 	handshakeCompatibility openAIWSHandshakeCompatibilityKey
+ 	routingAffinity        string
+ 
+@@ -2126,7 +2128,12 @@ func (p *openAIWSConnPool) dialConn(ctx context.Context, req openAIWSAcquireRequ
+ 			return nil, err
+ 		}
+ 	}
++	var observation *codexSentinelObservation
++	if req.SentinelHandshake != nil {
++		observation = req.SentinelHandshake(headers)
++	}
+ 	conn, status, handshakeHeaders, err := p.clientDialer.Dial(ctx, req.WSURL, headers, req.ProxyURL)
++	observation.header(handshakeHeaders)
+ 	if err != nil {
+ 		var handshakeErr *openAIWSHandshakeError
+ 		var responseBody []byte
+@@ -2149,6 +2156,7 @@ func (p *openAIWSConnPool) dialConn(ctx context.Context, req openAIWSAcquireRequ
+ 	}
+ 	id := p.nextConnID(req.Account.ID)
+ 	pooledConn := newOpenAIWSConn(id, req.Account.ID, conn, handshakeHeaders)
++	pooledConn.sentinelObservation = observation
+ 	accountID := req.Account.ID
+ 	evict := func() { p.evictConn(accountID, id) }
+ 	pooledConn.onPeerClosed.Store(&evict)
+diff --git a/backend/internal/service/openai_ws_v2_passthrough_adapter.go b/backend/internal/service/openai_ws_v2_passthrough_adapter.go
+index 556ad0627..538f67181 100644
+--- a/backend/internal/service/openai_ws_v2_passthrough_adapter.go
++++ b/backend/internal/service/openai_ws_v2_passthrough_adapter.go
+@@ -870,13 +870,19 @@ func (s *OpenAIGatewayService) proxyResponsesWebSocketV2Passthrough(
+ 	var upstreamConn openAIWSClientConn
+ 	statusCode := 0
+ 	var handshakeHeaders http.Header
++	var sentinelObservation *codexSentinelObservation
+ 	for {
++		if err := s.applyOpenAICodexTicket(ctx, account, gjson.GetBytes(firstClientMessage, "model").String(), headers); err != nil {
++			return err
++		}
++		sentinelObservation = s.sentinelObservation(account, gjson.GetBytes(firstClientMessage, "model").String(), headers)
+ 		headers, err = s.refreshOpenAIAgentIdentityHeaders(ctx, account, headers)
+ 		if err != nil {
+ 			return fmt.Errorf("refresh ws authentication headers: %w", err)
+ 		}
+ 		dialCtx, cancelDial := context.WithTimeout(ctx, s.openAIWSDialTimeout())
+ 		upstreamConn, statusCode, handshakeHeaders, err = dialer.Dial(dialCtx, wsURL, headers, proxyURL)
++		sentinelObservation.header(handshakeHeaders)
+ 		cancelDial()
+ 		if err == nil {
+ 			break
+@@ -1279,6 +1285,10 @@ func (s *OpenAIGatewayService) proxyResponsesWebSocketV2Passthrough(
+ 					return nil
+ 				}
+ 				eventType, _, _ := parseOpenAIWSEventEnvelope(payload)
++				if eventType == "response.completed" {
++					_, outboundModel := usageMeta.turnModels(capturedSessionModel)
++					sentinelObservation.forModel(outboundModel).completed(firstValidTrimmedGJSONString(payload, "response.model", "model"))
++				}
+ 				if eventType == "response.created" {
+ 					failureAccountSideEffectsApplied = false
+ 				}
+diff --git a/backend/internal/service/upstream_response_model.go b/backend/internal/service/upstream_response_model.go
+index 766657f84..612d1d06e 100644
+--- a/backend/internal/service/upstream_response_model.go
++++ b/backend/internal/service/upstream_response_model.go
+@@ -26,9 +26,10 @@ const (
+ // separate from the final outbound request tier until usage recording resolves
+ // the billable tier for the selected credential protocol.
+ type upstreamResponseModelObserver struct {
+-	first    string
+-	terminal string
+-	conflict bool
++	codexSentinel *codexSentinelObservation
++	first         string
++	terminal      string
++	conflict      bool
+ 
+ 	// firstTier holds the first non-terminal tier declaration; it is discarded
+ 	// when later non-terminal declarations disagree. terminalTier comes from a
+@@ -72,6 +73,9 @@ func (o *upstreamResponseModelObserver) ObserveOpenAI(payload []byte, eventType
+ 	model := firstValidTrimmedGJSONString(payload, "response.model", "model")
+ 	terminal := isUpstreamResponseModelTerminalEvent(eventType)
+ 	o.Observe(model, terminal)
++	if eventType == "response.completed" {
++		o.codexSentinel.completed(model)
++	}
+ 	// Every payload that declares a service tier also declares a model, so
+ 	// model-free delta frames skip the extra lookups entirely.
+ 	if model == "" {

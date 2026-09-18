@@ -1,0 +1,12 @@
+{
+  "baseline": "344466336f8a4fb348ecb183c7c55b60b598f008",
+  "worktree": "C:\\WORK-SPACE\\sub2api-sentinel-integration-20260919",
+  "patch_sha256": "ea4ca7d8147485447462e6910488c4195b9d4ddd024910d862de8d977dc4754a",
+  "utc_recorded": "2026-09-18T18:57:51.088217+00:00",
+  "focused_test_command": "go test ./internal/service ./internal/handler ./internal/server/routes ./internal/service/openai_ws_v2 -run 'TestCodexSentinel|Test.*OpenAICodexTicket|Test.*UpstreamResponseModel|TestRelay_OnTurnComplete' -count=1",
+  "focused_test_result": "PASS all four packages (handler/routes compiled; no matched tests)",
+  "host_target": "windows/amd64",
+  "linux_lint": "Two nonsemantic issues corrected (trusted admin token path annotation; equivalent ASCII predicate); cached rerun in progress",
+  "diff_check": "PASS",
+  "deploy_performed": false
+}

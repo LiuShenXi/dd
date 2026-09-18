@@ -386,6 +386,7 @@ func (s *OpenAIGatewayService) ForwardAsAnthropic(
 	if err := s.applyOpenAICodexTicket(ctx, account, upstreamModel, upstreamReq.Header); err != nil {
 		return nil, err
 	}
+	upstreamReq = s.bindSentinelRequest(c, upstreamReq, account, upstreamModel)
 
 	// 7. Send request
 	proxyURL := ""

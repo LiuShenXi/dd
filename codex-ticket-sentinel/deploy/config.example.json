@@ -1,0 +1,14 @@
+{
+  "base_url": "http://sub2api:8080",
+  "token_file": "/run/secrets/token",
+  "state_path": "/state/sentinel.sqlite",
+  "status_path": "/state/status.json",
+  "account_ids": [2],
+  "models": ["gpt-6-astra", "gpt-5.6-sol"],
+  "poll_seconds": 2,
+  "refresh_before_seconds": 600,
+  "cooldown_seconds": 60,
+  "max_backoff_seconds": 900,
+  "max_attempts_per_hour": 6,
+  "request_timeout_seconds": 40
+}

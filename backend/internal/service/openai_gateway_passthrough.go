@@ -634,6 +634,7 @@ func (s *OpenAIGatewayService) buildUpstreamRequestOpenAIPassthrough(
 	if err := s.applyOpenAICodexTicket(ctx, account, extractOpenAICodexTicketModel(body), req.Header); err != nil {
 		return nil, err
 	}
+	req = s.bindSentinelRequest(c, req, account, extractOpenAICodexTicketModel(body))
 
 	// 覆盖入站鉴权残留，并注入上游认证
 	req.Header.Del("authorization")

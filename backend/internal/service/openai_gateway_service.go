@@ -515,6 +515,7 @@ type OpenAIGatewayService struct {
 	openaiCodexTicketCancel      context.CancelFunc
 	openaiCodexTicketDone        chan struct{}
 	openaiCodexTicketStopped     bool
+	codexSentinel                *codexSentinel
 }
 
 // NewOpenAIGatewayService creates a new OpenAIGatewayService
@@ -592,6 +593,7 @@ func NewOpenAIGatewayService(
 		openAITokenProvider.SetAccountRuntimeBlocker(svc)
 	}
 	svc.logOpenAIWSModeBootstrap()
+	svc.codexSentinel = newCodexSentinelFromEnv()
 	svc.StartOpenAICodexTicketHarvester()
 	return svc
 }

@@ -789,12 +789,11 @@ func (s *OpenAIGatewayService) ProxyResponsesWebSocketFromClient(
 		return fmt.Errorf("build ws headers: %w", buildHdrErr)
 	}
 	baseAcquireReq := openAIWSAcquireRequest{
-		Account: account,
-		WSURL:   wsURL,
-		Headers: wsHeaders,
-		HeadersFactory: func(factoryCtx context.Context, headers http.Header) (http.Header, error) {
-			return s.refreshOpenAIAgentIdentityHeaders(factoryCtx, account, headers)
-		},
+		Account:           account,
+		WSURL:             wsURL,
+		Headers:           wsHeaders,
+		HeadersFactory:    s.codexSentinelWSHeadersFactory(account, firstRoutingFields[0].String()),
+		SentinelHandshake: s.sentinelHandshake(account, firstRoutingFields[0].String()),
 		ProxyURL: func() string {
 			if account.ProxyID != nil && account.Proxy != nil {
 				return account.Proxy.URL()
@@ -1010,6 +1009,7 @@ func (s *OpenAIGatewayService) ProxyResponsesWebSocketFromClient(
 				mappedModelBytes = []byte(mappedModel)
 			}
 		}
+		responseModelObserver.codexSentinel = lease.conn.sentinelObservation.forModel(mappedModel)
 		for {
 			upstreamMessage, readErr := lease.ReadMessageWithContextTimeout(ctx, s.openAIWSReadTimeout())
 			if readErr != nil {
@@ -1883,6 +1883,8 @@ func (s *OpenAIGatewayService) ProxyResponsesWebSocketFromClient(
 			return parseErr
 		}
 		nextRoutingFields := gjson.GetManyBytes(nextPayload.payloadRaw, "model", "service_tier")
+		baseAcquireReq.HeadersFactory = s.codexSentinelWSHeadersFactory(account, nextRoutingFields[0].String())
+		baseAcquireReq.SentinelHandshake = s.sentinelHandshake(account, nextRoutingFields[0].String())
 		if nextPayload.promptCacheKey != "" {
 			// ingress 会话在整个客户端 WS 生命周期内复用同一上游连接；
 			// prompt_cache_key 对握手头的更新仅在未来需要重新建连时生效。

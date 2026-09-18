@@ -1,0 +1,55 @@
+name: sub2api-ticket-sentinel
+
+services:
+  sentinel:
+    image: ${SENTINEL_IMAGE:?Set an immutable sentinel image tag or digest}
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    user: "10001:10001"
+    command: ["python", "/app/sentinel.py", "--config", "/run/secrets/config.json"]
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 64m
+    cpus: 0.25
+    pids_limit: 32
+    stop_grace_period: 50s
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=4m,mode=1777
+    volumes:
+      - type: bind
+        source: ${SENTINEL_CONFIG_FILE:?Set absolute path to private config.json}
+        target: /run/secrets/config.json
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${SENTINEL_TOKEN_FILE:?Set absolute path to private token file}
+        target: /run/secrets/token
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${SENTINEL_STATE_DIR:?Initialize the dedicated state directory first}
+        target: /state
+        bind:
+          create_host_path: false
+    networks: [sub2api]
+    healthcheck:
+      test: ["CMD", "python", "/app/sentinel.py", "--healthcheck", "/state/status.json", "--max-age", "30"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  sub2api:
+    external: true
+    name: sub2api_sub2api-network

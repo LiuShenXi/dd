@@ -26,9 +26,10 @@ const (
 // separate from the final outbound request tier until usage recording resolves
 // the billable tier for the selected credential protocol.
 type upstreamResponseModelObserver struct {
-	first    string
-	terminal string
-	conflict bool
+	codexSentinel *codexSentinelObservation
+	first         string
+	terminal      string
+	conflict      bool
 
 	// firstTier holds the first non-terminal tier declaration; it is discarded
 	// when later non-terminal declarations disagree. terminalTier comes from a
@@ -72,6 +73,9 @@ func (o *upstreamResponseModelObserver) ObserveOpenAI(payload []byte, eventType 
 	model := firstValidTrimmedGJSONString(payload, "response.model", "model")
 	terminal := isUpstreamResponseModelTerminalEvent(eventType)
 	o.Observe(model, terminal)
+	if eventType == "response.completed" {
+		o.codexSentinel.completed(model)
+	}
 	// Every payload that declares a service tier also declares a model, so
 	// model-free delta frames skip the extra lookups entirely.
 	if model == "" {

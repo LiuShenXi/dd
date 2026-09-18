@@ -870,13 +870,19 @@ func (s *OpenAIGatewayService) proxyResponsesWebSocketV2Passthrough(
 	var upstreamConn openAIWSClientConn
 	statusCode := 0
 	var handshakeHeaders http.Header
+	var sentinelObservation *codexSentinelObservation
 	for {
+		if err := s.applyOpenAICodexTicket(ctx, account, gjson.GetBytes(firstClientMessage, "model").String(), headers); err != nil {
+			return err
+		}
+		sentinelObservation = s.sentinelObservation(account, gjson.GetBytes(firstClientMessage, "model").String(), headers)
 		headers, err = s.refreshOpenAIAgentIdentityHeaders(ctx, account, headers)
 		if err != nil {
 			return fmt.Errorf("refresh ws authentication headers: %w", err)
 		}
 		dialCtx, cancelDial := context.WithTimeout(ctx, s.openAIWSDialTimeout())
 		upstreamConn, statusCode, handshakeHeaders, err = dialer.Dial(dialCtx, wsURL, headers, proxyURL)
+		sentinelObservation.header(handshakeHeaders)
 		cancelDial()
 		if err == nil {
 			break
@@ -1279,6 +1285,10 @@ func (s *OpenAIGatewayService) proxyResponsesWebSocketV2Passthrough(
 					return nil
 				}
 				eventType, _, _ := parseOpenAIWSEventEnvelope(payload)
+				if eventType == "response.completed" {
+					_, outboundModel := usageMeta.turnModels(capturedSessionModel)
+					sentinelObservation.forModel(outboundModel).completed(firstValidTrimmedGJSONString(payload, "response.model", "model"))
+				}
 				if eventType == "response.created" {
 					failureAccountSideEffectsApplied = false
 				}

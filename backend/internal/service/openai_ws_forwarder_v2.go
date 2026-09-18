@@ -203,14 +203,13 @@ func (s *OpenAIGatewayService) forwardOpenAIWSV2(
 	defer acquireCancel()
 
 	lease, err := s.getOpenAIWSConnPool().Acquire(acquireCtx, openAIWSAcquireRequest{
-		Account: account,
-		WSURL:   wsURL,
-		Headers: wsHeaders,
-		HeadersFactory: func(factoryCtx context.Context, headers http.Header) (http.Header, error) {
-			return s.refreshOpenAIAgentIdentityHeaders(factoryCtx, account, headers)
-		},
-		PreferredConnID: preferredConnID,
-		ForceNewConn:    forceNewConn,
+		Account:           account,
+		WSURL:             wsURL,
+		Headers:           wsHeaders,
+		HeadersFactory:    s.codexSentinelWSHeadersFactory(account, mappedModel),
+		SentinelHandshake: s.sentinelHandshake(account, mappedModel),
+		PreferredConnID:   preferredConnID,
+		ForceNewConn:      forceNewConn,
 		ProxyURL: func() string {
 			if account.ProxyID != nil && account.Proxy != nil {
 				return account.Proxy.URL()
@@ -311,6 +310,7 @@ func (s *OpenAIGatewayService) forwardOpenAIWSV2(
 		}
 	}
 
+	responseModelObserver.codexSentinel = lease.conn.sentinelObservation.forModel(mappedModel)
 	handshakeTurnState := strings.TrimSpace(lease.HandshakeHeader(openAIWSTurnStateHeader))
 	logOpenAIWSModeDebug(
 		"handshake account_id=%d conn_id=%s has_turn_state=%v turn_state_len=%d",

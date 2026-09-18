@@ -29,6 +29,8 @@ func RegisterGatewayRoutes(
 	compositeResolver *service.CompositeRouteResolver,
 	cfg *config.Config,
 ) {
+	r.GET("/internal/codex-sentinel/status", h.OpenAIGateway.CodexSentinelStatus)
+	r.POST("/internal/codex-sentinel/refresh", h.OpenAIGateway.CodexSentinelRefresh)
 	bodyLimit := middleware.RequestBodyLimit(cfg.Gateway.MaxBodySize)
 	textBodyLimit := middleware.RequestBodyLimit(cfg.Gateway.TextMaxBodySize)
 	clientRequestID := middleware.ClientRequestID()
