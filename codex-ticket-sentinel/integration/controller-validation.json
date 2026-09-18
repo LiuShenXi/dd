@@ -1,0 +1,9 @@
+{
+  "runtime": "Python 3.12 in Linux container, UID10001, read-only root, loopback-only tests",
+  "tests": 30,
+  "passed": true,
+  "command": "docker run --rm --network none --read-only --tmpfs /tmp:rw,size=32m -e PYTHONDONTWRITEBYTECODE=1 -v <source>:/tests:ro -w /tests codex-ticket-sentinel:20260919-v1 python -m unittest discover -s tests -v",
+  "scope": "HTTP fixtures, durable jobs and rate limits, stale signals, master-off, process lock and crash recovery; no live upstream inference",
+  "windows_tests": "30 passed in normal and optimized Python mode",
+  "sidecar_image_local_id": "sha256:6ef79bbed39cfc1cfd649921e9735da90e38387aeef8d3223428f3d3fb068991"
+}
