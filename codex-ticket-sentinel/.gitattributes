@@ -1,0 +1,2 @@
+# Unified diff context requires its leading space before original indentation.
+integration/*.patch -whitespace
