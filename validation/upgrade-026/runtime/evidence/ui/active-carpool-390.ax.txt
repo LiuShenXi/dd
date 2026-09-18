@@ -1,0 +1,78 @@
+Browser tab: 2048478615, Title: "拼车详情 - 水上列车", URL: "http://127.0.0.1:38626/carpool".
+1 AXWebArea 拼车详情 - 水上列车, URL: 127.0.0.1:38626/carpool
+	92 container app
+		93 container
+			94 link Description: 水上列车, Value: 127.0.0.1:38626/dashboard
+			95 link Description: 水上列车, Value: 127.0.0.1:38626/dashboard
+			96 link Description: 仪表盘, Value: 127.0.0.1:38626/dashboard
+			97 link Description: API 密钥, Value: 127.0.0.1:38626/keys
+			98 link Description: 使用记录, Value: 127.0.0.1:38626/usage
+			99 link Description: 渠道状态, Value: 127.0.0.1:38626/monitor
+			100 link Description: 我的订阅, Value: 127.0.0.1:38626/subscriptions
+			101 link Description: 拼车详情, Value: 127.0.0.1:38626/carpool
+			102 link Description: 兑换, Value: 127.0.0.1:38626/redeem
+			103 link Description: 个人资料, Value: 127.0.0.1:38626/profile
+			104 button 深色模式
+				105 image
+				106 text 深色模式
+			107 button 收起
+				108 image
+				109 text 收起
+		110 container
+			111 button 切换菜单
+				112 image
+			113 button 公告
+				114 image
+			115 button 🇨🇳, Help: 中文
+				116 text 🇨🇳
+				117 image
+			118 button 用户菜单
+			119 container
+				120 heading 拼车详情, Value: 1
+					121 text 拼车详情
+				122 text 查看拼车月卡有效期、可用额度与已确认的重置窗口
+				123 button 刷新
+					124 image
+					125 text 刷新
+				126 text 累计已使用额度
+				127 text $0.00
+				128 text 本期合约已重置
+				129 text 0
+				130 text 拼车可用额度
+				131 text $550.00
+				132 text 与普通账户余额独立
+				133 heading 会员周期, Value: 2
+					134 text 会员周期
+				135 text 2026/09/18 00:02 至 2026/10/16 00:02
+				136 text 时间均按 Asia/Shanghai 显示
+				137 text 进行中
+				138 text 每周基础额度
+				139 text 100% 剩余
+				140 progress indicator Description: 每周基础额度, Value: 100
+				141 text 当前第 1 周期
+				142 definition list
+					143 container 下一次自然补额
+						144 text 下一次自然补额
+					145 container
+						146 text 2026/09/25 00:02 剩余 5 天 23 小时 37 分钟
+					147 container 固定月卡到期时间
+						148 text 固定月卡到期时间
+					149 text 2026/10/16 00:02
+				150 heading 账期记录, Value: 3
+					151 text 账期记录
+				152 text 第 1 周期 2026/09/18 00:02 - 2026/09/25 00:02 进行中
+				153 image
+				154 heading 重置窗口, Value: 2
+					155 text 重置窗口
+				156 text 暂无重置窗口
+	83 container popper-container
+		84 button
+		85 button 图片翻译
+		86 button 语音翻译
+			87 image Capa_1
+		88 button (disabled) 添加到收藏夹
+		89 button 快捷设置
+		90 button 关闭(Esc)
+		91 text 请输入需要翻译的文本。
+
+The focused UI element is 1 AXWebArea 拼车详情 - 水上列车, URL: 127.0.0.1:38626/carpool

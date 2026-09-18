@@ -1,0 +1,93 @@
+Browser tab: 2048478615, Title: "兑换码 - 水上列车", URL: "http://127.0.0.1:38626/redeem".
+0 AXWebArea 兑换码 - 水上列车, URL: 127.0.0.1:38626/redeem
+	1 container app
+		138 container
+			139 link Description: 水上列车, Value: 127.0.0.1:38626/dashboard
+			140 link Description: 水上列车, Value: 127.0.0.1:38626/dashboard
+			141 link Description: 仪表盘, Value: 127.0.0.1:38626/dashboard
+			142 link Description: API 密钥, Value: 127.0.0.1:38626/keys
+			143 link Description: 使用记录, Value: 127.0.0.1:38626/usage
+			144 link Description: 渠道状态, Value: 127.0.0.1:38626/monitor
+			145 link Description: 我的订阅, Value: 127.0.0.1:38626/subscriptions
+			146 link Description: 拼车详情, Value: 127.0.0.1:38626/carpool
+			147 link Description: 兑换, Value: 127.0.0.1:38626/redeem
+			148 link Description: 个人资料, Value: 127.0.0.1:38626/profile
+			149 button 深色模式
+				150 image
+				151 text 深色模式
+			152 button 收起
+				153 image
+				154 text 收起
+		155 container
+			156 button 切换菜单
+				157 image
+			158 button 公告
+				159 image
+			160 button 🇨🇳, Help: 中文
+				161 text 🇨🇳
+				162 image
+			163 button 用户菜单
+			164 text 当前余额
+			165 text $77.00
+			166 text 并发数: 8 请求
+			167 container
+				168 text 兑换码
+				169 text field (settable) 兑换码, ID: code
+				170 text 兑换码区分大小写
+				171 button (disabled) 兑换
+					172 image
+					173 text 兑换
+			174 image
+			175 heading 关于兑换码, Value: 3
+				176 text 关于兑换码
+			177 content list
+				178 container
+					179 AXListMarker •
+					180 text 每个兑换码只能使用一次
+				181 container
+					182 AXListMarker •
+					183 text 兑换码可以增加余额、并发数或试用权限
+				184 container
+					185 AXListMarker •
+					186 text 如有兑换问题，请联系客服
+				187 container
+					188 AXListMarker •
+					189 text 余额和并发数即时更新
+			190 heading 最近活动, Value: 2
+				191 text 最近活动
+			217 image
+			218 text 并发增加（兑换）
+			219 text 2026/09/19 00:09:01
+			220 text +1 请求
+			221 text upgrade0...
+			222 image
+			223 text 并发增加（兑换）
+			224 text 2026/09/19 00:09:01
+			225 text +1 请求
+			226 text upgrade0...
+			227 image
+			228 text 并发增加（兑换）
+			229 text 2026/09/19 00:09:01
+			230 text +1 请求
+			231 text upgrade0...
+			207 text 总计: 3 条结果
+			208 container
+				209 text 每页
+				210 pop up button (collapsed, settable) 每页 , Value: 50, Secondary Actions: Expand
+					211 menu
+						212 20
+						213 (selected) 50
+						214 100
+			215 button (disabled) 上一页
+			216 button (disabled) 下一页
+	129 container popper-container
+		130 button
+		131 button 图片翻译
+		132 button 语音翻译
+			133 image Capa_1
+		134 button (disabled) 添加到收藏夹
+		135 button 快捷设置
+		136 button 关闭(Esc)
+		137 text 请输入需要翻译的文本。
+
+The focused UI element is 0 AXWebArea 兑换码 - 水上列车, URL: 127.0.0.1:38626/redeem

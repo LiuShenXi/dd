@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-09-18T16:21:08.847448+00:00",
+  "target": "linux/amd64",
+  "sha256": "1aca67341febbb8ac06efa8f880c2a0050528e90c7e3c07afcb3a6b1e8c214a5",
+  "compile_passed": true,
+  "offline_linux_help_exit_code": 0,
+  "production_cli_present_in_recovered_image": true,
+  "standard_dockerfile_build_and_copy_added": true,
+  "full_root_multistage_docker_build_run": false,
+  "note": "Preserves a production-image tool; does not claim current blue-green scripts invoke it."
+}

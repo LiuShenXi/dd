@@ -1,0 +1,141 @@
+Browser tab: 2048478615, Title: "仪表盘 - 水上列车", URL: "http://127.0.0.1:38626/dashboard".
+1 AXWebArea 仪表盘 - 水上列车, URL: 127.0.0.1:38626/dashboard
+	92 container app
+		93 container
+			94 link Description: 水上列车, Value: 127.0.0.1:38626/dashboard
+			95 link Description: 水上列车, Value: 127.0.0.1:38626/dashboard
+			96 link Description: 仪表盘, Value: 127.0.0.1:38626/dashboard
+			97 link Description: API 密钥, Value: 127.0.0.1:38626/keys
+			98 link Description: 使用记录, Value: 127.0.0.1:38626/usage
+			99 link Description: 渠道状态, Value: 127.0.0.1:38626/monitor
+			100 link Description: 我的订阅, Value: 127.0.0.1:38626/subscriptions
+			101 link Description: 拼车详情, Value: 127.0.0.1:38626/carpool
+			102 link Description: 兑换, Value: 127.0.0.1:38626/redeem
+			103 link Description: 个人资料, Value: 127.0.0.1:38626/profile
+			104 button 深色模式
+				105 image
+				106 text 深色模式
+			107 button 收起
+				108 image
+				109 text 收起
+		110 container
+			111 button 切换菜单
+				112 image
+			113 button 公告
+				114 image
+			115 button 🇨🇳, Help: 中文
+				116 text 🇨🇳
+				117 image
+			118 button 用户菜单
+			119 image
+			120 text 余额
+			121 text $77.00
+			122 text 可用
+			123 text 拼车加油
+			124 button 拼车加油
+				125 image
+			126 container
+				127 text 剩余 0/0 次  · 本周期增加 $0.00
+			128 button (disabled) 一键加油
+				129 image
+				130 text 一键加油
+			131 text 未开通拼车月卡
+			132 image
+			133 text API 密钥
+			134 text 1
+			135 text 1 启用
+			136 image
+			137 text 今日请求
+			138 text 0
+			139 text 总计: 0
+			140 image
+			141 text 今日消费
+			142 container
+				143 text $0.0000
+				144 text  / $0.0000
+			145 container
+				146 text 总计:
+				147 text $0.0000
+				148 text  / $0.0000
+			149 image
+			150 text 今日 Token
+			151 text 0
+			152 text 输入: 0 / 输出: 0 / 缓存: 0
+			153 image
+			154 text 累计 Token
+			155 text 0
+			156 text 输入: 0 / 输出: 0 / 缓存: 0
+			157 image
+			158 text 性能指标
+			159 text 0
+			160 text RPM
+			161 text 0
+			162 text TPM
+			163 image
+			164 text 平均响应
+			165 text 0ms
+			166 text 平均时间
+			167 text 时间范围:
+			168 button 近 7 天
+				169 image
+				170 text 近 7 天
+				171 image
+			172 button 刷新
+			173 text 粒度:
+			174 pop up button (collapsed) Description: Select option, Secondary Actions: Expand
+				175 text 按天
+				176 image
+			177 container
+				178 heading 模型分布, Value: 3
+					179 text 模型分布
+				180 text 暂无数据
+				181 table
+					182 row
+						183 cell
+							184 text 模型
+						185 cell
+							186 text 请求
+						187 cell
+							188 text Token
+						189 cell
+							190 text 实际
+						191 cell
+							192 text 标准
+			193 heading Token 使用趋势, Value: 3
+				194 text Token 使用趋势
+			195 text 暂无数据
+			196 heading 最近使用, Value: 2
+				197 text 最近使用
+			198 text 近 7 天
+			199 image
+			200 heading 暂无使用记录, Value: 3
+				201 text 暂无使用记录
+			202 text 开始使用 API 后，您的使用历史将显示在这里。
+			203 heading 快捷操作, Value: 2
+				204 text 快捷操作
+			205 button 创建 API 密钥 生成新的 API 密钥
+				206 image
+				207 text 创建 API 密钥
+				208 text 生成新的 API 密钥
+				209 image
+			210 button 查看使用记录 查看详细的使用日志
+				211 image
+				212 text 查看使用记录
+				213 text 查看详细的使用日志
+				214 image
+			215 button 兑换码 使用兑换码充值
+				216 image
+				217 text 兑换码
+				218 text 使用兑换码充值
+				219 image
+	83 container popper-container
+		84 button
+		85 button 图片翻译
+		86 button 语音翻译
+			87 image Capa_1
+		88 button (disabled) 添加到收藏夹
+		89 button 快捷设置
+		90 button 关闭(Esc)
+		91 text 请输入需要翻译的文本。
+
+The focused UI element is 1 AXWebArea 仪表盘 - 水上列车, URL: 127.0.0.1:38626/dashboard

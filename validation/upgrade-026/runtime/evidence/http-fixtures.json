@@ -1,0 +1,78 @@
+{
+  "source": "fresh synthetic data via real HTTP admin/user API",
+  "plan": {
+    "id": 7,
+    "reset_mode": "rolling"
+  },
+  "groups": {
+    "carpool": {
+      "id": 2,
+      "name": "Upgrade 0.2.6 carpool synthetic"
+    },
+    "standard": {
+      "id": 3,
+      "name": "Upgrade 0.2.6 standard synthetic"
+    }
+  },
+  "users": [
+    {
+      "name": "active",
+      "id": 2,
+      "group_id": 2,
+      "ordinary_balance": 123,
+      "starts_at": "2026-09-17T16:02:11.188Z",
+      "term_id": 1,
+      "expires_at": "2026-10-15T16:02:11.188Z",
+      "reset_mode": "rolling",
+      "preview_matches_open": true,
+      "next_natural_reset_at": "2026-09-24T16:02:11.188Z",
+      "api_key_id": 1,
+      "admin_bound": true,
+      "details_status": "active",
+      "remaining": 550,
+      "usage_omits_ordinary_balance": true
+    },
+    {
+      "name": "future",
+      "id": 3,
+      "group_id": 2,
+      "ordinary_balance": 45,
+      "starts_at": "2026-09-20T16:03:29.195Z",
+      "term_id": 2,
+      "expires_at": "2026-10-18T16:03:29.195Z",
+      "reset_mode": "rolling",
+      "preview_matches_open": true,
+      "next_natural_reset_at": "2026-09-27T16:03:29.195Z",
+      "api_key_id": 2,
+      "admin_bound": true,
+      "details_status": "pending"
+    },
+    {
+      "name": "expired",
+      "id": 4,
+      "group_id": 2,
+      "ordinary_balance": 9,
+      "starts_at": "2026-08-20T16:03:29.195Z",
+      "term_id": 3,
+      "expires_at": "2026-09-17T16:03:29.195Z",
+      "reset_mode": "rolling",
+      "preview_matches_open": true,
+      "next_natural_reset_at": null,
+      "api_key_id": 3,
+      "admin_bound": true,
+      "details_status": "expired"
+    },
+    {
+      "name": "ordinary",
+      "id": 5,
+      "group_id": 3,
+      "ordinary_balance": 77,
+      "starts_at": null,
+      "api_key_id": 4,
+      "usage_balance": 77
+    }
+  ],
+  "ordinary_balances_preserved": true,
+  "active_carpool_uses_quota_not_ordinary_balance": true,
+  "all_terms_28_days": true
+}

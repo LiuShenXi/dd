@@ -1,0 +1,132 @@
+{
+  "source": "fresh-synthetic-local-only",
+  "run_id": "380fb6903e77ea17",
+  "stage": "complete",
+  "passed": true,
+  "checks": [
+    "fresh_api_created_user_group_account_key_term",
+    "http_response_one_durable_receipt_one_ledger_one_usage_ordinary_balance_unchanged",
+    "same_websocket_two_independent_turn_receipts_and_debits_ordinary_balance_unchanged",
+    "unique_model_received_exactly_one_http_and_two_websocket_turns",
+    "native_responses_upstream_endpoint_three_inferences_no_chat_conversion"
+  ],
+  "synthetic_ids": {
+    "account": 4,
+    "api_key": 8,
+    "cycle": 7,
+    "group": 11,
+    "standard_group": 10,
+    "term": 7,
+    "user": 9
+  },
+  "before": {
+    "ordinary_balance": "47.25000000",
+    "billing_requests": 0,
+    "settled_receipts": 0,
+    "distinct_request_ids": 0,
+    "valid_durable_snapshots": 0,
+    "receipt_cost": "0",
+    "usage_ledger_rows": 0,
+    "usage_ledger_delta": "0",
+    "usage_log_rows": 0,
+    "usage_actual_cost": "0",
+    "usage_rows_with_correct_carpool_scope": 0
+  },
+  "after_http": {
+    "ordinary_balance": "47.25000000",
+    "billing_requests": 1,
+    "settled_receipts": 1,
+    "distinct_request_ids": 1,
+    "valid_durable_snapshots": 1,
+    "receipt_cost": "1.00000000",
+    "usage_ledger_rows": 1,
+    "usage_ledger_delta": "-1.00000000",
+    "usage_log_rows": 1,
+    "usage_actual_cost": "1.0000000000",
+    "usage_rows_with_correct_carpool_scope": 1
+  },
+  "after_websocket": {
+    "ordinary_balance": "47.25000000",
+    "billing_requests": 3,
+    "settled_receipts": 3,
+    "distinct_request_ids": 3,
+    "valid_durable_snapshots": 3,
+    "receipt_cost": "3.00000000",
+    "usage_ledger_rows": 3,
+    "usage_ledger_delta": "-3.00000000",
+    "usage_log_rows": 3,
+    "usage_actual_cost": "3.0000000000",
+    "usage_rows_with_correct_carpool_scope": 3
+  },
+  "mock_stats_before": {
+    "by_case": {
+      "default": 3,
+      "upgrade026-380fb6903e77ea17": 1,
+      "upgrade026-774a23dfc98f38c1": 4,
+      "upgrade026-8b70bc5bc7e21906": 4,
+      "upgrade026-cb00008fcce81028": 1
+    },
+    "by_case_synthetic_account_outcome": {
+      "upgrade026-774a23dfc98f38c1": {
+        "account_1:200": 2
+      },
+      "upgrade026-8b70bc5bc7e21906": {
+        "account_1:200": 2
+      }
+    },
+    "by_endpoint": {
+      "/__control": 4,
+      "/v1/chat/completions": 2,
+      "/v1/responses": 7
+    },
+    "by_status": {
+      "200": 13
+    },
+    "by_transport": {
+      "control": 4,
+      "http_json": 5,
+      "websocket": 4
+    },
+    "next_sequence": 26,
+    "rejected": 0,
+    "requests": 13,
+    "ws_connections": 8
+  },
+  "mock_stats": {
+    "by_case": {
+      "default": 3,
+      "upgrade026-380fb6903e77ea17": 4,
+      "upgrade026-774a23dfc98f38c1": 4,
+      "upgrade026-8b70bc5bc7e21906": 4,
+      "upgrade026-cb00008fcce81028": 1
+    },
+    "by_case_synthetic_account_outcome": {
+      "upgrade026-380fb6903e77ea17": {
+        "account_1:200": 2
+      },
+      "upgrade026-774a23dfc98f38c1": {
+        "account_1:200": 2
+      },
+      "upgrade026-8b70bc5bc7e21906": {
+        "account_1:200": 2
+      }
+    },
+    "by_endpoint": {
+      "/__control": 4,
+      "/v1/chat/completions": 2,
+      "/v1/responses": 10
+    },
+    "by_status": {
+      "200": 16
+    },
+    "by_transport": {
+      "control": 4,
+      "http_json": 6,
+      "websocket": 6
+    },
+    "next_sequence": 34,
+    "rejected": 0,
+    "requests": 16,
+    "ws_connections": 12
+  }
+}

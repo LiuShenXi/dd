@@ -143,6 +143,8 @@ docs/*
 !docs/PLUGIN_DEVELOPMENT.md
 !docs/channel-monitor-v2-safe-defaults.md
 !docs/OPERATIONS.md
+!docs/UPGRADE_0_2_6.md
+!docs/UPGRADE_0_2_6_FEATURE_MATRIX.md
 !docs/operations/
 docs/operations/*
 !docs/operations/2026-09-10-migration.md
@@ -158,6 +160,8 @@ docs/screenshots/*
 frontend/coverage/
 aicodex
 output/
+validation/upgrade-026/**/.runtime/
+validation/upgrade-026/**/__pycache__/
 .codegraph/
 
 # Vitest / Vite cache at repo root

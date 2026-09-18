@@ -1,0 +1,37 @@
+{
+  "test_events": {
+    "run": 20166,
+    "output": 55523,
+    "pass": 20147,
+    "pause": 1568,
+    "cont": 1568,
+    "skip": 19
+  },
+  "packages": {
+    "pass": 59,
+    "skip": 65
+  },
+  "top_level_pass": 10992,
+  "skipped_tests": [
+    "TestDingTalkOAuthStart_Disabled",
+    "TestResolvePageImagePathRejectsSymlinkEscape",
+    "TestDialerBasicConnection",
+    "TestJA3Fingerprint",
+    "TestAllProfiles",
+    "TestPromptAuditConfigCASSecretRoundTripInvalidationAndTTL",
+    "TestRedisPayloadStoreRoundTripTTLNamespaceAndDelete",
+    "TestPromptRuntimeAggregatesConfigWorkersQueueRedisEndpointsAndGuardMetrics",
+    "TestPromptAuditMigrationSchemaAndLeakageGate",
+    "TestPromptAuditDatabasePersistsFullPromptOnEventsOnly",
+    "TestPromptAuditRepositoryAdmissionClaimFencingAndEventTransaction",
+    "TestPromptAuditRepositoryForeignKeysFiltersAndStableIdentitySnapshots",
+    "TestPromptAuditRepositoryHighWaterAndSafeDeletion",
+    "TestPromptAuditServiceConfirmationKeepsPostPreviewEventsAndConcurrentDeletesAreSafe",
+    "TestAuthPendingIdentityService_UpsertAdoptionDecision_ClearsLegacyNullSessionReference",
+    "TestEstimateOpenAIInputTokens_CompareWithOpenAIAPI/simple_user_text",
+    "TestEstimateOpenAIInputTokens_CompareWithOpenAIAPI/system_plus_tool",
+    "TestEstimateOpenAIInputTokens_CompareWithOpenAIAPI/multi_turn_text",
+    "TestPluginRuntimeIntegration"
+  ],
+  "failures": []
+}

@@ -1,0 +1,14 @@
+{
+  "base_url": "http://127.0.0.1:38626",
+  "private_credentials_file": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\sub2api-upgrade-026-20260918\\runtime\\app-credentials.private.json",
+  "source": "fresh synthetic local database",
+  "health_status": 200,
+  "unauthenticated_models_status": 401,
+  "app_networks": [
+    "sub2api-upgrade026-app-internal"
+  ],
+  "app_network_internal": true,
+  "container_started_at": "2026-09-18T15:58:18.673734005Z",
+  "image_id": "sha256:3331be7a27b14a83630dedf1530e11fb400e82a2dcff3a1a730b1052a187b10d",
+  "label": "sub2api-upgrade026-20260918"
+}

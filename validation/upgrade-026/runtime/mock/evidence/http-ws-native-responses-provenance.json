@@ -1,0 +1,20 @@
+{
+  "source": "Synthetic candidate only",
+  "upstream_http_path": "/v1/responses",
+  "client_http_path": "/v1/responses",
+  "synthetic_account_responses_mode": "force_responses",
+  "fixture_run_id": "380fb6903e77ea17",
+  "git_head": "7ac4f2bc5f2f00f11d0ea859b2eff22fe7a7372b",
+  "candidate_binary_sha256": "d9a766fc1bd1e93b60411fdc7180c49c017eef47a82db3849d4e66256034aa01",
+  "candidate_image_id": "sha256:3331be7a27b14a83630dedf1530e11fb400e82a2dcff3a1a730b1052a187b10d",
+  "candidate_source_input_sha256": "b27fb220de74f244dcf97f7e89e5f34d0499f3aa2b5100ed28de9054a9f387d3",
+  "probe_source_sha256": "9f6d2b34e81626789658cabee5fcc4c96ab87d33eeb0b36eff21986b12c7b519",
+  "probe_binary_sha256": "a14c9be386c8d27aeb08bc9f771fec438ecf1f5153faecab55fd7b95b37ab966",
+  "mock_source_sha256": "17d90c4b5a8dc5543934617e1069b925f4cb82cccd278da3d1e4a6129b495041",
+  "mock_binary_sha256": "27577f3b5cc32eeb6421be8c062655b774c8ddda1b71913db76a2d38f339f416",
+  "bound_database": "upgrade026 on sub2api-upgrade026-app-postgres",
+  "db_session_read_only": true,
+  "network": "sub2api-upgrade026-app-internal",
+  "synthetic_runtime_http_policy": "allowlist disabled, insecure HTTP allowed; network prohibits external egress",
+  "real_upstream_calls": false
+}

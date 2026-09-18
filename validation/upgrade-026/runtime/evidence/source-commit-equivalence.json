@@ -1,0 +1,8 @@
+{
+  "built_git_head": "7ac4f2bc5f2f00f11d0ea859b2eff22fe7a7372b",
+  "current_git_head": "8c3275d597cdcf381a30dee87fe0e2c9fa2773ef",
+  "source_input_sha256": "b27fb220de74f244dcf97f7e89e5f34d0499f3aa2b5100ed28de9054a9f387d3",
+  "product_inputs_equal": true,
+  "binary_sha256": "d9a766fc1bd1e93b60411fdc7180c49c017eef47a82db3849d4e66256034aa01",
+  "note": "Binary was built from the 7ac4f2bc5 working tree including then-uncommitted compatibility changes. Those production inputs exactly match the later 8c3275d59 committed tree; the earlier git_head is not a clean-tree provenance claim."
+}

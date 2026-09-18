@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the Sub2API backup every six hours
+
+[Timer]
+OnCalendar=*-*-* 00/6:20:00 UTC
+RandomizedDelaySec=5m
+Persistent=true
+Unit=sub2api-backup.service
+
+[Install]
+WantedBy=timers.target

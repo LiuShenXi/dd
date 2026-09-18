@@ -1,0 +1,10 @@
+{
+  "source": "Synthetic candidate only",
+  "upstream_http_path": "/v1/chat/completions",
+  "client_http_path": "/v1/responses",
+  "reason": "Automatic capability probe correctly marked simple mock without function_call unsupported; Responses compatibility conversion succeeded",
+  "probe_source_sha256": "8fb463fe3e7bb230bc93b0d83247470ad2403f196c7f27f88961ccd60f45e046",
+  "probe_binary_sha256": "af87f139628870e82475c61b1a8396d60581fe366d74ed3ee66d2f30a395ecbc",
+  "mock_source_sha256": "17d90c4b5a8dc5543934617e1069b925f4cb82cccd278da3d1e4a6129b495041",
+  "mock_binary_sha256": "27577f3b5cc32eeb6421be8c062655b774c8ddda1b71913db76a2d38f339f416"
+}

@@ -1,0 +1,12 @@
+{
+  "production_count": 291,
+  "mismatches": [],
+  "new_migrations": [
+    "234z_group_model_allowlist_compatibility.sql",
+    "235_group_model_allowlist.sql",
+    "236_group_model_allowlist_repair.sql",
+    "237_add_minimax_platform.sql",
+    "238_opencode_go_platform.sql",
+    "238_purge_unlimited_user_platform_quotas.sql"
+  ]
+}

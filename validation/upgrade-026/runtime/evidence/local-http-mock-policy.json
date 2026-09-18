@@ -1,0 +1,14 @@
+{
+  "created_at": "2026-09-18T16:14:43.243349+00:00",
+  "scope": "synthetic local runtime only",
+  "security_url_allowlist_enabled": false,
+  "allow_insecure_http": true,
+  "reason": "HTTP deterministic mock; strict allowlist mode always requires HTTPS",
+  "application_network_internal": true,
+  "production_configuration_changed": false,
+  "product_source_changed": false,
+  "same_image": true,
+  "same_synthetic_database": true,
+  "health_status": 200,
+  "unauthenticated_models_status": 401
+}

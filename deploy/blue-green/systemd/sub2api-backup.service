@@ -1,0 +1,13 @@
+[Unit]
+Description=Back up Sub2API PostgreSQL, Redis, and application data
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=linuxuser
+Group=linuxuser
+ExecStart=/home/linuxuser/apps/sub2api/blue-green/scripts/backup.sh
+
+[Install]
+WantedBy=multi-user.target

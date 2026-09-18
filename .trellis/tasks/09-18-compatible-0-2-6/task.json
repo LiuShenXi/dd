@@ -2,10 +2,11 @@
   "id": "compatible-0-2-6",
   "title": "Progressive Sub2API 0.2.6 upgrade preserving BWH custom behavior",
   "description": "Recover the BWH runtime baseline and integrate the preserved upstream 0.2.6 source in staged, verifiable merges.",
-  "status": "in_progress",
+  "status": "completed",
   "dev_type": "fullstack",
   "priority": "P1",
   "createdAt": "2026-09-18",
+  "completedAt": "2026-09-19",
   "branch": "codex/compatible-0.2.6",
   "notes": "Explicit user instruction authorizes local source recovery, compatibility implementation and validation. Production reads only; no deployment. Trellis scripts absent in inherited repository, artifacts maintained directly. Original dd and unrelated dd-update-026 preserved."
 }

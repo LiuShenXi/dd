@@ -1,0 +1,168 @@
+Browser tab: 2048478615, Title: "API 密钥 - 水上列车", URL: "http://127.0.0.1:38626/keys".
+1 AXWebArea API 密钥 - 水上列车, URL: 127.0.0.1:38626/keys
+	92 container app
+		93 container
+			94 link Description: 水上列车, Value: 127.0.0.1:38626/dashboard
+			95 link Description: 水上列车, Value: 127.0.0.1:38626/dashboard
+			96 link Description: 仪表盘, Value: 127.0.0.1:38626/dashboard
+			97 link Description: API 密钥, Value: 127.0.0.1:38626/keys
+			98 link Description: 使用记录, Value: 127.0.0.1:38626/usage
+			99 link Description: 渠道状态, Value: 127.0.0.1:38626/monitor
+			100 link Description: 我的订阅, Value: 127.0.0.1:38626/subscriptions
+			101 link Description: 拼车详情, Value: 127.0.0.1:38626/carpool
+			102 link Description: 兑换, Value: 127.0.0.1:38626/redeem
+			103 link Description: 个人资料, Value: 127.0.0.1:38626/profile
+			104 button 深色模式
+				105 image
+				106 text 深色模式
+			107 button 收起
+				108 image
+				109 text 收起
+		110 container
+			111 heading API 密钥, Value: 1
+				112 text API 密钥
+			113 text 管理您的 API 密钥和访问令牌
+			114 button 公告
+				115 image
+			116 button 🇨🇳 ZH, Help: 中文
+				117 text 🇨🇳
+				118 text ZH
+				119 image
+			120 container
+				121 image
+				122 text $550.00 拼车
+			123 button 用户菜单
+				124 text UP
+				125 text Upgrade candidate active
+				126 text 用户
+				127 image
+			128 button 刷新
+				129 image
+			130 button 列设置
+				131 image
+				132 text 列设置
+			133 button 创建密钥
+				134 image
+				135 text 创建密钥
+			136 container
+				137 image
+				138 text field (settable)
+			139 pop up button (collapsed) Description: Select option, Secondary Actions: Expand
+				140 text 全部分组
+				141 image
+			142 pop up button (collapsed) Description: Select option, Secondary Actions: Expand
+				143 text 全部状态
+				144 image
+			145 table
+				146 row
+					147 cell
+						148 checkbox (settable, integer) Description: 全选, Value: 0
+					149 cell
+						150 text 名称
+					151 cell
+						152 text API 密钥
+					153 cell
+						154 text 分组
+					155 cell
+						156 text 当前并发
+					157 cell
+						158 text 用量
+					159 cell
+						160 text 过期时间
+					161 cell
+						162 text 状态
+					163 cell
+						164 text 创建时间
+					165 cell
+						166 text 操作
+				167 row
+					168 cell
+						169 checkbox (settable, integer) Description: 选择密钥 Synthetic browser acceptance, Value: 0
+					170 cell
+						171 text Synthetic browser acceptance
+					172 cell
+						173 text sk-8be...d692
+						174 button 复制到剪贴板
+							175 image
+					176 cell
+						177 container
+							178 image
+							179 text Upgrade 0.2.6 carpool synthetic 1x
+					180 cell
+						181 text 0
+					182 cell
+						183 text 今日: $0.0000 近30天: $0.0000
+					184 cell
+						185 text 永久有效
+					186 cell
+						187 text 活跃
+					188 cell
+						189 text 2026/09/19 00:03:29
+					190 cell
+						191 button 使用密钥
+							192 image
+							193 text 使用密钥
+						194 button 导入到 CCS
+							195 image
+							196 text 导入到 CCS
+						197 button 禁用
+							198 image
+							199 text 禁用
+						200 button 编辑
+							201 image
+							202 text 编辑
+						203 button 删除
+							204 image
+							205 text 删除
+			206 container
+				207 text 显示  1  至  1  共  1  条结果
+			208 text 每页:
+			209 pop up button (collapsed) Description: Select option, Secondary Actions: Expand
+				210 text 20
+				211 image
+			212 container Pagination
+				213 button (disabled) 上一页
+					214 image
+				215 button 跳转到第 1 页
+				216 button (disabled) 下一页
+					217 image
+	218 container 编辑密钥
+		219 container
+			220 heading 编辑密钥, Value: 3, ID: modal-title-14
+				221 text 编辑密钥
+			222 button Close modal
+				223 image
+			224 container key-form
+				225 text 名称
+				226 text field (settable) Synthetic browser acceptance
+				227 text 分组
+				228 image
+				229 text Upgrade 0.2.6 carpool synthetic 1x
+				230 text 状态
+				231 pop up button (collapsed) Description: Select option, Secondary Actions: Expand
+					232 text 启用
+					233 image
+				234 text IP 限制
+				235 button
+				236 text 额度限制
+				237 container
+					238 text $
+					239 stepper (settable)
+				240 text 设置此密钥可消费的最大金额。0 = 无限制。
+				241 text 速率限制
+				242 button
+				243 text 密钥有效期
+				244 button
+			245 button 取消
+			246 button 更新
+	83 container popper-container
+		84 button
+		85 button 图片翻译
+		86 button 语音翻译
+			87 image Capa_1
+		88 button (disabled) 添加到收藏夹
+		89 button 快捷设置
+		90 button 关闭(Esc)
+		91 text 请输入需要翻译的文本。
+
+The focused UI element is 222 button Close modal

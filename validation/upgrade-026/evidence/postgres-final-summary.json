@@ -1,0 +1,18 @@
+{
+  "run_id": "20260918T155600Z-09e0022e",
+  "redis_image": "redis:8-alpine",
+  "database": "sub2api_upgrade026_integration_20260918",
+  "completed_at": "2026-09-18T15:57:48.8172044+00:00",
+  "task": "09-18-compatible-0-2-6",
+  "verbose_run_events": 180,
+  "network": "sub2api-upgrade026-test-net",
+  "postgres_image": "postgres:18-alpine",
+  "count": 1,
+  "runner_image": "alpine:3.20",
+  "exit_code": 0,
+  "run_pattern": "^(TestSourceRuntimeHarnessIsolation|TestGroupModelAllowlistCompatibility_.*|TestUpgrade026ProductionMigrations_.*|Test.*Carpool.*|Test.*WithdrawAll.*|TestUsageSummary.*|Test.*GroupUsage.*)$",
+  "top_level_pass": 100,
+  "all_pass": 180,
+  "fail": 0,
+  "skip": 0
+}

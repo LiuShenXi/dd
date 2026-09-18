@@ -1,0 +1,78 @@
+name: sub2api
+
+services:
+  sub2api-blue:
+    extends:
+      file: ../docker-compose.local.yml
+      service: sub2api
+    image: ${SUB2API_BLUE_IMAGE:?SUB2API_BLUE_IMAGE is required}
+    container_name: sub2api-blue
+    environment:
+      RELEASE_DRAIN_START_HELD: "false"
+      CARPOOL_BACKGROUND_ENABLED: "false"
+      BATCH_IMAGE_QUEUE_ENABLED: "false"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -T 2 -O /dev/null http://127.0.0.1:8080/health && wget -S -T 2 -O /dev/null http://127.0.0.1:8080/v1/models 2>&1 | grep -q 'HTTP/1.1 401'"]
+      interval: 10s
+      timeout: 6s
+      retries: 3
+      start_period: 30s
+    depends_on: !reset {}
+    ports: !override
+      - "127.0.0.1:${SUB2API_BLUE_PORT:-18080}:8080"
+    networks:
+      sub2api-network:
+        aliases:
+          - sub2api-blue
+
+  sub2api-green:
+    extends:
+      file: ../docker-compose.local.yml
+      service: sub2api
+    image: ${SUB2API_GREEN_IMAGE:?SUB2API_GREEN_IMAGE is required}
+    container_name: sub2api-green
+    environment:
+      RELEASE_DRAIN_START_HELD: "false"
+      CARPOOL_BACKGROUND_ENABLED: "false"
+      BATCH_IMAGE_QUEUE_ENABLED: "false"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -T 2 -O /dev/null http://127.0.0.1:8080/health && wget -S -T 2 -O /dev/null http://127.0.0.1:8080/v1/models 2>&1 | grep -q 'HTTP/1.1 401'"]
+      interval: 10s
+      timeout: 6s
+      retries: 3
+      start_period: 30s
+    depends_on: !reset {}
+    ports: !override
+      - "127.0.0.1:${SUB2API_GREEN_PORT:-28080}:8080"
+    networks:
+      sub2api-network:
+        aliases:
+          - sub2api-green
+
+  router:
+    image: ${SUB2API_ROUTER_IMAGE:-nginx@sha256:2f07d83bf561b506400dc183b1b2003803e39efbd22451f848adaba14d28c7c7}
+    container_name: sub2api-router
+    mem_limit: 32m
+    memswap_limit: 64m
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "127.0.0.1:${SERVER_PORT:-8080}:8080"
+    volumes:
+      - ./router/conf.d:/etc/nginx/conf.d:ro
+    networks:
+      sub2api-network:
+        aliases:
+          - sub2api
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-T", "5", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
+
+networks:
+  sub2api-network:
+    external: true
+    name: ${SUB2API_NETWORK_NAME:-sub2api_sub2api-network}

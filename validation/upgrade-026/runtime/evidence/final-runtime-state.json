@@ -1,0 +1,40 @@
+{
+  "checked_at": "2026-09-18T16:20:05.395323+00:00",
+  "base_url": "http://127.0.0.1:38626",
+  "health_status": 200,
+  "unauthenticated_models_status": 401,
+  "containers": {
+    "server": {
+      "running": true,
+      "image_id": "sha256:3331be7a27b14a83630dedf1530e11fb400e82a2dcff3a1a730b1052a187b10d"
+    },
+    "rollback": {
+      "running": false,
+      "image_id": "sha256:51e2a5dc82fd83ccb0db30bbce5aaddd7cad2a5fe0c0987463db403f68d0dbcf"
+    },
+    "postgres": {
+      "running": true,
+      "image_id": "sha256:f6d4985d97e69bb9de4d5e24f9f24cbfaa90d30877ce935a8ee872f62efbb621"
+    },
+    "redis": {
+      "running": true,
+      "image_id": "sha256:00c30ddf0ef8074bbc7b7e5ea655bb6d359dc66694edd57d70fe95ce6ba531aa"
+    },
+    "mock": {
+      "running": true,
+      "image_id": "sha256:f6d4985d97e69bb9de4d5e24f9f24cbfaa90d30877ce935a8ee872f62efbb621"
+    },
+    "probe": {
+      "running": false,
+      "image_id": "sha256:f6d4985d97e69bb9de4d5e24f9f24cbfaa90d30877ce935a8ee872f62efbb621"
+    },
+    "ingress": {
+      "running": true,
+      "image_id": "sha256:6769dc3a703c719c1d2756bda113659be28ae16cf0da58dd5fd823d6b9a050ea"
+    }
+  },
+  "database_migration_count": 297,
+  "oauth_accounts": 0,
+  "ownership_preflight_passed": true,
+  "stop_cleanup_executed": false
+}

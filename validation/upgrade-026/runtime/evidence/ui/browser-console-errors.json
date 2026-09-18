@@ -1,0 +1,26 @@
+[
+  {
+    "level": "error",
+    "message": "SyntaxError: Failed to execute 'postMessage' on 'Window': Invalid target origin 'null' in a call to 'postMessage'.\n    at a (chrome-extension://bpoadfkcbjbfhfodiogcnhhhpibjhbnh/content_main.js:5258:13726)",
+    "timestamp": "2026-09-18T16:25:11.202Z",
+    "url": "chrome-extension://bpoadfkcbjbfhfodiogcnhhhpibjhbnh/content_main.js"
+  },
+  {
+    "level": "error",
+    "message": "SyntaxError: Failed to execute 'postMessage' on 'Window': Invalid target origin 'null' in a call to 'postMessage'.\n    at a (chrome-extension://bpoadfkcbjbfhfodiogcnhhhpibjhbnh/content_main.js:5258:13726)",
+    "timestamp": "2026-09-18T16:25:11.202Z",
+    "url": "chrome-extension://bpoadfkcbjbfhfodiogcnhhhpibjhbnh/content_main.js"
+  },
+  {
+    "level": "error",
+    "message": "SyntaxError: Failed to execute 'postMessage' on 'Window': Invalid target origin 'null' in a call to 'postMessage'.\n    at a (chrome-extension://bpoadfkcbjbfhfodiogcnhhhpibjhbnh/content_main.js:5258:13726)",
+    "timestamp": "2026-09-18T16:25:11.202Z",
+    "url": "chrome-extension://bpoadfkcbjbfhfodiogcnhhhpibjhbnh/content_main.js"
+  },
+  {
+    "level": "error",
+    "message": "SyntaxError: Failed to execute 'postMessage' on 'Window': Invalid target origin 'null' in a call to 'postMessage'.\n    at a (chrome-extension://bpoadfkcbjbfhfodiogcnhhhpibjhbnh/content_main.js:5258:13726)",
+    "timestamp": "2026-09-18T16:25:11.202Z",
+    "url": "chrome-extension://bpoadfkcbjbfhfodiogcnhhhpibjhbnh/content_main.js"
+  }
+]

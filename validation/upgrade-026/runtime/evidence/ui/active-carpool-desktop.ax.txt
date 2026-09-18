@@ -1,0 +1,46 @@
+Browser tab: 2048478615, Title: "拼车详情 - 水上列车", URL: "http://127.0.0.1:38626/carpool".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 129-227
+~1 AXWebArea 拼车详情 - 水上列车, URL: 127.0.0.1:38626/carpool
+~			111 heading 拼车详情, Value: 1
+~				112 text 拼车详情
+~			113 text 查看拼车月卡有效期、可用额度与已确认的重置窗口
+~			128 container
++				129 heading 拼车详情, Value: 1
++					130 text 拼车详情
++				131 text 查看拼车月卡有效期、可用额度与已确认的重置窗口
++				132 button 刷新
++					133 image
++					134 text 刷新
++				135 text 累计已使用额度
++				136 text $0.00
++				137 text 本期合约已重置
++				138 text 0
++				139 text 拼车可用额度
++				140 text $550.00
++				141 text 与普通账户余额独立
++				142 heading 会员周期, Value: 2
++					143 text 会员周期
++				144 text 2026/09/18 00:02 至 2026/10/16 00:02
++				145 text 时间均按 Asia/Shanghai 显示
++				146 text 进行中
++				147 text 每周基础额度
++				148 text 100% 剩余
++				149 progress indicator Description: 每周基础额度, Value: 100
++				150 text 当前第 1 周期
++				151 definition list
++					152 container 下一次自然补额
++						153 text 下一次自然补额
++					154 container
++						155 text 2026/09/25 00:02 剩余 5 天 23 小时 39 分钟
++					156 container 固定月卡到期时间
++						157 text 固定月卡到期时间
++					158 text 2026/10/16 00:02
++				159 heading 账期记录, Value: 3
++					160 text 账期记录
++				161 text 第 1 周期 2026/09/18 00:02 - 2026/09/25 00:02 进行中
++				162 image
++				163 heading 重置窗口, Value: 2
++					164 text 重置窗口
++				165 text 暂无重置窗口
+The focused UI element is 1 AXWebArea 拼车详情 - 水上列车, URL: 127.0.0.1:38626/carpool

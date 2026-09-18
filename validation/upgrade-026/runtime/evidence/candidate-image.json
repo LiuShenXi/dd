@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-09-18T16:18:10.103788+00:00",
+  "tag": "sub2api:carpool-compatible-0.2.6-8c3275d59",
+  "image_id": "sha256:3331be7a27b14a83630dedf1530e11fb400e82a2dcff3a1a730b1052a187b10d",
+  "source_commit": "8c3275d597cdcf381a30dee87fe0e2c9fa2773ef",
+  "source_input_sha256": "b27fb220de74f244dcf97f7e89e5f34d0499f3aa2b5100ed28de9054a9f387d3",
+  "local_only": true,
+  "pushed": false,
+  "purpose": "isolated acceptance image from validation/upgrade-026/runtime/Dockerfile; production release must use the reviewed root Dockerfile"
+}

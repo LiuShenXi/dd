@@ -1,0 +1,14 @@
+{
+  "source": "three synthetic concurrency redemptions through HTTP",
+  "user_id": 5,
+  "legacy_array_preserved": true,
+  "total": 3,
+  "page_sizes": [
+    2,
+    1
+  ],
+  "no_overlapping_items": true,
+  "paginated_order_matches_legacy": true,
+  "invalid_page_status": 400,
+  "ordinary_balance_unchanged": true
+}
