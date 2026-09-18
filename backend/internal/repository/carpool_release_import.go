@@ -125,7 +125,7 @@ func (r *CarpoolRepository) ImportRelease(ctx context.Context, input CarpoolRele
 	if err != nil {
 		return nil, err
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 	if _, err = tx.ExecContext(ctx, `SET LOCAL lock_timeout='3s'`); err != nil {
 		return nil, err
 	}
@@ -380,7 +380,7 @@ func (r *CarpoolRepository) VerifyRelease(ctx context.Context, input CarpoolRele
 	if err != nil {
 		return nil, err
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 	var storedFP, raw string
 	if err = tx.QueryRowContext(ctx, `SELECT request_fingerprint,result::text FROM carpool_release_imports WHERE batch_key=$1`, m.BatchKey).Scan(&storedFP, &raw); err != nil {
 		return nil, err
@@ -437,7 +437,7 @@ func releaseUsersTx(ctx context.Context, tx *sql.Tx, lock bool) (map[int64]relea
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	out := map[int64]releaseUser{}
 	for rows.Next() {
 		var u releaseUser
@@ -467,7 +467,7 @@ func releaseKeysTx(ctx context.Context, tx *sql.Tx, lock bool) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	h := sha256.New()
 	for rows.Next() {
 		var id int64
@@ -497,7 +497,7 @@ func validateReleaseKeys(ctx context.Context, tx *sql.Tx, m CarpoolReleaseManife
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	found := map[int64]bool{}
 	for rows.Next() {
 		var id, user int64

@@ -20,7 +20,7 @@ func (r *CarpoolResetRepository) ListDueResetBatchIDs(ctx context.Context, limit
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	ids := make([]int64, 0)
 	for rows.Next() {
 		var id int64

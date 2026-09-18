@@ -147,7 +147,7 @@ func (r *CarpoolRepository) GetUserDetails(ctx context.Context, userID int64) (*
 	if err != nil {
 		return nil, err
 	}
-	defer resetRows.Close()
+	defer func() { _ = resetRows.Close() }()
 	for resetRows.Next() {
 		var event domain.CarpoolUserResetEvent
 		var targetQuota string
@@ -390,7 +390,7 @@ func (r *CarpoolRepository) ListAdminCycles(ctx context.Context, filters domain.
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	out := make([]domain.CarpoolAdminCycle, 0)
 	for rows.Next() {
 		var item domain.CarpoolAdminCycle
@@ -438,7 +438,7 @@ func (r *CarpoolRepository) ListAdminLedger(ctx context.Context, filters domain.
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	out, err := scanLedgerRows(rows)
 	return out, total, err
 }
@@ -496,7 +496,7 @@ func (r *CarpoolRepository) ListBillingExceptions(ctx context.Context, filters d
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	out := make([]domain.CarpoolBillingException, 0)
 	for rows.Next() {
 		var item domain.CarpoolBillingException

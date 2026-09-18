@@ -14,7 +14,7 @@ func (r *CarpoolResetRepository) ListAnnouncementCarpoolScopes(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	scopes := make(map[int64]struct{})
 	for rows.Next() {
 		var scopeID int64

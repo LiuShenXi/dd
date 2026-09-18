@@ -17,6 +17,7 @@ import (
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	_ "github.com/Wei-Shaw/sub2api/ent/runtime"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/timezone"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -218,6 +219,29 @@ func testTx(t *testing.T) *sql.Tx {
 func testEntClient(t *testing.T) *dbent.Client {
 	t.Helper()
 	return integrationEntClient
+}
+
+// resetIdentityFixtures is for serial suites that assert global user/group counts.
+// Committed carpool fixtures retain restrictive foreign keys, so DELETE alone
+// cannot establish an empty identity boundary. Commit this cleanup before opening
+// a suite transaction: some tests also use a second, non-transactional client.
+func resetIdentityFixtures(t *testing.T) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	tx, err := integrationDB.BeginTx(ctx, nil)
+	require.NoError(t, err, "begin identity fixture cleanup")
+	defer func() { _ = tx.Rollback() }()
+	_, err = tx.ExecContext(ctx, "SET LOCAL lock_timeout = '5s'")
+	require.NoError(t, err, "bound identity fixture cleanup lock wait")
+	_, err = tx.ExecContext(ctx, "TRUNCATE TABLE users, groups CASCADE")
+	require.NoError(t, err, "clear identities and dependent committed test fixtures")
+	// CASCADE may reach reset state through ledger/announcement dependencies.
+	// Preserve the global scope required by later carpool tests without changing
+	// an existing scope or resetting identity sequences.
+	_, err = tx.ExecContext(ctx, `INSERT INTO carpool_reset_scope_states(scope_id) VALUES($1) ON CONFLICT(scope_id) DO NOTHING`, domain.CarpoolGlobalScopeID)
+	require.NoError(t, err, "retain global carpool reset scope")
+	require.NoError(t, tx.Commit(), "commit identity fixture cleanup")
 }
 
 // testEntTx 返回一个 ent 事务，用于需要事务隔离的测试。

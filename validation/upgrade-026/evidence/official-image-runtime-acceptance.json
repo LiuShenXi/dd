@@ -1,0 +1,30 @@
+{
+  "utc": "2026-09-18T16:45:27.723639+00:00",
+  "image_tag": "sub2api:carpool-compatible-0.2.6-20260919",
+  "image_id": "sha256:736a164bc54ed775125e0d3823035a7dc3f76fc070217eec0be2ef1344a26a72",
+  "base_url": "http://127.0.0.1:38627",
+  "scope": "fresh synthetic internal network and DB, no production access",
+  "normal_health_status": 200,
+  "normal_models_unauth_status": 401,
+  "admin_normal_login": true,
+  "ticket_default_enabled": false,
+  "migrations": 297,
+  "binary_version": "2026-09-19T00:45:27.702+0800\tINFO\tstdlog\tSub2API 0.2.6-carpool-20260919 (commit: b5ca578abbb7abf590115625713f95f5eca7d261, built: 2026-09-18T16:40:02Z)\t{\"service\": \"sub2api\", \"env\": \"bootstrap\", \"legacy_stdlog\": true}",
+  "normal_networks": [
+    "sub2api-upgrade026-official-internal"
+  ],
+  "held_probe": {
+    "health_status": 200,
+    "models_readiness": "timeout within 2-second probe",
+    "guard_rejected_initial_and_restarted": true,
+    "restart_preserves_held_env": true,
+    "restart_still_not_business_ready": true,
+    "normal_app_stopped_during_probe": true
+  },
+  "normal_restored": true,
+  "final_admin_login": true,
+  "final_ticket_enabled": false,
+  "final_health_status": 200,
+  "final_models_unauth_status": 401,
+  "held_probe_stopped_and_removed": true
+}

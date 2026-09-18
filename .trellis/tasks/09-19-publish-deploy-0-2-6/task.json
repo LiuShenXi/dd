@@ -1,0 +1,10 @@
+{
+  "id": "publish-deploy-0-2-6",
+  "title": "Publish compatible 0.2.6 to remote main and deploy BWH production",
+  "status": "in_progress",
+  "dev_type": "fullstack",
+  "priority": "P1",
+  "createdAt": "2026-09-19",
+  "branch": "codex/compatible-0.2.6",
+  "notes": "User explicitly authorized updating remote main and deploying production. Preserve original dirty dd checkout, historical remote operations commit, immutable application provenance, old image/config and private backups. Use high reasoning for new subagents as requested. Trellis scripts absent; task records maintained directly."
+}

@@ -51,7 +51,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	decoder := json.NewDecoder(io.LimitReader(f, 1<<20))
 	decoder.DisallowUnknownFields()
 	var manifest repository.CarpoolReleaseManifest
@@ -67,7 +67,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer func() { _ = out.Close() }()
 	dsn := os.Getenv("CARPOOL_RELEASE_DATABASE_URL")
 	if dsn == "" {
 		return errors.New("CARPOOL_RELEASE_DATABASE_URL is required")
@@ -83,7 +83,7 @@ func run() error {
 	if err != nil {
 		return errors.New("invalid release database configuration")
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 	db.SetMaxOpenConns(1)
 	if err = db.PingContext(ctx); err != nil {
 		return errors.New("release database connection failed")
@@ -119,7 +119,7 @@ func migrateSchema() error {
 	if err != nil {
 		return errors.New("invalid release database configuration")
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 	db.SetMaxOpenConns(1)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
@@ -152,7 +152,7 @@ func verifyGate(ctx context.Context) error {
 		return errors.New("release operation ID and administrator token required")
 	}
 	base.Path = "/api/v1/admin/release/status"
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, base.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, base.String(), nil) //nolint:gosec // G704: the local release operator explicitly configures this administrative endpoint.
 	if err != nil {
 		return err
 	}
@@ -162,11 +162,11 @@ func verifyGate(ctx context.Context) error {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
 	client := &http.Client{Timeout: 5 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-	resp, err := client.Do(req)
+	resp, err := client.Do(req) //nolint:gosec // G704: the endpoint is operator-controlled and redirects are disabled above.
 	if err != nil {
 		return errors.New("cannot verify serving release gate")
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		return errors.New("release gate authentication or status failed")
 	}

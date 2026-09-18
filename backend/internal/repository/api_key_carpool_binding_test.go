@@ -13,7 +13,7 @@ import (
 func TestAPIKeyCarpoolBindingProjectionIsPrivateAndFailsClosed(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 	repo := &apiKeyRepository{sql: db}
 	shared := &service.Group{ID: 2, Platform: service.PlatformOpenAI, SubscriptionType: service.SubscriptionTypeStandard, RateMultiplier: 0.8}
 	wrongGroupID := int64(3)

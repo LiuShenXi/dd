@@ -402,7 +402,7 @@ func TestRecordCyberPolicyUsageLog_BillsRealUpstreamTokens(t *testing.T) {
 
 	// 流式 cyber：上游 response.failed 报告了真实 token，须按真实 token 计费并扣费，
 	// 与 WS cyber / 正常请求口径一致（不再是 tokens=0 免费行）。
-	svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{
+	require.NoError(t, svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{
 		APIKey:       &APIKey{ID: 2, User: &User{ID: 1}},
 		Account:      &Account{ID: 3},
 		RequestID:    "rid-cyber-stream",
@@ -410,7 +410,7 @@ func TestRecordCyberPolicyUsageLog_BillsRealUpstreamTokens(t *testing.T) {
 		Stream:       true,
 		InputTokens:  1200,
 		OutputTokens: 300,
-	})
+	}))
 
 	require.Equal(t, 1, usageRepo.calls)
 	require.NotNil(t, usageRepo.lastLog)
@@ -434,13 +434,13 @@ func TestRecordCyberPolicyUsageLog_NonStreamZeroTokensZeroCost(t *testing.T) {
 	svc := newOpenAIRecordUsageServiceForTest(usageRepo, userRepo, subRepo, nil)
 
 	// 非流式直接拒：上游未报 token，mark token 为 0 → cost 自然为 0，仍写一条 cyber 行（可见）。
-	svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{
+	require.NoError(t, svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{
 		APIKey:    &APIKey{ID: 2, User: &User{ID: 1}},
 		Account:   &Account{ID: 3},
 		RequestID: "rid-cyber-400",
 		Model:     "gpt-5.1",
 		Stream:    false,
-	})
+	}))
 
 	require.Equal(t, 1, usageRepo.calls)
 	require.NotNil(t, usageRepo.lastLog)
@@ -455,10 +455,10 @@ func TestRecordCyberPolicyUsageLog_SkipsWhenIncomplete(t *testing.T) {
 	svc := newOpenAIRecordUsageServiceForTest(usageRepo, &openAIRecordUsageUserRepoStub{}, &openAIRecordUsageSubRepoStub{}, nil)
 
 	acct := &Account{ID: 3}
-	svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{Account: acct, Model: "gpt-5"})                              // APIKey nil
-	svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{APIKey: &APIKey{ID: 2}, Account: acct, Model: "gpt-5"})      // User nil
-	svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{APIKey: &APIKey{ID: 2, User: &User{ID: 1}}, Model: "gpt-5"}) // Account nil
-	svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{APIKey: &APIKey{ID: 2, User: &User{ID: 1}}, Account: acct})  // Model 空
+	require.NoError(t, svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{Account: acct, Model: "gpt-5"}))                              // APIKey nil
+	require.NoError(t, svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{APIKey: &APIKey{ID: 2}, Account: acct, Model: "gpt-5"}))      // User nil
+	require.NoError(t, svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{APIKey: &APIKey{ID: 2, User: &User{ID: 1}}, Model: "gpt-5"})) // Account nil
+	require.NoError(t, svc.RecordCyberPolicyUsageLog(context.Background(), CyberPolicyUsageInput{APIKey: &APIKey{ID: 2, User: &User{ID: 1}}, Account: acct}))  // Model 空
 	require.Equal(t, 0, usageRepo.calls, "APIKey/User/Account 缺失或 Model 空时跳过，不记不扣费")
 }
 

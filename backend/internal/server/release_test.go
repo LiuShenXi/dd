@@ -111,7 +111,7 @@ func TestReleaseDrainKeepsUpgradedWebSocketActiveUntilClose(t *testing.T) {
 		if err != nil {
 			return
 		}
-		defer conn.CloseNow()
+		defer func() { _ = conn.CloseNow() }()
 		_, _, _ = conn.Read(c.Request.Context())
 	})
 	server := httptest.NewServer(r)

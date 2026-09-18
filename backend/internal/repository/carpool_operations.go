@@ -124,7 +124,7 @@ func listTermCycles(rows *sql.Rows, err error) ([]domain.CarpoolCycle, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	var out []domain.CarpoolCycle
 	for rows.Next() {
 		cycle, scanErr := scanCarpoolCycle(rows)
@@ -341,7 +341,7 @@ func listTermPaymentsTx(ctx context.Context, tx *sql.Tx, termID int64) ([]domain
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	out := make([]domain.CarpoolPayment, 0)
 	for rows.Next() {
 		payment, scanErr := scanPayment(rows)
@@ -363,7 +363,7 @@ func (r *CarpoolRepository) ListPayments(ctx context.Context, termID int64, page
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	out := make([]domain.CarpoolPayment, 0)
 	for rows.Next() {
 		p, e := scanPayment(rows)
@@ -631,7 +631,6 @@ func (r *CarpoolRepository) AdjustCycle(ctx context.Context, cycleID, actorID in
 		_, err = applyGrantTx(ctx, tx, userID, cycle.TermID, cycleID, bucket, delta.Round(8), "adjustment", eventKey, &requestID, nil, &actorID, reversesID, reason, now)
 	} else {
 		amount := delta.Abs().Round(8)
-		targetDebit, baseDebit := amount, decimal.Zero
 		if bucket == domain.CarpoolBucketBase {
 			if _, err = tx.ExecContext(ctx, `UPDATE carpool_cycles SET base_balance_usd=base_balance_usd-$1,updated_at=NOW(),revision=revision+1 WHERE id=$2`, amount.StringFixed(8), cycleID); err == nil {
 				err = insertLedgerTx(ctx, tx, userID, cycle.TermID, cycleID, "adjustment", bucket, amount.Neg(), eventKey, &requestID, nil, nil, nil, &actorID, reversesID, reason, now)
@@ -641,8 +640,8 @@ func (r *CarpoolRepository) AdjustCycle(ctx context.Context, cycleID, actorID in
 			if bucket == domain.CarpoolBucketManual {
 				balance = cycle.ManualBalanceUSD
 			}
-			targetDebit = decimal.Min(decimal.Max(balance, decimal.Zero), amount)
-			baseDebit = amount.Sub(targetDebit)
+			targetDebit := decimal.Min(decimal.Max(balance, decimal.Zero), amount)
+			baseDebit := amount.Sub(targetDebit)
 			if _, err = tx.ExecContext(ctx, fmt.Sprintf(`UPDATE carpool_cycles SET %s=%s-$1,base_balance_usd=base_balance_usd-$2,updated_at=NOW(),revision=revision+1 WHERE id=$3`, column, column), targetDebit.StringFixed(8), baseDebit.StringFixed(8), cycleID); err == nil {
 				linked := reversesID
 				if targetDebit.IsPositive() {
@@ -676,7 +675,7 @@ func listLedgerByRequestTx(ctx context.Context, tx *sql.Tx, requestID string) ([
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	return scanLedgerRows(rows)
 }
 

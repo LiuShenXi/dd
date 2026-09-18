@@ -247,7 +247,7 @@ func (r *apiKeyRepository) projectCarpoolBilling(ctx context.Context, key *servi
 	if err != nil {
 		return nil, fmt.Errorf("load carpool billing binding: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	if !rows.Next() {
 		if err := rows.Err(); err != nil {
 			return nil, fmt.Errorf("read carpool billing binding: %w", err)

@@ -40,9 +40,20 @@ func (s *forbidSQLExecutor) QueryContext(ctx context.Context, query string, args
 
 func (s *GroupRepoSuite) SetupTest() {
 	s.ctx = context.Background()
+	resetIdentityFixtures(s.T())
 	tx := testEntTx(s.T())
 	s.tx = tx
 	s.repo = newGroupRepositoryWithSQL(tx.Client(), tx)
+	// Recreate the fresh-install default group within this test's transaction.
+	// Global cleanup removes committed fixtures, including migration 008's seed.
+	s.Require().NoError(s.repo.Create(s.ctx, &service.Group{
+		Name:             "default",
+		Description:      "Default group",
+		Platform:         service.PlatformAnthropic,
+		RateMultiplier:   1,
+		Status:           service.StatusActive,
+		SubscriptionType: service.SubscriptionTypeStandard,
+	}))
 }
 
 func TestGroupRepoSuite(t *testing.T) {

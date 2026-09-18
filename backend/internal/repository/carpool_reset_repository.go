@@ -99,7 +99,7 @@ func (r *CarpoolResetRepository) ListResetBatches(ctx context.Context, filters d
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	items := make([]domain.CarpoolResetBatch, 0)
 	for rows.Next() {
 		batch, scanErr := scanResetBatch(rows)

@@ -73,7 +73,7 @@ func (r *CarpoolRepository) ListPlans(ctx context.Context, enabledOnly bool) ([]
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	var plans []domain.CarpoolPlan
 	for rows.Next() {
 		plan, err := scanCarpoolPlan(rows)
@@ -428,16 +428,16 @@ func prepareCarpoolUserGroupTx(ctx context.Context, tx *sql.Tx, params domain.Cr
 	for rows.Next() {
 		var keyGroup sql.NullInt64
 		if err = rows.Scan(&keyGroup); err != nil {
-			rows.Close()
+			_ = rows.Close()
 			return err
 		}
 		if !keyGroup.Valid || keyGroup.Int64 != params.GroupID {
-			rows.Close()
+			_ = rows.Close()
 			return service.ErrCarpoolOpeningKeyGroup
 		}
 	}
 	err = rows.Err()
-	rows.Close()
+	_ = rows.Close()
 	if err != nil {
 		return err
 	}
@@ -875,7 +875,7 @@ func (r *CarpoolRepository) RecoverPendingReceipts(ctx context.Context, limit in
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	var out []domain.CarpoolKnownUsage
 	for rows.Next() {
 		var item domain.CarpoolKnownUsage

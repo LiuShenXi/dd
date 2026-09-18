@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -426,29 +425,4 @@ func resetObservationJitterForWindow(now time.Time, window time.Duration) time.D
 func hashCarpoolResetValue(namespace, value string) string {
 	sum := sha256.Sum256([]byte(namespace + "\n" + strings.TrimSpace(value)))
 	return hex.EncodeToString(sum[:])
-}
-
-func validateCarpoolResetBatchStatus(status string) bool {
-	switch status {
-	case "", domain.CarpoolResetStatusQualified, domain.CarpoolResetStatusScheduled, domain.CarpoolResetStatusRunning, domain.CarpoolResetStatusCompleted, domain.CarpoolResetStatusCancelled, domain.CarpoolResetStatusNeedsReview:
-		return true
-	default:
-		return false
-	}
-}
-
-func normalizeResetPage(page, pageSize *int) {
-	if *page < 1 {
-		*page = 1
-	}
-	if *pageSize < 1 {
-		*pageSize = 20
-	}
-	if *pageSize > 200 {
-		*pageSize = 200
-	}
-}
-
-func resetSourceEventHash(scopeID int64, sourceEventKey string) string {
-	return hashCarpoolResetValue(fmt.Sprintf("carpool-reset-scope:%d", scopeID), sourceEventKey)
 }

@@ -2896,7 +2896,7 @@ func (h *OpenAIGatewayHandler) ResponsesWebSocket(c *gin.Context) {
 			snapshot, admitted := carpoolTurnAdmissions.load(turn)
 			if !admitted {
 				var err error
-				turnCtx, snapshot, err = h.admitCarpoolTurn(turnCtx, apiKey)
+				_, snapshot, err = h.admitCarpoolTurn(turnCtx, apiKey)
 				if err != nil {
 					releaseTurnSlots()
 					return service.NewOpenAIWSClientCloseError(coderws.StatusTryAgainLater, "carpool admission failed", err)
@@ -4248,7 +4248,11 @@ func (h *OpenAIGatewayHandler) enqueueCyberSessionBlockedOpsEntry(c *gin.Context
 // 当前请求已发给用户，本方法只做事后记录，不影响响应。forwardErrored 为 true 时才写用量行，
 // 避免与正常 RecordUsage(forward 成功路径)重复。每请求至多记录一次。
 func (h *OpenAIGatewayHandler) recordCyberPolicyIfMarked(c *gin.Context, apiKey *service.APIKey, account *service.Account, subscription *service.UserSubscription, model string, forwardErrored bool, cyberBlockBody []byte, channelFields service.ChannelUsageFields, requestPayloadHash string) {
-	_ = h.recordCyberPolicyIfMarkedWithContext(nil, c, apiKey, account, subscription, model, forwardErrored, cyberBlockBody, channelFields, requestPayloadHash)
+	billingCtx := context.Background()
+	if c != nil && c.Request != nil {
+		billingCtx = c.Request.Context()
+	}
+	_ = h.recordCyberPolicyIfMarkedWithContext(billingCtx, c, apiKey, account, subscription, model, forwardErrored, cyberBlockBody, channelFields, requestPayloadHash)
 }
 
 func (h *OpenAIGatewayHandler) recordCyberPolicyIfMarkedWithContext(billingCtx context.Context, c *gin.Context, apiKey *service.APIKey, account *service.Account, subscription *service.UserSubscription, model string, forwardErrored bool, cyberBlockBody []byte, channelFields service.ChannelUsageFields, requestPayloadHash string) error {

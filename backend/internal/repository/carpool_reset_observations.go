@@ -25,7 +25,7 @@ func (r *CarpoolResetRepository) ListResetObservations(ctx context.Context, filt
 	if err != nil {
 		return nil, 0, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	items := make([]domain.CarpoolResetObservation, 0)
 	for rows.Next() {
 		var item domain.CarpoolResetObservation
