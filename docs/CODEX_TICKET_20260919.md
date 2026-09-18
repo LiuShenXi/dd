@@ -22,6 +22,12 @@ Business account egress, account scheduling flags and other settings were preser
   currently also probes active-status accounts that are paused for scheduling.
 - Public `/health` returned 200 and unauthenticated `/v1/models` returned 401.
   Application start time and restart count were unchanged.
+- At 01:48:48, there were 40 new account-2 usage records labelled `gpt-6-astra`
+  since activation. The application remained healthy, gate open, restart count 0,
+  with no OOM. Logs in that interval contained none of the checked overload,
+  model-reroute, ticket-unavailable, ticket-persistence-failure, panic or fatal
+  markers. Usage-record model labels are not final upstream completion receipts;
+  this check establishes continued recorded traffic, not absence of model changes.
 
 ## Mechanism and limits
 

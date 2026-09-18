@@ -1,0 +1,26 @@
+{
+  "since": "2026-09-18T17:42:52.312562+00:00",
+  "completed_usage_by_account_model": [
+    {
+      "model": "gpt-6-astra",
+      "last_at": "2026-09-19T01:48:46.765925+08:00",
+      "first_at": "2026-09-19T01:43:02.203438+08:00",
+      "account_id": 2,
+      "completed_usage_records": 40
+    }
+  ],
+  "observed_log_marker_counts": {},
+  "active_slot": "blue",
+  "health": "healthy",
+  "restart_count": 0,
+  "oom": false,
+  "gate": {
+    "operation_id": "",
+    "state": "open",
+    "active_http": 2,
+    "pending_usage": 0,
+    "queued_http": 0
+  },
+  "ticket_enabled": true,
+  "time": "2026-09-18T17:48:48.870195+00:00"
+}
