@@ -95,7 +95,12 @@ RUN --mount=type=cache,id=sub2api-gomod,target=/go/pkg/mod \
     -ldflags="-s -w -X main.Version=${VERSION_VALUE} -X main.Commit=${COMMIT} -X main.Date=${DATE_VALUE} -X main.BuildType=release" \
     -trimpath \
     -o /app/sub2api \
-    ./cmd/server
+    ./cmd/server && \
+    CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build \
+    -ldflags="-s -w" \
+    -trimpath \
+    -o /app/carpool-release \
+    ./cmd/carpool-release
 
 # -----------------------------------------------------------------------------
 # Stage 3: PostgreSQL Client (version-matched with docker-compose)
@@ -140,6 +145,7 @@ WORKDIR /app
 
 # Copy binary/resources with ownership to avoid extra full-layer chown copy
 COPY --from=backend-builder --chown=sub2api:sub2api /app/sub2api /app/sub2api
+COPY --from=backend-builder --chown=sub2api:sub2api /app/carpool-release /app/carpool-release
 COPY --from=backend-builder --chown=sub2api:sub2api /app/backend/resources /app/resources
 
 # Create data directory
