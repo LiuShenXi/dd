@@ -1973,6 +1973,9 @@ func TestBuildOpenAIImagesResponsesRequest_ForcesImageToolChoice(t *testing.T) {
 	body, err := buildOpenAIImagesResponsesRequest(parsed, "gpt-image-2")
 	require.NoError(t, err)
 	require.NotNil(t, body)
+	// The OAuth bridge must use a supported orchestration model while retaining
+	// the requested image model on the image_generation tool.
+	require.Equal(t, "gpt-5.5", gjson.GetBytes(body, "model").String())
 	require.Equal(t, "image_generation", gjson.GetBytes(body, "tool_choice.type").String())
 	require.Equal(t, "image_generation", gjson.GetBytes(body, "tools.0.type").String())
 	require.Equal(t, "gpt-image-2", gjson.GetBytes(body, "tools.0.model").String())

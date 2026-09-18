@@ -1,0 +1,3 @@
+{"file":".trellis/spec/backend/carpool-contracts.md","reason":"Preserve accounting and lifecycle invariants"}
+{"file":".trellis/spec/backend/release-safety.md","reason":"Keep held-release and readiness protections"}
+{"file":".trellis/spec/frontend/carpool-state-contracts.md","reason":"Preserve asynchronous UI and quota contracts"}
