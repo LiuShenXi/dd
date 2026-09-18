@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "utc": "2026-09-18T17:12:24.452780+00:00",
+  "source_commit": "a8370c5529406e5333d818d95b95cde6bcc9d460",
+  "image_tag": "sub2api:carpool-compatible-0.2.6-a8370c552",
+  "image_id": "sha256:fe40b9719772763b51c1d8154dd81c7ae9876cc2463dd35a848c7ad64df6764a",
+  "container_id": "36773b9db6c00243d15f0ce71b9c8f4cf08629a33d40b8df8a5c0ef21262fb84",
+  "old_container_id": "50efa221b95737fffe04df1e972bebb32441693b037ca864bb99d230af5e1e4b",
+  "old_container_retained_stopped_as": "sub2api-upgrade026-official-rollback",
+  "base_url": "http://127.0.0.1:38627",
+  "scope": "same synthetic isolated official database; no production access",
+  "health_status": 200,
+  "models_unauth_status": 401,
+  "admin_login": true,
+  "ticket_enabled": false,
+  "migrations": 297,
+  "binary_version": "2026-09-19T01:12:20.584+0800\tINFO\tstdlog\tSub2API 0.2.6-carpool-20260919 (commit: a8370c5529406e5333d818d95b95cde6bcc9d460, built: 2026-09-18T17:10:46Z)\t{\"service\": \"sub2api\", \"env\": \"bootstrap\", \"legacy_stdlog\": true}",
+  "normal_networks": [
+    "sub2api-upgrade026-official-internal"
+  ],
+  "network_internal": true,
+  "held_env": false,
+  "held_retest": "not repeated; prior official-image held protection acceptance retained"
+}

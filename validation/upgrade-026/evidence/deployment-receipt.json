@@ -1,0 +1,27 @@
+{
+  "active_slot": "blue",
+  "image_id": "sha256:2d000b7bb658e8d1c95a4c2c676ccb6b9d6f9161631171ce76d6700a90f30f25",
+  "image_tag": "sub2api:carpool-compatible-0.2.6-a8370c552",
+  "source_commit": "a8370c5529406e5333d818d95b95cde6bcc9d460",
+  "version": "0.2.6-carpool-20260919",
+  "migrations": 297,
+  "old_stopped": true,
+  "gate": {
+    "operation_id": "",
+    "state": "open",
+    "active_http": 0,
+    "pending_usage": 0,
+    "queued_http": 0
+  },
+  "ticket_enabled": false,
+  "health": 200,
+  "unauthenticated_models": 401,
+  "restart_count": 0,
+  "public_version_verified": true,
+  "public_frontend_assets_verified": [
+    "/assets/index-C-BP_Wob.js",
+    "/assets/vendor-vue-DIuYXcRc.js",
+    "/assets/vendor-i18n-CwcqCV01.js"
+  ],
+  "time": "2026-09-18T17:19:55.406212+00:00"
+}

@@ -1,6 +1,6 @@
 # Sub2API 0.2.6 兼容升级记录
 
-本任务按用户要求恢复 fork 源码和搬瓦工当前生产基线，在独立目录完成渐进合并。**这是本地候选版本；没有发布到搬瓦工，没有切换生产流量。** 生产基线核验于 2026-09-18，验收跨至 2026-09-19（Asia/Shanghai）。
+本任务按用户要求恢复 fork 源码和搬瓦工生产基线，在独立目录完成渐进合并。**兼容版本已于 2026-09-19 01:19:55（Asia/Shanghai）部署到搬瓦工，远程 main 已更新。** 实际运行版本与发布证据见 [生产发布记录](RELEASE_0_2_6_20260919.md)。下文保留升级前基线与本地验收历史。
 
 ## 源码与生产基线
 
@@ -10,7 +10,7 @@
 | 纯上游快照 | `C:\WORK-SPACE\sub2api-upstream-0.2.6-20260918`，分支 `codex/upstream-0.2.6` |
 | 保留的 0.2.6 提交 | `8b69738d782ccaa7fd26511e1cca26ba8d1b58db`，上一提交 `49a39b6dc1abed30fd227611e8af1108bc427610` |
 | fork 来源 | [geniusywb/sub2api](https://github.com/geniusywb/sub2api/commit/8b69738d782ccaa7fd26511e1cca26ba8d1b58db)，交叉确认 ljb1020/sub2api 和 go31/sub2api |
-| 当前生产 | SSH 别名 `bwh`；`/home/linuxuser/apps/sub2api`；活动容器 `sub2api-green` |
+| 升级前生产基线 | SSH 别名 `bwh`；`/home/linuxuser/apps/sub2api`；原活动容器 `sub2api-green` |
 | 生产镜像 | `sub2api:carpool-imagefix-20260915-gpt55` |
 | 生产镜像 ID | `sha256:133537d6b33be5578a6e825fa74e7254de655ddf14b07ab7221790922477e4d0` |
 | 生产二进制 SHA256 | `7c8ac352ca44541b770c13bdcce913586cf138a75013b6477866e30af92b0bc1` |

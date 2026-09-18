@@ -1,0 +1,8 @@
+{
+  "local_config_image_id": "sha256:fe40b9719772763b51c1d8154dd81c7ae9876cc2463dd35a848c7ad64df6764a",
+  "production_oci_manifest_image_id": "sha256:2d000b7bb658e8d1c95a4c2c676ccb6b9d6f9161631171ce76d6700a90f30f25",
+  "archive_sha256": "cee765e226e09b72458dc9e9bc6d0fb780bec5d60e2a39e831b4f8042bf98e24",
+  "archive_oci_config_digest": "sha256:fe40b9719772763b51c1d8154dd81c7ae9876cc2463dd35a848c7ad64df6764a",
+  "rootfs_layers_exactly_equal": true,
+  "layer_count": 13
+}
