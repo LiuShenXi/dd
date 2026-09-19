@@ -1,0 +1,10 @@
+{
+  "unauthenticated": 401,
+  "wrong_token": 401,
+  "authorized_metadata": 200,
+  "master_default_disabled": true,
+  "master_off_refresh": "disabled",
+  "embedded_routes_reachable": true,
+  "oauth_accounts": 0,
+  "real_upstream_requests": false
+}

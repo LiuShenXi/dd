@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "label": "sub2api-upgrade027-20260919",
+  "prefix": "sub2api-upgrade027-app",
+  "removed": "recorded containers, networks, synthetic volumes",
+  "retained": "private files and local candidate build image",
+  "completed_at": "2026-09-19T15:47:36.160372+00:00"
+}

@@ -87,6 +87,45 @@ describe('BulkEditKeysModal', () => {
     expect(bulkUpdate).toHaveBeenCalledWith([1, 2], { group_id: 7 })
   })
 
+  it('keeps assigned carpool groups read-only while editing other fields in a mixed selection', async () => {
+    const wrapper = mountModal()
+    await wrapper.setProps({ show: false })
+    await wrapper.setProps({
+      show: true,
+      selectedKeys: [
+        { id: 1, name: 'Member key', group: { id: 77, subscription_type: 'carpool' } as Group },
+        { id: 2, name: 'Standard key' }
+      ]
+    })
+    expect(wrapper.get('[data-test="enable-group"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.text()).toContain('keys.bulkEdit.carpoolGroupReadOnly')
+    expect(wrapper.find('[data-test="group-input"]').exists()).toBe(false)
+
+    await wrapper.get('[data-test="enable-status"]').setValue(true)
+    await wrapper.get('[data-test="status-input"]').setValue('inactive')
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(bulkUpdate).toHaveBeenCalledWith([1, 2], { status: 'inactive' })
+  })
+
+  it('excludes carpool groups from bulk targets and rejects a stale carpool selection', async () => {
+    const wrapper = mountModal()
+    await wrapper.setProps({ groups: [
+      { id: 7, name: 'Standard group', subscription_type: 'standard' } as Group,
+      { id: 77, name: 'Assigned carpool', subscription_type: 'carpool' } as Group
+    ] })
+    await wrapper.get('[data-test="enable-group"]').setValue(true)
+    expect(wrapper.get('[data-test="group-input"]').text()).not.toContain('Assigned carpool')
+    wrapper.findComponent('[data-test="group-input"]').vm.$emit('update:modelValue', 77)
+    await wrapper.get('form').trigger('submit')
+    expect(bulkUpdate).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('keys.groupRequired')
+
+    await wrapper.get('[data-test="group-input"]').setValue('7')
+    await wrapper.get('form').trigger('submit')
+    expect(bulkUpdate).toHaveBeenCalledWith([1, 2], { group_id: 7 })
+  })
+
   it('clears only an explicitly selected IP list and expiration', async () => {
     const wrapper = mountModal()
     await wrapper.get('[data-test="enable-ip_whitelist"]').setValue(true)

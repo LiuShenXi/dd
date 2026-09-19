@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "created_at": "2026-09-19T15:47:03.706915+00:00",
+  "image_id": "sha256:63e822c268bc4adb0f4e99416dc94c83fe7ea8ede0960cd66c61cb6fea6646ce",
+  "binary_sha256": "76e8c8a12f59c39259c5325f78b96e55095526e7ea40e70b542300ee9202c543",
+  "source_input_sha256": "ed8abebad9280551ef8d65f3c4c934512a540f9042d978cea3e4e40470ab9f1a",
+  "frontend_index_sha256": "193c2d73df5360a4ec7999138074b594309af0c62c21c1045b7959352b0a55e6",
+  "frontend_files": 185,
+  "build_head": "2fefcf51f0e00618686ab825d81e65444ee1ccfd",
+  "merge_head": "7484192016807acf55c6ef4f2827d371eb61ec1c",
+  "working_tree_source_bound_by_sha256": true,
+  "version": "0.2.7",
+  "health": 200,
+  "unauthenticated_models": 401,
+  "migrations": 297,
+  "restart_count": 0,
+  "oom_killed": false,
+  "app_only_internal_network": true,
+  "source_unchanged_since_build": true,
+  "tests": [
+    "sentinel runtime auth and master-off",
+    "ticket runtime settings and masked proxy",
+    "real HTTP Responses and two turns on one WebSocket with mock billing"
+  ],
+  "financial_result": {
+    "receipts": 3,
+    "settled": 3,
+    "ledger_debits": 3,
+    "cost_usd": "3.00000000",
+    "ordinary_balance": "47.25000000"
+  },
+  "synthetic_only": true,
+  "real_oauth_accounts": 0,
+  "real_upstream_inference": false,
+  "carpool_release_cli": "Linux amd64 build passed; no database command executed",
+  "cleanup_passed": true,
+  "remaining_owned_resources": {
+    "containers": 0,
+    "networks": 0,
+    "volumes": 0
+  },
+  "final_input_hash_matches_build": true,
+  "metadata_boundary": "binary Commit reports the pre-merge HEAD with an upgrade027-local suffix; acceptance binds the uncommitted merged production source and embedded frontend by source_input_sha256, not by that old HEAD alone"
+}

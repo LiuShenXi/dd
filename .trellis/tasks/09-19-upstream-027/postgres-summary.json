@@ -1,0 +1,22 @@
+{
+  "task": "09-19-compatible-0-2-7",
+  "run_pattern": "^(TestSourceRuntimeHarnessIsolation|TestGroupModelAllowlistCompatibility_.*|TestUpgrade026ProductionMigrations_.*|Test.*Carpool.*|Test.*WithdrawAll.*|TestUsageSummary.*|Test.*GroupUsage.*)$",
+  "database": "sub2api_upgrade026_integration_20260918",
+  "runner_image": "alpine:3.20",
+  "count": 1,
+  "run_id": "20260919T153444Z-94041238",
+  "postgres_image": "postgres:18-alpine",
+  "exit_code": 0,
+  "network": "sub2api-upgrade027-test-net",
+  "verbose_run_events": 180,
+  "completed_at": "2026-09-19T15:37:50.8898812+00:00",
+  "redis_image": "redis:8-alpine",
+  "total_pass": 180,
+  "top_level_pass": 100,
+  "failures": 0,
+  "skips": 0,
+  "cleanup": {
+    "owned_containers_and_volume_removed": true,
+    "empty_owned_network_removed": true
+  }
+}

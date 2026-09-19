@@ -1,0 +1,13 @@
+{
+  "id": "upstream-027",
+  "name": "upstream-027",
+  "title": "Incremental 0.2.6 to 0.2.7 upgrade preserving carpool and sentinel",
+  "status": "completed",
+  "dev_type": "fullstack",
+  "createdAt": "2026-09-19",
+  "branch": "codex/compatible-0.2.7",
+  "baseline": "2fefcf51f0e00618686ab825d81e65444ee1ccfd",
+  "upstream": "aea725f2ea644d5592d0bbb1d63b607efa7e200a",
+  "notes": "User requested source integration. Original dd is stale; use completed 0.2.6/sentinel baseline. No production deployment. Trellis scripts absent.",
+  "validation": "Frontend2365; backend20297 pass19skip after corrected package rerun; realPG180 no skip; sentinelPython34; lint0; LinuxHTTP+2WS actual billing passed; no deployment"
+}

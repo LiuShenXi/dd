@@ -18,9 +18,10 @@
       <fieldset :disabled="submitting" class="space-y-5">
         <div class="space-y-2">
           <label class="flex items-center gap-2 text-sm font-medium">
-            <input v-model="enabled.group_id" type="checkbox" class="checkbox" data-test="enable-group" />
+            <input v-model="enabled.group_id" type="checkbox" class="checkbox" :disabled="hasCarpoolKey" data-test="enable-group" />
             {{ t('keys.groupLabel') }}
           </label>
+          <p v-if="hasCarpoolKey" class="input-hint">{{ t('keys.bulkEdit.carpoolGroupReadOnly') }}</p>
           <Select
             v-if="enabled.group_id"
             v-model="groupId"
@@ -157,7 +158,7 @@ import BaseDialog from '@/components/common/BaseDialog.vue'
 import Select from '@/components/common/Select.vue'
 import type { ApiKey, Group, UpdateApiKeyRequest } from '@/types'
 
-type SelectedKey = Pick<ApiKey, 'id' | 'name'>
+type SelectedKey = Pick<ApiKey, 'id' | 'name' | 'group'>
 type LimitField = 'quota' | 'rate_limit_5h' | 'rate_limit_1d' | 'rate_limit_7d'
 type IPField = 'ip_whitelist' | 'ip_blacklist'
 type EditableField = LimitField | IPField | 'group_id' | 'status' | 'expires_at'
@@ -206,14 +207,18 @@ const ipFields: Array<{ key: IPField; label: string }> = [
   { key: 'ip_whitelist', label: 'keys.ipWhitelist' },
   { key: 'ip_blacklist', label: 'keys.ipBlacklist' }
 ]
-const groupOptions = computed(() => props.groups.map((group) => ({ value: group.id, label: group.name })))
+const hasCarpoolKey = computed(() => pendingKeys.value.some((key) => key.group?.subscription_type === 'carpool'))
+const groupOptions = computed(() => props.groups
+  .filter((group) => group.subscription_type !== 'carpool')
+  .map((group) => ({ value: group.id, label: group.name })))
 const statusOptions = computed(() => [
   { value: 'active', label: t('keys.enable') },
   { value: 'inactive', label: t('keys.disable') }
 ])
 
 const validationError = computed(() => {
-  if (enabled.group_id && !props.groups.some((group) => group.id === groupId.value)) {
+  if (enabled.group_id && hasCarpoolKey.value) return t('keys.bulkEdit.carpoolGroupReadOnly')
+  if (enabled.group_id && !groupOptions.value.some((group) => group.value === groupId.value)) {
     return t('keys.groupRequired')
   }
   for (const { key } of limitFields) {
@@ -235,7 +240,7 @@ const canSubmit = computed(() =>
 
 watch(() => props.show, (show) => {
   if (!show) return
-  pendingKeys.value = props.selectedKeys.map(({ id, name }) => ({ id, name }))
+  pendingKeys.value = props.selectedKeys.map(({ id, name, group }) => ({ id, name, group }))
   failures.value = []
   for (const field of Object.keys(enabled) as EditableField[]) enabled[field] = false
   for (const { key } of limitFields) limits[key] = ''

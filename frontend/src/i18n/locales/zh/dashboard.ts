@@ -89,6 +89,7 @@ export default {
       selectKey: '选择密钥 {name}',
       clearSelection: '取消选择',
       hint: '勾选需要修改的字段，未勾选的字段保持原值。',
+      carpoolGroupReadOnly: '所选密钥包含拼车密钥，其分组由管理员分配，其他字段仍可编辑。',
       limitHint: '输入 0 表示不限制；已用额度保持不变。',
       ipHint: '每行一个 IP 或 CIDR；留空将清空所选密钥的此项名单。',
       invalidLimit: '请输入大于或等于 0 的有效金额。',

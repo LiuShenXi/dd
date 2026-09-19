@@ -1,0 +1,9 @@
+{
+  "attempt": 1,
+  "application_exit_code": 1,
+  "cause": "synthetic token initializer created app-data volume as root before candidate UID1000; config write failed on read-only fallback directory",
+  "product_failure": false,
+  "fix": "initialize only this owned volume root as UID1000 before app startup",
+  "rerun_policy": "remove first synthetic containers/networks/volumes with ownership checks; start a fresh synthetic DB",
+  "at": "2026-09-19T15:43:47.853391+00:00"
+}

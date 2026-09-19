@@ -89,6 +89,7 @@ export default {
       selectKey: 'Select key {name}',
       clearSelection: 'Clear selection',
       hint: 'Check the fields to update. Unchecked fields keep their current values.',
+      carpoolGroupReadOnly: 'The selection includes carpool keys whose groups are assigned by an administrator. Other fields can still be edited.',
       limitHint: 'Enter 0 for no limit. Existing usage is preserved.',
       ipHint: 'One IP or CIDR per line. Leave empty to clear this list on the selected keys.',
       invalidLimit: 'Enter a valid amount greater than or equal to 0.',

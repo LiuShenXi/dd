@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"regexp"
 	"sort"
 	"strings"
 	"testing"
@@ -18,43 +17,53 @@ import (
 )
 
 func TestEveryGatewayPOSTRouteIsClassifiedForPromptAuditCoverage(t *testing.T) {
-	routeSource, err := os.ReadFile("gateway.go")
-	require.NoError(t, err)
-	pattern := regexp.MustCompile(`(?:gateway|gemini|r|codexDirect|antigravityV1|antigravityV1Beta)\.POST\("([^"]+)"`)
-	matches := pattern.FindAllStringSubmatch(string(routeSource), -1)
+	// Inspect registered routes so helper-based and loop-generated registrations
+	// are covered as well as literal .POST calls.
 	actual := map[string]struct{}{}
-	for _, match := range matches {
-		actual[match[1]] = struct{}{}
+	for _, route := range newGatewayRoutesTestRouter().Routes() {
+		if route.Method != http.MethodPost {
+			continue
+		}
+		path := route.Path
+		for _, prefix := range []string{"/backend-api/codex", "/antigravity/v1beta", "/antigravity/v1", "/api/v3", "/v1beta", "/v1", "/v3"} {
+			if strings.HasPrefix(path, prefix+"/") {
+				path = strings.TrimPrefix(path, prefix)
+				break
+			}
+		}
+		actual[path] = struct{}{}
 	}
 
 	audited := map[string][]string{
-		"/messages":                 {"gateway_handler.go", "openai_gateway_handler.go"},
-		"/responses":                {"gateway_handler_responses.go", "openai_gateway_handler.go"},
-		"/responses/*subpath":       {"gateway_handler_responses.go", "openai_gateway_handler.go"},
-		"/chat/completions":         {"gateway_handler_chat_completions.go", "openai_chat_completions.go"},
-		"/embeddings":               {"openai_embeddings.go"},
-		"/alpha/search":             {"openai_alpha_search.go"},
-		"/live":                     {"openai_live.go"},
-		"/realtime/calls":           {"openai_live.go"},
-		"/images/generations":       {"openai_images.go", "grok_media.go"},
-		"/images/edits":             {"openai_images.go", "grok_media.go"},
-		"/images/generations/async": {"image_task_handler.go"},
-		"/images/edits/async":       {"image_task_handler.go"},
-		"/images/batches":           {"batch_image_handler.go"},
-		"/videos":                   {"grok_media.go"},
-		"/videos/generations":       {"grok_media.go"},
-		"/videos/edits":             {"grok_media.go"},
-		"/videos/extensions":        {"grok_media.go"},
-		"/models/*modelAction":      {"gemini_v1beta_handler.go"},
-		"/tts":                      {"grok_audio.go"},
-		"/web_search":               {"gateway_web_search.go"},
-		"/x_search":                 {"gateway_web_search.go"},
+		"/messages":                   {"gateway_handler.go", "openai_gateway_handler.go"},
+		"/responses":                  {"gateway_handler_responses.go", "openai_gateway_handler.go"},
+		"/responses/*subpath":         {"gateway_handler_responses.go", "openai_gateway_handler.go"},
+		"/chat/completions":           {"gateway_handler_chat_completions.go", "openai_chat_completions.go"},
+		"/embeddings":                 {"openai_embeddings.go"},
+		"/alpha/search":               {"openai_alpha_search.go"},
+		"/live":                       {"openai_live.go"},
+		"/realtime/calls":             {"openai_live.go"},
+		"/images/generations":         {"openai_images.go", "grok_media.go"},
+		"/images/edits":               {"openai_images.go", "grok_media.go"},
+		"/images/generations/async":   {"image_task_handler.go"},
+		"/images/edits/async":         {"image_task_handler.go"},
+		"/images/batches":             {"batch_image_handler.go"},
+		"/videos":                     {"grok_media.go"},
+		"/videos/generations":         {"grok_media.go"},
+		"/videos/edits":               {"grok_media.go"},
+		"/videos/extensions":          {"grok_media.go"},
+		"/contents/generations/tasks": {"grok_media.go"},
+		"/models/*modelAction":        {"gemini_v1beta_handler.go"},
+		"/tts":                        {"grok_audio.go"},
+		"/web_search":                 {"gateway_web_search.go"},
+		"/x_search":                   {"gateway_web_search.go"},
 	}
 	excluded := map[string]string{
-		"/messages/count_tokens":     "tokenization only; it does not execute a model request",
-		"/images/batches/:id/cancel": "control-plane cancellation with no user prompt",
-		"/stt":                       "speech transcription is not a text-generation prompt",
-		"/custom-voices":             "voice profile management has no model prompt",
+		"/messages/count_tokens":           "tokenization only; it does not execute a model request",
+		"/images/batches/:id/cancel":       "control-plane cancellation with no user prompt",
+		"/stt":                             "speech transcription is not a text-generation prompt",
+		"/custom-voices":                   "voice profile management has no model prompt",
+		"/internal/codex-sentinel/refresh": "authenticated ticket refresh control plane accepts only account, model, reason and version/event metadata; no user prompt",
 	}
 
 	unclassified := make([]string, 0)

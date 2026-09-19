@@ -1,0 +1,15 @@
+{
+  "default_disabled": true,
+  "enable_visible_without_restart": true,
+  "disable_visible_without_restart": true,
+  "proxy_configured": true,
+  "proxy_response_masks_password": true,
+  "masked_roundtrip_preserves_proxy": true,
+  "invalid_scheme_status": 400,
+  "invalid_scheme_preserves_existing_proxy": true,
+  "invalid_response_omits_password": true,
+  "oauth_accounts": 0,
+  "final_enabled": false,
+  "container_started_at_unchanged": true,
+  "boundary": "HTTP live settings persistence and response masking; no real ticket harvest or upstream call"
+}

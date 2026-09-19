@@ -1,0 +1,14 @@
+{
+  "source": "existing 026 synthetic harness; limited naming/path/concurrency/sentinel config adaptation",
+  "source_files_sha256": {
+    "runtime.py": "17146b9a8a9a4a551cdefb6a8ea1c2d25593037d975048efafbfc14e6483879d",
+    "lifecycle.py": "926fc0b9545b417c33d83606c439c10aa8f03c1c02f5991653fdfb805b7b0fb5",
+    "verify_http.py": "cdbda473008da077f601733de444f1e9081291b23e743eb149f0e96866370870",
+    "Dockerfile": "e9a61e23f7ac95a0d836a4a4126c4ecbd1e44955037bb9c2ae1ad41d7f56aeb7",
+    "nginx.conf": "8b1ed5654f8f0d70d3c181910ffd94e29be1d44f6b7400f74f97eb9e785c7f9d",
+    "mock/probe.go": "9f6d2b34e81626789658cabee5fcc4c96ab87d33eeb0b36eff21986b12c7b519"
+  },
+  "prefix": "sub2api-upgrade027-app",
+  "label": "sub2api-upgrade027-20260919",
+  "host_port": 38627
+}
