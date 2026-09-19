@@ -8,6 +8,7 @@
 | --- | --- |
 | 集成工作区 | `C:\WORK-SPACE\sub2api-compatible-0.2.7-20260919` |
 | 本地分支 | `codex/compatible-0.2.7` |
+| 源码合并提交 | `a52841d46670d6c040a18d278b13457e3319eb0c` |
 | 完整二开基线 | `2fefcf51f0e00618686ab825d81e65444ee1ccfd` |
 | 该基线对应的应用源码 | `f8f099c1d2851d1cfe7416e7f41a5108d529079c`，后续提交仅增加部署记录 |
 | 上游固定提交 | `aea725f2ea644d5592d0bbb1d63b607efa7e200a` |

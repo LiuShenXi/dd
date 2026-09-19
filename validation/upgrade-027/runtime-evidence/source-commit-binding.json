@@ -1,0 +1,10 @@
+{
+  "source_commit": "a52841d46670d6c040a18d278b13457e3319eb0c",
+  "source_input_sha256": "ed8abebad9280551ef8d65f3c4c934512a540f9042d978cea3e4e40470ab9f1a",
+  "all_recorded_build_inputs_match": true,
+  "tracked_backend_frontend_clean": true,
+  "frontend_files": 185,
+  "binary_sha256": "76e8c8a12f59c39259c5325f78b96e55095526e7ea40e70b542300ee9202c543",
+  "verified_at": "2026-09-19T15:50:17.694865+00:00",
+  "boundary": "Acceptance binary was built before merge commit with exact merged working-tree bytes. This receipt binds identical production source and embedded frontend inputs to the finalized merge commit; it does not relabel binary build metadata or claim an archive-rebuilt production image."
+}

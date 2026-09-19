@@ -24,6 +24,8 @@
 
 ## 构建来源与边界
 
+合并提交已完成：`a52841d46670d6c040a18d278b13457e3319eb0c`。提交后重新验证全部构建输入逐文件哈希一致，且 backend/frontend 已跟踪源码无未提交差异；映射回执见 [source-commit-binding.json](runtime-evidence/source-commit-binding.json)。它绑定实际测试输入，不改写旧二进制的构建元数据。
+
 - 候选镜像：`sub2api-upgrade027-app:candidate`，ID `sha256:63e822c268bc4adb0f4e99416dc94c83fe7ea8ede0960cd66c61cb6fea6646ce`。
 - 应用二进制 SHA-256：`76e8c8a12f59c39259c5325f78b96e55095526e7ea40e70b542300ee9202c543`。
 - 当前生产源码及嵌入前端输入集合 SHA-256：`ed8abebad9280551ef8d65f3c4c934512a540f9042d978cea3e4e40470ab9f1a`。
