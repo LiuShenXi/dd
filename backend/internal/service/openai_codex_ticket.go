@@ -180,6 +180,23 @@ func (s *OpenAIGatewayService) openAICodexTicketHarvestProxyURLContext(ctx conte
 	return strings.TrimSpace(s.openAICodexTicketConfig().HarvestProxyURL)
 }
 
+// openAICodexTicketAccountProxyURL returns the URL of the proxy bound to the
+// account (proxy_id) for ticket harvesting, or "" when the account is unbound
+// or its bound proxy is not a syntactically valid harvest proxy. An
+// account-bound proxy takes precedence over the global harvest proxy setting;
+// the global master switch (openai_codex_ticket_enabled) still gates all
+// collection.
+func openAICodexTicketAccountProxyURL(account *Account) string {
+	if account == nil || account.ProxyID == nil || account.Proxy == nil {
+		return ""
+	}
+	u := account.Proxy.URL()
+	if ValidateOpenAICodexTicketHarvestProxyURL(u) != nil {
+		return ""
+	}
+	return u
+}
+
 func (t *openAICodexTicket) valid(now time.Time, targetLen int) bool {
 	if t == nil {
 		return false
@@ -541,7 +558,14 @@ func (s *OpenAIGatewayService) collectOpenAICodexTicket(ctx context.Context, acc
 		return nil, errCodexTicketCollection
 	}
 	cfg := s.openAICodexTicketConfig()
-	proxyURL := s.openAICodexTicketHarvestProxyURLContext(ctx)
+	// Proxy resolution: an account-bound proxy (proxy_id) wins over the global
+	// harvest proxy. The global master switch (openai_codex_ticket_enabled)
+	// remains the only collection kill switch; an empty global proxy merely
+	// disables harvesting for unbound accounts.
+	proxyURL, proxySource := s.openAICodexTicketHarvestProxyURLContext(ctx), "global"
+	if accountURL := openAICodexTicketAccountProxyURL(account); accountURL != "" {
+		proxyURL, proxySource = accountURL, "account"
+	}
 	if proxyURL == "" || s.httpUpstream == nil || ctx.Err() != nil {
 		return nil, errCodexTicketCollection
 	}
@@ -571,7 +595,7 @@ func (s *OpenAIGatewayService) collectOpenAICodexTicket(ctx context.Context, acc
 		if err := s.persistOpenAICodexTicket(ctx, account, ticket); err != nil {
 			return nil, err
 		}
-		logger.L().Info("openai_codex_ticket harvested", zap.Int64("account_id", account.ID), zap.String("model", model), zap.Int("length", ticket.Length), zap.String("mode", "continuous"))
+		logger.L().Info("openai_codex_ticket harvested", zap.Int64("account_id", account.ID), zap.String("model", model), zap.Int("length", ticket.Length), zap.String("mode", "continuous"), zap.String("proxy_source", proxySource))
 		return ticket, nil
 	})
 	select {
