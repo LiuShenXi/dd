@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/requesttiming"
+	"github.com/Wei-Shaw/sub2api/internal/service/basispoints"
 	"io"
 	"net/http"
 	"strings"
@@ -60,6 +62,7 @@ func (s *OpenAIGatewayService) Forward(ctx context.Context, c *gin.Context, acco
 
 	if account.IsExcelBPSEnabled() {
 		return s.forwardExcelBPS(ctx, c, account, body, startTime)
+	}
 	}
 
 	// The SDK adapter owns Lite declarations, custom tools, replay item IDs,
