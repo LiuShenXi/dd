@@ -681,6 +681,10 @@ export default {
         oauthPassthrough: '自动透传（仅替换认证）',
         excelBPS: 'Excel / BPS 协议',
         excelBPSDesc: '使用本账号已有的 ChatGPT OAuth 凭据，经 Excel 接口转发 Responses 请求。无需 GitHub 登录或 sidecar；关闭后恢复原 Codex 路径。',
+        excelBPSAllModels: '对所有模型启用（兼容原设置）',
+        excelBPSModels: '勾选使用 Excel / BPS 的模型',
+        excelBPSAstraOnly: '仅选 Astra',
+        excelBPSModelsHint: '按账号映射后的模型名称匹配。仅勾选模型走 Excel / BPS；未选模型保留原 Codex、WS 和自动透传设置。不勾选任何模型时不使用 BPS。',
         excelBPSNotice: '保存后新开 Codex 会话。该路径强制 HTTP/SSE，忽略 WS mode 与自动透传；仅支持 Responses、客户端工具和 HTTPS 图片链接，不支持 base64 图片。max / ultra 按 xhigh 发送，模型权限以上游为准。',
         copilotSDKDesc: '保留 Codex 原生工具结构，断连时取消 SDK 回合。请使用仅含一个 sidecar 账号的独立分组；Base URL 和 API Key 填适配服务地址及密钥。',
         oauthPassthroughDesc:
