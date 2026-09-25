@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -65,6 +66,10 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	originalModel := gjson.GetBytes(body, "model").String()
 	model := account.GetMappedModel(originalModel)
 	stream := gjson.GetBytes(body, "stream").Bool()
+	// Keep a streaming upstream request alive after downstream cancellation so
+	// the terminal usage event can still be drained and billed.
+	upstreamCtx, releaseUpstreamCtx := detachStreamUpstreamContext(ctx, stream)
+	defer releaseUpstreamCtx()
 	var err error
 	body, err = sjson.SetBytes(body, "model", model)
 	if err != nil {
@@ -111,7 +116,7 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	if accountID == "" {
 		return fail(400, "basispoints_account_id_missing", "Excel BPS requires chatgpt_account_id")
 	}
-	requestCtx := WithHTTPUpstreamRedirectsDisabled(WithHTTPUpstreamProfile(ctx, HTTPUpstreamProfileLongStream))
+	requestCtx := WithHTTPUpstreamRedirectsDisabled(WithHTTPUpstreamProfile(upstreamCtx, HTTPUpstreamProfileLongStream))
 	req, err := newExcelBPSRequest(requestCtx, upstreamBody, token, accountID)
 	if err != nil {
 		return nil, err
@@ -172,15 +177,17 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	defer scanner.Close()
 	heartbeat := time.NewTicker(15 * time.Second)
 	defer heartbeat.Stop()
+	clientDisconnected := false
+	var clientDisconnectErr error
 	keepalive := func() {
-		if stream && ctx.Err() == nil {
+		if stream && !clientDisconnected && upstreamCtx.Err() == nil {
 			_, _ = c.Writer.WriteString(": keepalive\n\n")
 			c.Writer.Flush()
 		}
 	}
 	var completed []byte
 	terminal := ""
-	for scanner.Next(ctx, 0, heartbeat.C, keepalive) {
+	for scanner.Next(upstreamCtx, 0, heartbeat.C, keepalive) {
 		line := scanner.Text()
 		if strings.HasPrefix(line, "data: ") {
 			payload := []byte(strings.TrimPrefix(line, "data: "))
@@ -198,13 +205,14 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 				result.UpstreamResponseModel = gjson.GetBytes(payload, "response.model").String()
 			}
 		}
-		if stream {
+		if stream && !clientDisconnected {
 			if _, err = c.Writer.WriteString(line + "\n"); err != nil {
+				clientDisconnected = true
 				result.ClientDisconnect = true
-				result.Duration = time.Since(start)
-				return result, err
+				clientDisconnectErr = err
+				// Continue draining the detached upstream for terminal usage.
 			}
-			if line == "" {
+			if line == "" && !clientDisconnected {
 				c.Writer.Flush()
 			}
 		}
@@ -212,15 +220,15 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	result.Duration = time.Since(start)
 	result.UpstreamTerminalEvent = terminal
 	if err = scanner.Err(); err != nil || terminal == "" {
-		if ctx.Err() != nil {
+		if upstreamCtx.Err() != nil {
 			result.ClientDisconnect = true
-			return result, ctx.Err()
+			return result, upstreamCtx.Err()
 		}
 		MarkResponseCommitted(c)
-		if stream {
+		if stream && !clientDisconnected {
 			_, _ = c.Writer.WriteString("event: response.failed\ndata: {\"type\":\"response.failed\",\"response\":{\"status\":\"failed\",\"error\":{\"code\":\"basispoints_stream_incomplete\",\"message\":\"Upstream stream ended before completion\"}}}\n\n")
 			c.Writer.Flush()
-		} else {
+		} else if !clientDisconnected {
 			c.JSON(502, gin.H{"error": gin.H{"code": "basispoints_stream_incomplete", "message": "Excel BPS stream ended before completion"}})
 		}
 		return result, fmt.Errorf("excel BPS stream incomplete")
@@ -228,7 +236,7 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	if terminal != "response.completed" {
 		MarkResponseCommitted(c)
 	}
-	if !stream {
+	if !stream && !clientDisconnected {
 		if terminal != "response.completed" {
 			c.JSON(502, gin.H{"error": gin.H{"code": "basispoints_protocol_error", "message": "Excel BPS did not complete the response"}})
 		} else {
@@ -239,6 +247,12 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 		return result, fmt.Errorf("excel BPS terminal: %s", terminal)
 	}
 	s.bindHTTPResponseAccount(ctx, c, account, result.ResponseID)
+	if clientDisconnected {
+		if clientDisconnectErr == nil {
+			clientDisconnectErr = errors.New("client disconnected after Excel BPS response started")
+		}
+		return result, clientDisconnectErr
+	}
 	return result, nil
 }
 

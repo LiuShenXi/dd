@@ -87,6 +87,48 @@ func TestExcelBPSForwardContract(t *testing.T) {
 		})
 	}
 }
+
+type excelBPSDisconnectedWriter struct{ gin.ResponseWriter }
+
+func (w *excelBPSDisconnectedWriter) Write([]byte) (int, error) {
+	return 0, fmt.Errorf("write failed: client disconnected")
+}
+
+func (w *excelBPSDisconnectedWriter) WriteString(string) (int, error) {
+	return 0, fmt.Errorf("write failed: client disconnected")
+}
+
+func TestExcelBPSStreamingClientDisconnectDrainsTerminalUsage(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	rec := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(rec)
+	c.Writer = &excelBPSDisconnectedWriter{ResponseWriter: c.Writer}
+	body := []byte(`{"model":"gpt-5.6-sol","stream":true,"input":"test"}`)
+	c.Request = httptest.NewRequest(http.MethodPost, "/v1/responses", bytes.NewReader(body))
+
+	wire := strings.Join([]string{
+		`event: response.output_text.delta`,
+		`data: {"type":"response.output_text.delta","delta":"partial"}`,
+		``,
+		`event: response.completed`,
+		`data: {"type":"response.completed","response":{"id":"resp_disconnect","status":"completed","model":"gpt-5.6-sol","output":[],"usage":{"input_tokens":17,"output_tokens":3}}}`,
+		``,
+	}, "\n")
+	upstream := &httpUpstreamRecorder{resp: &http.Response{
+		StatusCode: http.StatusOK,
+		Header:     http.Header{"Content-Type": {"text/event-stream"}},
+		Body:       io.NopCloser(strings.NewReader(wire)),
+	}}
+	svc := openAIClientToolsTestService(upstream)
+	result, err := svc.Forward(context.Background(), c, excelAccount(), body)
+	require.Error(t, err)
+	require.True(t, result.ClientDisconnect)
+	require.Equal(t, 17, result.Usage.InputTokens)
+	require.Equal(t, 3, result.Usage.OutputTokens)
+	require.Equal(t, "response.completed", result.UpstreamTerminalEvent)
+	require.Equal(t, "resp_disconnect", result.ResponseID)
+}
+
 func TestExcelBPSModelDeniedDoesNotFailover(t *testing.T) {
 	upstream := &httpUpstreamRecorder{resp: &http.Response{StatusCode: 403, Header: http.Header{}, Body: io.NopCloser(strings.NewReader(`{"error":{"code":"basispoints_model_access_changed","message":"SECRET_UPSTREAM"}}`))}}
 	svc := openAIClientToolsTestService(upstream)
