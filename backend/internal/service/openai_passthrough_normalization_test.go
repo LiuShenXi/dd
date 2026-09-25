@@ -161,8 +161,8 @@ func TestNormalizeOpenAIResponsesReasoningMode_AstraPreservesBody(t *testing.T) 
 	}
 }
 
-func TestNormalizeOpenAIResponsesReasoningMode_NonAstraKeepsLegacyBehavior(t *testing.T) {
-	// 确保 guard 只放过 Astra，非 Astra model 字段不影响既有 strip/pro->max 语义。
+func TestNormalizeOpenAIResponsesReasoningMode_NonGPT6KeepsLegacyBehavior(t *testing.T) {
+	// GPT-6 Sol/Luna 与 Astra 保留官方字段，其它模型继续使用旧兼容语义。
 	tests := []struct {
 		name       string
 		body       string
@@ -179,6 +179,20 @@ func TestNormalizeOpenAIResponsesReasoningMode_NonAstraKeepsLegacyBehavior(t *te
 			require.False(t, gjson.GetBytes(normalized, "reasoning.mode").Exists())
 			require.Equal(t, tt.wantEffort, gjson.GetBytes(normalized, "reasoning.effort").String())
 		})
+	}
+}
+
+func TestNormalizeOpenAIResponsesReasoningMode_GPT6SolLunaPreservesOfficialFields(t *testing.T) {
+	for _, model := range []string{"gpt-6-sol", "gpt-6-luna"} {
+		body := []byte(`{"model":"` + model + `","reasoning":{"mode":"pro","effort":"max"},"temperature":0.2,"top_p":0.8,"include":["message.output_text.logprobs","foo"]}`)
+		normalized, changed, err := normalizeOpenAIResponsesReasoningMode(body)
+		require.NoError(t, err)
+		require.True(t, changed)
+		require.Equal(t, "pro", gjson.GetBytes(normalized, "reasoning.mode").String())
+		require.Equal(t, "max", gjson.GetBytes(normalized, "reasoning.effort").String())
+		require.False(t, gjson.GetBytes(normalized, "temperature").Exists())
+		require.False(t, gjson.GetBytes(normalized, "top_p").Exists())
+		require.Equal(t, 1, len(gjson.GetBytes(normalized, "include").Array()))
 	}
 }
 
