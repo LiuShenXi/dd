@@ -95,7 +95,7 @@ func TestEffortAndUnsupportedCapabilities(t *testing.T) {
 		{"tools": []any{object{"type": "unknown_hosted_tool"}}},
 		{"tool_choice": "required"},
 		{"previous_response_id": "resp_missing"},
-		{"input": []any{object{"role": "user", "content": []any{object{"type": "input_image", "image_url": "data:image/png;base64,AAAA"}}}}},
+		{"input": []any{object{"role": "user", "content": []any{object{"type": "input_image", "image_url": "data:image/png;base64,INVALID_IMAGE"}}}}},
 		{"text": object{"format": object{"type": "json_schema"}}},
 	} {
 		source := testSource()

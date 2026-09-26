@@ -20,13 +20,19 @@
 - 不从脚本, 多调用, 数组, 未闭合调用或带尾随内容的字符串中截取工具对象. 这类返回会产生 `basispoints_protocol_error`, 不会先发送其中一个工具执行. 未带明确工具身份的原始代码仍会被拒绝.
 - `basispoints_request_invalid` 的内容错误附带分叉接收到的字段位置, 例如 `path=input[2].output[1]; type=input_file`. 位置同时覆盖消息内容和 function/custom 工具结果. `input_image` URL 校验失败也附带位置.
 - 错误仅显示固定的已知协议类型名称; 任意未知类型归类为 `unknown`, 缺失类型或非对象内容分别标记. 不回显正文, 图片字节, URL 或任意自定义 type 值. 不支持的文件, 音频或其他内容仍返回明确错误, 不会静默丢弃或伪装为文本.
-- `supports text and HTTPS input_image content only` 表示内容分块类型不被支持, 单凭这条错误不能判断为 base64 转换失败. 下游应保留完整错误消息及请求 ID, 以便定位字段而不需要保存客户正文.
+- `supports text and HTTPS or inline input_image content only` 表示内容分块类型不被支持, 单凭这条错误不能判断为 base64 转换失败. 下游应保留完整错误消息及请求 ID, 以便定位字段而不需要保存客户正文.
 
 ## 能力限制
 
 `max`/`ultra` 映射 `xhigh`，`none`/`minimal` 映射 `low`，实际 effort 出现在响应/用量中。拒绝强制指定工具、托管工具、结构化输出与仅 previous_response_id 的增量历史。不要把 HTTP 200 当作模型能力证明。
 
-仅转发 HTTPS 图片 URL，不上传本地图片，不接受 base64/data URL 或 file_id。本地请求校验通过不等于上游视觉已验收。CPA 参考项目也记录了实际图片 422。
+支持 HTTPS 图片 URL 和 `data:image/...;base64,...`。内嵌图片在完整请求校验后，使用所选账号的凭据和代理上传到 BPS 官方 `/basispoints/api/attachments`，再用返回的 `openai_file_id` 发起推理。客户端直接提供的 `file_id` 仍不接受，以免跨账号引用。单张解码后最大 20 MiB；支持用户消息和工具结果中的图片，保留 detail 与原有会话标识。
+
+上传结果按账号、API Key、线程和凭据隔离，最多缓存 512 个文件引用、有效期一小时；重复历史图片无需每轮重新上传。缓存仅保存摘要和文件 ID，不保存图片或凭据。上传失败不继续提交推理，错误不回显图片内容。纯文本请求保持原转发路径。无需公开图片 URL 或另设图床。
+
+BPS 上游拒绝 `function_call_output.output` 中的多模态数组。适配器将完整工具结果保留为 JSON 文本，并在相邻消息中附上图片，明确标记为不可信工具输出；不丢弃文字、图片顺序、call_id 或 detail。内嵌图片先上传再转换，避免 Base64 落入文本字段。该格式已通过真实上游识图验证。
+
+2026-09-26 已直接验证官方附件接口返回 200，随后 Responses 返回 `response.completed`，正确识别合成测试图片的左右颜色。完整网关上线验收另见对应发布记录。附件接口对照来源：JaxsonWang/cpa-plugin-oai-basispoints 的 `internal/basispoints/attachments.go`。
 
 原始协议来自 hloolx/codex2api：9d02d3f5 → c125e560 → 20ff3e86 → d39f7e36 → 4dea83ec（含中间依赖修复）。另外对照 JaxsonWang/cpa-plugin-oai-basispoints 05b2d97 的工具目录、信封和回放实现。出处见 `backend/internal/service/basispoints/NOTICE.md`。
 

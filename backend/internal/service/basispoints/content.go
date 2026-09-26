@@ -13,7 +13,7 @@ func validateHistoryContent(value any, inputIndex int, field string) error {
 				return fmt.Errorf("%w (path=input[%d].%s[%d])", err, inputIndex, field, index)
 			}
 		default:
-			return fmt.Errorf("basispoints supports text and HTTPS input_image content only (path=input[%d].%s[%d]; type=%s)", inputIndex, field, index, contentTypeDiagnostic(part))
+			return fmt.Errorf("basispoints supports text and HTTPS or inline input_image content only (path=input[%d].%s[%d]; type=%s)", inputIndex, field, index, contentTypeDiagnostic(part))
 		}
 	}
 	return nil

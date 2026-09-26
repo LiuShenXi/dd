@@ -49,8 +49,8 @@ func TestUnsupportedImageFormsReturnActionableErrors(t *testing.T) {
 			if strings.Contains(err.Error(), "PRIVATE_IMAGE_BYTES") || strings.Contains(err.Error(), "private-secret") {
 				t.Fatal("image data or credentials leaked into the error")
 			}
-			if name == "base64" && (!strings.Contains(err.Error(), "HTTPS image URL") || !strings.Contains(err.Error(), "disable Basispoints")) {
-				t.Fatalf("base64 rejection lacks a remedy: %v", err)
+			if name == "base64" && !strings.Contains(err.Error(), "invalid base64") {
+				t.Fatalf("invalid image data must be rejected: %v", err)
 			}
 		})
 	}

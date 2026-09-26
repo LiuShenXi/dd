@@ -100,12 +100,12 @@ func TestDeepAuditImageInToolResultValidated(t *testing.T) {
 	}
 	source["input"] = []any{message("user", "Inspect the screenshot"), call, object{
 		"type": "function_call_output", "call_id": call["call_id"], "output": []any{
-			object{"type": "input_image", "image_url": "data:image/png;base64,AAAA"},
+			object{"type": "input_image", "image_url": "data:image/png;base64,INVALID_IMAGE"},
 		},
 	}}
 	raw, _ := json.Marshal(source)
 	_, _, err = Prepare(raw, bridge.scope, cache)
-	if err == nil || !strings.Contains(err.Error(), "does not accept data:image") {
-		t.Fatalf("tool result image must have the same HTTPS requirement as user content: %v", err)
+	if err == nil || !strings.Contains(err.Error(), "invalid base64") {
+		t.Fatalf("tool result image must have the same validation as user content: %v", err)
 	}
 }

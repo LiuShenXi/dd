@@ -21,3 +21,10 @@ Additional review reference: JaxsonWang/cpa-plugin-oai-basispoints at
 were compared with this package. We retain scoped caches, incremental text
 streaming and multiple-terminal-tool handling rather than its global call-ID
 cache and single-transport extraction. No CPA plugin ABI is imported.
+
+The 2026-09-26 inline-image upload implementation also references the official
+attachment workflow and bounded hash/file-ID cache in that project's
+`internal/basispoints/attachments.go` (main, retrieved 2026-09-26):
+https://github.com/JaxsonWang/cpa-plugin-oai-basispoints/blob/main/internal/basispoints/attachments.go
+Sub2API adds tenant/thread scoping, expiry, cancellation, bounded decoding and
+response reads, and tool-image wire normalization verified against BPS.

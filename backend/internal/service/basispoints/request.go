@@ -20,6 +20,8 @@ type Bridge struct {
 	RequestedEffort  string
 	Effort           string
 	Warnings         []string
+	HasInlineImages  bool
+	HasToolImages    bool
 	tools            map[string]tool
 	unsupportedTools map[string]bool
 	structured       *structuredOutput
@@ -135,6 +137,21 @@ func Prepare(raw []byte, scope string, replay *ReplayCache) ([]byte, *Bridge, er
 	translated, err := b.translateHistory(input)
 	if err != nil {
 		return nil, nil, err
+	}
+	for _, raw := range translated {
+		item, _ := raw.(object)
+		for _, field := range []string{"content", "output"} {
+			parts, _ := item[field].([]any)
+			for _, rawPart := range parts {
+				part, _ := rawPart.(object)
+				if text(part["type"]) == "input_image" && isInlineImage(text(part["image_url"])) {
+					b.HasInlineImages = true
+				}
+				if text(part["type"]) == "input_image" && field == "output" && text(item["type"]) == "function_call_output" {
+					b.HasToolImages = true
+				}
+			}
+		}
 	}
 	prologue := make([]any, 0, 2)
 	if instructions := text(source["instructions"]); instructions != "" {

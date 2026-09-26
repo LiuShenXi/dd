@@ -116,6 +116,22 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	if accountID == "" {
 		return fail(400, "basispoints_account_id_missing", "Excel BPS requires chatgpt_account_id")
 	}
+	// Include tenant/thread, upstream account and credential in the cache scope.
+	// Only their digest is retained by AttachmentCache. Upload before inference,
+	// but after Prepare so validation and turn fingerprints use original input.
+	if bridge.HasInlineImages || bridge.HasToolImages {
+		attachmentScope, _ := json.Marshal([]string{scope, accountID, token})
+		upstreamBody, err = excelBPSAttachments.UploadImages(ctx, upstreamBody, string(attachmentScope), func(uploadCtx context.Context, mediaType string, data []byte) (string, error) {
+			return s.uploadExcelBPSImage(uploadCtx, account, token, accountID, mediaType, data)
+		})
+		if err != nil {
+			var attachmentErr *excelBPSAttachmentError
+			if errors.As(err, &attachmentErr) {
+				return fail(attachmentErr.status, attachmentErr.code, attachmentErr.message)
+			}
+			return fail(400, "basispoints_image_invalid", "Could not prepare the image attachment")
+		}
+	}
 	requestCtx := WithHTTPUpstreamRedirectsDisabled(WithHTTPUpstreamProfile(upstreamCtx, HTTPUpstreamProfileLongStream))
 	req, err := newExcelBPSRequest(requestCtx, upstreamBody, token, accountID)
 	if err != nil {
