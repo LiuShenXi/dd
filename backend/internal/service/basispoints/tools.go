@@ -415,15 +415,9 @@ func (b *Bridge) translateCall(native object) (object, error) {
 // (optionally carrying a host "functions." display prefix) are accepted; any other
 // native tool remains an unsupported-native-tool error.
 func (b *Bridge) translateDirectCatalogCall(native object) (object, error) {
-	name := text(native["name"])
-	info, ok := b.tools[name]
+	info, ok := b.directCatalogTool(native)
 	if !ok {
-		if trimmed := strings.TrimPrefix(name, "functions."); trimmed != name {
-			info, ok = b.tools[trimmed]
-		}
-	}
-	if !ok {
-		return nil, fmt.Errorf("basispoints returned an unsupported native tool; no tool was executed")
+		return nil, unsupportedNativeToolError(native, "name_not_in_catalog")
 	}
 	kind := text(native["type"])
 	var envelope object
@@ -443,7 +437,7 @@ func (b *Bridge) translateDirectCatalogCall(native object) (object, error) {
 		}
 		envelope = object{"name": info.Name, "input": input}
 	default:
-		return nil, fmt.Errorf("basispoints returned an unsupported native tool; no tool was executed")
+		return nil, unsupportedNativeToolError(native, "unsupported_catalog_kind")
 	}
 	result, err := b.finishClientToolCall(native, info, envelope, false)
 	if err != nil {

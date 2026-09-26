@@ -16,6 +16,9 @@
 
 ### 下游转发与错误定位
 
+- 原生工具调用既可使用完整名称，也可将 namespace 与 name 分开返回。按完整命名空间精确匹配客户端目录，保留参数、工具类型和 call_id；命名空间冲突不会退回同名全局工具。functions 作为既有宿主显示前缀继续兼容。不按短名称猜测工具，也不执行服务端脚本。
+- unsupported native tool 表示模型返回的工具身份无法匹配客户端目录。错误包含固定原生工具分类、命名空间状态和身份摘要，不回显任意工具名称或参数；不得仅凭此错误断言用了哪个工具。整批工具校验通过后才会下发。
+
 - 模型将单个工具写成 `functions.shell({"command":"pwd"})` 时, 适配器按完整调用解析工具名和一个 JSON 字面量参数. 允许可选的 `await` / `return` 和末尾分号, 工具必须已在客户端目录中声明. function 参数必须为 JSON 对象; custom 参数必须为 JSON 字符串, 解码后原样交给客户端. 此处不运行 JavaScript.
 - 不从脚本, 多调用, 数组, 未闭合调用或带尾随内容的字符串中截取工具对象. 这类返回会产生 `basispoints_protocol_error`, 不会先发送其中一个工具执行. 未带明确工具身份的原始代码仍会被拒绝.
 - `basispoints_request_invalid` 的内容错误附带分叉接收到的字段位置, 例如 `path=input[2].output[1]; type=input_file`. 位置同时覆盖消息内容和 function/custom 工具结果. `input_image` URL 校验失败也附带位置.
