@@ -30,8 +30,22 @@ func newExcelBPSAttachmentRequest(ctx context.Context, mediaType string, data []
 	var body bytes.Buffer
 	writer := multipart.NewWriter(&body)
 	filename := "image"
-	if extensions, _ := mime.ExtensionsByType(mediaType); len(extensions) > 0 {
-		filename += extensions[0]
+	// BPS checks the attachment filename, not just its Content-Type. Go 1.27
+	// lists .jfif first for JPEG, but BPS inference only accepts .jpg/.jpeg.
+	// Keep supported image filenames independent of the OS MIME database.
+	switch mediaType {
+	case "image/jpeg":
+		filename += ".jpg"
+	case "image/png":
+		filename += ".png"
+	case "image/gif":
+		filename += ".gif"
+	case "image/webp":
+		filename += ".webp"
+	default:
+		if extensions, _ := mime.ExtensionsByType(mediaType); len(extensions) > 0 {
+			filename += extensions[0]
+		}
 	}
 	headers := make(textproto.MIMEHeader)
 	headers.Set("Content-Disposition", mime.FormatMediaType("form-data", map[string]string{"name": "file", "filename": filename}))
