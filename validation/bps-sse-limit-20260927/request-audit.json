@@ -1,0 +1,102 @@
+{
+  "requests": [
+    {
+      "container": "sub2api-blue",
+      "request_id": "3d7210c4-c966-4583-8b3d-b5abfceef4a9",
+      "client_request_id": "c3c6a613-75d4-4796-abaa-84e02852deb1",
+      "status_code": 200,
+      "account_id": 14,
+      "completed_at": "2026-09-27T13:46:22.858+0800",
+      "latency_ms": 28836,
+      "started_at": "2026-09-27T13:45:54.022000+08:00"
+    },
+    {
+      "container": "sub2api-blue",
+      "request_id": "3ab6deeb-05fb-493e-a45d-dbf7abe5fcfc",
+      "client_request_id": "1754e4f8-901c-4211-a5eb-d39711277001",
+      "status_code": 200,
+      "account_id": 14,
+      "completed_at": "2026-09-27T13:46:27.820+0800",
+      "latency_ms": 4684,
+      "started_at": "2026-09-27T13:46:23.136000+08:00"
+    },
+    {
+      "container": "sub2api-blue",
+      "request_id": "3eb6c0a6-9a92-4d5c-ab23-d347c69ca38c",
+      "client_request_id": "f5a5af36-bda1-4cf2-9010-65df7fe4011e",
+      "status_code": 200,
+      "account_id": 11,
+      "completed_at": "2026-09-27T13:47:15.484+0800",
+      "latency_ms": 4340,
+      "started_at": "2026-09-27T13:47:11.144000+08:00"
+    },
+    {
+      "container": "sub2api-blue",
+      "request_id": "a7bf2ac0-0ea0-494e-acb2-bc376c0f13ef",
+      "client_request_id": "44604294-6e27-458b-9517-b58867b930e3",
+      "status_code": 200,
+      "account_id": 5,
+      "completed_at": "2026-09-27T13:47:33.384+0800",
+      "latency_ms": 17448,
+      "started_at": "2026-09-27T13:47:15.936000+08:00"
+    },
+    {
+      "container": "sub2api-green",
+      "request_id": "91bb0c24-cc35-4932-ba9d-255ba5f2c2b3",
+      "client_request_id": "d07fab46-09ff-46bb-861b-26043affadaa",
+      "status_code": 200,
+      "account_id": 14,
+      "completed_at": "2026-09-27T13:47:51.348+0800",
+      "latency_ms": 1102124,
+      "started_at": "2026-09-27T13:29:29.224000+08:00"
+    },
+    {
+      "container": "sub2api-green",
+      "request_id": "95c2db82-8ff6-4798-b573-54027a51cf99",
+      "client_request_id": "c4f23316-918b-45aa-b421-85cf9ae1b7f8",
+      "status_code": 200,
+      "account_id": 14,
+      "completed_at": "2026-09-27T13:49:22.274+0800",
+      "latency_ms": 135368,
+      "started_at": "2026-09-27T13:47:06.906000+08:00"
+    }
+  ],
+  "probe_usage": [
+    {
+      "id": 254189,
+      "request_id": "client:1754e4f8-901c-4211-a5eb-d39711277001",
+      "account_id": 14,
+      "requested_model": "gpt-6-astra",
+      "upstream_response_model": "gpt-6-astra",
+      "upstream_endpoint": "/basispoints/api/responses"
+    },
+    {
+      "id": 254205,
+      "request_id": "client:44604294-6e27-458b-9517-b58867b930e3",
+      "account_id": 5,
+      "requested_model": "gpt-6-astra",
+      "upstream_response_model": "gpt-6-astra",
+      "upstream_endpoint": "/basispoints/api/responses"
+    },
+    {
+      "id": 254187,
+      "request_id": "client:c3c6a613-75d4-4796-abaa-84e02852deb1",
+      "account_id": 14,
+      "requested_model": "gpt-6-astra",
+      "upstream_response_model": "gpt-6-astra",
+      "upstream_endpoint": "/basispoints/api/responses"
+    },
+    {
+      "id": 254199,
+      "request_id": "client:f5a5af36-bda1-4cf2-9010-65df7fe4011e",
+      "account_id": 11,
+      "requested_model": "gpt-6-astra",
+      "upstream_response_model": "gpt-6-astra",
+      "upstream_endpoint": "/basispoints/api/responses"
+    }
+  ],
+  "cutover_at": "2026-09-27T05:47:10Z",
+  "drained_at": "2026-09-27T05:51:19Z",
+  "errors_since_drain": 0,
+  "audited_at": "2026-09-27T05:52:53.775211+00:00"
+}
