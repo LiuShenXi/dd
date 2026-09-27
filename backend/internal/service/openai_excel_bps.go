@@ -189,7 +189,7 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 		c.Header("Cache-Control", "no-cache")
 		c.Header("X-Accel-Buffering", "no")
 	}
-	scanner := newOpenAISSEReadPump(converted, 16<<20)
+	scanner := newOpenAISSEReadPump(converted, basispoints.MaxSSELineBytes)
 	defer scanner.Close()
 	heartbeat := time.NewTicker(15 * time.Second)
 	defer heartbeat.Stop()

@@ -18,4 +18,7 @@ the final response locally. This does not provide upstream constrained decoding.
   without exposing partial structured message text.
 - Resolve schema references inside the submitted document only. Never fetch
   remote schemas or read local files. Limit schemas to 1 MiB and answer text to
-  16 MiB, subject to the existing SSE event limit.
+  16 MiB. Serialized SSE events have a separate 64 MiB limit, shared with the
+  gateway forwarding scanner, to accommodate terminal envelopes and opaque
+  reasoning without truncating response contents. Both single-line and
+  multiline events remain bounded; this does not increase tool/schema limits.

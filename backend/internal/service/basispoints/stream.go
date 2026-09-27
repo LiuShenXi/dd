@@ -2,6 +2,7 @@ package basispoints
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,6 +10,15 @@ import (
 	"strings"
 	"sync"
 )
+
+// MaxSSEEventBytes bounds one serialized JSON event, not the entire response.
+// Terminal responses may contain opaque reasoning and all completed items, so
+// their serialized size can exceed the former 16 MiB text-oriented limit.
+const MaxSSEEventBytes = 64 << 20
+
+// MaxSSELineBytes includes the data prefix, CRLF and Scanner lookahead. Keep the
+// gateway's downstream scanner aligned with the adapter's upstream scanner.
+const MaxSSELineBytes = MaxSSEEventBytes + len("data: ") + 2
 
 type protocolError struct{ error }
 
@@ -56,7 +66,13 @@ func (b *Bridge) transform(reader io.Reader, writer io.Writer) error {
 		if err != nil {
 			return err
 		}
-		_, err = fmt.Fprintf(writer, "event: %s\ndata: %s\n\n", kind, raw)
+		if _, err = io.WriteString(writer, "event: "+kind+"\ndata: "); err != nil {
+			return err
+		}
+		if _, err = writer.Write(raw); err != nil {
+			return err
+		}
+		_, err = io.WriteString(writer, "\n\n")
 		return err
 	}
 	emitTool := func(item object, index any) error {
@@ -208,39 +224,55 @@ func (b *Bridge) transform(reader io.Reader, writer io.Writer) error {
 }
 
 func readEvents(reader io.Reader, consume func(string, []byte) error) error {
+	return readEventsWithLimit(reader, MaxSSEEventBytes, consume)
+}
+
+func readEventsWithLimit(reader io.Reader, maxEventBytes int, consume func(string, []byte) error) error {
 	scanner := bufio.NewScanner(reader)
-	scanner.Buffer(make([]byte, 64*1024), 16<<20)
-	var data strings.Builder
+	maxLineBytes := maxEventBytes + len("data: ") + 2
+	scanner.Buffer(make([]byte, min(64*1024, maxLineBytes)), maxLineBytes)
+	var data bytes.Buffer
+	hasData := false
 	event := ""
 	flush := func() error {
-		if data.Len() == 0 {
+		if !hasData {
 			event = ""
 			return nil
 		}
-		err := consume(event, []byte(strings.TrimSuffix(data.String(), "\n")))
-		data.Reset()
+		err := consume(event, data.Bytes())
+		// Do not retain a large event buffer for the rest of a long-lived stream.
+		data = bytes.Buffer{}
+		hasData = false
 		event = ""
 		return err
 	}
 	for scanner.Scan() {
-		line := scanner.Text()
-		if line == "" {
+		line := scanner.Bytes()
+		if len(line) == 0 {
 			if err := flush(); err != nil {
 				return err
 			}
-		} else if strings.HasPrefix(line, "event:") {
-			event = strings.TrimSpace(strings.TrimPrefix(line, "event:"))
-		} else if strings.HasPrefix(line, "data:") {
-			_, _ = data.WriteString(strings.TrimPrefix(strings.TrimPrefix(line, "data:"), " "))
-			_ = data.WriteByte('\n')
-			if data.Len() > 16<<20 {
-				return protocolError{fmt.Errorf("basispoints SSE event exceeds 16 MiB")}
+		} else if bytes.HasPrefix(line, []byte("event:")) {
+			event = strings.TrimSpace(string(line[len("event:"):]))
+		} else if bytes.HasPrefix(line, []byte("data:")) {
+			value := bytes.TrimPrefix(line[len("data:"):], []byte(" "))
+			separator := 0
+			if hasData {
+				separator = 1
 			}
+			if len(value) > maxEventBytes-data.Len()-separator {
+				return protocolError{fmt.Errorf("basispoints SSE event exceeds %d bytes", maxEventBytes)}
+			}
+			if hasData {
+				_ = data.WriteByte('\n')
+			}
+			_, _ = data.Write(value)
+			hasData = true
 		}
 	}
 	if err := scanner.Err(); err != nil {
 		if errors.Is(err, bufio.ErrTooLong) {
-			return protocolError{fmt.Errorf("basispoints SSE line exceeds 16 MiB")}
+			return protocolError{fmt.Errorf("basispoints SSE line exceeds %d bytes", maxLineBytes)}
 		}
 		return err
 	}
