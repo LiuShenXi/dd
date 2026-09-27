@@ -24,6 +24,22 @@ import (
 var excelBPSReplay basispoints.ReplayCache
 var excelBPSOpaque = &basispoints.OpaqueStore{Root: os.Getenv("BPS_OPAQUE_DIR")}
 
+// Restore at the last HTTP request boundary, including native compact/fallback
+// routes. A later scheduler choice must never send a local reference upstream.
+func restoreBPSOpaqueRequest(c *gin.Context, req *http.Request, body []byte) (*http.Request, error) {
+	scope := fmt.Sprintf("key:%d", getAPIKeyIDFromContext(c))
+	reader, length, err := excelBPSOpaque.OpenRequest(scope, body)
+	if err != nil {
+		return nil, err
+	}
+	if req.Body != nil {
+		_ = req.Body.Close()
+	}
+	req.Body, req.ContentLength = reader, length
+	req.GetBody = func() (io.ReadCloser, error) { r, _, err := excelBPSOpaque.OpenRequest(scope, body); return r, err }
+	return req, nil
+}
+
 func excelBPSAccountID(account *Account, accessToken string) string {
 	if accountID := strings.TrimSpace(account.GetChatGPTAccountID()); accountID != "" {
 		return accountID
