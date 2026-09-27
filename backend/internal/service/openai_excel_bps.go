@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -21,6 +22,7 @@ import (
 )
 
 var excelBPSReplay basispoints.ReplayCache
+var excelBPSOpaque = &basispoints.OpaqueStore{Root: os.Getenv("BPS_OPAQUE_DIR")}
 
 func excelBPSAccountID(account *Account, accessToken string) string {
 	if accountID := strings.TrimSpace(account.GetChatGPTAccountID()); accountID != "" {
@@ -104,6 +106,7 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 		}
 	}
 	scope := fmt.Sprintf("account:%d/key:%d/thread:%s", account.ID, getAPIKeyIDFromContext(c), identity)
+	opaqueScope := fmt.Sprintf("key:%d", getAPIKeyIDFromContext(c))
 	upstreamBody, bridge, err := basispoints.Prepare(body, scope, &excelBPSReplay)
 	if err != nil {
 		return fail(400, "basispoints_request_invalid", err.Error())
@@ -136,6 +139,16 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	req, err := newExcelBPSRequest(requestCtx, upstreamBody, token, accountID)
 	if err != nil {
 		return nil, err
+	}
+	opaqueBody, opaqueLength, err := excelBPSOpaque.OpenRequest(opaqueScope, upstreamBody)
+	if err != nil {
+		return fail(400, "basispoints_compaction_unavailable", err.Error())
+	}
+	defer opaqueBody.Close()
+	req.Body, req.ContentLength = opaqueBody, opaqueLength
+	req.GetBody = func() (io.ReadCloser, error) {
+		body, _, err := excelBPSOpaque.OpenRequest(opaqueScope, upstreamBody)
+		return body, err
 	}
 	proxyURL := ""
 	if account.Proxy != nil {
@@ -198,6 +211,9 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	go func() {
 		defer close(done)
 		readResult <- bridge.Transform(resp.Body, func(event basispoints.Event) error {
+			if err := excelBPSOpaque.CompactEvent(opaqueScope, event); err != nil {
+				return err
+			}
 			select {
 			case events <- event:
 			case <-stop:
