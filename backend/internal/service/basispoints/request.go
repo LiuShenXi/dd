@@ -75,6 +75,16 @@ func message(role, content string) object {
 
 // Prepare preserves the requested model and uses a whitelist for the Excel wire body.
 func Prepare(raw []byte, scope string, replay *ReplayCache) ([]byte, *Bridge, error) {
+	return prepare(raw, scope, replay, nil, "")
+}
+
+// PrepareWithCompactionStore drops history already covered by a verified
+// in-stream compaction. Standalone /responses/compact windows remain intact.
+func PrepareWithCompactionStore(raw []byte, scope string, replay *ReplayCache, store *OpaqueStore, storageScope string) ([]byte, *Bridge, error) {
+	return prepare(raw, scope, replay, store, storageScope)
+}
+
+func prepare(raw []byte, scope string, replay *ReplayCache, store *OpaqueStore, storageScope string) ([]byte, *Bridge, error) {
 	var source object
 	if err := decode(raw, &source); err != nil || source == nil {
 		return nil, nil, fmt.Errorf("invalid Basispoints request JSON")
@@ -134,7 +144,13 @@ func Prepare(raw []byte, scope string, replay *ReplayCache) ([]byte, *Bridge, er
 	default:
 		return nil, nil, fmt.Errorf("basispoints input must be text or a Responses item array")
 	}
-	translated, err := b.translateHistory(input)
+	// Collect the current tool catalog first. Preserve original input for stable
+	// turn fingerprints; only filter the history sent to the upstream model.
+	history, err := store.PruneHistory(storageScope, input)
+	if err != nil {
+		return nil, nil, err
+	}
+	translated, err := b.translateHistory(history)
 	if err != nil {
 		return nil, nil, err
 	}

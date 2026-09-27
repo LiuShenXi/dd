@@ -123,13 +123,22 @@ func (s *OpaqueStore) save(scope string, value any) (string, error) {
 
 // CompactEvent changes only compaction encrypted_content. Model text, tools,
 // item ids, terminal events and usage retain their original semantics.
-func (s *OpaqueStore) CompactEvent(scope string, event Event) error {
+func (s *OpaqueStore) CompactEvent(scope string, event Event, coversHistory ...bool) error {
 	if s == nil || s.Root == "" {
 		return nil
 	}
 	compact := func(item object) error {
 		if text(item["type"]) != "compaction" {
 			return nil
+		}
+		kind := event.Kind
+		if kind == "" {
+			kind = text(event.Payload["type"])
+		}
+		if len(coversHistory) > 0 && coversHistory[0] && (kind == "response.output_item.done" || kind == "response.completed") {
+			if err := s.markHistoryCompaction(scope, text(item["id"])); err != nil {
+				return err
+			}
 		}
 		reference, err := s.save(scope, item["encrypted_content"])
 		if err != nil {
@@ -156,6 +165,73 @@ func (s *OpaqueStore) CompactEvent(scope string, event Event) error {
 		}
 	}
 	return nil
+}
+
+func (s *OpaqueStore) historyMarker(scope, id string) string {
+	h := sha256.Sum256([]byte(id))
+	return filepath.Join(s.scopeDir(scope), "server-compaction-"+hex.EncodeToString(h[:])+".marker")
+}
+
+// Only the authenticated upstream streaming response can create a pruning
+// marker. An arbitrary compaction in client input is not evidence that preceding
+// items are redundant: standalone compact output can retain required messages.
+func (s *OpaqueStore) markHistoryCompaction(scope, id string) error {
+	if id == "" || len(id) > 512 {
+		return nil
+	}
+	dir := s.scopeDir(scope)
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		return fmt.Errorf("compaction provenance storage unavailable")
+	}
+	path := s.historyMarker(scope, id)
+	if existing, err := os.ReadFile(path); err == nil && string(existing) == id {
+		return nil
+	}
+	f, err := os.CreateTemp(dir, ".provenance-")
+	if err != nil {
+		return fmt.Errorf("compaction provenance storage unavailable")
+	}
+	defer os.Remove(f.Name())
+	defer f.Close()
+	if _, err := f.WriteString(id); err != nil {
+		return fmt.Errorf("compaction provenance write failed")
+	}
+	if err := f.Sync(); err != nil {
+		return fmt.Errorf("compaction provenance sync failed")
+	}
+	if err := f.Close(); err != nil {
+		return fmt.Errorf("compaction provenance close failed")
+	}
+	if err := os.Rename(f.Name(), path); err != nil {
+		return fmt.Errorf("compaction provenance commit failed")
+	}
+	if d, err := os.Open(dir); err == nil {
+		_ = d.Sync()
+		_ = d.Close()
+	}
+	return nil
+}
+
+func (s *OpaqueStore) PruneHistory(scope string, input []any) ([]any, error) {
+	if s == nil || s.Root == "" {
+		return input, nil
+	}
+	for i := len(input) - 1; i > 0; i-- {
+		item, _ := input[i].(object)
+		id := text(item["id"])
+		if text(item["type"]) != "compaction" || id == "" || len(id) > 512 || text(item["encrypted_content"]) == "" {
+			continue
+		}
+		marker, err := os.ReadFile(s.historyMarker(scope, id))
+		if os.IsNotExist(err) {
+			continue
+		}
+		if err != nil || string(marker) != id {
+			return nil, fmt.Errorf("compaction provenance unavailable")
+		}
+		return input[i:], nil
+	}
+	return input, nil
 }
 
 var opaqueReferenceJSON = regexp.MustCompile(`"bps-opaque-v1:([0-9a-f]{64})"`)

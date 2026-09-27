@@ -123,7 +123,7 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	}
 	scope := fmt.Sprintf("account:%d/key:%d/thread:%s", account.ID, getAPIKeyIDFromContext(c), identity)
 	opaqueScope := fmt.Sprintf("key:%d", getAPIKeyIDFromContext(c))
-	upstreamBody, bridge, err := basispoints.Prepare(body, scope, &excelBPSReplay)
+	upstreamBody, bridge, err := basispoints.PrepareWithCompactionStore(body, scope, &excelBPSReplay, excelBPSOpaque, opaqueScope)
 	if err != nil {
 		return fail(400, "basispoints_request_invalid", err.Error())
 	}
@@ -227,7 +227,7 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	go func() {
 		defer close(done)
 		readResult <- bridge.Transform(resp.Body, func(event basispoints.Event) error {
-			if err := excelBPSOpaque.CompactEvent(opaqueScope, event); err != nil {
+			if err := excelBPSOpaque.CompactEvent(opaqueScope, event, !isOpenAIResponsesCompactPath(c)); err != nil {
 				return err
 			}
 			select {
