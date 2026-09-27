@@ -43,7 +43,7 @@ func TestVerifiedStreamCompactionPrunesCoveredHistory(t *testing.T) {
 		t.Fatal(err)
 	}
 	items := output["input"].([]any)
-	if !reflect.DeepEqual(items[2], latest) || !strings.Contains(string(body), "Help with code") {
+	if !reflect.DeepEqual(items[0], latest) || !strings.Contains(string(body), "Help with code") || text(items[2].(object)["role"]) != "developer" {
 		t.Fatal("latest compaction or top-level instructions were lost")
 	}
 	// Provenance survives restart, but cannot cross authenticated API keys.
@@ -59,6 +59,39 @@ func TestVerifiedStreamCompactionPrunesCoveredHistory(t *testing.T) {
 	}
 	if len(history) != 9 {
 		t.Fatal("original input was mutated")
+	}
+}
+
+func TestPruneNativeRequestPreservesFieldsAndCanonicalWindow(t *testing.T) {
+	store := &OpaqueStore{Root: t.TempDir()}
+	if err := store.markHistoryCompaction("key:1", "cmp_verified"); err != nil {
+		t.Fatal(err)
+	}
+	old := message("user", "covered")
+	compact := object{"type": "compaction", "id": "cmp_verified", "encrypted_content": "opaque"}
+	source := object{"model": "gpt-6-astra", "instructions": "current instructions", "input": []any{old, compact, message("user", "new")}, "stream": false}
+	raw, _ := json.MarshalIndent(source, "", "  ")
+	got, err := store.PruneRequest("key:1", raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var output object
+	if err := decode(got, &output); err != nil {
+		t.Fatal(err)
+	}
+	want := []any{compact, message("user", "new")}
+	if !reflect.DeepEqual(output["input"], want) || output["instructions"] != source["instructions"] || output["stream"] != false {
+		t.Fatal("native body pruning changed required data")
+	}
+	got, err = store.PruneRequest("another-key", raw)
+	if err != nil || string(got) != string(raw) {
+		t.Fatal("unverified native history changed")
+	}
+	compact["id"] = "cmp_standalone"
+	raw, _ = json.Marshal(source)
+	got, err = store.PruneRequest("key:1", raw)
+	if err != nil || string(got) != string(raw) {
+		t.Fatal("canonical standalone compact input changed")
 	}
 }
 

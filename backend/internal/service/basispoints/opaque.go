@@ -11,6 +11,8 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+
+	"github.com/tidwall/gjson"
 )
 
 const opaquePrefix = "bps-opaque-v1:"
@@ -232,6 +234,47 @@ func (s *OpaqueStore) PruneHistory(scope string, input []any) ([]any, error) {
 		return input[i:], nil
 	}
 	return input, nil
+}
+
+// PruneRequest applies the same verified streaming-compaction boundary to
+// native HTTP fallback and /responses/compact requests. It preserves all other
+// JSON fields and never re-encodes a large ciphertext string.
+func (s *OpaqueStore) PruneRequest(scope string, body []byte) ([]byte, error) {
+	if s == nil || s.Root == "" {
+		return body, nil
+	}
+	input := gjson.GetBytes(body, "input")
+	if !input.IsArray() {
+		return body, nil
+	}
+	cut := 0
+	var failure error
+	input.ForEach(func(_, item gjson.Result) bool {
+		id := item.Get("id").String()
+		if item.Get("type").String() != "compaction" || id == "" || len(id) > 512 || item.Get("encrypted_content").String() == "" {
+			return true
+		}
+		marker, err := os.ReadFile(s.historyMarker(scope, id))
+		if os.IsNotExist(err) {
+			return true
+		}
+		if err != nil || string(marker) != id {
+			failure = fmt.Errorf("compaction provenance unavailable")
+			return false
+		}
+		cut = item.Index
+		return true
+	})
+	if failure != nil {
+		return nil, failure
+	}
+	if cut <= input.Index+1 {
+		return body, nil
+	}
+	pruned := make([]byte, 0, input.Index+1+len(body)-cut)
+	pruned = append(pruned, body[:input.Index+1]...)
+	pruned = append(pruned, body[cut:]...)
+	return pruned, nil
 }
 
 var opaqueReferenceJSON = regexp.MustCompile(`"bps-opaque-v1:([0-9a-f]{64})"`)

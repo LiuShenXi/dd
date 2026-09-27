@@ -28,6 +28,11 @@ var excelBPSOpaque = &basispoints.OpaqueStore{Root: os.Getenv("BPS_OPAQUE_DIR")}
 // routes. A later scheduler choice must never send a local reference upstream.
 func restoreBPSOpaqueRequest(c *gin.Context, req *http.Request, body []byte) (*http.Request, error) {
 	scope := fmt.Sprintf("key:%d", getAPIKeyIDFromContext(c))
+	var err error
+	body, err = excelBPSOpaque.PruneRequest(scope, body)
+	if err != nil {
+		return nil, err
+	}
 	reader, length, err := excelBPSOpaque.OpenRequest(scope, body)
 	if err != nil {
 		return nil, err

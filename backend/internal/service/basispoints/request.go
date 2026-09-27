@@ -203,6 +203,21 @@ func prepare(raw []byte, scope string, replay *ReplayCache, store *OpaqueStore, 
 		protocol += "\n" + structured.instructions()
 	}
 	prologue = append(prologue, message("developer", protocol))
+	// A streaming compaction supersedes preceding messages. Fresh instructions
+	// and the current tool catalog must follow it, or the model can resurrect
+	// the obsolete catalog encrypted in the prior context. Keep canonical
+	// standalone compact windows intact; only insert the fresh prologue.
+	prologueAt := 0
+	for i, raw := range translated {
+		item, _ := raw.(object)
+		if text(item["type"]) == "compaction" {
+			prologueAt = i + 1
+		}
+	}
+	upstreamInput := make([]any, 0, len(prologue)+len(translated))
+	upstreamInput = append(upstreamInput, translated[:prologueAt]...)
+	upstreamInput = append(upstreamInput, prologue...)
+	upstreamInput = append(upstreamInput, translated[prologueAt:]...)
 	cacheKey := text(source["prompt_cache_key"])
 	conversation := cacheKey
 	if conversation == "" && len(input) > 0 {
@@ -225,7 +240,7 @@ func prepare(raw []byte, scope string, replay *ReplayCache, store *OpaqueStore, 
 	}
 	output := object{
 		"model": model, "model_selection": "explicit", "stream": true, "store": false,
-		"input": append(prologue, translated...), "reasoning_effort": effort,
+		"input": upstreamInput, "reasoning_effort": effort,
 		"context_management": []any{object{"type": "compaction", "compact_threshold": 200000}},
 		"metadata": object{
 			"task_id": fingerprint([]any{scope, conversation}),
