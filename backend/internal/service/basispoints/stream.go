@@ -3,7 +3,6 @@ package basispoints
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -11,13 +10,12 @@ import (
 	"sync"
 )
 
-// MaxSSEEventBytes bounds one serialized JSON event, not the entire response.
-// Terminal responses may contain opaque reasoning and all completed items, so
-// their serialized size can exceed the former 16 MiB text-oriented limit.
+// MaxSSEEventBytes bounds the legacy buffered reader used by compatibility
+// tests. Production Transform uses the bounded disk-backed reader instead.
 const MaxSSEEventBytes = 64 << 20
 
-// MaxSSELineBytes includes the data prefix, CRLF and Scanner lookahead. Keep the
-// gateway's downstream scanner aligned with the adapter's upstream scanner.
+// MaxSSELineBytes includes the data prefix, CRLF and Scanner lookahead for
+// callers of the legacy buffered reader.
 const MaxSSELineBytes = MaxSSEEventBytes + len("data: ") + 2
 
 type protocolError struct{ error }
@@ -54,6 +52,12 @@ func (b *Bridge) Stream(upstream io.ReadCloser) io.ReadCloser {
 }
 
 func (b *Bridge) transform(reader io.Reader, writer io.Writer) error {
+	return b.Transform(reader, func(event Event) error { return event.WriteSSE(writer) })
+}
+
+// Transform delivers validated events without serializing and reparsing an
+// entire event at the gateway. Callbacks must not retain spool-backed values.
+func (b *Bridge) Transform(reader io.Reader, sink func(Event) error) error {
 	sequence := 0
 	terminal := false
 	emitted := make(map[string]bool)
@@ -62,18 +66,7 @@ func (b *Bridge) transform(reader io.Reader, writer io.Writer) error {
 		payload["type"] = kind
 		payload["sequence_number"] = sequence
 		sequence++
-		raw, err := json.Marshal(payload)
-		if err != nil {
-			return err
-		}
-		if _, err = io.WriteString(writer, "event: "+kind+"\ndata: "); err != nil {
-			return err
-		}
-		if _, err = writer.Write(raw); err != nil {
-			return err
-		}
-		_, err = io.WriteString(writer, "\n\n")
-		return err
+		return sink(Event{Kind: kind, Payload: payload})
 	}
 	emitTool := func(item object, index any) error {
 		id := text(item["id"])
@@ -101,14 +94,7 @@ func (b *Bridge) transform(reader io.Reader, writer io.Writer) error {
 		}
 		return emit("response.output_item.done", object{"output_index": index, "item": item})
 	}
-	process := func(event string, data []byte) error {
-		if string(data) == "[DONE]" {
-			return nil
-		}
-		var payload object
-		if decode(data, &payload) != nil || payload == nil {
-			return fmt.Errorf("invalid Basispoints SSE event")
-		}
+	process := func(event string, payload object) error {
 		kind := text(payload["type"])
 		if kind == "" {
 			kind = event
@@ -147,6 +133,18 @@ func (b *Bridge) transform(reader io.Reader, writer io.Writer) error {
 				response["text"] = config
 			}
 			if kind == "response.completed" {
+				// Preserve large opaque fields on disk. Only tool and structured
+				// message contents need to become strings for semantic validation.
+				budget := int64(16 << 20)
+				largeOutput, _ := response["output"].([]any)
+				for _, raw := range largeOutput {
+					item, _ := raw.(object)
+					if isTool(item) || (b.structured != nil && text(item["type"]) == "message") {
+						if _, err := materializeEventValue(item, &budget); err != nil {
+							return err
+						}
+					}
+				}
 				if b.structured != nil {
 					if err := b.structured.validate(response); err != nil {
 						return err
@@ -195,11 +193,11 @@ func (b *Bridge) transform(reader io.Reader, writer io.Writer) error {
 		terminal = kind == "response.completed" || kind == "response.incomplete" || kind == "response.failed" || kind == "error"
 		return emit(kind, payload)
 	}
-	err := readEvents(reader, func(event string, data []byte) error {
+	err := readSpooledEvents(reader, func(event string, payload object) error {
 		if terminal {
 			return io.EOF
 		}
-		if err := process(event, data); err != nil {
+		if err := process(event, payload); err != nil {
 			return protocolError{err}
 		}
 		if terminal {

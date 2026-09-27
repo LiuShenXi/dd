@@ -181,34 +181,49 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 		}
 		return fail(resp.StatusCode, "basispoints_upstream_error", "Excel BPS rejected this request; account scheduling was not changed")
 	}
-	converted := bridge.Stream(resp.Body)
-	defer func() { _ = converted.Close() }()
+
 	result := &OpenAIForwardResult{Model: originalModel, UpstreamModel: model, UpstreamEndpoint: "/basispoints/api/responses", Stream: stream, ReasoningEffort: &bridge.Effort, RequestedReasoningEffort: &bridge.RequestedEffort, RequestID: resp.Header.Get("x-request-id")}
 	if stream {
 		c.Header("Content-Type", "text/event-stream")
 		c.Header("Cache-Control", "no-cache")
 		c.Header("X-Accel-Buffering", "no")
 	}
-	scanner := newOpenAISSEReadPump(converted, basispoints.MaxSSELineBytes)
-	defer scanner.Close()
+	// Pass validated events directly. A second SSE scanner used to retain and
+	// copy the whole large event again and impose a second hard line limit.
+	events := make(chan basispoints.Event)
+	ack := make(chan struct{})
+	stop := make(chan struct{})
+	done := make(chan struct{})
+	readResult := make(chan error, 1)
+	go func() {
+		defer close(done)
+		readResult <- bridge.Transform(resp.Body, func(event basispoints.Event) error {
+			select {
+			case events <- event:
+			case <-stop:
+				return io.ErrClosedPipe
+			}
+			// The event's private spool must live until the consumer has written it.
+			select {
+			case <-ack:
+				return nil
+			case <-stop:
+				return io.ErrClosedPipe
+			}
+		})
+	}()
+	defer func() { close(stop); _ = resp.Body.Close(); <-done }()
 	heartbeat := time.NewTicker(15 * time.Second)
 	defer heartbeat.Stop()
 	clientDisconnected := false
 	var clientDisconnectErr error
-	keepalive := func() {
-		if stream && !clientDisconnected && upstreamCtx.Err() == nil {
-			_, _ = c.Writer.WriteString(": keepalive\n\n")
-			c.Writer.Flush()
-		}
-	}
-	var completed []byte
 	terminal := ""
-	for scanner.Next(upstreamCtx, 0, heartbeat.C, keepalive) {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "data: ") {
-			payload := []byte(strings.TrimPrefix(line, "data: "))
-			kind := gjson.GetBytes(payload, "type").String()
-			s.parseSSEUsageBytes(payload, &result.Usage)
+readEvents:
+	for {
+		select {
+		case event := <-events:
+			kind := event.Kind
+			s.parseSSEUsageBytes(event.UsageJSON(), &result.Usage)
 			if result.FirstTokenMs == nil && (kind == "response.output_text.delta" || kind == "response.output_item.added") {
 				ms := int(time.Since(start).Milliseconds())
 				result.FirstTokenMs = &ms
@@ -216,26 +231,48 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 			switch kind {
 			case "response.completed", "response.failed", "response.incomplete", "error":
 				terminal = kind
-				completed = []byte(gjson.GetBytes(payload, "response").Raw)
-				result.ResponseID = gjson.GetBytes(payload, "response.id").String()
-				result.UpstreamResponseModel = gjson.GetBytes(payload, "response.model").String()
+				result.ResponseID = event.ResponseID()
+				result.UpstreamResponseModel = event.ResponseModel()
 			}
-		}
-		if stream && !clientDisconnected {
-			if _, err = c.Writer.WriteString(line + "\n"); err != nil {
-				clientDisconnected = true
-				result.ClientDisconnect = true
-				clientDisconnectErr = err
-				// Continue draining the detached upstream for terminal usage.
+			if !clientDisconnected {
+				var writeErr error
+				if stream {
+					writeErr = event.WriteSSE(c.Writer)
+					if writeErr == nil {
+						c.Writer.Flush()
+					}
+				} else if kind == "response.completed" {
+					c.Header("Content-Type", "application/json")
+					c.Status(200)
+					writeErr = event.WriteResponse(c.Writer)
+				}
+				if writeErr != nil {
+					clientDisconnected = true
+					result.ClientDisconnect = true
+					clientDisconnectErr = writeErr
+				}
 			}
-			if line == "" && !clientDisconnected {
-				c.Writer.Flush()
+			ack <- struct{}{}
+		case err = <-readResult:
+			break readEvents
+		case <-upstreamCtx.Done():
+			err = upstreamCtx.Err()
+			break readEvents
+		case <-heartbeat.C:
+			if stream && !clientDisconnected {
+				if _, writeErr := c.Writer.WriteString(": keepalive\n\n"); writeErr != nil {
+					clientDisconnected = true
+					result.ClientDisconnect = true
+					clientDisconnectErr = writeErr
+				} else {
+					c.Writer.Flush()
+				}
 			}
 		}
 	}
 	result.Duration = time.Since(start)
 	result.UpstreamTerminalEvent = terminal
-	if err = scanner.Err(); err != nil || terminal == "" {
+	if err != nil || terminal == "" {
 		if upstreamCtx.Err() != nil {
 			result.ClientDisconnect = true
 			return result, upstreamCtx.Err()
@@ -255,8 +292,6 @@ func (s *OpenAIGatewayService) forwardExcelBPS(ctx context.Context, c *gin.Conte
 	if !stream && !clientDisconnected {
 		if terminal != "response.completed" {
 			c.JSON(502, gin.H{"error": gin.H{"code": "basispoints_protocol_error", "message": "Excel BPS did not complete the response"}})
-		} else {
-			c.Data(200, "application/json", completed)
 		}
 	}
 	if terminal != "response.completed" {
