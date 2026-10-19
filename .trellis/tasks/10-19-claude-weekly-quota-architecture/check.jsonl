@@ -1,0 +1,5 @@
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/test-plan.md","reason":"62 acceptance cases and required evidence"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/migration-rollout.md","reason":"Activation and accounting-preserving rollback"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/operations.md","reason":"Reconciliation and exception handling"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/evidence/code-index.md","reason":"Production source change anchors"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/evidence/architecture-review.md","reason":"Design review findings and validation boundaries"}

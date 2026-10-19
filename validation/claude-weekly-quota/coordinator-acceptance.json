@@ -1,0 +1,441 @@
+{
+  "production_enabled": false,
+  "baseline_revision": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
+  "scope": "code, isolated synthetic tests, release/rollback rehearsal only",
+  "tests": [
+    {
+      "id": "T01",
+      "scenario": "A 100、B 300",
+      "required_assertions": "两张卡归属、额度独立",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T02",
+      "scenario": "多 Key 同用户同组",
+      "required_assertions": "共用一张卡，不能每 Key 重发额度",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T03",
+      "scenario": "空、零、负、NaN、Infinity、科学计数",
+      "required_assertions": "拒绝且不写父记录、卡或操作",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T04",
+      "scenario": "省略额度选有效套餐",
+      "required_assertions": "精确复制默认值，改套餐不改旧卡",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T05",
+      "scenario": "省略额度且无默认",
+      "required_assertions": "QUOTA_REQUIRED，无不限额路径",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T06",
+      "scenario": "同幂等键重复开卡",
+      "required_assertions": "一张卡，原响应和原时间不变",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T07",
+      "scenario": "同目标同幂等键更改金额或套餐",
+      "required_assertions": "409，不追加；不同身份 scope 不返回他人结果",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T08",
+      "scenario": "同用户同时两次续卡",
+      "required_assertions": "串行排期不重叠，term_no 唯一",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T09",
+      "scenario": "stale expected_revision",
+      "required_assertions": "409，保留输入但不写入",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T10",
+      "scenario": "到期前、到期瞬间、到期后",
+      "required_assertions": "左闭右开；精确 168 小时",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T11",
+      "scenario": "取消未来中间卡",
+      "required_assertions": "后续卡不自动前移，无结转",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T12",
+      "scenario": "耗尽后提前续卡",
+      "required_assertions": "新卡按队尾生效，不能提前消费",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T13",
+      "scenario": "同用户 GPT 与 Claude 交错请求",
+      "required_assertions": "两账本各自变化，另一侧精确零变更",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T14",
+      "scenario": "GPT 额度零、Claude 有额",
+      "required_assertions": "Claude 可调用，GPT 原错误",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T15",
+      "scenario": "Claude 耗尽、GPT 有额",
+      "required_assertions": "GPT 可调用，Claude 429",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T16",
+      "scenario": "任一订阅过期或取消",
+      "required_assertions": "另一订阅仍正常，无余额回退",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T17",
+      "scenario": "已绑定 GPT 使用普通其他组",
+      "required_assertions": "原拒绝仍在，不能借本修复绕过",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T18",
+      "scenario": "GPT 开通前已有合法 Claude Key",
+      "required_assertions": "开通成功，Claude Key 和权益不被覆盖",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T19",
+      "scenario": "GPT 续费时有 Claude Key",
+      "required_assertions": "续费成功，不删除 Key 或取消卡",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T20",
+      "scenario": "GPT 首次开通普通余额非零",
+      "required_assertions": "原前置检查仍生效",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T21",
+      "scenario": "GPT 加量、四周期、自动重置",
+      "required_assertions": "原卡期、次数、额度、流水语义保持",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T22",
+      "scenario": "GPT HTTP、SSE、WS 跨周期",
+      "required_assertions": "原 durable receipt 和恢复行为不变",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T23",
+      "scenario": "新模块关闭、仓库未注入",
+      "required_assertions": "Claude term 拒绝，GPT 不调用新领域 Repo",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T24",
+      "scenario": "入参伪造其他 user/group/term",
+      "required_assertions": "DTO 和复合 FK 拒绝跨归属写入",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T25",
+      "scenario": "同凭据并发 Apply",
+      "required_assertions": "一条 debit、一次用量和一次 Key/账号计数",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T26",
+      "scenario": "已归档 dedup 重放",
+      "required_assertions": "不第二次扣费，校验原 fingerprint",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T27",
+      "scenario": "零费用",
+      "required_assertions": "有明确来源和 settled 事实，不写普通余额",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T28",
+      "scenario": "同一请求不同费用",
+      "required_assertions": "冲突并告警，原事实不覆盖",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T29",
+      "scenario": "客户端重复 Request-ID 两次真实调用",
+      "required_assertions": "两个服务器消费身份，正常分别计费",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T30",
+      "scenario": "部分来源字段恶意混填",
+      "required_assertions": "四种来源互斥，零费用不能绕过",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T31",
+      "scenario": "等锁跨到期或下一期起点",
+      "required_assertions": "回滚重选，不拿旧卡加新时间",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T32",
+      "scenario": "请求结束时旧卡已过期",
+      "required_assertions": "仍记旧卡，新卡用量零变化",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T33",
+      "scenario": "请求结束前当前卡被取消",
+      "required_assertions": "已准入费用仍记原卡",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T34",
+      "scenario": "上游后、known receipt 前崩溃",
+      "required_assertions": "admitted 转待核查，不猜零、不补扣 GPT",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T35",
+      "scenario": "known receipt 后、Apply 前崩溃",
+      "required_assertions": "恢复后精确结算一次",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T36",
+      "scenario": "Apply 提交后进程崩溃",
+      "required_assertions": "重放不再扣；日志可补写",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T37",
+      "scenario": "流断连且 usage 已知",
+      "required_assertions": "正常结算，断连不是退款",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T38",
+      "scenario": "usage 缺失、迟到与人工核查竞争",
+      "required_assertions": "NULL 与 reconcile_required；当前卡暂停新请求，旧卡不阻塞新卡；不产生假零账单",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T39",
+      "scenario": "恢复首笔超时",
+      "required_assertions": "后续条目用独立 context 继续",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T40",
+      "scenario": "两恢复 worker 与租约到期",
+      "required_assertions": "最多一次业务效果，未持 request 锁等待 scope",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T41",
+      "scenario": "0.000078125 等舍入边界",
+      "required_assertions": "八位金额逐表精确一致",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T42",
+      "scenario": "套餐或倍率在请求中途变化",
+      "required_assertions": "使用冻结定价；恢复不按现价重算",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T43",
+      "scenario": "账本提交、usage_log 写失败及日志清理",
+      "required_assertions": "未写成功可补；已确认后清理不补回；不重新计费",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T44",
+      "scenario": "多个在途请求超过额度、known 尚未 Apply",
+      "required_assertions": "已知待结算计入准入判断；原卡真实已用可超额，不抹账或转下一期",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T45",
+      "scenario": "Messages、Chat、Responses 及全部别名",
+      "required_assertions": "流式和非流式均有准入快照和结算",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T46",
+      "scenario": "跨组 fallback、强制平台、未支持收费入口",
+      "required_assertions": "明确拒绝，GPT 原能力仍正常",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T47",
+      "scenario": "慢预览、关闭 A 打开 B、A 的 finally 迟到",
+      "required_assertions": "B 不被旧结果覆盖",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T48",
+      "scenario": "页面倒计时到零且网络未返回",
+      "required_assertions": "不自行发额度、清零或假装已重置",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T49",
+      "scenario": "中英文、窄屏、键盘、多个 Key",
+      "required_assertions": "所有页面同一额度来源，Key 限额另标",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T50",
+      "scenario": "下单后修改、下架或删除套餐",
+      "required_assertions": "按订单原额度履约",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T51",
+      "scenario": "支付回调并发、重试、租约交接",
+      "required_assertions": "一个订单只创建一张卡",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T52",
+      "scenario": "开卡事务失败后回调重试",
+      "required_assertions": "不重复扣款或重复开卡，状态可恢复",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T53",
+      "scenario": "无快照旧订单遇新模式分组",
+      "required_assertions": "显式失败待处理，不猜额度",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T54",
+      "scenario": "reset、extend、restore、bulk、兑换及旧维护 worker",
+      "required_assertions": "未适配动作拒绝，旧维护排除 term，已用及卡期不变",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T55",
+      "scenario": "旧式自动全额/部分退款及取消",
+      "required_assertions": "term 旧退款路径拒绝，不减父记录天数冒充撤销额度，不充值普通余额",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T56",
+      "scenario": "空库和旧二开库迁移、重复执行",
+      "required_assertions": "约束正确，既有迁移校验和不变",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T57",
+      "scenario": "新字段默认值及旧数据查询",
+      "required_assertions": "全部旧组 windows，GPT 行为不改变",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T58",
+      "scenario": "旧 auth cache 命中、新模式切换",
+      "required_assertions": "旧版本失效，陈旧允许不越过最终 DB 检查",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T59",
+      "scenario": "活跃 GPT 事务同时 Claude 开卡或结算",
+      "required_assertions": "无锁环，无全局重置锁竞争",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T60",
+      "scenario": "R2 关闭新准入回到 R1",
+      "required_assertions": "Claude 明确拒绝，已知账务可完成，GPT 正常",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T61",
+      "scenario": "未升级副本仍服务时请求启用",
+      "required_assertions": "启用门禁拒绝，不运行混合语义",
+      "status": "not_run",
+      "evidence": []
+    },
+    {
+      "id": "T62",
+      "scenario": "分组切换前旧余额请求仍在途",
+      "required_assertions": "必须排空，切换前后每个请求来源明确",
+      "status": "not_run",
+      "evidence": []
+    }
+  ]
+}

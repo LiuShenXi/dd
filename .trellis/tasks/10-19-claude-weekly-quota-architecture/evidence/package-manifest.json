@@ -1,0 +1,155 @@
+{
+  "created_at_utc": "2026-10-19T12:56:39.034259+00:00",
+  "files": [
+    {
+      "path": "api-contracts.md",
+      "bytes": 9152,
+      "sha256": "4628a5c2f1fb3a2361714f842ec621fb9f88c962e7fab8a9af9c6d1bf200f05d"
+    },
+    {
+      "path": "billing-protocol.md",
+      "bytes": 11140,
+      "sha256": "a072020822760cf0cc600d46f71582a46ef191264aaa6183f5b094cd6adee611"
+    },
+    {
+      "path": "check.jsonl",
+      "bytes": 691,
+      "sha256": "1fcddecdc38d06799cecd0d5adc0606a436caf9d542fabf22a53c08dfc84e8db"
+    },
+    {
+      "path": "contracts/openapi.json",
+      "bytes": 43365,
+      "sha256": "d88683628d6264b49e8f71491c0eb01e825f4d3158b91882c71060a63c06a8d8"
+    },
+    {
+      "path": "contracts/schema.sql.example",
+      "bytes": 10005,
+      "sha256": "a23c52915cc3a5a7b728e8ac01d052800ae3db4fef893b1c6e4474dda1e2fadd"
+    },
+    {
+      "path": "data-model.md",
+      "bytes": 8087,
+      "sha256": "c23de1c3a662e3fb1e52c595e61c0055676455ef9568f9cb480f6a06ef3cad48"
+    },
+    {
+      "path": "decisions.md",
+      "bytes": 4182,
+      "sha256": "3f8aec084ef432e0447771c15501bac147ce3db283b47675f18f32147d37fcde"
+    },
+    {
+      "path": "design.md",
+      "bytes": 8143,
+      "sha256": "2afcfb869c56753055ec17820123bb4fbd9f30b99d0bf541305a76204619b978"
+    },
+    {
+      "path": "evidence/architecture-review.md",
+      "bytes": 3968,
+      "sha256": "f63e46bd4ba804d1b711b2b897a1788c486bf0ca683394586a224f2f24bc547e"
+    },
+    {
+      "path": "evidence/code-index.md",
+      "bytes": 15450,
+      "sha256": "35c2bdba3d549179aa9c8a5a46e99ef1698f2e7f9c277bf315249301915a1362"
+    },
+    {
+      "path": "evidence/local-baseline.json",
+      "bytes": 116120,
+      "sha256": "1df0e05174562e2a16bc4e33da9cb536a34e04e7b821cd4514f0ab201f4ce308"
+    },
+    {
+      "path": "evidence/production-baseline.json",
+      "bytes": 133844,
+      "sha256": "45475d6e422ee5c0e5fab08ce0f6a857b42962519b815a0049d35c91c8bc4ecb"
+    },
+    {
+      "path": "evidence/production-recheck.json",
+      "bytes": 383,
+      "sha256": "f154dcc5aa3a338428cfe9e3afe47c153760b65219c06b06390415873449154a"
+    },
+    {
+      "path": "evidence/validation-receipt.json",
+      "bytes": 3690,
+      "sha256": "6cc1b33e39a5e9c7e4b7619a1b6844226cdb91c3977b64ae0cccc398b6eef6c1"
+    },
+    {
+      "path": "implement.jsonl",
+      "bytes": 1294,
+      "sha256": "d80dbb9a8d94678b8e6d550d76208b2d38d658de9a99420c35912ba6971eae91"
+    },
+    {
+      "path": "implement.md",
+      "bytes": 9149,
+      "sha256": "2de53e9adf083b0e8e55e6cd387d9ef8dbfcf8bc816623888de38b411bdd113e"
+    },
+    {
+      "path": "integration-contracts.md",
+      "bytes": 8658,
+      "sha256": "75fd1e4da5958122b2f3953c9d667511bf6f12acdf87eb9fa445b214a56433c9"
+    },
+    {
+      "path": "migration-rollout.md",
+      "bytes": 6267,
+      "sha256": "a06d0806bfc47d683dc06b371d4718a6baf97a76a1d4464c658e20f13ee66da8"
+    },
+    {
+      "path": "operations.md",
+      "bytes": 4091,
+      "sha256": "ae68c27990000492a228f43189e4e8441bd588f35ab84e60ace25e5dec75430c"
+    },
+    {
+      "path": "prd.md",
+      "bytes": 7131,
+      "sha256": "6984d00ae13f271c5ec32e6f8c585cf9f4a7f9740c62c63985602f6ae56f34d0"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5602,
+      "sha256": "1b65a29d5ace3d13ae663e3b737abd7ceacbfb129062b8239e48f81875f65424"
+    },
+    {
+      "path": "sol-handoff.md",
+      "bytes": 3747,
+      "sha256": "7b46b6f1918f89f7d1272abbe527bf26395ddffc8a16f8103bcbd02e31cf553a"
+    },
+    {
+      "path": "task.json",
+      "bytes": 1094,
+      "sha256": "aab82f3b335ac745af9b3462bc7e0e7f6f11671f31103f232a160f20f2e41e54"
+    },
+    {
+      "path": "test-plan.md",
+      "bytes": 7427,
+      "sha256": "334bdeb9948fe143b80989977425f3473cbf29f57f1fbfba12be5a8e80084894"
+    },
+    {
+      "path": "tools/build_openapi.py",
+      "bytes": 9784,
+      "sha256": "86290c7b8d0a5ec7ffa80d8370fe917ca693ddc9cf4cd34e4e0ba12377723af9"
+    },
+    {
+      "path": "tools/README.md",
+      "bytes": 1566,
+      "sha256": "0504a5e6bbe739f697db0abd1f89f73be1b43fc3bd762cea748fae20d5659870"
+    },
+    {
+      "path": "tools/validate_package.py",
+      "bytes": 9287,
+      "sha256": "bffcfa615e6ce81dcd81866df051a6eb9b8a31bd5f7c966a2df82cf84e3ddaca"
+    },
+    {
+      "path": "tools/verify_baseline.py",
+      "bytes": 12236,
+      "sha256": "09e3db032eacff1da8df485b5a35efd8493e124c34f5e60bd7a6d37a74b28c2e"
+    },
+    {
+      "path": "traceability.md",
+      "bytes": 2090,
+      "sha256": "cb849bb75eb72d885f7f7584cbc0daf4352e3a60ce38492744db41cc81a82f61"
+    },
+    {
+      "path": "ui-contracts.md",
+      "bytes": 4616,
+      "sha256": "f05dc4b9e5ad17a4c009cd03ae66de2121b774286ba4836658cec9df36c24636"
+    }
+  ]
+}

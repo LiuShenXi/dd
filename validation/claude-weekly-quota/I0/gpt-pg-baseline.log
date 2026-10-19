@@ -1,0 +1,56 @@
+go: downloading go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.61.0
+go: downloading go.opentelemetry.io/otel/metric v1.44.0
+2026/10/19 13:06:32 Timezone initialized: UTC (UTC offset: +00:00)
+2026/10/19 13:06:33 github.com/testcontainers/testcontainers-go - Connected to docker: 
+  Server Version: 25.0.3
+  API Version: 1.44
+  Operating System: Docker Desktop
+  Total Memory: 32014 MB
+  Testcontainers for Go Version: v0.40.0
+  Resolved Docker Host: npipe:////./pipe/docker_engine
+  Resolved Docker Socket Path: //var/run/docker.sock
+  Test SessionID: ba45c8df5be819c358571ed8b104ad8728b6e477348dac659f19bf76997f5f36
+  Test ProcessID: 7bd92040-316d-4bb7-9ec9-933cbcd5b2eb
+2026/10/19 13:06:33 🐳 Creating container for image postgres:18.1-alpine3.23
+2026/10/19 13:06:33 🐳 Creating container for image testcontainers/ryuk:0.13.0
+2026/10/19 13:06:33 ✅ Container created: 3cf35ae8d616
+2026/10/19 13:06:33 🐳 Starting container: 3cf35ae8d616
+2026/10/19 13:06:33 ✅ Container started: 3cf35ae8d616
+2026/10/19 13:06:33 ⏳ Waiting for container id 3cf35ae8d616 image: testcontainers/ryuk:0.13.0. Waiting for: port 8080/tcp to be listening
+2026/10/19 13:06:33 Shell not executable in container, only external port validated
+2026/10/19 13:06:33 🔔 Container is ready: 3cf35ae8d616
+2026/10/19 13:06:33 ✅ Container created: 595a8c3e4c91
+2026/10/19 13:06:33 🐳 Starting container: 595a8c3e4c91
+2026/10/19 13:06:34 ✅ Container started: 595a8c3e4c91
+2026/10/19 13:06:34 ⏳ Waiting for container id 595a8c3e4c91 image: postgres:18.1-alpine3.23. Waiting for: all of: [log message "database system is ready to accept connections" (occurrence: 2), port 5432/tcp to be listening]
+2026/10/19 13:06:35 🔔 Container is ready: 595a8c3e4c91
+2026/10/19 13:06:35 🐳 Creating container for image redis:8.4-alpine
+2026/10/19 13:06:36 ✅ Container created: 607bf14308ec
+2026/10/19 13:06:36 🐳 Starting container: 607bf14308ec
+2026/10/19 13:06:36 ✅ Container started: 607bf14308ec
+2026/10/19 13:06:36 ⏳ Waiting for container id 607bf14308ec image: redis:8.4-alpine. Waiting for: all of: [port 6379/tcp to be listening, log message "* Ready to accept connections"]
+2026/10/19 13:06:36 🔔 Container is ready: 607bf14308ec
+=== RUN   TestCarpoolBillingBindingPreservesGroupAndAdminThroughAuth
+--- PASS: TestCarpoolBillingBindingPreservesGroupAndAdminThroughAuth (0.27s)
+=== RUN   TestCarpoolStandardGroupOpenRenewAndExistingKeyAuth
+--- PASS: TestCarpoolStandardGroupOpenRenewAndExistingKeyAuth (0.18s)
+=== RUN   TestCarpoolStandardOpeningRejectsConflictsWithoutMutation
+=== RUN   TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/balance
+=== RUN   TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/frozen
+=== RUN   TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/nil_key_group
+=== RUN   TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/different_key_group
+=== RUN   TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/inactive_group
+=== RUN   TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/wrong_platform
+=== RUN   TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/existing_binding
+=== RUN   TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/late_invalid_payment
+--- PASS: TestCarpoolStandardOpeningRejectsConflictsWithoutMutation (0.21s)
+    --- PASS: TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/balance (0.03s)
+    --- PASS: TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/frozen (0.03s)
+    --- PASS: TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/nil_key_group (0.03s)
+    --- PASS: TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/different_key_group (0.03s)
+    --- PASS: TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/inactive_group (0.02s)
+    --- PASS: TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/wrong_platform (0.02s)
+    --- PASS: TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/existing_binding (0.02s)
+    --- PASS: TestCarpoolStandardOpeningRejectsConflictsWithoutMutation/late_invalid_payment (0.04s)
+PASS
+ok  	github.com/Wei-Shaw/sub2api/internal/repository	9.616s

@@ -1,0 +1,10 @@
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/prd.md","reason":"Confirmed behavior and acceptance contract"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/design.md","reason":"Boundaries and GPT coexistence"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/data-model.md","reason":"Schema ownership and invariants"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/billing-protocol.md","reason":"Lock order, immutable admission, settlement and recovery"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/api-contracts.md","reason":"API and legacy entry guards"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/integration-contracts.md","reason":"Payment transaction, pricing snapshot, maintenance and cleanup compatibility"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/implement.md","reason":"I0 through I6 implementation sequence"}
+{"file":".trellis/spec/backend/carpool-contracts.md","reason":"Preserve current carpool business contracts"}
+{"file":".trellis/spec/frontend/carpool-state-contracts.md","reason":"UI identity and state consistency"}
+{"file":".trellis/spec/backend/release-safety.md","reason":"Read current release rules; reconcile with actual main-server deployment"}

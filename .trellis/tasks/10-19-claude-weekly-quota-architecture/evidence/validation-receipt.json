@@ -1,0 +1,151 @@
+{
+  "checked_at_utc": "2026-10-19T12:56:39.034259+00:00",
+  "result": "pass",
+  "counts": {
+    "json_files": 7,
+    "jsonl_records": 15,
+    "markdown_links": 30,
+    "openapi_operations": 11,
+    "json_schemas": 27,
+    "schema_examples": 21,
+    "requirements": 18,
+    "acceptance_cases": 62,
+    "source_files": 47,
+    "exact_migrations": 297
+  },
+  "errors": [],
+  "schema_examples": [
+    {
+      "case": "A100",
+      "schema": "OpenTermInput",
+      "expected_valid": true,
+      "actual_valid": true
+    },
+    {
+      "case": "B300",
+      "schema": "OpenTermInput",
+      "expected_valid": true,
+      "actual_valid": true
+    },
+    {
+      "case": "plan default",
+      "schema": "OpenTermInput",
+      "expected_valid": true,
+      "actual_valid": true
+    },
+    {
+      "case": "no quota",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "smallest unit",
+      "schema": "OpenTermInput",
+      "expected_valid": true,
+      "actual_valid": true
+    },
+    {
+      "case": "reject '0'",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "reject '0.00000000'",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "reject '-1'",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "reject 'NaN'",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "reject 'Infinity'",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "reject '1e3'",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "reject '1.000000001'",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "reject '1000000000000'",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "reject ''",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "reject None",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "reject 100",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "unknown field",
+      "schema": "OpenTermInput",
+      "expected_valid": false,
+      "actual_valid": false
+    },
+    {
+      "case": "read-only preview",
+      "schema": "PreviewInput",
+      "expected_valid": true,
+      "actual_valid": true
+    },
+    {
+      "case": "cancel",
+      "schema": "CancelInput",
+      "expected_valid": true,
+      "actual_valid": true
+    },
+    {
+      "case": "no-charge evidence",
+      "schema": "ResolveInput",
+      "expected_valid": true,
+      "actual_valid": true
+    },
+    {
+      "case": "no-charge cannot inject amount",
+      "schema": "ResolveInput",
+      "expected_valid": false,
+      "actual_valid": false
+    }
+  ],
+  "limitations": [
+    "Architecture static checks only",
+    "No complete OpenAPI spec validator was installed; references, operation shape and JSON Schema examples checked",
+    "SQL draft not executed",
+    "No application implementation, business tests, browser tests or production writes"
+  ]
+}
