@@ -36,6 +36,13 @@ func (s *GatewayService) ForwardAsResponses(
 	parsed *ParsedRequest,
 ) (*ForwardResult, error) {
 	startTime := time.Now()
+	if err := rejectUnsupportedSubscriptionQuotaTools(ctx, body); err != nil {
+		return nil, err
+	}
+	if err := rejectUnsupportedSubscriptionQuotaAdapter(ctx, account.IsBedrock()); err != nil {
+		return nil, err
+	}
+	beginSubscriptionQuotaMetering(c)
 
 	normalizedBody, normalized, err := normalizeOpenAIResponsesLegacyIngress(body)
 	if err != nil {
@@ -132,14 +139,18 @@ func (s *GatewayService) ForwardAsResponses(
 
 	// 10. Build upstream request
 	upstreamCtx, releaseUpstreamCtx := detachStreamUpstreamContext(ctx, reqStream)
-	upstreamReq, _, err := s.buildUpstreamRequest(upstreamCtx, c, account, anthropicBody, token, tokenType, mappedModel, reqStream, shouldMimicClaudeCode)
+	upstreamReq, wireBody, err := s.buildUpstreamRequest(upstreamCtx, c, account, anthropicBody, token, tokenType, mappedModel, reqStream, shouldMimicClaudeCode)
 	releaseUpstreamCtx()
 	if err != nil {
 		return nil, fmt.Errorf("build upstream request: %w", err)
 	}
 
 	// 11. Send request
+	if err := s.beforeSubscriptionQuotaSend(ctx, c, account, mappedModel, wireBody); err != nil {
+		return nil, err
+	}
 	resp, err := s.httpUpstream.DoWithTLS(upstreamReq, proxyURL, account.ID, account.Concurrency, s.tlsFPProfileService.ResolveTLSProfile(account))
+	observeSubscriptionQuotaHTTP(ctx, resp, err)
 	if err != nil {
 		if resp != nil && resp.Body != nil {
 			_ = resp.Body.Close()
@@ -196,6 +207,7 @@ func (s *GatewayService) ForwardAsResponses(
 		result, handleErr = s.handleResponsesBufferedStreamingResponse(resp, c, originalModel, mappedModel, reasoningEffort, startTime, clientToolMapping)
 	}
 
+	attachSubscriptionQuotaMetering(c, result)
 	return result, handleErr
 }
 
@@ -374,6 +386,7 @@ func (s *GatewayService) handleResponsesBufferedStreamingResponse(
 		}
 
 		var event apicompat.AnthropicStreamEvent
+		observeSubscriptionQuotaMetering(c, []byte(payload), "anthropic_sse")
 		if err := json.Unmarshal([]byte(payload), &event); err != nil {
 			logger.L().Warn("forward_as_responses buffered: failed to parse event",
 				zap.Error(err),
@@ -427,6 +440,10 @@ func (s *GatewayService) handleResponsesBufferedStreamingResponse(
 		}
 	}
 
+	if _, term := SubscriptionQuotaForwardStateFromContext(c.Request.Context()); term && !completeSubscriptionQuotaMetering(c) {
+		writeResponsesError(c, http.StatusBadGateway, "server_error", "Upstream final usage is unavailable")
+		return nil, fmt.Errorf("term buffered final usage missing")
+	}
 	if finalResp == nil {
 		writeResponsesError(c, http.StatusBadGateway, "server_error", "Upstream stream ended without a response")
 		return nil, fmt.Errorf("upstream stream ended without response")
@@ -505,6 +522,8 @@ func (s *GatewayService) handleResponsesStreamingResponse(
 	clientToolRestorer := apicompat.NewResponsesClientToolStreamRestorer(clientToolMapping)
 	var usage ClaudeUsage
 	var firstTokenMs *int
+	clientDisconnected := false
+	_, termForward := SubscriptionQuotaForwardStateFromContext(c.Request.Context())
 	firstChunk := true
 
 	scanner := bufio.NewScanner(resp.Body)
@@ -516,15 +535,16 @@ func (s *GatewayService) handleResponsesStreamingResponse(
 
 	resultWithUsage := func() *ForwardResult {
 		return &ForwardResult{
-			RequestID:       requestID,
-			UpstreamHeaders: resp.Header,
-			Usage:           usage,
-			Model:           originalModel,
-			UpstreamModel:   mappedModel,
-			ReasoningEffort: reasoningEffort,
-			Stream:          true,
-			Duration:        time.Since(startTime),
-			FirstTokenMs:    firstTokenMs,
+			RequestID:        requestID,
+			UpstreamHeaders:  resp.Header,
+			Usage:            usage,
+			Model:            originalModel,
+			UpstreamModel:    mappedModel,
+			ReasoningEffort:  reasoningEffort,
+			Stream:           true,
+			Duration:         time.Since(startTime),
+			FirstTokenMs:     firstTokenMs,
+			ClientDisconnect: clientDisconnected,
 		}
 	}
 
@@ -566,8 +586,15 @@ func (s *GatewayService) handleResponsesStreamingResponse(
 				continue
 			}
 			for _, restored := range payloads {
+				if clientDisconnected {
+					continue
+				}
 				eventType := gjson.GetBytes(restored, "type").String()
 				if _, err := fmt.Fprintf(c.Writer, "event: %s\ndata: %s\n\n", eventType, restored); err != nil {
+					if termForward {
+						clientDisconnected = true
+						continue
+					}
 					logger.L().Info("forward_as_responses stream: client disconnected",
 						zap.String("request_id", requestID),
 					)
@@ -615,6 +642,7 @@ func (s *GatewayService) handleResponsesStreamingResponse(
 		}
 
 		var event apicompat.AnthropicStreamEvent
+		observeSubscriptionQuotaMetering(c, []byte(payload), "anthropic_sse")
 		if err := json.Unmarshal([]byte(payload), &event); err != nil {
 			logger.L().Warn("forward_as_responses stream: failed to parse event",
 				zap.Error(err),
@@ -638,6 +666,9 @@ func (s *GatewayService) handleResponsesStreamingResponse(
 		}
 	}
 
+	if termForward && !completeSubscriptionQuotaMetering(c) {
+		return resultWithUsage(), fmt.Errorf("term stream final usage missing")
+	}
 	return finalizeStream()
 }
 

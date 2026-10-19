@@ -115,6 +115,7 @@ type BillingCacheService struct {
 	userPlatformQuotaRepo            UserPlatformQuotaRepository
 	carpoolGatewayBilling            CarpoolGatewayBilling
 	subscriptionQuotaProtectedGroups *SubscriptionQuotaProtectedGroupService
+	subscriptionQuotaGatewayBilling  SubscriptionQuotaGatewayBilling
 
 	cacheWriteChan     chan cacheWriteTask
 	cacheWriteWg       sync.WaitGroup
@@ -739,7 +740,18 @@ func (s *BillingCacheService) CheckBillingEligibility(ctx context.Context, user 
 		return err
 	}
 	if group.HasTermQuotaMode() {
-		return ErrSubscriptionQuotaBillingUnavailable
+		if s == nil || !SubscriptionQuotaAdmissionEnabled(s.cfg, group.ID) || s.SubscriptionQuotaGatewayBilling() == nil {
+			return ErrSubscriptionQuotaBillingUnavailable
+		}
+		if platform != PlatformAnthropic || user == nil || apiKey == nil || apiKey.UserID != user.ID || apiKey.GroupID == nil || *apiKey.GroupID != group.ID {
+			return ErrSubscriptionQuotaEndpointUnsupported
+		}
+		if apiKey.HasRateLimits() {
+			if err := s.checkAPIKeyRateLimits(ctx, apiKey); err != nil {
+				return err
+			}
+		}
+		return s.checkRPM(ctx, user, group)
 	}
 	// 简易模式：跳过所有计费检查
 	if s.cfg.RunMode == config.RunModeSimple {

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/ctxkey"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/timezone"
@@ -38,21 +39,22 @@ func (s *GatewayService) ResolveUserGroupRateMultiplier(ctx context.Context, use
 // RecordUsageInput 记录使用量的输入参数。
 // 异步 worker 只接收计费所需快照，不能持有 ParsedRequest/RequestBodyRef 这类大请求体引用。
 type RecordUsageInput struct {
-	Result             *ForwardResult
-	APIKey             *APIKey
-	User               *User
-	Account            *Account
-	Subscription       *UserSubscription  // 可选：订阅信息
-	PricingAt          time.Time          // token 售价固定时刻；零值保持既有的记录时刻语义
-	InboundEndpoint    string             // 入站端点（客户端请求路径）
-	UpstreamEndpoint   string             // 上游端点（标准化后的上游路径）
-	UserAgent          string             // 请求的 User-Agent
-	IPAddress          string             // 请求的客户端 IP 地址
-	SessionID          string             // 客户端显式会话标识（session_id / X-Session-Id 等请求头），仅用于用量行会话关联
-	RequestPayloadHash string             // 请求体语义哈希，用于降低 request_id 误复用时的静默误去重风险
-	ForceCacheBilling  bool               // 强制缓存计费：将 input_tokens 转为 cache_read 计费（用于粘性会话切换）
-	APIKeyService      APIKeyQuotaUpdater // 可选：用于更新API Key配额
-	QuotaPlatform      string             // user×platform 配额计量平台：handler 在请求 ctx 内经 QuotaPlatform() 算定后传入（后扣运行在 worker 池 background ctx 上，取不到 ForcePlatform）
+	SubscriptionQuotaSnapshot *domain.SubscriptionQuotaBillingSnapshot
+	Result                    *ForwardResult
+	APIKey                    *APIKey
+	User                      *User
+	Account                   *Account
+	Subscription              *UserSubscription  // 可选：订阅信息
+	PricingAt                 time.Time          // token 售价固定时刻；零值保持既有的记录时刻语义
+	InboundEndpoint           string             // 入站端点（客户端请求路径）
+	UpstreamEndpoint          string             // 上游端点（标准化后的上游路径）
+	UserAgent                 string             // 请求的 User-Agent
+	IPAddress                 string             // 请求的客户端 IP 地址
+	SessionID                 string             // 客户端显式会话标识（session_id / X-Session-Id 等请求头），仅用于用量行会话关联
+	RequestPayloadHash        string             // 请求体语义哈希，用于降低 request_id 误复用时的静默误去重风险
+	ForceCacheBilling         bool               // 强制缓存计费：将 input_tokens 转为 cache_read 计费（用于粘性会话切换）
+	APIKeyService             APIKeyQuotaUpdater // 可选：用于更新API Key配额
+	QuotaPlatform             string             // user×platform 配额计量平台：handler 在请求 ctx 内经 QuotaPlatform() 算定后传入（后扣运行在 worker 池 background ctx 上，取不到 ForcePlatform）
 
 	ChannelUsageFields // 渠道映射信息（由 handler 在 Forward 前解析）
 }
@@ -650,6 +652,23 @@ func writeUsageLogBestEffort(ctx context.Context, repo UsageLogRepository, usage
 
 // RecordUsage 记录使用量并扣费（或更新订阅用量）
 func (s *GatewayService) RecordUsage(ctx context.Context, input *RecordUsageInput) error {
+	if input == nil {
+		return ErrSubscriptionQuotaReceiptConflict
+	}
+	snapshot := input.SubscriptionQuotaSnapshot
+	if inherited, ok := SubscriptionQuotaBillingSnapshotFromContext(ctx); ok {
+		if snapshot != nil && !domain.SubscriptionQuotaSnapshotsEqual(*snapshot, *inherited) {
+			return ErrSubscriptionQuotaReceiptConflict
+		}
+		snapshot = inherited
+	}
+	if snapshot != nil {
+		copy := snapshot.Clone()
+		return s.recordSubscriptionQuotaUsage(ctx, input, &copy)
+	}
+	if input.APIKey != nil && input.APIKey.Group != nil && input.APIKey.Group.HasTermQuotaMode() {
+		return ErrSubscriptionQuotaBillingUnavailable
+	}
 	return s.recordUsageCore(ctx, &recordUsageCoreInput{
 		Result:             input.Result,
 		APIKey:             input.APIKey,

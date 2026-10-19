@@ -827,6 +827,7 @@ func ProvideBillingCacheService(
 	userPlatformQuotaRepo UserPlatformQuotaRepository,
 	carpoolService *CarpoolService,
 	protectedGroupRepo SubscriptionQuotaProtectedGroupRepository,
+	quotaService *SubscriptionQuotaService,
 ) *BillingCacheService {
 	svc := NewBillingCacheService(cache, userRepo, subRepo, apiKeyRepo, rpmCache, rateRepo, cfg, userPlatformQuotaRepo)
 	svc.SetCarpoolGatewayBilling(carpoolService)
@@ -835,6 +836,7 @@ func ProvideBillingCacheService(
 		protectedIDs = cfg.SubscriptionQuota.ProtectedGroupIDs
 	}
 	svc.SetSubscriptionQuotaProtectedGroups(NewSubscriptionQuotaProtectedGroupService(protectedGroupRepo, protectedIDs))
+	svc.SetSubscriptionQuotaGatewayBilling(quotaService)
 	return svc
 }
 
@@ -856,6 +858,7 @@ func ProvideAPIKeyService(
 	svc.SetRateLimitCacheInvalidator(billingCacheService)
 	svc.SetConcurrencyService(concurrencyService)
 	svc.SetSubscriptionQuotaEntitlementReader(quotaEntitlements)
+	svc.SetSubscriptionQuotaGatewayBilling(billingCacheService.SubscriptionQuotaGatewayBilling())
 	carpoolService.SetAuthInvalidator(svc)
 	return svc
 }
@@ -879,7 +882,8 @@ var ProviderSet = wire.NewSet(
 	NewDashboardService,
 	ProvidePricingService,
 	NewBillingService,
-	NewSubscriptionQuotaService,
+	ProvideSubscriptionQuotaService,
+	ProvideSubscriptionQuotaRecoveryService,
 	ProvideSubscriptionQuotaEntitlementReader,
 	ProvideCarpoolService,
 	ProvideCarpoolResetService,

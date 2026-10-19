@@ -1722,16 +1722,17 @@ type SubscriptionCacheConfig struct {
 }
 
 // SubscriptionQuotaConfig separates issuance, generation and recovery. R1
-// recognizes term groups. I2 permits gated manual issuance; generation stays closed.
+// recognizes term groups. Admission additionally requires startup capability checks.
 type SubscriptionQuotaConfig struct {
-	IssueEnabled      bool          `mapstructure:"issue_enabled"`
-	AdmissionEnabled  bool          `mapstructure:"admission_enabled"`
-	RecoveryEnabled   bool          `mapstructure:"recovery_enabled"`
-	EnabledGroupIDs   []int64       `mapstructure:"enabled_group_ids"`
-	ProtectedGroupIDs []int64       `mapstructure:"protected_group_ids"`
-	RecoveryBatchSize int           `mapstructure:"recovery_batch_size"`
-	RecoveryInterval  time.Duration `mapstructure:"recovery_interval"`
-	RequestStaleGrace time.Duration `mapstructure:"request_stale_grace"`
+	IssueEnabled        bool          `mapstructure:"issue_enabled"`
+	AdmissionEnabled    bool          `mapstructure:"admission_enabled"`
+	RecoveryEnabled     bool          `mapstructure:"recovery_enabled"`
+	EnabledGroupIDs     []int64       `mapstructure:"enabled_group_ids"`
+	ProtectedGroupIDs   []int64       `mapstructure:"protected_group_ids"`
+	RecoveryBatchSize   int           `mapstructure:"recovery_batch_size"`
+	RecoveryInterval    time.Duration `mapstructure:"recovery_interval"`
+	RecoveryItemTimeout time.Duration `mapstructure:"recovery_item_timeout"`
+	RequestStaleGrace   time.Duration `mapstructure:"request_stale_grace"`
 }
 
 // SubscriptionMaintenanceConfig 订阅窗口维护后台任务配置。
@@ -2031,6 +2032,7 @@ func setDefaults() {
 	viper.SetDefault("subscription_quota.protected_group_ids", []int64{})
 	viper.SetDefault("subscription_quota.recovery_batch_size", 100)
 	viper.SetDefault("subscription_quota.recovery_interval", "30s")
+	viper.SetDefault("subscription_quota.recovery_item_timeout", "5s")
 	viper.SetDefault("subscription_quota.request_stale_grace", "1m")
 
 	// Server
@@ -2700,8 +2702,11 @@ func setEnvReachableDefaults() {
 }
 
 func (c *Config) Validate() error {
-	if c.SubscriptionQuota.AdmissionEnabled {
-		return fmt.Errorf("subscription_quota admission cannot be enabled before term billing is implemented")
+	if c.SubscriptionQuota.AdmissionEnabled && (len(c.SubscriptionQuota.EnabledGroupIDs) == 0 || c.RunMode == RunModeSimple || !c.SubscriptionQuota.RecoveryEnabled) {
+		return fmt.Errorf("subscription_quota admission requires standard mode, explicit enabled group IDs and recovery")
+	}
+	if c.SubscriptionQuota.RecoveryBatchSize < 0 || c.SubscriptionQuota.RecoveryBatchSize > 1000 || c.SubscriptionQuota.RecoveryInterval < 0 || c.SubscriptionQuota.RecoveryItemTimeout < 0 || c.SubscriptionQuota.RequestStaleGrace < 0 {
+		return fmt.Errorf("invalid subscription_quota recovery limits")
 	}
 	if c.SubscriptionQuota.IssueEnabled && (len(c.SubscriptionQuota.EnabledGroupIDs) == 0 || c.RunMode == RunModeSimple) {
 		return fmt.Errorf("subscription_quota issuance requires explicit enabled group IDs and standard mode")

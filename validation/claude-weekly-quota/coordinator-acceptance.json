@@ -21,15 +21,22 @@
       "id": "T02",
       "scenario": "多 Key 同用户同组",
       "required_assertions": "共用一张卡，不能每 Key 重发额度",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I2-review.md",
         "I2-domain-F2-final-receipt.json",
         "I2-domain-F2-20261019T140738Z-receipt.json",
         "I2-domain-race-F2-20261019T140748Z-receipt.json",
-        "I2-final-windows-unit-F2.jsonl"
+        "I2-final-windows-unit-F2.jsonl",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
       ],
-      "acceptance_note": "Same user/group shares one card and multiple Keys remain unchanged; actual multi-Key charging remains I3/I4."
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T03",
@@ -175,29 +182,65 @@
       "id": "T13",
       "scenario": "同用户 GPT 与 Claude 交错请求",
       "required_assertions": "两账本各自变化，另一侧精确零变更",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T14",
       "scenario": "GPT 额度零、Claude 有额",
       "required_assertions": "Claude 可调用，GPT 原错误",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T15",
       "scenario": "Claude 耗尽、GPT 有额",
       "required_assertions": "GPT 可调用，Claude 429",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T16",
       "scenario": "任一订阅过期或取消",
       "required_assertions": "另一订阅仍正常，无余额回退",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T17",
@@ -208,35 +251,56 @@
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
       ],
-      "acceptance_note": "Accepted at I1 on frozen F3; later billing and release iterations require regression."
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T18",
       "scenario": "GPT 开通前已有合法 Claude Key",
       "required_assertions": "开通成功，Claude Key 和权益不被覆盖",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
       ],
-      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T19",
       "scenario": "GPT 续费时有 Claude Key",
       "required_assertions": "续费成功，不删除 Key 或取消卡",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
       ],
-      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T20",
@@ -247,42 +311,72 @@
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
       ],
-      "acceptance_note": "Accepted at I1 on frozen F3; later billing and release iterations require regression."
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T21",
       "scenario": "GPT 加量、四周期、自动重置",
       "required_assertions": "原卡期、次数、额度、流水语义保持",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
       ],
-      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T22",
       "scenario": "GPT HTTP、SSE、WS 跨周期",
       "required_assertions": "原 durable receipt 和恢复行为不变",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T23",
       "scenario": "新模块关闭、仓库未注入",
       "required_assertions": "Claude term 拒绝，GPT 不调用新领域 Repo",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
       ],
-      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T24",
@@ -295,149 +389,336 @@
         "I2-domain-F2-20261019T140738Z-receipt.json",
         "I2-domain-race-F2-20261019T140748Z-receipt.json",
         "I2-final-windows-unit-F2.jsonl",
-        "environment-I1-F3-20261019T133930Z-pg-receipt.json"
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
       ],
-      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T25",
       "scenario": "同凭据并发 Apply",
       "required_assertions": "一条 debit、一次用量和一次 Key/账号计数",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T26",
       "scenario": "已归档 dedup 重放",
       "required_assertions": "不第二次扣费，校验原 fingerprint",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T27",
       "scenario": "零费用",
       "required_assertions": "有明确来源和 settled 事实，不写普通余额",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T28",
       "scenario": "同一请求不同费用",
       "required_assertions": "冲突并告警，原事实不覆盖",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T29",
       "scenario": "客户端重复 Request-ID 两次真实调用",
       "required_assertions": "两个服务器消费身份，正常分别计费",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T30",
       "scenario": "部分来源字段恶意混填",
       "required_assertions": "四种来源互斥，零费用不能绕过",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T31",
       "scenario": "等锁跨到期或下一期起点",
       "required_assertions": "回滚重选，不拿旧卡加新时间",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T32",
       "scenario": "请求结束时旧卡已过期",
       "required_assertions": "仍记旧卡，新卡用量零变化",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T33",
       "scenario": "请求结束前当前卡被取消",
       "required_assertions": "已准入费用仍记原卡",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T34",
       "scenario": "上游后、known receipt 前崩溃",
       "required_assertions": "admitted 转待核查，不猜零、不补扣 GPT",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T35",
       "scenario": "known receipt 后、Apply 前崩溃",
       "required_assertions": "恢复后精确结算一次",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T36",
       "scenario": "Apply 提交后进程崩溃",
       "required_assertions": "重放不再扣；日志可补写",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T37",
       "scenario": "流断连且 usage 已知",
       "required_assertions": "正常结算，断连不是退款",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T38",
       "scenario": "usage 缺失、迟到与人工核查竞争",
       "required_assertions": "NULL 与 reconcile_required；当前卡暂停新请求，旧卡不阻塞新卡；不产生假零账单",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T39",
       "scenario": "恢复首笔超时",
       "required_assertions": "后续条目用独立 context 继续",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T40",
       "scenario": "两恢复 worker 与租约到期",
       "required_assertions": "最多一次业务效果，未持 request 锁等待 scope",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T41",
       "scenario": "0.000078125 等舍入边界",
       "required_assertions": "八位金额逐表精确一致",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T42",
       "scenario": "套餐或倍率在请求中途变化",
       "required_assertions": "使用冻结定价；恢复不按现价重算",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T43",
       "scenario": "账本提交、usage_log 写失败及日志清理",
       "required_assertions": "未写成功可补；已确认后清理不补回；不重新计费",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T44",
       "scenario": "多个在途请求超过额度、known 尚未 Apply",
       "required_assertions": "已知待结算计入准入判断；原卡真实已用可超额，不抹账或转下一期",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
     },
     {
       "id": "T45",
@@ -636,6 +917,12 @@
       "status": "accepted",
       "receipt": "coordinator-I2-review.md",
       "source_sha256": "4dd98708a8cab51b34a46f00fec7263a969025b60aa3ac7198a0256c49aeaa97"
+    },
+    {
+      "id": "I3",
+      "status": "accepted",
+      "receipt": "coordinator-I3-review.md",
+      "source_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe"
     }
   ]
 }

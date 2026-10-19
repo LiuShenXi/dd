@@ -41,13 +41,16 @@ type UsageBillingCommand struct {
 	ImageCount          int
 	MediaType           string
 
-	BalanceCost         float64
-	SubscriptionCost    float64
-	CarpoolCost         decimal.Decimal
-	CarpoolSnapshot     *domain.CarpoolBillingSnapshot
-	APIKeyQuotaCost     float64
-	APIKeyRateLimitCost float64
-	AccountQuotaCost    float64
+	BalanceCost              float64
+	SubscriptionCost         float64
+	CarpoolCost              decimal.Decimal
+	CarpoolSnapshot          *domain.CarpoolBillingSnapshot
+	SubscriptionTermSnapshot *domain.SubscriptionQuotaBillingSnapshot
+	SubscriptionTermCost     decimal.Decimal
+	SubscriptionTermCounters *domain.SubscriptionQuotaCounterCosts
+	APIKeyQuotaCost          float64
+	APIKeyRateLimitCost      float64
+	AccountQuotaCost         float64
 }
 
 const CarpoolUsageBillingReceiptVersion = 1
@@ -181,6 +184,12 @@ func (c *UsageBillingCommand) Normalize() {
 	if c == nil {
 		return
 	}
+	if c.SubscriptionTermSnapshot != nil {
+		if c.RequestFingerprint == "" {
+			c.RequestFingerprint = buildSubscriptionQuotaUsageFingerprint(c)
+		}
+		return
+	}
 	c.RequestID = strings.TrimSpace(c.RequestID)
 	if strings.TrimSpace(c.RequestFingerprint) == "" {
 		c.RequestFingerprint = buildUsageBillingFingerprint(c)
@@ -225,6 +234,12 @@ func (c *UsageBillingCommand) quantizeMonetaryFields() {
 func (c *UsageBillingCommand) Validate() error {
 	if c == nil {
 		return nil
+	}
+	if c.SubscriptionTermSnapshot != nil {
+		return validateSubscriptionQuotaUsageCommand(c)
+	}
+	if !c.SubscriptionTermCost.IsZero() || c.SubscriptionTermCounters != nil {
+		return ErrUsageBillingSourceConflict
 	}
 	sources := 0
 	if c.BalanceCost > 0 {

@@ -113,6 +113,7 @@ func TestDashboardAggregationRepositoryRecomputeRangeInvalidatesGroupRollupsBefo
 	end := start.Add(time.Hour)
 
 	mock.ExpectBegin()
+	mock.ExpectExec(`SELECT pg_advisory_xact_lock\(1936811121, 1\)`).WillReturnResult(sqlmock.NewResult(0, 1))
 	mock.ExpectQuery(`SELECT id FROM usage_group_rollup_state.*FOR UPDATE`).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 	mock.ExpectExec(`UPDATE usage_group_rollup_state`).
@@ -141,6 +142,7 @@ func TestDashboardAggregationRepositoryRecomputeRangeRebuildsGroupRollupsBeforeC
 	require.NoError(t, err)
 
 	mock.ExpectBegin()
+	mock.ExpectExec(`SELECT pg_advisory_xact_lock\(1936811121, 1\)`).WillReturnResult(sqlmock.NewResult(0, 1))
 	mock.ExpectQuery(`SELECT id FROM usage_group_rollup_state.*FOR UPDATE`).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 	mock.ExpectExec(`UPDATE usage_group_rollup_state`).
@@ -242,6 +244,9 @@ func TestDashboardAggregationRepositoryCleanupUsageLogsPartitionedSortsAndInvali
 		mock.ExpectBegin()
 		mock.ExpectQuery(`SELECT id FROM usage_group_rollup_state.*FOR UPDATE`).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+		mock.ExpectQuery(`(?s)SELECT.*EXISTS.*subscription_quota_requests.*admitted_at.*OR EXISTS.*usage_logs`).
+			WithArgs(partition.start, partition.start.AddDate(0, 1, 0)).
+			WillReturnRows(sqlmock.NewRows([]string{"protected"}).AddRow(false))
 		mock.ExpectExec(`UPDATE usage_group_rollup_state`).
 			WithArgs(partition.start, "Asia/Shanghai").
 			WillReturnResult(sqlmock.NewResult(0, 1))
@@ -271,7 +276,7 @@ func TestDashboardAggregationRepositoryCleanupUsageLogsNonPartitionedFailureRoll
 	mock.ExpectBegin()
 	mock.ExpectQuery(`SELECT id FROM usage_group_rollup_state.*FOR UPDATE`).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-	mock.ExpectQuery(`(?s)SELECT ctid.*ORDER BY created_at ASC, id ASC.*DELETE FROM usage_logs.*RETURNING created_at`).
+	mock.ExpectQuery(`(?s)SELECT tableoid, ctid.*ORDER BY created_at ASC, id ASC.*DELETE FROM usage_logs.*RETURNING created_at`).
 		WithArgs(cutoff, usageLogsCleanupBatchSize).
 		WillReturnRows(sqlmock.NewRows([]string{"created_at"}).AddRow(deletedAt))
 	mock.ExpectExec(`UPDATE usage_group_rollup_state`).
@@ -301,6 +306,9 @@ func TestDashboardAggregationRepositoryCleanupUsageLogsPartitionFailureRollsBack
 	mock.ExpectBegin()
 	mock.ExpectQuery(`SELECT id FROM usage_group_rollup_state.*FOR UPDATE`).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+	mock.ExpectQuery(`(?s)SELECT.*EXISTS.*subscription_quota_requests.*admitted_at.*OR EXISTS.*usage_logs`).
+		WithArgs(aprilStart, aprilStart.AddDate(0, 1, 0)).
+		WillReturnRows(sqlmock.NewRows([]string{"protected"}).AddRow(false))
 	mock.ExpectExec(`UPDATE usage_group_rollup_state`).
 		WithArgs(aprilStart, "Asia/Shanghai").
 		WillReturnResult(sqlmock.NewResult(0, 1))

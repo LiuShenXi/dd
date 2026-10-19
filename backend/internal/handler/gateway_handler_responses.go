@@ -263,6 +263,16 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 		}
 		var result *service.ForwardResult
 		setActualUpstreamEndpoint(c, "")
+		termState, termErr := h.prepareSubscriptionQuotaForward(c, apiKey, apiKey, account.Platform, clientRequestedUsageFields(c, channelMapping, reqModel, ""))
+		if termErr != nil {
+			if accountReleaseFunc != nil {
+				accountReleaseFunc()
+			}
+			h.writeSubscriptionQuotaForwardError(c, termErr, streamStarted)
+			return
+		}
+		defer finishSubscriptionQuotaForward(termState)
+		requestCtx = service.PreserveSubscriptionQuotaForwardState(requestCtx, c.Request.Context())
 		protectedRequest, protectedErr := h.admitProtectedGroupForward(c, apiKey, apiKey, account.Platform)
 		if protectedErr != nil {
 			if accountReleaseFunc != nil {
@@ -291,8 +301,16 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 		}
 
 		if err != nil {
+			h.submitSubscriptionQuotaUsageAfterError(c, termState, apiKey, account, subscription, result, pricingAt, clientRequestedUsageFields(c, channelMapping, reqModel, ""), body)
+			if termState != nil && h.writeSubscriptionQuotaForwardError(c, err, streamStarted) {
+				return
+			}
 			var failoverErr *service.UpstreamFailoverError
 			if errors.As(err, &failoverErr) {
+				if termState != nil && termState.Snapshot() != nil {
+					h.handleResponsesFailoverExhausted(c, failoverErr, streamStarted)
+					return
+				}
 				// Can't failover if streaming content already sent
 				if c.Writer.Size() != writerSizeBeforeForward {
 					h.handleResponsesFailoverExhausted(c, failoverErr, true)
@@ -335,23 +353,26 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 		sessionID := service.ExtractClientSessionID(c)
 		stampForwardRequestedReasoningEffort(result, service.RequestedReasoningEffortFromContext(c.Request.Context()))
 		channelUsageFields := clientRequestedUsageFields(c, channelMapping, reqModel, result.UpstreamModel)
+		forceCacheBilling := termState != nil && service.IsForceCacheBilling(c.Request.Context())
 		h.submitProtectedGroupUsageRecordTask(c.Request.Context(), protectedRequest, result, account.ID, pricingAt, func(ctx context.Context) {
 			usageErr := h.gatewayService.RecordProtectedGroupUsage(ctx, &service.RecordUsageInput{
-				Result:             result,
-				QuotaPlatform:      quotaPlatform,
-				APIKey:             apiKey,
-				User:               apiKey.User,
-				Account:            account,
-				Subscription:       subscription,
-				PricingAt:          pricingAt,
-				InboundEndpoint:    inboundEndpoint,
-				UpstreamEndpoint:   upstreamEndpoint,
-				UserAgent:          userAgent,
-				IPAddress:          clientIP,
-				RequestPayloadHash: requestPayloadHash,
-				APIKeyService:      h.apiKeyService,
-				SessionID:          sessionID,
-				ChannelUsageFields: channelUsageFields,
+				Result:                    result,
+				SubscriptionQuotaSnapshot: service.SubscriptionQuotaForwardBillingSnapshot(ctx),
+				QuotaPlatform:             quotaPlatform,
+				APIKey:                    apiKey,
+				User:                      apiKey.User,
+				Account:                   account,
+				Subscription:              subscription,
+				PricingAt:                 pricingAt,
+				ForceCacheBilling:         forceCacheBilling,
+				InboundEndpoint:           inboundEndpoint,
+				UpstreamEndpoint:          upstreamEndpoint,
+				UserAgent:                 userAgent,
+				IPAddress:                 clientIP,
+				RequestPayloadHash:        requestPayloadHash,
+				APIKeyService:             h.apiKeyService,
+				SessionID:                 sessionID,
+				ChannelUsageFields:        channelUsageFields,
 			}, protectedRequest)
 			finishProtectedGroupUsage(protectedRequest, usageErr)
 			if err := usageErr; err != nil {

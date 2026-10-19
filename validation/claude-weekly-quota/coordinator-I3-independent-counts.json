@@ -1,0 +1,50 @@
+{
+  "checked_utc": "2026-10-19T16:14:04.8597909Z",
+  "reviewer": "root",
+  "freeze": "F3",
+  "status": "accepted_F3",
+  "source_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+  "checks": [
+    {
+      "receipt": "I3-windows-F3-20261019T160855Z-receipt.json",
+      "log": "I3-windows-F3-20261019T160855Z-unit.jsonl",
+      "layer": "Windows focused unit",
+      "source_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+      "source_after_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+      "top_pass": 356,
+      "including_subtests_pass": 692,
+      "failures": 0,
+      "individual_skips": 0
+    },
+    {
+      "receipt": "I3-pg-F3-20261019T160927Z-receipt.json",
+      "log": "I3-pg-F3-20261019T160927Z.jsonl",
+      "layer": "Real isolated PostgreSQL 18 integration",
+      "source_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+      "source_after_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+      "top_pass": 87,
+      "including_subtests_pass": 234,
+      "failures": 0,
+      "individual_skips": 0
+    },
+    {
+      "receipt": "I3-pg-race-F3-20261019T160927Z-receipt.json",
+      "log": "I3-pg-race-F3-20261019T160927Z.jsonl",
+      "layer": "Linux unit concurrency race",
+      "source_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+      "source_after_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+      "top_pass": 293,
+      "including_subtests_pass": 636,
+      "failures": 0,
+      "individual_skips": 0
+    }
+  ],
+  "baseline_gpt_exact_tests": 84,
+  "baseline_gpt_missing": 0,
+  "all_package_compile_exit": 0,
+  "related_vet_exit": 0,
+  "F1_to_F3_only_changed_file": "backend/internal/repository/subscription_quota_billing_integration_test.go",
+  "production_enabled": false,
+  "image_recovery_receipt": "I3-pg-F3-20261019T161410Z-receipt.json",
+  "image_id": "sha256:c17ee70e59572a06cb4b44d7334739120f0425d71cb2978e705ae36943ea0897"
+}

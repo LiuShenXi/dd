@@ -10,6 +10,12 @@ import (
 )
 
 func (h *GatewayHandler) admitProtectedGroupForward(c *gin.Context, original, current *service.APIKey, platform string) (*service.SubscriptionQuotaProtectedRequest, error) {
+	if _, term := service.SubscriptionQuotaForwardStateFromContext(c.Request.Context()); term {
+		return nil, nil
+	}
+	if original != nil && original.Group != nil && original.Group.HasTermQuotaMode() && (c.Request.URL.Path == "/v1/messages/count_tokens" || c.Request.URL.Path == "/messages/count_tokens") {
+		return nil, nil
+	}
 	if h.billingCacheService != nil {
 		return h.billingCacheService.AdmitSubscriptionQuotaProtectedGroup(c.Request.Context(), original, current, platform)
 	}
@@ -36,6 +42,15 @@ func finishProtectedGroupUsage(protection *service.SubscriptionQuotaProtectedReq
 }
 
 func (h *GatewayHandler) submitProtectedGroupUsageRecordTask(parent context.Context, protection *service.SubscriptionQuotaProtectedRequest, result *service.ForwardResult, accountID int64, pricingAt time.Time, task service.UsageRecordTask) {
+	if state, term := service.SubscriptionQuotaForwardStateFromContext(parent); term {
+		state.MarkUsageQueued()
+		snapshot := state.Snapshot()
+		h.submitMandatoryUsageRecordTask(parent, func(ctx context.Context) {
+			defer state.StopHeartbeat()
+			task(service.ContextWithSubscriptionQuotaBillingSnapshot(ctx, snapshot))
+		})
+		return
+	}
 	if protection == nil {
 		h.submitUsageRecordTask(parent, task)
 		return

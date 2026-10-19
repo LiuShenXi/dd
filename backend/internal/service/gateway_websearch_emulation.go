@@ -52,6 +52,12 @@ func getWebSearchManager() *websearch.Manager {
 // Judgment chain: manager exists → only web_search tool → global enabled → account/channel enabled.
 // Account-level mode: "enabled" (force on), "disabled" (force off), "default" (follow channel).
 func (s *GatewayService) shouldEmulateWebSearch(ctx context.Context, account *Account, groupID *int64, body []byte) bool {
+	// Term builtins are rejected at ingress. Remaining function/custom tools,
+	// including functions named web_search, must stay client-executed instead
+	// of being captured by the legacy name-based emulation heuristic.
+	if _, term := SubscriptionQuotaForwardStateFromContext(ctx); term {
+		return false
+	}
 	if getWebSearchManager() == nil {
 		return false
 	}
@@ -143,6 +149,9 @@ func extractWebSearchTextFromContent(content gjson.Result) string {
 func (s *GatewayService) handleWebSearchEmulation(
 	ctx context.Context, c *gin.Context, account *Account, parsed *ParsedRequest,
 ) (*ForwardResult, error) {
+	if err := rejectUnsupportedSubscriptionQuotaAdapter(ctx, true); err != nil {
+		return nil, err
+	}
 	startTime := time.Now()
 
 	// Release the serial queue lock immediately — we don't need upstream.

@@ -475,6 +475,16 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			}
 			// 记录 Forward 前已写入字节数，Forward 后若增加则说明 SSE 内容已发，禁止 failover
 			writerSizeBeforeForward := c.Writer.Size()
+			termState, termErr := h.prepareSubscriptionQuotaForward(c, apiKey, apiKey, account.Platform, clientRequestedUsageFields(c, channelMapping, reqModel, ""))
+			if termErr != nil {
+				if accountReleaseFunc != nil {
+					accountReleaseFunc()
+				}
+				h.writeSubscriptionQuotaForwardError(c, termErr, streamStarted)
+				return
+			}
+			defer finishSubscriptionQuotaForward(termState)
+			requestCtx = service.PreserveSubscriptionQuotaForwardState(requestCtx, c.Request.Context())
 			protectedRequest, protectedErr := h.admitProtectedGroupForward(c, apiKey, apiKey, account.Platform)
 			if protectedErr != nil {
 				if accountReleaseFunc != nil {
@@ -505,6 +515,10 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			if err != nil {
 				var failoverErr *service.UpstreamFailoverError
 				if errors.As(err, &failoverErr) {
+					if termState != nil && termState.Snapshot() != nil {
+						h.handleFailoverExhausted(c, failoverErr, account.Platform, streamStarted)
+						return
+					}
 					// 流式内容已写入客户端，无法撤销，禁止 failover 以防止流拼接腐化
 					if c.Writer.Size() != writerSizeBeforeForward {
 						h.handleFailoverExhausted(c, failoverErr, service.PlatformGemini, true)
@@ -588,22 +602,23 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			channelUsageFields := clientRequestedUsageFields(c, channelMapping, reqModel, result.UpstreamModel)
 			h.submitProtectedGroupUsageRecordTask(c.Request.Context(), protectedRequest, result, account.ID, pricingAt, func(ctx context.Context) {
 				usageErr := h.gatewayService.RecordProtectedGroupUsage(ctx, &service.RecordUsageInput{
-					Result:             result,
-					QuotaPlatform:      quotaPlatform,
-					APIKey:             apiKey,
-					User:               apiKey.User,
-					Account:            account,
-					Subscription:       subscription,
-					PricingAt:          pricingAt,
-					InboundEndpoint:    inboundEndpoint,
-					UpstreamEndpoint:   upstreamEndpoint,
-					UserAgent:          userAgent,
-					IPAddress:          clientIP,
-					SessionID:          sessionID,
-					RequestPayloadHash: requestPayloadHash,
-					ForceCacheBilling:  forceCacheBilling,
-					APIKeyService:      h.apiKeyService,
-					ChannelUsageFields: channelUsageFields,
+					Result:                    result,
+					SubscriptionQuotaSnapshot: service.SubscriptionQuotaForwardBillingSnapshot(ctx),
+					QuotaPlatform:             quotaPlatform,
+					APIKey:                    apiKey,
+					User:                      apiKey.User,
+					Account:                   account,
+					Subscription:              subscription,
+					PricingAt:                 pricingAt,
+					InboundEndpoint:           inboundEndpoint,
+					UpstreamEndpoint:          upstreamEndpoint,
+					UserAgent:                 userAgent,
+					IPAddress:                 clientIP,
+					SessionID:                 sessionID,
+					RequestPayloadHash:        requestPayloadHash,
+					ForceCacheBilling:         forceCacheBilling,
+					APIKeyService:             h.apiKeyService,
+					ChannelUsageFields:        channelUsageFields,
 				}, protectedRequest)
 				finishProtectedGroupUsage(protectedRequest, usageErr)
 				if err := usageErr; err != nil {
@@ -904,6 +919,16 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			}
 			// 记录 Forward 前已写入字节数，Forward 后若增加则说明 SSE 内容已发，禁止 failover
 			writerSizeBeforeForward := c.Writer.Size()
+			termState, termErr := h.prepareSubscriptionQuotaForward(c, apiKey, currentAPIKey, account.Platform, clientRequestedUsageFields(c, channelMapping, reqModel, ""))
+			if termErr != nil {
+				if accountReleaseFunc != nil {
+					accountReleaseFunc()
+				}
+				h.writeSubscriptionQuotaForwardError(c, termErr, streamStarted)
+				return
+			}
+			defer finishSubscriptionQuotaForward(termState)
+			requestCtx = service.PreserveSubscriptionQuotaForwardState(requestCtx, c.Request.Context())
 			protectedRequest, protectedErr := h.admitProtectedGroupForward(c, apiKey, currentAPIKey, account.Platform)
 			if protectedErr != nil {
 				if queueRelease != nil {
@@ -966,22 +991,23 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				channelUsageFields := clientRequestedUsageFields(c, channelMapping, reqModel, result.UpstreamModel)
 				h.submitProtectedGroupUsageRecordTask(c.Request.Context(), protectedRequest, result, account.ID, pricingAt, func(ctx context.Context) {
 					usageErr := h.gatewayService.RecordProtectedGroupUsage(ctx, &service.RecordUsageInput{
-						Result:             result,
-						QuotaPlatform:      quotaPlatform,
-						APIKey:             currentAPIKey,
-						User:               currentAPIKey.User,
-						Account:            account,
-						Subscription:       currentSubscription,
-						PricingAt:          pricingAt,
-						InboundEndpoint:    inboundEndpoint,
-						UpstreamEndpoint:   upstreamEndpoint,
-						UserAgent:          userAgent,
-						IPAddress:          clientIP,
-						SessionID:          sessionID,
-						RequestPayloadHash: requestPayloadHash,
-						ForceCacheBilling:  forceCacheBilling,
-						APIKeyService:      h.apiKeyService,
-						ChannelUsageFields: channelUsageFields,
+						Result:                    result,
+						SubscriptionQuotaSnapshot: service.SubscriptionQuotaForwardBillingSnapshot(ctx),
+						QuotaPlatform:             quotaPlatform,
+						APIKey:                    currentAPIKey,
+						User:                      currentAPIKey.User,
+						Account:                   account,
+						Subscription:              currentSubscription,
+						PricingAt:                 pricingAt,
+						InboundEndpoint:           inboundEndpoint,
+						UpstreamEndpoint:          upstreamEndpoint,
+						UserAgent:                 userAgent,
+						IPAddress:                 clientIP,
+						SessionID:                 sessionID,
+						RequestPayloadHash:        requestPayloadHash,
+						ForceCacheBilling:         forceCacheBilling,
+						APIKeyService:             h.apiKeyService,
+						ChannelUsageFields:        channelUsageFields,
 					}, protectedRequest)
 					finishProtectedGroupUsage(protectedRequest, usageErr)
 					if err := usageErr; err != nil {
@@ -999,6 +1025,12 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 
 			if err != nil {
 				// Beta policy block: return 400 immediately, no failover
+				if termState != nil && h.writeSubscriptionQuotaForwardError(c, err, streamStarted) {
+					if result != nil {
+						submitForwardUsage(result)
+					}
+					return
+				}
 				var betaBlockedErr *service.BetaBlockedError
 				if errors.As(err, &betaBlockedErr) {
 					service.MarkOpsClientBusinessLimited(c, service.OpsClientBusinessLimitedReasonLocalPolicyDenied)
@@ -1008,6 +1040,10 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 
 				var promptTooLongErr *service.PromptTooLongError
 				if errors.As(err, &promptTooLongErr) {
+					if termState != nil {
+						h.handleStreamingAwareError(c, http.StatusServiceUnavailable, "api_error", service.ErrSubscriptionQuotaEndpointUnsupported.Error(), streamStarted)
+						return
+					}
 					reqLog.Warn("gateway.prompt_too_long_from_antigravity",
 						zap.Any("current_group_id", currentAPIKey.GroupID),
 						zap.Any("fallback_group_id", fallbackGroupID),
@@ -1059,6 +1095,10 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				}
 				var failoverErr *service.UpstreamFailoverError
 				if errors.As(err, &failoverErr) {
+					if termState != nil && termState.Snapshot() != nil {
+						h.handleFailoverExhausted(c, failoverErr, account.Platform, streamStarted)
+						return
+					}
 					// 流式内容已写入客户端，无法撤销，禁止 failover 以防止流拼接腐化
 					if c.Writer.Size() != writerSizeBeforeForward {
 						h.handleFailoverExhausted(c, failoverErr, account.Platform, true)
@@ -2227,13 +2267,17 @@ func (h *GatewayHandler) CountTokens(c *gin.Context) {
 
 	// 校验 billing eligibility（订阅/余额）
 	// 【注意】不计算并发，但需要校验订阅/余额
-	if err := h.billingCacheService.CheckBillingEligibility(c.Request.Context(), apiKey.User, apiKey, apiKey.Group, subscription, service.QuotaPlatform(c.Request.Context(), apiKey)); err != nil {
-		status, code, message, retryAfter := billingErrorDetails(err)
-		if retryAfter > 0 {
-			c.Header("Retry-After", strconv.Itoa(retryAfter))
+	// Term input counting is authenticated metadata: a current card and a
+	// generation admission are not required, and it creates no consumption.
+	if !apiKey.Group.IsTermQuota() {
+		if err := h.billingCacheService.CheckBillingEligibility(c.Request.Context(), apiKey.User, apiKey, apiKey.Group, subscription, service.QuotaPlatform(c.Request.Context(), apiKey)); err != nil {
+			status, code, message, retryAfter := billingErrorDetails(err)
+			if retryAfter > 0 {
+				c.Header("Retry-After", strconv.Itoa(retryAfter))
+			}
+			h.errorResponse(c, status, code, message)
+			return
 		}
-		h.errorResponse(c, status, code, message)
-		return
 	}
 
 	// 计算粘性会话 hash

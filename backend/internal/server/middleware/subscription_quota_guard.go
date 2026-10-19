@@ -25,6 +25,9 @@ func subscriptionQuotaProtectedGroup(cfg *config.Config, groupID int64) bool {
 // R1 permits discovery without accidentally reading an ordinary balance as a
 // Claude allowance. Usage remains unavailable until its term projection exists.
 func subscriptionQuotaDiscoveryRequest(c *gin.Context) bool {
+	if c.Request.Method == http.MethodPost && (c.Request.URL.Path == "/v1/messages/count_tokens" || c.Request.URL.Path == "/messages/count_tokens") {
+		return true
+	}
 	if c.Request.Method != http.MethodGet {
 		return false
 	}
@@ -35,7 +38,7 @@ func subscriptionQuotaDiscoveryRequest(c *gin.Context) bool {
 }
 
 // Check before simple mode, subscription loading and every balance fallback.
-func abortIfSubscriptionQuotaUnsupported(c *gin.Context, key *service.APIKey, cfg *config.Config, google bool) bool {
+func abortIfSubscriptionQuotaUnsupported(c *gin.Context, key *service.APIKey, cfg *config.Config, google bool, billing service.SubscriptionQuotaGatewayBilling) bool {
 	if key == nil {
 		return false
 	}
@@ -63,7 +66,11 @@ func abortIfSubscriptionQuotaUnsupported(c *gin.Context, key *service.APIKey, cf
 	} else if protected && cfg.RunMode == config.RunModeSimple {
 		status, reason, message = 503, "TERM_BILLING_UNAVAILABLE", "Protected Claude groups require durable billing"
 	} else if term && !subscriptionQuotaDiscoveryRequest(c) {
-		status, reason, message = 503, "TERM_BILLING_UNAVAILABLE", "Claude quota generation and usage are unavailable in this compatibility version"
+		if !service.SubscriptionQuotaAdmissionEnabled(cfg, group.ID) || billing == nil {
+			status, reason, message = 503, "TERM_BILLING_UNAVAILABLE", "Claude quota billing is unavailable"
+		} else if !service.SubscriptionQuotaGenerationRouteAllowed(c.Request.Method, c.Request.URL.Path) {
+			status, reason, message = 403, "TERM_ENDPOINT_UNSUPPORTED", "This endpoint is not covered by Claude quota billing"
+		}
 	} else if protected && !service.SubscriptionQuotaProtectedRouteAllowed(c.Request.Method, c.Request.URL.Path) {
 		status, reason, message = 403, "TERM_ENDPOINT_UNSUPPORTED", "This endpoint is not covered by the protected Claude group gateway"
 	}

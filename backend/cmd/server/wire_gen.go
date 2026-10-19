@@ -71,16 +71,20 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	userPlatformQuotaRepository := repository.NewUserPlatformQuotaRepository(client)
 	serviceUserPlatformQuotaRepository := repository.NewUserPlatformQuotaServiceAdapter(userPlatformQuotaRepository)
 	carpoolRepository := repository.NewCarpoolRepository(db)
-	usageBillingRepository := repository.NewUsageBillingRepository(client, db, carpoolRepository)
+	subscriptionQuotaRepository := repository.NewSubscriptionQuotaRepository(db)
+	usageBillingRepository := repository.ProvideUsageBillingRepository(client, db, carpoolRepository, subscriptionQuotaRepository)
 	carpoolService := service.ProvideCarpoolService(carpoolRepository, usageBillingRepository)
 	subscriptionQuotaProtectedGroupRepository := repository.NewSubscriptionQuotaProtectedGroupRepository(db)
-	billingCacheService := service.ProvideBillingCacheService(billingCache, userRepository, userSubscriptionRepository, apiKeyRepository, userRPMCache, userGroupRateRepository, configConfig, serviceUserPlatformQuotaRepository, carpoolService, subscriptionQuotaProtectedGroupRepository)
+	subscriptionQuotaService, err := service.ProvideSubscriptionQuotaService(subscriptionQuotaRepository, configConfig)
+	if err != nil {
+		return nil, err
+	}
+	billingCacheService := service.ProvideBillingCacheService(billingCache, userRepository, userSubscriptionRepository, apiKeyRepository, userRPMCache, userGroupRateRepository, configConfig, serviceUserPlatformQuotaRepository, carpoolService, subscriptionQuotaProtectedGroupRepository, subscriptionQuotaService)
 	apiKeyCache := repository.NewAPIKeyCache(redisClient)
 	concurrencyCache := repository.ProvideConcurrencyCache(redisClient, configConfig)
 	schedulerCache := repository.ProvideSchedulerCache(redisClient, configConfig)
 	accountRepository := repository.NewAccountRepository(client, db, schedulerCache)
 	concurrencyService := service.ProvideConcurrencyService(concurrencyCache, accountRepository, configConfig)
-	subscriptionQuotaRepository := repository.NewSubscriptionQuotaRepository(db)
 	subscriptionQuotaEntitlementReader := service.ProvideSubscriptionQuotaEntitlementReader(subscriptionQuotaRepository)
 	apiKeyService := service.ProvideAPIKeyService(apiKeyRepository, userRepository, groupRepository, userSubscriptionRepository, userGroupRateRepository, apiKeyCache, configConfig, billingCacheService, concurrencyService, carpoolService, subscriptionQuotaEntitlementReader)
 	apiKeyAuthCacheInvalidator := service.ProvideAPIKeyAuthCacheInvalidator(apiKeyService)
@@ -177,7 +181,6 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	usageHandler := handler.NewUsageHandler(usageService, apiKeyService, opsService, settingService)
 	redeemHandler := handler.NewRedeemHandler(redeemService)
 	subscriptionHandler := handler.NewSubscriptionHandler(subscriptionService)
-	subscriptionQuotaService := service.NewSubscriptionQuotaService(subscriptionQuotaRepository, configConfig)
 	subscriptionQuotaHandler := handler.ProvideSubscriptionQuotaHandler(subscriptionQuotaService)
 	announcementRepository := repository.NewAnnouncementRepository(client)
 	announcementReadRepository := repository.NewAnnouncementReadRepository(client)
@@ -362,7 +365,11 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	channelMonitorRunner := service.ProvideChannelMonitorRunner(channelMonitorService, settingService, channelMonitorQuotaFetcher)
 	channelMonitorV2Aggregator := service.ProvideChannelMonitorV2Aggregator(channelMonitorV2Repository, db, settingService)
 	userPlatformQuotaUsageFlusher := service.ProvideUserPlatformQuotaUsageFlusher(configConfig, billingCache, serviceUserPlatformQuotaRepository, timingWheelService)
-	v := provideCleanup(client, redisClient, opsMetricsCollector, opsAggregationService, opsAlertEvaluatorService, opsCleanupService, opsScheduledReportService, opsSystemLogSink, opsService, opsIngressRejectAggregator, apiKeyService, authCacheInvalidationWorker, schedulerSnapshotService, tokenRefreshService, accountExpiryService, cnProviderBalanceCheckService, openAICodexVersionSyncService, proxyExpiryService, subscriptionExpiryService, usageCleanupService, idempotencyCleanupService, batchImageCleanupService, batchImageWorkerRuntime, pricingService, emailQueueService, billingCacheService, usageRecordWorkerPool, subscriptionService, oAuthService, openAIOAuthService, geminiOAuthService, antigravityOAuthService, grokOAuthService, openAIGatewayService, scheduledTestRunnerService, backupService, paymentOrderExpiryService, channelMonitorRunner, channelMonitorV2Aggregator, userPlatformQuotaUsageFlusher, upstreamBillingProbeService, ollamaCloudUsageService, auditLogService, openAIQuotaAutoResetService, promptService, pluginManager, carpoolService, carpoolResetService)
+	subscriptionQuotaRecoveryService, err := service.ProvideSubscriptionQuotaRecoveryService(subscriptionQuotaService, usageBillingRepository, usageLogRepository, billingCacheService, configConfig)
+	if err != nil {
+		return nil, err
+	}
+	v := provideCleanup(client, redisClient, opsMetricsCollector, opsAggregationService, opsAlertEvaluatorService, opsCleanupService, opsScheduledReportService, opsSystemLogSink, opsService, opsIngressRejectAggregator, apiKeyService, authCacheInvalidationWorker, schedulerSnapshotService, tokenRefreshService, accountExpiryService, cnProviderBalanceCheckService, openAICodexVersionSyncService, proxyExpiryService, subscriptionExpiryService, usageCleanupService, idempotencyCleanupService, batchImageCleanupService, batchImageWorkerRuntime, pricingService, emailQueueService, billingCacheService, usageRecordWorkerPool, subscriptionService, oAuthService, openAIOAuthService, geminiOAuthService, antigravityOAuthService, grokOAuthService, openAIGatewayService, scheduledTestRunnerService, backupService, paymentOrderExpiryService, channelMonitorRunner, channelMonitorV2Aggregator, userPlatformQuotaUsageFlusher, upstreamBillingProbeService, ollamaCloudUsageService, auditLogService, openAIQuotaAutoResetService, promptService, pluginManager, carpoolService, carpoolResetService, subscriptionQuotaRecoveryService)
 	application := &Application{
 		Server:        httpServer,
 		PromptAudit:   promptService,
@@ -448,8 +455,16 @@ func provideCleanup(
 	pluginManager *service.PluginManager,
 	carpool *service.CarpoolService,
 	carpoolReset *service.CarpoolResetService,
+	subscriptionQuotaRecovery *service.SubscriptionQuotaRecoveryService,
 ) func() {
 	return func() {
+
+		if usageRecordWorkerPool != nil {
+			usageRecordWorkerPool.Stop()
+		}
+		if subscriptionQuotaRecovery != nil {
+			subscriptionQuotaRecovery.Stop()
+		}
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
@@ -625,16 +640,6 @@ func provideCleanup(
 				emailQueue.Stop()
 				return nil
 			}},
-			{"BillingCacheService", func() error {
-				billingCache.Stop()
-				return nil
-			}},
-			{"UsageRecordWorkerPool", func() error {
-				if usageRecordWorkerPool != nil {
-					usageRecordWorkerPool.Stop()
-				}
-				return nil
-			}},
 			{"OAuthService", func() error {
 				oauth.Stop()
 				return nil
@@ -763,6 +768,9 @@ func provideCleanup(
 		}
 
 		runParallel(parallelSteps)
+		if billingCache != nil {
+			billingCache.Stop()
+		}
 		runSequential(infraSteps)
 
 		select {

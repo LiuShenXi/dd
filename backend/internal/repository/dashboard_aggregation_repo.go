@@ -81,6 +81,10 @@ func (r *dashboardAggregationRepository) AggregateRange(ctx context.Context, sta
 		if err != nil {
 			return err
 		}
+		if err := lockDashboardAggregationWriter(ctx, tx); err != nil {
+			_ = tx.Rollback()
+			return err
+		}
 		txRepo := newDashboardAggregationRepositoryWithSQL(tx)
 		if err := txRepo.aggregateRangeInTx(ctx, hourStart, hourEnd, dayStart, dayEnd); err != nil {
 			_ = tx.Rollback()
@@ -135,6 +139,10 @@ func (r *dashboardAggregationRepository) RecomputeRange(ctx context.Context, sta
 	if db, ok := r.sql.(*sql.DB); ok {
 		tx, err := db.BeginTx(ctx, nil)
 		if err != nil {
+			return err
+		}
+		if err := lockDashboardAggregationWriter(ctx, tx); err != nil {
+			_ = tx.Rollback()
 			return err
 		}
 		if err := lockGroupUsageRollupState(ctx, tx); err != nil {
@@ -213,6 +221,24 @@ func (r *dashboardAggregationRepository) UpdateAggregationWatermark(ctx context.
 }
 
 func (r *dashboardAggregationRepository) CleanupAggregates(ctx context.Context, hourlyCutoff, dailyCutoff time.Time) error {
+	if db, ok := r.sql.(*sql.DB); ok {
+		tx, err := db.BeginTx(ctx, nil)
+		if err != nil {
+			return err
+		}
+		defer func() { _ = tx.Rollback() }()
+		if err := lockDashboardAggregationWriter(ctx, tx); err != nil {
+			return err
+		}
+		if err := newDashboardAggregationRepositoryWithSQL(tx).cleanupAggregatesInTx(ctx, hourlyCutoff, dailyCutoff); err != nil {
+			return err
+		}
+		return tx.Commit()
+	}
+	return r.cleanupAggregatesInTx(ctx, hourlyCutoff, dailyCutoff)
+}
+
+func (r *dashboardAggregationRepository) cleanupAggregatesInTx(ctx context.Context, hourlyCutoff, dailyCutoff time.Time) error {
 	hourlyCutoffUTC := hourlyCutoff.UTC()
 	dailyCutoffUTC := dailyCutoff.UTC()
 	if _, err := r.sql.ExecContext(ctx, "DELETE FROM usage_dashboard_hourly WHERE bucket_start < $1", hourlyCutoffUTC); err != nil {
@@ -261,14 +287,24 @@ func (r *dashboardAggregationRepository) cleanupUsageLogsBatches(ctx context.Con
 
 		res, err := r.sql.ExecContext(ctx, `
 			WITH victims AS (
-				SELECT ctid
+				SELECT tableoid, ctid
 				FROM usage_logs
 				WHERE created_at < $1
+				AND (subscription_quota_request_id IS NULL OR EXISTS (
+					SELECT 1 FROM subscription_quota_requests qr
+					WHERE qr.id = usage_logs.subscription_quota_request_id
+					AND qr.usage_log_recorded_at IS NOT NULL
+				))
 				ORDER BY created_at ASC, id ASC
 				LIMIT $2
 			)
 			DELETE FROM usage_logs
-			WHERE ctid IN (SELECT ctid FROM victims)
+			WHERE (tableoid, ctid) IN (SELECT tableoid, ctid FROM victims)
+			AND (subscription_quota_request_id IS NULL OR EXISTS (
+				SELECT 1 FROM subscription_quota_requests qr
+				WHERE qr.id = usage_logs.subscription_quota_request_id
+				AND qr.usage_log_recorded_at IS NOT NULL
+			))
 		`, cutoff.UTC(), usageLogsCleanupBatchSize)
 		if err != nil {
 			return err
@@ -298,14 +334,24 @@ func cleanupUsageLogsBatchWithRollupInvalidation(ctx context.Context, db *sql.DB
 	}
 	rows, err := tx.QueryContext(ctx, `
 		WITH victims AS (
-			SELECT ctid
+			SELECT tableoid, ctid
 			FROM usage_logs
 			WHERE created_at < $1
+			AND (subscription_quota_request_id IS NULL OR EXISTS (
+				SELECT 1 FROM subscription_quota_requests qr
+				WHERE qr.id = usage_logs.subscription_quota_request_id
+				AND qr.usage_log_recorded_at IS NOT NULL
+			))
 			ORDER BY created_at ASC, id ASC
 			LIMIT $2
 		)
 		DELETE FROM usage_logs
-		WHERE ctid IN (SELECT ctid FROM victims)
+		WHERE (tableoid, ctid) IN (SELECT tableoid, ctid FROM victims)
+		AND (subscription_quota_request_id IS NULL OR EXISTS (
+			SELECT 1 FROM subscription_quota_requests qr
+			WHERE qr.id = usage_logs.subscription_quota_request_id
+			AND qr.usage_log_recorded_at IS NOT NULL
+		))
 		RETURNING created_at
 	`, cutoff.UTC(), usageLogsCleanupBatchSize)
 	if err != nil {
@@ -636,6 +682,13 @@ func (r *dashboardAggregationRepository) dropUsageLogsPartitions(ctx context.Con
 		return nil
 	}
 	for _, partition := range partitions {
+		protected, err := subscriptionQuotaUsagePartitionProtected(ctx, r.sql, partition.month)
+		if err != nil {
+			return err
+		}
+		if protected {
+			continue
+		}
 		if _, err := r.sql.ExecContext(ctx, fmt.Sprintf("DROP TABLE IF EXISTS %s", pq.QuoteIdentifier(partition.name))); err != nil {
 			return err
 		}
@@ -656,6 +709,13 @@ func dropUsageLogsPartitionWithRollupInvalidation(ctx context.Context, db *sql.D
 	if err := lockGroupUsageRollupState(ctx, tx); err != nil {
 		return rollback(err)
 	}
+	protected, err := subscriptionQuotaUsagePartitionProtected(ctx, tx, monthStart)
+	if err != nil {
+		return rollback(err)
+	}
+	if protected {
+		return tx.Commit()
+	}
 	if err := invalidateGroupUsageRollupsAt(ctx, tx, monthStart); err != nil {
 		return rollback(err)
 	}
@@ -663,6 +723,27 @@ func dropUsageLogsPartitionWithRollupInvalidation(ctx context.Context, db *sql.D
 		return rollback(err)
 	}
 	return tx.Commit()
+}
+
+// The admitted timestamp is immutable and assigned by the database. Once a
+// month is old enough for partition retention, a new admission cannot enter it.
+// Holding the existing rollup lock also excludes an in-progress late log insert.
+// Check requests as well as logs so retention cannot race known -> publication.
+func subscriptionQuotaUsagePartitionProtected(ctx context.Context, q sqlExecutor, monthStart time.Time) (bool, error) {
+	var protected bool
+	err := scanSingleRow(ctx, q, `SELECT
+		EXISTS (SELECT 1 FROM subscription_quota_requests
+			WHERE admitted_at >= $1 AND admitted_at < $2
+			AND (status IN ('admitted','usage_known','reconcile_required')
+				OR (status = 'settled' AND usage_log_recorded_at IS NULL)))
+		OR EXISTS (SELECT 1 FROM usage_logs
+			WHERE created_at >= $1 AND created_at < $2
+			AND subscription_quota_request_id IS NOT NULL
+			AND NOT EXISTS (SELECT 1 FROM subscription_quota_requests qr
+				WHERE qr.id = usage_logs.subscription_quota_request_id
+				AND qr.usage_log_recorded_at IS NOT NULL))`,
+		[]any{monthStart.UTC(), monthStart.UTC().AddDate(0, 1, 0)}, &protected)
+	return protected, err
 }
 
 func (r *dashboardAggregationRepository) createUsageLogsPartition(ctx context.Context, month time.Time) error {

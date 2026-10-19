@@ -1,0 +1,15 @@
+{
+  "utc": "2026-10-19T15:57:24.5987553Z",
+  "runner": "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+  "only_task_resource_changed": true,
+  "memory_before_bytes": 4294967296,
+  "memory_after_bytes": 8589934592,
+  "memory_swap_after_bytes": 8589934592,
+  "nano_cpus": 4000000000,
+  "pids_limit": 512,
+  "GOMAXPROCS": 2,
+  "go_parallelism": 2,
+  "source_or_test_timeouts_changed": false,
+  "output_available_GiB": 868,
+  "reason": "Full Linux service unit test compiler approached the task-specific4GiB cap; host VM has32GiB and ample available memory."
+}

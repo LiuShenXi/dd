@@ -10,11 +10,13 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/Wei-Shaw/sub2api/internal/service"
+	"github.com/shopspring/decimal"
 )
 
 type usageBillingRepository struct {
-	db          *sql.DB
-	carpoolRepo *CarpoolRepository
+	db                    *sql.DB
+	carpoolRepo           *CarpoolRepository
+	subscriptionQuotaRepo *subscriptionQuotaRepository
 }
 
 func NewUsageBillingRepository(_ *dbent.Client, sqlDB *sql.DB, carpoolRepo *CarpoolRepository) service.UsageBillingRepository {
@@ -27,6 +29,16 @@ func (r *usageBillingRepository) Apply(ctx context.Context, cmd *service.UsageBi
 	}
 	if r == nil || r.db == nil {
 		return nil, errors.New("usage billing repository db is nil")
+	}
+	if cmd.SubscriptionTermSnapshot != nil {
+		if err := cmd.Validate(); err != nil {
+			service.ObserveSubscriptionQuotaSettlement(false, err)
+			return nil, err
+		}
+		cmd.Normalize()
+		result, err := r.applySubscriptionQuotaUsage(ctx, cmd)
+		service.ObserveSubscriptionQuotaSettlement(result != nil && result.Applied, err)
+		return result, err
 	}
 
 	cmd.Normalize()
@@ -502,6 +514,14 @@ func incrementUsageBillingAPIKeyRateLimit(ctx context.Context, tx *sql.Tx, apiKe
 }
 
 func incrementUsageBillingAccountQuota(ctx context.Context, tx *sql.Tx, accountID int64, amount float64) (*service.AccountQuotaState, error) {
+	return incrementUsageBillingAccountQuotaHistorical(ctx, tx, accountID, amount, false)
+}
+
+func incrementUsageBillingAccountQuotaHistorical(ctx context.Context, tx *sql.Tx, accountID int64, amount any, historical bool) (*service.AccountQuotaState, error) {
+	livePredicate := " AND deleted_at IS NULL"
+	if historical {
+		livePredicate = ""
+	}
 	rows, err := tx.QueryContext(ctx,
 		`UPDATE accounts SET extra = (
 			COALESCE(extra, '{}'::jsonb)
@@ -537,7 +557,7 @@ func incrementUsageBillingAccountQuota(ctx context.Context, tx *sql.Tx, accountI
 				   ELSE '{}'::jsonb END
 			ELSE '{}'::jsonb END
 		), updated_at = NOW()
-		WHERE id = $2 AND deleted_at IS NULL
+		WHERE id = $2`+livePredicate+`
 		RETURNING
 			COALESCE((extra->>'quota_used')::numeric, 0),
 			COALESCE((extra->>'quota_limit')::numeric, 0),
@@ -583,9 +603,22 @@ func incrementUsageBillingAccountQuota(ctx context.Context, tx *sql.Tx, accountI
 	// 最终观察到 daily_used / weekly_used 大幅超过配置的 limit。
 	// 对于日/周额度，即使本次触发了周期重置（pre=0、post=amount），
 	// 判定式 (post-amount) < limit 同样成立，逻辑与总额度保持一致。
-	crossedTotal := state.TotalLimit > 0 && state.TotalUsed >= state.TotalLimit && (state.TotalUsed-amount) < state.TotalLimit
-	crossedDaily := state.DailyLimit > 0 && state.DailyUsed >= state.DailyLimit && (state.DailyUsed-amount) < state.DailyLimit
-	crossedWeekly := state.WeeklyLimit > 0 && state.WeeklyUsed >= state.WeeklyLimit && (state.WeeklyUsed-amount) < state.WeeklyLimit
+	var boundaryAmount float64
+	switch typed := amount.(type) {
+	case float64:
+		boundaryAmount = typed
+	case string:
+		exact, err := decimal.NewFromString(typed)
+		if err != nil {
+			return nil, err
+		}
+		boundaryAmount, _ = exact.Float64()
+	default:
+		return nil, service.ErrSubscriptionQuotaReceiptConflict
+	}
+	crossedTotal := state.TotalLimit > 0 && state.TotalUsed >= state.TotalLimit && (state.TotalUsed-boundaryAmount) < state.TotalLimit
+	crossedDaily := state.DailyLimit > 0 && state.DailyUsed >= state.DailyLimit && (state.DailyUsed-boundaryAmount) < state.DailyLimit
+	crossedWeekly := state.WeeklyLimit > 0 && state.WeeklyUsed >= state.WeeklyLimit && (state.WeeklyUsed-boundaryAmount) < state.WeeklyLimit
 	if crossedTotal || crossedDaily || crossedWeekly {
 		if err := enqueueSchedulerOutbox(ctx, tx, service.SchedulerOutboxEventAccountChanged, &accountID, nil, nil); err != nil {
 			logger.LegacyPrintf("repository.usage_billing", "[SchedulerOutbox] enqueue quota exceeded failed: account=%d err=%v", accountID, err)

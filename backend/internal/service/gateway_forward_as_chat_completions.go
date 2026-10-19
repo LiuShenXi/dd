@@ -34,6 +34,13 @@ func (s *GatewayService) ForwardAsChatCompletions(
 	parsed *ParsedRequest,
 ) (*ForwardResult, error) {
 	startTime := time.Now()
+	if err := rejectUnsupportedSubscriptionQuotaTools(ctx, body); err != nil {
+		return nil, err
+	}
+	if err := rejectUnsupportedSubscriptionQuotaAdapter(ctx, account.IsBedrock()); err != nil {
+		return nil, err
+	}
+	beginSubscriptionQuotaMetering(c)
 
 	// 1. Parse Chat Completions request
 	var ccReq apicompat.ChatCompletionsRequest
@@ -119,14 +126,18 @@ func (s *GatewayService) ForwardAsChatCompletions(
 
 	// 10. Build upstream request
 	upstreamCtx, releaseUpstreamCtx := detachStreamUpstreamContext(ctx, reqStream)
-	upstreamReq, _, err := s.buildUpstreamRequest(upstreamCtx, c, account, anthropicBody, token, tokenType, mappedModel, reqStream, shouldMimicClaudeCode)
+	upstreamReq, wireBody, err := s.buildUpstreamRequest(upstreamCtx, c, account, anthropicBody, token, tokenType, mappedModel, reqStream, shouldMimicClaudeCode)
 	releaseUpstreamCtx()
 	if err != nil {
 		return nil, fmt.Errorf("build upstream request: %w", err)
 	}
 
 	// 11. Send request
+	if err := s.beforeSubscriptionQuotaSend(ctx, c, account, mappedModel, wireBody); err != nil {
+		return nil, err
+	}
 	resp, err := s.httpUpstream.DoWithTLS(upstreamReq, proxyURL, account.ID, account.Concurrency, s.tlsFPProfileService.ResolveTLSProfile(account))
+	observeSubscriptionQuotaHTTP(ctx, resp, err)
 	if err != nil {
 		if resp != nil && resp.Body != nil {
 			_ = resp.Body.Close()
@@ -190,6 +201,7 @@ func (s *GatewayService) ForwardAsChatCompletions(
 		result, handleErr = s.handleCCBufferedFromAnthropic(resp, c, originalModel, mappedModel, reasoningEffort, startTime)
 	}
 
+	attachSubscriptionQuotaMetering(c, result)
 	return result, handleErr
 }
 
@@ -254,6 +266,7 @@ func (s *GatewayService) handleCCBufferedFromAnthropic(
 		}
 
 		var event apicompat.AnthropicStreamEvent
+		observeSubscriptionQuotaMetering(c, []byte(payload), "anthropic_sse")
 		if err := json.Unmarshal([]byte(payload), &event); err != nil {
 			continue
 		}
@@ -300,6 +313,10 @@ func (s *GatewayService) handleCCBufferedFromAnthropic(
 		}
 	}
 
+	if _, term := SubscriptionQuotaForwardStateFromContext(c.Request.Context()); term && !completeSubscriptionQuotaMetering(c) {
+		writeGatewayCCError(c, http.StatusBadGateway, "server_error", "Upstream final usage is unavailable")
+		return nil, fmt.Errorf("term buffered final usage missing")
+	}
 	if finalResp == nil {
 		writeGatewayCCError(c, http.StatusBadGateway, "server_error", "Upstream stream ended without a response")
 		return nil, fmt.Errorf("upstream stream ended without response")
@@ -380,6 +397,8 @@ func (s *GatewayService) handleCCStreamingFromAnthropic(
 
 	var usage ClaudeUsage
 	var firstTokenMs *int
+	clientDisconnected := false
+	_, termForward := SubscriptionQuotaForwardStateFromContext(c.Request.Context())
 	firstChunk := true
 
 	scanner := bufio.NewScanner(resp.Body)
@@ -391,19 +410,23 @@ func (s *GatewayService) handleCCStreamingFromAnthropic(
 
 	resultWithUsage := func() *ForwardResult {
 		return &ForwardResult{
-			RequestID:       requestID,
-			UpstreamHeaders: resp.Header,
-			Usage:           usage,
-			Model:           originalModel,
-			UpstreamModel:   mappedModel,
-			ReasoningEffort: reasoningEffort,
-			Stream:          true,
-			Duration:        time.Since(startTime),
-			FirstTokenMs:    firstTokenMs,
+			RequestID:        requestID,
+			UpstreamHeaders:  resp.Header,
+			Usage:            usage,
+			Model:            originalModel,
+			UpstreamModel:    mappedModel,
+			ReasoningEffort:  reasoningEffort,
+			Stream:           true,
+			Duration:         time.Since(startTime),
+			FirstTokenMs:     firstTokenMs,
+			ClientDisconnect: clientDisconnected,
 		}
 	}
 
 	writeChunk := func(chunk apicompat.ChatCompletionsChunk) bool {
+		if clientDisconnected {
+			return false
+		}
 		sse, err := apicompat.ChatChunkToSSE(chunk)
 		if err != nil {
 			return false
@@ -412,6 +435,10 @@ func (s *GatewayService) handleCCStreamingFromAnthropic(
 		// c 可能持有请求侧注入的 ToolNameRewrite；无则仅做静态前缀还原。
 		out := string(reverseToolNamesIfPresent(c, []byte(sse)))
 		if _, err := fmt.Fprint(c.Writer, out); err != nil {
+			if termForward {
+				clientDisconnected = true
+				return false
+			}
 			return true // client disconnected
 		}
 		return false
@@ -463,6 +490,7 @@ func (s *GatewayService) handleCCStreamingFromAnthropic(
 		}
 
 		var event apicompat.AnthropicStreamEvent
+		observeSubscriptionQuotaMetering(c, []byte(payload), "anthropic_sse")
 		if err := json.Unmarshal([]byte(payload), &event); err != nil {
 			continue
 		}
@@ -482,6 +510,9 @@ func (s *GatewayService) handleCCStreamingFromAnthropic(
 	}
 
 	// Finalize both state machines
+	if termForward && !completeSubscriptionQuotaMetering(c) {
+		return resultWithUsage(), fmt.Errorf("term stream final usage missing")
+	}
 	finalResEvents := apicompat.FinalizeAnthropicResponsesStream(anthState)
 	for _, resEvt := range finalResEvents {
 		ccChunks := apicompat.ResponsesEventToChatChunks(&resEvt, ccState)

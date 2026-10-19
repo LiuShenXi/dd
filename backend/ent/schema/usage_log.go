@@ -107,22 +107,22 @@ func (UsageLog) Fields() []ent.Field {
 		// 成本字段
 		field.Float("input_cost").
 			Default(0).
-			SchemaType(map[string]string{dialect.Postgres: "decimal(20,10)"}),
+			SchemaType(map[string]string{dialect.Postgres: "decimal(22,10)"}),
 		field.Float("output_cost").
 			Default(0).
-			SchemaType(map[string]string{dialect.Postgres: "decimal(20,10)"}),
+			SchemaType(map[string]string{dialect.Postgres: "decimal(22,10)"}),
 		field.Float("cache_creation_cost").
 			Default(0).
-			SchemaType(map[string]string{dialect.Postgres: "decimal(20,10)"}),
+			SchemaType(map[string]string{dialect.Postgres: "decimal(22,10)"}),
 		field.Float("cache_read_cost").
 			Default(0).
-			SchemaType(map[string]string{dialect.Postgres: "decimal(20,10)"}),
+			SchemaType(map[string]string{dialect.Postgres: "decimal(22,10)"}),
 		field.Float("total_cost").
 			Default(0).
-			SchemaType(map[string]string{dialect.Postgres: "decimal(20,10)"}),
+			SchemaType(map[string]string{dialect.Postgres: "decimal(22,10)"}),
 		field.Float("actual_cost").
 			Default(0).
-			SchemaType(map[string]string{dialect.Postgres: "decimal(20,10)"}),
+			SchemaType(map[string]string{dialect.Postgres: "decimal(22,10)"}),
 		field.Float("rate_multiplier").
 			Default(1).
 			SchemaType(map[string]string{dialect.Postgres: "decimal(10,4)"}),

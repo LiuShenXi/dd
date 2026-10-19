@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -102,12 +104,15 @@ func ApplyLegacyRequestFields(requestType RequestType, fallbackStream bool, fall
 }
 
 type UsageLog struct {
-	ID        int64
-	UserID    int64
-	APIKeyID  int64
-	AccountID int64
-	RequestID string
-	Model     string
+	// Only term receipt publication consumes this exact value. Analytics retain
+	// their existing float fields without controlling durable monetary identity.
+	SubscriptionQuotaAccountStatsCost *decimal.Decimal `json:"-"`
+	ID                                int64
+	UserID                            int64
+	APIKeyID                          int64
+	AccountID                         int64
+	RequestID                         string
+	Model                             string
 	// RequestedModel is the client-requested model name recorded for stable user/admin display.
 	// Empty should be treated as Model for backward compatibility with historical rows.
 	RequestedModel string
@@ -144,11 +149,13 @@ type UsageLog struct {
 	// UpstreamEndpoint is the normalized upstream endpoint path, e.g. /v1/responses.
 	UpstreamEndpoint *string
 
-	GroupID           *int64
-	SubscriptionID    *int64
-	CarpoolTermID     *int64
-	CarpoolCycleID    *int64
-	CarpoolAdmittedAt *time.Time
+	GroupID                    *int64
+	SubscriptionID             *int64
+	SubscriptionTermID         *int64
+	SubscriptionQuotaRequestID *int64
+	CarpoolTermID              *int64
+	CarpoolCycleID             *int64
+	CarpoolAdmittedAt          *time.Time
 
 	InputTokens         int
 	OutputTokens        int

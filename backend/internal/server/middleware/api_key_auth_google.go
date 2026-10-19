@@ -131,7 +131,7 @@ func APIKeyAuthWithSubscriptionGoogle(apiKeyService *service.APIKeyService, subs
 			return
 		}
 
-		if abortIfSubscriptionQuotaUnsupported(c, apiKey, cfg, true) {
+		if abortIfSubscriptionQuotaUnsupported(c, apiKey, cfg, true, apiKeyService.SubscriptionQuotaGatewayBilling()) {
 			return
 		}
 

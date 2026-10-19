@@ -1272,3 +1272,18 @@ image_storage:
   presign_expiry_hours: 24
   # 当上游返回的是图片 url 时，下载该图片再转存的字节上限（默认 32MB）
   max_download_bytes: 33554432
+
+# Claude weekly quota. Separate gates let a compatible recovery image drain
+# known receipts with new issuance and generation disabled. No groups are
+# automatically converted or granted an allowance.
+subscription_quota:
+  issue_enabled: false
+  admission_enabled: false
+  recovery_enabled: true
+  enabled_group_ids: []
+  protected_group_ids: []
+  recovery_batch_size: 100
+  recovery_interval: "30s"
+  recovery_item_timeout: "5s"
+  # Forward heartbeats maintain liveness; this grace never grants free expiry.
+  request_stale_grace: "1m"

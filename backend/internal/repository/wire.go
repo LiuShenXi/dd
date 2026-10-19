@@ -82,7 +82,7 @@ var ProviderSet = wire.NewSet(
 	NewAnnouncementRepository,
 	NewAnnouncementReadRepository,
 	NewUsageLogRepository,
-	NewUsageBillingRepository,
+	ProvideUsageBillingRepository,
 	NewCarpoolRepository,
 	wire.Bind(new(service.CarpoolRepositoryAPI), new(*CarpoolRepository)),
 	NewCarpoolResetRepository,

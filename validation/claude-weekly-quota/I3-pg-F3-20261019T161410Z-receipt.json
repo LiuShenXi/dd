@@ -1,0 +1,37 @@
+{
+  "freeze": "F3",
+  "started_utc": "2026-10-19T16:14:13.2986959Z",
+  "finished_utc": "2026-10-19T16:14:36.3219761Z",
+  "executable": "C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/bin/go.exe",
+  "arguments": [
+    "test",
+    "-tags=integration",
+    "-json",
+    "-count=1",
+    "-timeout=10m",
+    "-run",
+    "^TestSubscriptionQuotaR1ImageRecovery$",
+    "./internal/repository"
+  ],
+  "head": "0d61e956e2a9d86fbe7fb9a24adbdb47e687c486",
+  "source_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+  "source_after_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+  "source_stable": true,
+  "source_before_manifest": "I3-pg-F3-20261019T161410Z-source-before.json",
+  "source_after_manifest": "I3-pg-F3-20261019T161410Z-source-after.json",
+  "exit_code": 0,
+  "expected_top_level_tests": 1,
+  "top_level_passes": [
+    "github.com/Wei-Shaw/sub2api/internal/repository::TestSubscriptionQuotaR1ImageRecovery"
+  ],
+  "skip_count": 0,
+  "failure_count": 0,
+  "functional_pass": true,
+  "acceptance": true,
+  "synthetic_only": true,
+  "original_testmain": true,
+  "postgres_image": "postgres:18.1-alpine3.23",
+  "production_connected": false,
+  "upstream_called": false,
+  "log": "I3-pg-F3-20261019T161410Z.jsonl"
+}

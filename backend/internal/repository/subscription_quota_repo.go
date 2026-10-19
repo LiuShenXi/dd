@@ -55,6 +55,8 @@ func subscriptionQuotaValidKey(key string) bool {
 }
 
 func subscriptionQuotaScopeLock(ctx context.Context, tx *sql.Tx, userID, groupID int64) error {
+	started := time.Now()
+	defer func() { service.ObserveSubscriptionQuotaScopeWait(time.Since(started)) }()
 	_, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1, 1397839188))`, fmt.Sprintf("subscription_quota:%d:%d", userID, groupID))
 	return err
 }

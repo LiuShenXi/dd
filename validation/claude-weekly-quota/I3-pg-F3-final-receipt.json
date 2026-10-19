@@ -1,0 +1,113 @@
+{
+  "stage": "I3 final F3 isolated validation",
+  "freeze": "F3",
+  "source_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+  "head": "0d61e956e2a9d86fbe7fb9a24adbdb47e687c486",
+  "source_dirty": true,
+  "frontend_dist_sha256": "b657870fcdf990281b559656e5bd671843e0f626608a9bfd3e7dcc0d26d96542",
+  "source_stable": true,
+  "postgresql": {
+    "kind": "original unmodified TestMain PostgreSQL18 integration/fault/concurrency",
+    "counts": {
+      "top_level_passes": 87,
+      "passes_including_subtests": 234,
+      "individual_skips": 0,
+      "failures": 0
+    },
+    "composition": {
+      "additional_GPT_lifecycle_recovery": 8,
+      "automatic_reset_execution": 13,
+      "retained_I1_I2_GPT": 29,
+      "billing": 37
+    },
+    "receipt": "I3-pg-F3-20261019T160927Z-receipt.json"
+  },
+  "linux": {
+    "kind": "Linux critical unit concurrency race",
+    "tags": "unit",
+    "race": true,
+    "real_postgresql": false,
+    "go": "go1.27.2 linux/amd64",
+    "counts": {
+      "top_level_passes": 293,
+      "passes_including_subtests": 636,
+      "individual_skips": 0,
+      "failures": 0
+    },
+    "receipt": "I3-pg-race-F3-20261019T160927Z-receipt.json"
+  },
+  "windows": {
+    "go": "go1.27.0 windows/amd64",
+    "counts": {
+      "top_level_passes": 356,
+      "passes_including_subtests": 692,
+      "individual_skips": 0,
+      "failures": 0
+    },
+    "baseline_GPT_tests": 84,
+    "missing_baseline_GPT": [],
+    "all_package_compile_and_vet": true,
+    "no_test_helper_package_skips": 1,
+    "receipt": "I3-windows-F3-20261019T160855Z-receipt.json"
+  },
+  "image": {
+    "tag": "sub2api:claude-weekly-i3-receipt-r1-c9d25ce07053",
+    "id": "sha256:c17ee70e59572a06cb4b44d7334739120f0425d71cb2978e705ae36943ea0897",
+    "revision": "0d61e956e2a9d86fbe7fb9a24adbdb47e687c486-dirty-frozen-I3-c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe",
+    "capability": "I3 current receipt recovery plus existing GPT",
+    "build_go": "go1.27.2 linux/amd64",
+    "cgo_enabled": 0,
+    "runtime_recipe": "environment-I3-R1.Dockerfile",
+    "runtime_recipe_sha256": "3ef5e6cadcdecff3c142ccd8da3dd418fd7867e10c32c6ed94a17a7aab40d90e",
+    "build_receipt": "I3-pg-F3-20261019T161328Z-build-receipt.json",
+    "actual_proof_receipt": "I3-pg-F3-R1-final-receipt.json",
+    "actual_server_started": true,
+    "claude_known_recovered": true,
+    "original_GPT_known_recovered": true,
+    "restart_exactly_once": true,
+    "term_HTTP_status": 503,
+    "issue_enabled": false,
+    "admission_enabled": false,
+    "recovery_enabled": true,
+    "host_ports": [],
+    "external_egress": false,
+    "I5_paid_order_recovery_proven": false,
+    "final_I6_schema_revalidation_required": true
+  },
+  "exact_receipt_files": [
+    {
+      "file": "I3-pg-F3-20261019T160927Z-receipt.json",
+      "sha256": "ab5ec9bb8c58d710d6a034f360477188a2c08c782635324d6e722e18a8603c5c"
+    },
+    {
+      "file": "I3-pg-race-F3-20261019T160927Z-receipt.json",
+      "sha256": "9b19c1d8bdeebec815575c77b95fff9e03a49d5565982ca023b7aebb27c130bb"
+    },
+    {
+      "file": "I3-windows-F3-20261019T160855Z-receipt.json",
+      "sha256": "154f82ba4dc2e0cf3045b780eebf4d4ae03a04890d83fa2766e63f36ebfc3f5e"
+    },
+    {
+      "file": "I3-pg-F3-20261019T161328Z-build-receipt.json",
+      "sha256": "ecea81ebcd08a55be5876bbf003b7f90f5a4c9acce984ae20f84c815b87718a1"
+    },
+    {
+      "file": "I3-pg-F3-R1-final-receipt.json",
+      "sha256": "5962a687594b5e401f39ed853d9a0b1ad665c7fcac783c2de3a97e80bfc92b31"
+    }
+  ],
+  "traceability": "I3-pg-traceability.md",
+  "diagnostics": "I3-pg-test-plan.md",
+  "superseded_freezes": [
+    "F1",
+    "F2"
+  ],
+  "retained_environment": "environment-active.json",
+  "runner_limit_update": "environment-I3-runner-limits.json",
+  "synthetic_only": true,
+  "production_connected": false,
+  "upstream_called": false,
+  "activation_authorized": false,
+  "acceptance": true,
+  "finished_utc": "2026-10-19T16:15:35.0471242Z"
+}

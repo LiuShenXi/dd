@@ -48,7 +48,7 @@ func (r *subscriptionQuotaRepository) ListCurrentTermGroupIDs(ctx context.Contex
 const subscriptionQuotaTermColumns = `t.id,t.subscription_id,t.user_id,t.group_id,t.term_no,t.quota_usd::text,t.used_usd::text,t.starts_at,t.expires_at,t.lifecycle_state,t.cancelled_at,t.revision,
  COALESCE((SELECT SUM(r.actual_cost_usd) FROM subscription_quota_requests r WHERE r.term_id=t.id AND r.status='usage_known'),0)::text,
  (SELECT COUNT(*) FROM subscription_quota_requests r WHERE r.term_id=t.id AND r.status IN ('admitted','usage_known','reconcile_required')),
- (SELECT COUNT(*) FROM subscription_quota_requests r WHERE r.term_id=t.id AND r.status='reconcile_required')`
+ (SELECT COUNT(*) FROM subscription_quota_requests r WHERE r.term_id=t.id AND (r.status='reconcile_required' OR r.last_error_category='ledger_mismatch'))`
 
 func subscriptionQuotaScanTerm(row carpoolRowScanner) (domain.SubscriptionQuotaTerm, error) {
 	var t domain.SubscriptionQuotaTerm

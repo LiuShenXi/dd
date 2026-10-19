@@ -335,6 +335,10 @@ func parseMinutes(hhmm string) (int, bool) {
 //
 // 该方法是纯函数，不读取任何外部状态，便于单测。
 func (g *Group) PeakMultiplierAt(now time.Time) float64 {
+	return g.peakMultiplierAtLocation(now, timezone.Location())
+}
+
+func (g *Group) peakMultiplierAtLocation(now time.Time, location *time.Location) float64 {
 	if g == nil || !g.IsSubscriptionType() || !g.PeakRateEnabled || g.PeakStart == "" || g.PeakEnd == "" {
 		return 1.0
 	}
@@ -343,7 +347,7 @@ func (g *Group) PeakMultiplierAt(now time.Time) float64 {
 	if !ok1 || !ok2 || start >= end {
 		return 1.0
 	}
-	t := now.In(timezone.Location())
+	t := now.In(location)
 	cur := t.Hour()*60 + t.Minute()
 	if cur >= start && cur < end {
 		return g.PeakRateMultiplier
