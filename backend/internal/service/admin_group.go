@@ -1373,7 +1373,18 @@ func (s *adminServiceImpl) AdminUpdateAPIKeyGroupID(ctx context.Context, keyID i
 			return nil, infraerrors.BadRequest("GROUP_NOT_ACTIVE", "target group is not active")
 		}
 		// 订阅类型分组：用户须持有该分组的有效订阅才可绑定
-		if group.IsSubscriptionType() {
+		if group.HasTermQuotaMode() {
+			if s.subscriptionQuotaEntitlements == nil {
+				return nil, ErrSubscriptionQuotaBillingUnavailable
+			}
+			current, err := s.subscriptionQuotaEntitlements.HasCurrentTerm(ctx, apiKey.UserID, *groupID)
+			if err != nil {
+				return nil, err
+			}
+			if !current {
+				return nil, infraerrors.BadRequest("SUBSCRIPTION_REQUIRED", "user does not have a current term for this group")
+			}
+		} else if group.IsSubscriptionType() {
 			if s.userSubRepo == nil {
 				return nil, infraerrors.InternalServer("SUBSCRIPTION_REPOSITORY_UNAVAILABLE", "subscription repository is not configured")
 			}

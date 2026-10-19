@@ -45,6 +45,15 @@ type visibilityGroupRepo struct {
 
 func (r *visibilityGroupRepo) ListActive(context.Context) ([]Group, error) { return r.groups, nil }
 
+func (r *visibilityGroupRepo) GetByID(_ context.Context, id int64) (*Group, error) {
+	for i := range r.groups {
+		if r.groups[i].ID == id {
+			return &r.groups[i], nil
+		}
+	}
+	return &Group{ID: id}, nil
+}
+
 func TestGetUserGroupVisibilityIncludesActiveSubscriptions(t *testing.T) {
 	for _, restricted := range []bool{false, true} {
 		t.Run(map[bool]string{false: "unrestricted", true: "restricted"}[restricted], func(t *testing.T) {

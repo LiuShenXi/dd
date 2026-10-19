@@ -1722,7 +1722,7 @@ type SubscriptionCacheConfig struct {
 }
 
 // SubscriptionQuotaConfig separates issuance, generation and recovery. R1
-// recognizes term groups but cannot enable issuance or generation.
+// recognizes term groups. I2 permits gated manual issuance; generation stays closed.
 type SubscriptionQuotaConfig struct {
 	IssueEnabled      bool          `mapstructure:"issue_enabled"`
 	AdmissionEnabled  bool          `mapstructure:"admission_enabled"`
@@ -2700,8 +2700,11 @@ func setEnvReachableDefaults() {
 }
 
 func (c *Config) Validate() error {
-	if c.SubscriptionQuota.IssueEnabled || c.SubscriptionQuota.AdmissionEnabled {
-		return fmt.Errorf("subscription_quota issuance/admission cannot be enabled in the R1 compatibility version")
+	if c.SubscriptionQuota.AdmissionEnabled {
+		return fmt.Errorf("subscription_quota admission cannot be enabled before term billing is implemented")
+	}
+	if c.SubscriptionQuota.IssueEnabled && (len(c.SubscriptionQuota.EnabledGroupIDs) == 0 || c.RunMode == RunModeSimple) {
+		return fmt.Errorf("subscription_quota issuance requires explicit enabled group IDs and standard mode")
 	}
 	for _, ids := range [][]int64{c.SubscriptionQuota.EnabledGroupIDs, c.SubscriptionQuota.ProtectedGroupIDs} {
 		for _, id := range ids {

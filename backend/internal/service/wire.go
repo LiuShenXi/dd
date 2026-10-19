@@ -850,10 +850,12 @@ func ProvideAPIKeyService(
 	billingCacheService *BillingCacheService,
 	concurrencyService *ConcurrencyService,
 	carpoolService *CarpoolService,
+	quotaEntitlements SubscriptionQuotaEntitlementReader,
 ) *APIKeyService {
 	svc := NewAPIKeyService(apiKeyRepo, userRepo, groupRepo, userSubRepo, userGroupRateRepo, cache, cfg)
 	svc.SetRateLimitCacheInvalidator(billingCacheService)
 	svc.SetConcurrencyService(concurrencyService)
+	svc.SetSubscriptionQuotaEntitlementReader(quotaEntitlements)
 	carpoolService.SetAuthInvalidator(svc)
 	return svc
 }
@@ -877,11 +879,13 @@ var ProviderSet = wire.NewSet(
 	NewDashboardService,
 	ProvidePricingService,
 	NewBillingService,
+	NewSubscriptionQuotaService,
+	ProvideSubscriptionQuotaEntitlementReader,
 	ProvideCarpoolService,
 	ProvideCarpoolResetService,
 	ProvideBillingCacheService,
 	NewAnnouncementService,
-	NewAdminService,
+	ProvideAdminService,
 	NewGatewayService,
 	NewOpenAIGatewayService,
 	ProvideImageStorageSettingService,

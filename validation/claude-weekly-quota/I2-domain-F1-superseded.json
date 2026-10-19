@@ -1,0 +1,9 @@
+{
+  "freeze": "F1",
+  "status": "superseded",
+  "acceptance": false,
+  "reason": "After the F1 PG run finished, review found last_term must follow the actual effective end timestamp, not maximum term_no. F2 will include that implementation and regression tests. The test owner's funds guard also expanded to include new quota requests, ledger and protected requests.",
+  "pg_receipt": "I2-domain-F1-20261019T140213Z-receipt.json",
+  "race_prefix": "I2-domain-race-F1-20261019T140213Z",
+  "preservation": "Original commands, logs, hashes and their contemporaneous result fields are preserved. Even an original acceptance=true field is superseded by this record and is not the final I2 acceptance."
+}

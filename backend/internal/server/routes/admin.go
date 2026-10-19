@@ -90,6 +90,7 @@ func RegisterAdminRoutes(
 
 		// 订阅管理
 		registerSubscriptionRoutes(admin, h)
+		registerSubscriptionQuotaRoutes(admin, h)
 		registerCarpoolRoutes(admin, h)
 
 		// 使用记录管理
@@ -693,6 +694,16 @@ func registerSystemRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		system.POST("/rollback", h.Admin.System.Rollback)
 		system.POST("/restart", h.Admin.System.RestartService)
 	}
+}
+
+func registerSubscriptionQuotaRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	// Reuse the existing /users/:id wildcard; Gin requires the same name for
+	// sibling paths under one parameter node.
+	admin.GET("/users/:id/subscription-quota", h.Admin.SubscriptionQuota.GetSummary)
+	admin.GET("/users/:id/subscription-quota/terms", h.Admin.SubscriptionQuota.ListTerms)
+	admin.POST("/users/:id/subscription-quota/terms/preview", h.Admin.SubscriptionQuota.Preview)
+	admin.POST("/users/:id/subscription-quota/terms", h.Admin.SubscriptionQuota.OpenTerm)
+	admin.POST("/subscription-quota/terms/:term_id/cancel", h.Admin.SubscriptionQuota.CancelTerm)
 }
 
 func registerSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {

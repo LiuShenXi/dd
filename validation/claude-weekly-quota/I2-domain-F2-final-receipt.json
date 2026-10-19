@@ -1,0 +1,39 @@
+{
+  "freeze": "F2",
+  "head": "92bd96e6feaa4426bacb2312eed8e2d162ba1bc7",
+  "source_state": "Uncommitted frozen I2 tree on the I1 commit; source hash identifies the tested code",
+  "source_sha256": "4dd98708a8cab51b34a46f00fec7263a969025b60aa3ac7198a0256c49aeaa97",
+  "current_source_sha256": "4dd98708a8cab51b34a46f00fec7263a969025b60aa3ac7198a0256c49aeaa97",
+  "all_source_stable": true,
+  "pg": {
+    "receipt": "I2-domain-F2-20261019T140738Z-receipt.json",
+    "passes": 16,
+    "domain": 11,
+    "i1_coexistence": 2,
+    "original_gpt": 3,
+    "skip_count": 0,
+    "failure_count": 0,
+    "acceptance": true,
+    "go_version": "go1.27.0 windows/amd64",
+    "database_image": "postgres:18.1-alpine3.23",
+    "original_testmain": true
+  },
+  "linux_race": {
+    "receipt": "I2-domain-race-F2-20261019T140748Z-receipt.json",
+    "passes": 61,
+    "skip_count": 0,
+    "failure_count": 0,
+    "acceptance": true,
+    "go_version": "go1.27.2 linux/amd64",
+    "package_count": 6
+  },
+  "funds_guard": "All unrelated public tables, native windows parent, and new quota requests/ledger/protected requests unchanged; only terms/operations/parent/outbox and explicit plan fixture edits excluded",
+  "t02_scope": "I2 shared user/group card identity and unchanged multiple Keys only; actual multi-Key consumption remains I3/I4",
+  "legacy_delete_protection": "Actual renew and cancel wait on a separately held parent row lock; three deletion paths reject for populated/empty term groups before parent access, original GPT prepare succeeds with lock_timeout=500ms and rolls back, then release allows each quota mutation to finish",
+  "image_rebuilt": false,
+  "production_connected": false,
+  "upstream_called": false,
+  "activated": false,
+  "superseded_receipts": "I2-domain-F1-superseded.json",
+  "acceptance": true
+}

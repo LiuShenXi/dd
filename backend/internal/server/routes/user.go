@@ -135,6 +135,14 @@ func RegisterUserRoutes(
 		}
 
 		// 用户订阅
+		quota := authenticated.Group("/subscription-quota")
+		{
+			quota.GET("", h.SubscriptionQuota.List)
+			quota.GET("/groups/:group_id", h.SubscriptionQuota.GetSummary)
+			quota.GET("/groups/:group_id/terms", h.SubscriptionQuota.ListTerms)
+			quota.GET("/terms/:term_id/usage", h.SubscriptionQuota.ListUsage)
+		}
+
 		subscriptions := authenticated.Group("/subscriptions")
 		{
 			subscriptions.GET("", h.Subscription.List)

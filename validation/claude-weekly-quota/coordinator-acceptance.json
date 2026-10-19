@@ -7,85 +7,169 @@
       "id": "T01",
       "scenario": "A 100、B 300",
       "required_assertions": "两张卡归属、额度独立",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T02",
       "scenario": "多 Key 同用户同组",
       "required_assertions": "共用一张卡，不能每 Key 重发额度",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Same user/group shares one card and multiple Keys remain unchanged; actual multi-Key charging remains I3/I4."
     },
     {
       "id": "T03",
       "scenario": "空、零、负、NaN、Infinity、科学计数",
       "required_assertions": "拒绝且不写父记录、卡或操作",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T04",
       "scenario": "省略额度选有效套餐",
       "required_assertions": "精确复制默认值，改套餐不改旧卡",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T05",
       "scenario": "省略额度且无默认",
       "required_assertions": "QUOTA_REQUIRED，无不限额路径",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T06",
       "scenario": "同幂等键重复开卡",
       "required_assertions": "一张卡，原响应和原时间不变",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T07",
       "scenario": "同目标同幂等键更改金额或套餐",
       "required_assertions": "409，不追加；不同身份 scope 不返回他人结果",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T08",
       "scenario": "同用户同时两次续卡",
       "required_assertions": "串行排期不重叠，term_no 唯一",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T09",
       "scenario": "stale expected_revision",
       "required_assertions": "409，保留输入但不写入",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T10",
       "scenario": "到期前、到期瞬间、到期后",
       "required_assertions": "左闭右开；精确 168 小时",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T11",
       "scenario": "取消未来中间卡",
       "required_assertions": "后续卡不自动前移，无结转",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T12",
       "scenario": "耗尽后提前续卡",
       "required_assertions": "新卡按队尾生效，不能提前消费",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T13",
@@ -204,8 +288,16 @@
       "id": "T24",
       "scenario": "入参伪造其他 user/group/term",
       "required_assertions": "DTO 和复合 FK 拒绝跨归属写入",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
     },
     {
       "id": "T25",
@@ -490,9 +582,14 @@
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
       ],
-      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+      "acceptance_note": "Actual GPT prepare succeeds while Claude parent is locked and renew/cancel wait; legacy group deletion rejects before parent access. Settlement concurrency remains I3."
     },
     {
       "id": "T60",
@@ -533,6 +630,12 @@
       "status": "accepted_preliminary_R1",
       "receipt": "coordinator-I1-review.md",
       "source_sha256": "e2d31f2525ccf72a74eb03c308611785246ce45d0e75198ef4d06fd6d7651693"
+    },
+    {
+      "id": "I2",
+      "status": "accepted",
+      "receipt": "coordinator-I2-review.md",
+      "source_sha256": "4dd98708a8cab51b34a46f00fec7263a969025b60aa3ac7198a0256c49aeaa97"
     }
   ]
 }

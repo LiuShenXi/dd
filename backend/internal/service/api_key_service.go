@@ -283,32 +283,33 @@ type RateLimitCacheInvalidator interface {
 }
 
 type APIKeyService struct {
-	apiKeyRepo                APIKeyRepository
-	userRepo                  UserRepository
-	groupRepo                 GroupRepository
-	userSubRepo               UserSubscriptionRepository
-	userGroupRateRepo         UserGroupRateRepository
-	cache                     APIKeyCache
-	rateLimitCacheInvalid     RateLimitCacheInvalidator // optional: invalidate Redis rate limit cache
-	concurrencyService        *ConcurrencyService
-	cfg                       *config.Config
-	authCacheL1               *ristretto.Cache
-	authNegativeCacheL1       *ristretto.Cache
-	authCfg                   apiKeyAuthCacheConfig
-	authGroup                 singleflight.Group
-	authLookupSlots           chan struct{}
-	authLookupTotal           atomic.Uint64
-	authLookupRejected        atomic.Uint64
-	authLookupInFlight        atomic.Int64
-	invalidAuthAbuse          *invalidAuthAbuseLimiter
-	authInvalidationStart     sync.Once
-	authInvalidationStop      sync.Once
-	authInvalidationCancel    context.CancelFunc
-	authInvalidationWG        sync.WaitGroup
-	authInvalidationConnected atomic.Bool
-	authInvalidationFailures  atomic.Uint64
-	lastUsedTouchL1           sync.Map // keyID -> nextAllowedAt(time.Time)
-	lastUsedTouchSF           singleflight.Group
+	apiKeyRepo                    APIKeyRepository
+	userRepo                      UserRepository
+	groupRepo                     GroupRepository
+	userSubRepo                   UserSubscriptionRepository
+	subscriptionQuotaEntitlements SubscriptionQuotaEntitlementReader
+	userGroupRateRepo             UserGroupRateRepository
+	cache                         APIKeyCache
+	rateLimitCacheInvalid         RateLimitCacheInvalidator // optional: invalidate Redis rate limit cache
+	concurrencyService            *ConcurrencyService
+	cfg                           *config.Config
+	authCacheL1                   *ristretto.Cache
+	authNegativeCacheL1           *ristretto.Cache
+	authCfg                       apiKeyAuthCacheConfig
+	authGroup                     singleflight.Group
+	authLookupSlots               chan struct{}
+	authLookupTotal               atomic.Uint64
+	authLookupRejected            atomic.Uint64
+	authLookupInFlight            atomic.Int64
+	invalidAuthAbuse              *invalidAuthAbuseLimiter
+	authInvalidationStart         sync.Once
+	authInvalidationStop          sync.Once
+	authInvalidationCancel        context.CancelFunc
+	authInvalidationWG            sync.WaitGroup
+	authInvalidationConnected     atomic.Bool
+	authInvalidationFailures      atomic.Uint64
+	lastUsedTouchL1               sync.Map // keyID -> nextAllowedAt(time.Time)
+	lastUsedTouchSF               singleflight.Group
 }
 
 type APIKeyAuthLookupMetrics struct {
@@ -447,19 +448,25 @@ func (s *APIKeyService) incrementAPIKeyErrorCount(ctx context.Context, userID in
 // canUserBindGroup 检查用户是否可以绑定指定分组
 // 对于订阅类型分组：检查用户是否有有效订阅
 // 对于标准类型分组：使用原有的 AllowedGroups 和 IsExclusive 逻辑
-func (s *APIKeyService) canUserBindGroup(ctx context.Context, user *User, group *Group) bool {
+func (s *APIKeyService) canUserBindGroup(ctx context.Context, user *User, group *Group) (bool, error) {
+	if group.HasTermQuotaMode() {
+		if s.subscriptionQuotaEntitlements == nil {
+			return false, ErrSubscriptionQuotaBillingUnavailable
+		}
+		return s.subscriptionQuotaEntitlements.HasCurrentTerm(ctx, user.ID, group.ID)
+	}
 	// Carpool keys are assigned only through the administrator endpoint. A
 	// current term controls gateway admission, not self-service group binding.
 	if group.IsCarpoolType() {
-		return false
+		return false, nil
 	}
 	// 订阅类型分组：需要有效订阅
 	if group.IsSubscriptionType() {
 		_, err := s.userSubRepo.GetActiveByUserIDAndGroupID(ctx, user.ID, group.ID)
-		return err == nil // 有有效订阅则允许
+		return err == nil, nil // Preserve the existing windows-mode behavior.
 	}
 	// 标准类型分组：使用原有逻辑
-	return user.CanBindGroup(group.ID, group.IsExclusive)
+	return user.CanBindGroup(group.ID, group.IsExclusive), nil
 }
 
 // Create 创建API Key
@@ -498,7 +505,11 @@ func (s *APIKeyService) Create(ctx context.Context, userID int64, req CreateAPIK
 		}
 
 		// 检查用户是否可以绑定该分组
-		if !s.canUserBindGroup(ctx, user, group) {
+		allowed, err := s.canUserBindGroup(ctx, user, group)
+		if err != nil {
+			return nil, err
+		}
+		if !allowed {
 			return nil, ErrGroupNotAllowed
 		}
 	}
@@ -822,7 +833,11 @@ func (s *APIKeyService) Update(ctx context.Context, id int64, userID int64, req 
 				return nil, fmt.Errorf("get group: %w", err)
 			}
 
-			if !s.canUserBindGroup(ctx, user, group) {
+			allowed, err := s.canUserBindGroup(ctx, user, group)
+			if err != nil {
+				return nil, err
+			}
+			if !allowed {
 				return nil, ErrGroupNotAllowed
 			}
 
@@ -1055,10 +1070,38 @@ func (s *APIKeyService) GetAvailableGroups(ctx context.Context, userID int64) ([
 	for _, sub := range activeSubscriptions {
 		subscribedGroupIDs[sub.GroupID] = true
 	}
+	currentTerms := make(map[int64]bool)
+	groupsByID := make(map[int64]*Group, len(allGroups))
+	for i := range allGroups {
+		groupsByID[allGroups[i].ID] = &allGroups[i]
+	}
+	for _, sub := range activeSubscriptions {
+		group := groupsByID[sub.GroupID]
+		if group == nil || !group.HasTermQuotaMode() {
+			continue
+		}
+		if s.subscriptionQuotaEntitlements == nil {
+			return nil, ErrSubscriptionQuotaBillingUnavailable
+		}
+		ids, err := s.subscriptionQuotaEntitlements.ListCurrentTermGroupIDs(ctx, userID)
+		if err != nil {
+			return nil, err
+		}
+		for _, id := range ids {
+			currentTerms[id] = true
+		}
+		break
+	}
 
 	// 过滤出用户有权限的分组
 	availableGroups := make([]Group, 0)
 	for _, group := range allGroups {
+		if group.HasTermQuotaMode() {
+			if group.IsTermQuota() && currentTerms[group.ID] {
+				availableGroups = append(availableGroups, group)
+			}
+			continue
+		}
 		if s.canUserBindGroupInternal(user, &group, subscribedGroupIDs) {
 			availableGroups = append(availableGroups, group)
 		}
@@ -1069,6 +1112,10 @@ func (s *APIKeyService) GetAvailableGroups(ctx context.Context, userID int64) ([
 
 // canUserBindGroupInternal 内部方法，检查用户是否可以绑定分组（使用预加载的订阅数据）
 func (s *APIKeyService) canUserBindGroupInternal(user *User, group *Group, subscribedGroupIDs map[int64]bool) bool {
+	// Term IDs must come from the authoritative reader in GetAvailableGroups.
+	if group.HasTermQuotaMode() {
+		return false
+	}
 	if group.IsCarpoolType() {
 		return false
 	}
@@ -1098,16 +1145,46 @@ func (s *APIKeyService) GetUserGroupVisibility(ctx context.Context, userID int64
 	if err != nil {
 		return nil, false, fmt.Errorf("get user: %w", err)
 	}
-	allowed := make(map[int64]struct{}, len(user.AllowedGroups))
+	candidates := make(map[int64]*Group, len(user.AllowedGroups))
 	for _, id := range user.AllowedGroups {
-		allowed[id] = struct{}{}
+		candidates[id] = nil
 	}
 	subscriptions, err := s.userSubRepo.ListActiveByUserID(ctx, userID)
 	if err != nil {
 		return nil, false, fmt.Errorf("list active subscriptions: %w", err)
 	}
 	for _, sub := range subscriptions {
-		allowed[sub.GroupID] = struct{}{}
+		candidates[sub.GroupID] = sub.Group
+	}
+	allowed := make(map[int64]struct{}, len(candidates))
+	hasTermCandidate := false
+	for id, group := range candidates {
+		if group == nil {
+			if s.groupRepo == nil {
+				return nil, false, ErrSubscriptionQuotaBillingUnavailable
+			}
+			group, err = s.groupRepo.GetByID(ctx, id)
+			if err != nil {
+				return nil, false, fmt.Errorf("get visibility group: %w", err)
+			}
+		}
+		if group.HasTermQuotaMode() {
+			hasTermCandidate = true
+			if s.subscriptionQuotaEntitlements == nil {
+				return nil, false, ErrSubscriptionQuotaBillingUnavailable
+			}
+			continue
+		}
+		allowed[id] = struct{}{}
+	}
+	if hasTermCandidate {
+		ids, err := s.subscriptionQuotaEntitlements.ListCurrentTermGroupIDs(ctx, userID)
+		if err != nil {
+			return nil, false, err
+		}
+		for _, id := range ids {
+			allowed[id] = struct{}{}
+		}
 	}
 	return allowed, user.RestrictPublicGroups, nil
 }
