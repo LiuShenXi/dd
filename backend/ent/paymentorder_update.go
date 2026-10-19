@@ -270,6 +270,18 @@ func (_u *PaymentOrderUpdate) ClearQrCodeImg() *PaymentOrderUpdate {
 	return _u
 }
 
+// SetSubscriptionQuotaSnapshot sets the "subscription_quota_snapshot" field.
+func (_u *PaymentOrderUpdate) SetSubscriptionQuotaSnapshot(v map[string]interface{}) *PaymentOrderUpdate {
+	_u.mutation.SetSubscriptionQuotaSnapshot(v)
+	return _u
+}
+
+// ClearSubscriptionQuotaSnapshot clears the value of the "subscription_quota_snapshot" field.
+func (_u *PaymentOrderUpdate) ClearSubscriptionQuotaSnapshot() *PaymentOrderUpdate {
+	_u.mutation.ClearSubscriptionQuotaSnapshot()
+	return _u
+}
+
 // SetOrderType sets the "order_type" field.
 func (_u *PaymentOrderUpdate) SetOrderType(v string) *PaymentOrderUpdate {
 	_u.mutation.SetOrderType(v)
@@ -911,6 +923,12 @@ func (_u *PaymentOrderUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if _u.mutation.QrCodeImgCleared() {
 		_spec.ClearField(paymentorder.FieldQrCodeImg, field.TypeString)
 	}
+	if value, ok := _u.mutation.SubscriptionQuotaSnapshot(); ok {
+		_spec.SetField(paymentorder.FieldSubscriptionQuotaSnapshot, field.TypeJSON, value)
+	}
+	if _u.mutation.SubscriptionQuotaSnapshotCleared() {
+		_spec.ClearField(paymentorder.FieldSubscriptionQuotaSnapshot, field.TypeJSON)
+	}
 	if value, ok := _u.mutation.OrderType(); ok {
 		_spec.SetField(paymentorder.FieldOrderType, field.TypeString, value)
 	}
@@ -1330,6 +1348,18 @@ func (_u *PaymentOrderUpdateOne) SetNillableQrCodeImg(v *string) *PaymentOrderUp
 // ClearQrCodeImg clears the value of the "qr_code_img" field.
 func (_u *PaymentOrderUpdateOne) ClearQrCodeImg() *PaymentOrderUpdateOne {
 	_u.mutation.ClearQrCodeImg()
+	return _u
+}
+
+// SetSubscriptionQuotaSnapshot sets the "subscription_quota_snapshot" field.
+func (_u *PaymentOrderUpdateOne) SetSubscriptionQuotaSnapshot(v map[string]interface{}) *PaymentOrderUpdateOne {
+	_u.mutation.SetSubscriptionQuotaSnapshot(v)
+	return _u
+}
+
+// ClearSubscriptionQuotaSnapshot clears the value of the "subscription_quota_snapshot" field.
+func (_u *PaymentOrderUpdateOne) ClearSubscriptionQuotaSnapshot() *PaymentOrderUpdateOne {
+	_u.mutation.ClearSubscriptionQuotaSnapshot()
 	return _u
 }
 
@@ -2003,6 +2033,12 @@ func (_u *PaymentOrderUpdateOne) sqlSave(ctx context.Context) (_node *PaymentOrd
 	}
 	if _u.mutation.QrCodeImgCleared() {
 		_spec.ClearField(paymentorder.FieldQrCodeImg, field.TypeString)
+	}
+	if value, ok := _u.mutation.SubscriptionQuotaSnapshot(); ok {
+		_spec.SetField(paymentorder.FieldSubscriptionQuotaSnapshot, field.TypeJSON, value)
+	}
+	if _u.mutation.SubscriptionQuotaSnapshotCleared() {
+		_spec.ClearField(paymentorder.FieldSubscriptionQuotaSnapshot, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.OrderType(); ok {
 		_spec.SetField(paymentorder.FieldOrderType, field.TypeString, value)

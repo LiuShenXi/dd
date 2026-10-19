@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "verified_utc": "2026-10-19T13:13:04.0182873Z",
+  "task": "claude-weekly-quota",
+  "environment_run_id": "20261019T131000Z-e4f68a1d",
+  "resources_retained": true,
+  "tools": {
+    "docker_desktop": "4.27.2.137060",
+    "docker_client": "25.0.3",
+    "docker_server": "25.0.3",
+    "docker_api": "1.44",
+    "wsl": "2.0.14.0",
+    "wsl_kernel": "5.15.133.1-1",
+    "windows_go": "go1.27.0 windows/amd64",
+    "linux_go": "go1.27.2 linux/amd64",
+    "linux_gcc": "15.2.0",
+    "node": "20.14.0",
+    "pnpm": "9.5.0"
+  },
+  "constraints": {
+    "synthetic_only": true,
+    "production_connected": false,
+    "upstream_models_called": false,
+    "original_harness_changed": false,
+    "host_ports": [],
+    "docker_socket_mounted": false,
+    "existing_containers_modified_explicitly": false,
+    "existing_container_autostart": "Existing restart policies took effect when Docker Desktop started."
+  },
+  "checks": [
+    {
+      "name": "PG18 synthetic database",
+      "command": "docker exec <recorded postgres ID> psql ...",
+      "exit_code": 0,
+      "server_version": "18.1",
+      "public_tables_initial": 0,
+      "timezone": "UTC"
+    },
+    {
+      "name": "Redis synthetic instance",
+      "command": "docker exec <recorded redis ID> redis-cli PING / DBSIZE",
+      "exit_code": 0,
+      "version": "8.4.6",
+      "ping": "PONG",
+      "dbsize_initial": 0
+    },
+    {
+      "name": "Linux race capability",
+      "command": "docker exec <recorded runner ID> go test -race -count=1 ./internal/pkg/timezone",
+      "exit_code": 0,
+      "log": "environment-linux-race.log"
+    },
+    {
+      "name": "Linux compile capability",
+      "command": "docker exec <recorded runner ID> go build -buildvcs=false -o /output/timezone.a ./internal/pkg/timezone",
+      "exit_code": 0,
+      "artifact": "/output/timezone.a",
+      "artifact_bytes": 79928
+    },
+    {
+      "name": "Frontend offline frozen dependencies",
+      "command": "pnpm install --frozen-lockfile --offline",
+      "exit_code": 0,
+      "duration_seconds": 47.8,
+      "log": "environment-frontend-offline.log"
+    },
+    {
+      "name": "Frontend full build",
+      "command": "pnpm run build",
+      "exit_code": 0,
+      "i18n_assertions": 3,
+      "typescript_build": "pass",
+      "vite_build": "pass",
+      "vite_seconds": 26.87,
+      "warning": "Existing chunks larger than 500 kB",
+      "log": "environment-frontend-build.log"
+    },
+    {
+      "name": "Dependency manifests preserved",
+      "command": "git diff --name-only -- frontend/package.json frontend/pnpm-lock.yaml",
+      "exit_code": 0,
+      "changed_paths": []
+    }
+  ],
+  "startup_failures": [
+    "Docker engine pipe absent before Docker Desktop start",
+    "Start-Service com.docker.service could not open the service in this process context",
+    "Docker default IPv4 address pool exhausted; first task run created no resources"
+  ],
+  "resolved_with": [
+    "Start existing Docker Desktop.exe with WindowStyle Hidden",
+    "Explicit task-only internal subnet 10.247.190.0/24, checked against Docker networks and Windows IPv4 routes"
+  ],
+  "limitations": [
+    "This is environment validation, not full application or Claude business acceptance",
+    "Linux runner has no Docker control socket: original integration TestMain must run on Windows host",
+    "Linux Go official minor tag resolves to patch 1.27.2, distinct from the existing Windows pinned 1.27.0",
+    "Cleanup preflight passed with -ValidateOnly; destructive cleanup was not executed because resources are retained"
+  ]
+}

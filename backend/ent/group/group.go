@@ -42,6 +42,8 @@ const (
 	FieldStatus = "status"
 	// FieldDuplicateOperationID holds the string denoting the duplicate_operation_id field in the database.
 	FieldDuplicateOperationID = "duplicate_operation_id"
+	// FieldSubscriptionQuotaMode holds the string denoting the subscription_quota_mode field in the database.
+	FieldSubscriptionQuotaMode = "subscription_quota_mode"
 	// FieldPlatform holds the string denoting the platform field in the database.
 	FieldPlatform = "platform"
 	// FieldSubscriptionType holds the string denoting the subscription_type field in the database.
@@ -236,6 +238,7 @@ var Columns = []string{
 	FieldIsExclusive,
 	FieldStatus,
 	FieldDuplicateOperationID,
+	FieldSubscriptionQuotaMode,
 	FieldPlatform,
 	FieldSubscriptionType,
 	FieldDailyLimitUsd,
@@ -348,6 +351,10 @@ var (
 	StatusValidator func(string) error
 	// DuplicateOperationIDValidator is a validator for the "duplicate_operation_id" field. It is called by the builders before save.
 	DuplicateOperationIDValidator func(string) error
+	// DefaultSubscriptionQuotaMode holds the default value on creation for the "subscription_quota_mode" field.
+	DefaultSubscriptionQuotaMode string
+	// SubscriptionQuotaModeValidator is a validator for the "subscription_quota_mode" field. It is called by the builders before save.
+	SubscriptionQuotaModeValidator func(string) error
 	// DefaultPlatform holds the default value on creation for the "platform" field.
 	DefaultPlatform string
 	// PlatformValidator is a validator for the "platform" field. It is called by the builders before save.
@@ -507,6 +514,11 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByDuplicateOperationID orders the results by the duplicate_operation_id field.
 func ByDuplicateOperationID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDuplicateOperationID, opts...).ToFunc()
+}
+
+// BySubscriptionQuotaMode orders the results by the subscription_quota_mode field.
+func BySubscriptionQuotaMode(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubscriptionQuotaMode, opts...).ToFunc()
 }
 
 // ByPlatform orders the results by the platform field.

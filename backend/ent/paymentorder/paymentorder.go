@@ -42,6 +42,8 @@ const (
 	FieldQrCode = "qr_code"
 	// FieldQrCodeImg holds the string denoting the qr_code_img field in the database.
 	FieldQrCodeImg = "qr_code_img"
+	// FieldSubscriptionQuotaSnapshot holds the string denoting the subscription_quota_snapshot field in the database.
+	FieldSubscriptionQuotaSnapshot = "subscription_quota_snapshot"
 	// FieldOrderType holds the string denoting the order_type field in the database.
 	FieldOrderType = "order_type"
 	// FieldPlanID holds the string denoting the plan_id field in the database.
@@ -122,6 +124,7 @@ var Columns = []string{
 	FieldPayURL,
 	FieldQrCode,
 	FieldQrCodeImg,
+	FieldSubscriptionQuotaSnapshot,
 	FieldOrderType,
 	FieldPlanID,
 	FieldSubscriptionGroupID,

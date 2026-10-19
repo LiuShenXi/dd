@@ -74,6 +74,8 @@ func (UsageLog) Fields() []ent.Field {
 		field.Int64("subscription_id").
 			Optional().
 			Nillable(),
+		field.Int64("subscription_term_id").Optional().Nillable(),
+		field.Int64("subscription_quota_request_id").Optional().Nillable(),
 		field.Int64("carpool_term_id").
 			Optional().
 			Nillable().

@@ -224,6 +224,9 @@ func (s *SubscriptionService) assignOrExtendSubscription(ctx context.Context, in
 	if err != nil {
 		return nil, false, fmt.Errorf("group not found: %w", err)
 	}
+	if group.EffectiveSubscriptionQuotaMode() != "windows" {
+		return nil, false, ErrLegacySubscriptionOperationUnsupported
+	}
 	if !group.IsSubscriptionType() {
 		return nil, false, ErrGroupNotSubscriptionType
 	}
@@ -509,6 +512,9 @@ func (s *SubscriptionService) assignSubscriptionWithReuse(ctx context.Context, i
 	if err != nil {
 		return nil, false, fmt.Errorf("group not found: %w", err)
 	}
+	if group.EffectiveSubscriptionQuotaMode() != "windows" {
+		return nil, false, ErrLegacySubscriptionOperationUnsupported
+	}
 	if !group.IsSubscriptionType() {
 		return nil, false, ErrGroupNotSubscriptionType
 	}
@@ -604,6 +610,10 @@ func (s *SubscriptionService) RevokeSubscription(ctx context.Context, subscripti
 		return err
 	}
 
+	if err := legacySubscriptionModeError(sub); err != nil {
+		return err
+	}
+
 	if err := s.userSubRepo.Delete(ctx, subscriptionID); err != nil {
 		return err
 	}
@@ -619,6 +629,10 @@ func (s *SubscriptionService) RevokeSubscription(ctx context.Context, subscripti
 func (s *SubscriptionService) RestoreSubscription(ctx context.Context, subscriptionID int64) (*UserSubscription, error) {
 	sub, err := s.userSubRepo.GetByIDIncludeDeleted(ctx, subscriptionID)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := legacySubscriptionModeError(sub); err != nil {
 		return nil, err
 	}
 	if sub.DeletedAt == nil {
@@ -652,7 +666,14 @@ func (s *SubscriptionService) RestoreSubscription(ctx context.Context, subscript
 
 // ExtendSubscription 调整订阅时长（正数延长，负数缩短）
 func (s *SubscriptionService) ExtendSubscription(ctx context.Context, subscriptionID int64, days int) (*UserSubscription, error) {
-	err := s.withSubscriptionUpdateTx(ctx, func(txCtx context.Context) error {
+	preflight, err := s.userSubRepo.GetByID(ctx, subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+	if err := legacySubscriptionModeError(preflight); err != nil {
+		return nil, err
+	}
+	err = s.withSubscriptionUpdateTx(ctx, func(txCtx context.Context) error {
 		// Lock the row before reading its expiry. Without this lock, concurrent
 		// adjustments can both calculate from the same stale expiry and lose one
 		// of the updates when they write the absolute timestamp.
@@ -870,6 +891,9 @@ func startOfDay(t time.Time) time.Time {
 
 // CheckAndActivateWindow 检查并激活窗口（首次使用时）
 func (s *SubscriptionService) CheckAndActivateWindow(ctx context.Context, sub *UserSubscription) error {
+	if err := legacySubscriptionModeError(sub); err != nil {
+		return err
+	}
 	return s.checkAndActivateWindowAt(ctx, sub, s.now())
 }
 
@@ -892,6 +916,10 @@ func (s *SubscriptionService) AdminResetQuota(ctx context.Context, subscriptionI
 	if err != nil {
 		return nil, err
 	}
+
+	if err := legacySubscriptionModeError(sub); err != nil {
+		return nil, err
+	}
 	now := s.now()
 	// 日窗口锚点取当天 0 点：手动重置只清空用量，不改变“每天 0 点刷新”的节奏。
 	// 周/月窗口保持锚定重置时刻（期限对齐滚动窗口语义）。
@@ -911,6 +939,9 @@ func (s *SubscriptionService) AdminResetQuota(ctx context.Context, subscriptionI
 
 // CheckAndResetWindows 检查并重置过期的窗口
 func (s *SubscriptionService) CheckAndResetWindows(ctx context.Context, sub *UserSubscription) error {
+	if err := legacySubscriptionModeError(sub); err != nil {
+		return err
+	}
 	now := s.now()
 	needsInvalidateCache := false
 
@@ -1003,6 +1034,9 @@ func (s *SubscriptionService) CheckUsageLimits(ctx context.Context, sub *UserSub
 // 仅做内存检查，不触发 DB 写入。调用方必须在放行请求前同步完成窗口维护。
 // 返回 needsMaintenance 表示是否需要执行窗口维护并回读数据库快照。
 func (s *SubscriptionService) ValidateAndCheckLimits(sub *UserSubscription, group *Group) (needsMaintenance bool, err error) {
+	if group != nil && group.EffectiveSubscriptionQuotaMode() != "windows" {
+		return false, ErrSubscriptionQuotaBillingUnavailable
+	}
 	now := s.now()
 	// 1. 验证订阅状态
 	if sub.Status == SubscriptionStatusExpired {
@@ -1054,6 +1088,9 @@ func (s *SubscriptionService) ValidateAndCheckLimits(sub *UserSubscription, grou
 // 因此进入此方法的订阅一定未过期，无需处理过期状态同步。
 func (s *SubscriptionService) DoWindowMaintenance(sub *UserSubscription) {
 	if s == nil {
+		return
+	}
+	if legacySubscriptionModeError(sub) != nil {
 		return
 	}
 	if s.maintenanceQueue != nil {
@@ -1250,6 +1287,9 @@ func (s *SubscriptionService) GetUserSubscriptionsWithProgress(ctx context.Conte
 
 // ValidateSubscription 验证订阅是否有效
 func (s *SubscriptionService) ValidateSubscription(ctx context.Context, sub *UserSubscription) error {
+	if err := legacySubscriptionModeError(sub); err != nil {
+		return err
+	}
 	if sub.Status == SubscriptionStatusExpired {
 		return ErrSubscriptionExpired
 	}

@@ -34,11 +34,12 @@ type Group struct {
 	// an already committed one-click copy. It must never be mapped to API DTOs.
 	DuplicateOperationID string
 
-	SubscriptionType    string
-	DailyLimitUSD       *float64
-	WeeklyLimitUSD      *float64
-	MonthlyLimitUSD     *float64
-	DefaultValidityDays int
+	SubscriptionType      string
+	SubscriptionQuotaMode string
+	DailyLimitUSD         *float64
+	WeeklyLimitUSD        *float64
+	MonthlyLimitUSD       *float64
+	DefaultValidityDays   int
 
 	// 图片生成计费配置（antigravity 和 gemini 平台使用）
 	AllowImageGeneration         bool
@@ -157,6 +158,23 @@ func (g *Group) IsSubscriptionType() bool {
 
 func (g *Group) IsCarpoolType() bool {
 	return g.SubscriptionType == SubscriptionTypeCarpool
+}
+
+func (g *Group) EffectiveSubscriptionQuotaMode() string {
+	if g == nil {
+		return domain.SubscriptionQuotaModeWindows
+	}
+	return domain.NormalizeSubscriptionQuotaMode(g.SubscriptionQuotaMode)
+}
+
+// HasTermQuotaMode identifies the mode even if another group attribute is
+// invalid. Such a group must never fall through to legacy billing.
+func (g *Group) HasTermQuotaMode() bool {
+	return g != nil && g.EffectiveSubscriptionQuotaMode() == domain.SubscriptionQuotaModeTerm
+}
+
+func (g *Group) IsTermQuota() bool {
+	return g.HasTermQuotaMode() && g.Platform == PlatformAnthropic && g.IsSubscriptionType()
 }
 
 func (g *Group) HasDailyLimit() bool {

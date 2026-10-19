@@ -1,0 +1,4 @@
+ok  	github.com/Wei-Shaw/sub2api/internal/repository	6.760s
+ok  	github.com/Wei-Shaw/sub2api/internal/server	3.487s
+ok  	github.com/Wei-Shaw/sub2api/internal/server/middleware	(cached)
+ok  	github.com/Wei-Shaw/sub2api/internal/server/routes	10.810s

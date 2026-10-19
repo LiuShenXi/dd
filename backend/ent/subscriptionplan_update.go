@@ -49,6 +49,26 @@ func (_u *SubscriptionPlanUpdate) AddGroupID(v int64) *SubscriptionPlanUpdate {
 	return _u
 }
 
+// SetTermQuotaUsd sets the "term_quota_usd" field.
+func (_u *SubscriptionPlanUpdate) SetTermQuotaUsd(v string) *SubscriptionPlanUpdate {
+	_u.mutation.SetTermQuotaUsd(v)
+	return _u
+}
+
+// SetNillableTermQuotaUsd sets the "term_quota_usd" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdate) SetNillableTermQuotaUsd(v *string) *SubscriptionPlanUpdate {
+	if v != nil {
+		_u.SetTermQuotaUsd(*v)
+	}
+	return _u
+}
+
+// ClearTermQuotaUsd clears the value of the "term_quota_usd" field.
+func (_u *SubscriptionPlanUpdate) ClearTermQuotaUsd() *SubscriptionPlanUpdate {
+	_u.mutation.ClearTermQuotaUsd()
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *SubscriptionPlanUpdate) SetName(v string) *SubscriptionPlanUpdate {
 	_u.mutation.SetName(v)
@@ -327,6 +347,12 @@ func (_u *SubscriptionPlanUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if value, ok := _u.mutation.AddedGroupID(); ok {
 		_spec.AddField(subscriptionplan.FieldGroupID, field.TypeInt64, value)
 	}
+	if value, ok := _u.mutation.TermQuotaUsd(); ok {
+		_spec.SetField(subscriptionplan.FieldTermQuotaUsd, field.TypeString, value)
+	}
+	if _u.mutation.TermQuotaUsdCleared() {
+		_spec.ClearField(subscriptionplan.FieldTermQuotaUsd, field.TypeString)
+	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(subscriptionplan.FieldName, field.TypeString, value)
 	}
@@ -416,6 +442,26 @@ func (_u *SubscriptionPlanUpdateOne) SetNillableGroupID(v *int64) *SubscriptionP
 // AddGroupID adds value to the "group_id" field.
 func (_u *SubscriptionPlanUpdateOne) AddGroupID(v int64) *SubscriptionPlanUpdateOne {
 	_u.mutation.AddGroupID(v)
+	return _u
+}
+
+// SetTermQuotaUsd sets the "term_quota_usd" field.
+func (_u *SubscriptionPlanUpdateOne) SetTermQuotaUsd(v string) *SubscriptionPlanUpdateOne {
+	_u.mutation.SetTermQuotaUsd(v)
+	return _u
+}
+
+// SetNillableTermQuotaUsd sets the "term_quota_usd" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdateOne) SetNillableTermQuotaUsd(v *string) *SubscriptionPlanUpdateOne {
+	if v != nil {
+		_u.SetTermQuotaUsd(*v)
+	}
+	return _u
+}
+
+// ClearTermQuotaUsd clears the value of the "term_quota_usd" field.
+func (_u *SubscriptionPlanUpdateOne) ClearTermQuotaUsd() *SubscriptionPlanUpdateOne {
+	_u.mutation.ClearTermQuotaUsd()
 	return _u
 }
 
@@ -726,6 +772,12 @@ func (_u *SubscriptionPlanUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	}
 	if value, ok := _u.mutation.AddedGroupID(); ok {
 		_spec.AddField(subscriptionplan.FieldGroupID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TermQuotaUsd(); ok {
+		_spec.SetField(subscriptionplan.FieldTermQuotaUsd, field.TypeString, value)
+	}
+	if _u.mutation.TermQuotaUsdCleared() {
+		_spec.ClearField(subscriptionplan.FieldTermQuotaUsd, field.TypeString)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(subscriptionplan.FieldName, field.TypeString, value)

@@ -1,0 +1,8 @@
+{
+  "freeze": "F3",
+  "source_manifest": "C:\\Users\\Administrator\\.codex\\worktrees\\claude-weekly-quota\\dd\\validation\\claude-weekly-quota\\environment-I1-F3-20261019T133930Z-source.json",
+  "source_sha256": "e2d31f2525ccf72a74eb03c308611785246ce45d0e75198ef4d06fd6d7651693",
+  "run_id": "20261019T133930Z",
+  "frontend_dist_sha256": "b657870fcdf990281b559656e5bd671843e0f626608a9bfd3e7dcc0d26d96542",
+  "linux_runner": "cwq-env-20261019t131000z-e4f68a1d-runner"
+}

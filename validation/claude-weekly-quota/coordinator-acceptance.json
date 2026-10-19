@@ -119,36 +119,66 @@
       "id": "T17",
       "scenario": "已绑定 GPT 使用普通其他组",
       "required_assertions": "原拒绝仍在，不能借本修复绕过",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "Accepted at I1 on frozen F3; later billing and release iterations require regression."
     },
     {
       "id": "T18",
       "scenario": "GPT 开通前已有合法 Claude Key",
       "required_assertions": "开通成功，Claude Key 和权益不被覆盖",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
     },
     {
       "id": "T19",
       "scenario": "GPT 续费时有 Claude Key",
       "required_assertions": "续费成功，不删除 Key 或取消卡",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
     },
     {
       "id": "T20",
       "scenario": "GPT 首次开通普通余额非零",
       "required_assertions": "原前置检查仍生效",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "Accepted at I1 on frozen F3; later billing and release iterations require regression."
     },
     {
       "id": "T21",
       "scenario": "GPT 加量、四周期、自动重置",
       "required_assertions": "原卡期、次数、额度、流水语义保持",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
     },
     {
       "id": "T22",
@@ -161,8 +191,14 @@
       "id": "T23",
       "scenario": "新模块关闭、仓库未注入",
       "required_assertions": "Claude term 拒绝，GPT 不调用新领域 Repo",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
     },
     {
       "id": "T24",
@@ -322,8 +358,14 @@
       "id": "T46",
       "scenario": "跨组 fallback、强制平台、未支持收费入口",
       "required_assertions": "明确拒绝，GPT 原能力仍正常",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
     },
     {
       "id": "T47",
@@ -378,43 +420,79 @@
       "id": "T54",
       "scenario": "reset、extend、restore、bulk、兑换及旧维护 worker",
       "required_assertions": "未适配动作拒绝，旧维护排除 term，已用及卡期不变",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
     },
     {
       "id": "T55",
       "scenario": "旧式自动全额/部分退款及取消",
       "required_assertions": "term 旧退款路径拒绝，不减父记录天数冒充撤销额度，不充值普通余额",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
     },
     {
       "id": "T56",
       "scenario": "空库和旧二开库迁移、重复执行",
       "required_assertions": "约束正确，既有迁移校验和不变",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "Accepted at I1 on frozen F3; later billing and release iterations require regression."
     },
     {
       "id": "T57",
       "scenario": "新字段默认值及旧数据查询",
       "required_assertions": "全部旧组 windows，GPT 行为不改变",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "Accepted at I1 on frozen F3; later billing and release iterations require regression."
     },
     {
       "id": "T58",
       "scenario": "旧 auth cache 命中、新模式切换",
       "required_assertions": "旧版本失效，陈旧允许不越过最终 DB 检查",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
     },
     {
       "id": "T59",
       "scenario": "活跃 GPT 事务同时 Claude 开卡或结算",
       "required_assertions": "无锁环，无全局重置锁竞争",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
     },
     {
       "id": "T60",
@@ -434,8 +512,27 @@
       "id": "T62",
       "scenario": "分组切换前旧余额请求仍在途",
       "required_assertions": "必须排空，切换前后每个请求来源明确",
-      "status": "not_run",
-      "evidence": []
+      "status": "partial",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+    }
+  ],
+  "iterations": [
+    {
+      "id": "I0",
+      "status": "accepted",
+      "receipt": "coordinator-I0-review.md"
+    },
+    {
+      "id": "I1",
+      "status": "accepted_preliminary_R1",
+      "receipt": "coordinator-I1-review.md",
+      "source_sha256": "e2d31f2525ccf72a74eb03c308611785246ce45d0e75198ef4d06fd6d7651693"
     }
   ]
 }

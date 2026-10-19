@@ -209,6 +209,20 @@ func (_u *GroupUpdate) SetNillableStatus(v *string) *GroupUpdate {
 	return _u
 }
 
+// SetSubscriptionQuotaMode sets the "subscription_quota_mode" field.
+func (_u *GroupUpdate) SetSubscriptionQuotaMode(v string) *GroupUpdate {
+	_u.mutation.SetSubscriptionQuotaMode(v)
+	return _u
+}
+
+// SetNillableSubscriptionQuotaMode sets the "subscription_quota_mode" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillableSubscriptionQuotaMode(v *string) *GroupUpdate {
+	if v != nil {
+		_u.SetSubscriptionQuotaMode(*v)
+	}
+	return _u
+}
+
 // SetPlatform sets the "platform" field.
 func (_u *GroupUpdate) SetPlatform(v string) *GroupUpdate {
 	_u.mutation.SetPlatform(v)
@@ -1503,6 +1517,11 @@ func (_u *GroupUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Group.status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.SubscriptionQuotaMode(); ok {
+		if err := group.SubscriptionQuotaModeValidator(v); err != nil {
+			return &ValidationError{Name: "subscription_quota_mode", err: fmt.Errorf(`ent: validator failed for field "Group.subscription_quota_mode": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Platform(); ok {
 		if err := group.PlatformValidator(v); err != nil {
 			return &ValidationError{Name: "platform", err: fmt.Errorf(`ent: validator failed for field "Group.platform": %w`, err)}
@@ -1610,6 +1629,9 @@ func (_u *GroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.DuplicateOperationIDCleared() {
 		_spec.ClearField(group.FieldDuplicateOperationID, field.TypeString)
+	}
+	if value, ok := _u.mutation.SubscriptionQuotaMode(); ok {
+		_spec.SetField(group.FieldSubscriptionQuotaMode, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Platform(); ok {
 		_spec.SetField(group.FieldPlatform, field.TypeString, value)
@@ -2399,6 +2421,20 @@ func (_u *GroupUpdateOne) SetStatus(v string) *GroupUpdateOne {
 func (_u *GroupUpdateOne) SetNillableStatus(v *string) *GroupUpdateOne {
 	if v != nil {
 		_u.SetStatus(*v)
+	}
+	return _u
+}
+
+// SetSubscriptionQuotaMode sets the "subscription_quota_mode" field.
+func (_u *GroupUpdateOne) SetSubscriptionQuotaMode(v string) *GroupUpdateOne {
+	_u.mutation.SetSubscriptionQuotaMode(v)
+	return _u
+}
+
+// SetNillableSubscriptionQuotaMode sets the "subscription_quota_mode" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillableSubscriptionQuotaMode(v *string) *GroupUpdateOne {
+	if v != nil {
+		_u.SetSubscriptionQuotaMode(*v)
 	}
 	return _u
 }
@@ -3710,6 +3746,11 @@ func (_u *GroupUpdateOne) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Group.status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.SubscriptionQuotaMode(); ok {
+		if err := group.SubscriptionQuotaModeValidator(v); err != nil {
+			return &ValidationError{Name: "subscription_quota_mode", err: fmt.Errorf(`ent: validator failed for field "Group.subscription_quota_mode": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Platform(); ok {
 		if err := group.PlatformValidator(v); err != nil {
 			return &ValidationError{Name: "platform", err: fmt.Errorf(`ent: validator failed for field "Group.platform": %w`, err)}
@@ -3834,6 +3875,9 @@ func (_u *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error)
 	}
 	if _u.mutation.DuplicateOperationIDCleared() {
 		_spec.ClearField(group.FieldDuplicateOperationID, field.TypeString)
+	}
+	if value, ok := _u.mutation.SubscriptionQuotaMode(); ok {
+		_spec.SetField(group.FieldSubscriptionQuotaMode, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Platform(); ok {
 		_spec.SetField(group.FieldPlatform, field.TypeString, value)

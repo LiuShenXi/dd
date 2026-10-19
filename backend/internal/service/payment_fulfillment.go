@@ -554,6 +554,9 @@ func (s *PaymentService) doSub(ctx context.Context, o *dbent.PaymentOrder, lease
 }
 
 func (s *PaymentService) ensurePaymentSubscriptionAssigned(ctx context.Context, o *dbent.PaymentOrder, groupID int64, days int) error {
+	if err := s.rejectLegacyQuotaOrder(ctx, o); err != nil {
+		return err
+	}
 	if s.subscriptionSvc == nil {
 		return errors.New("subscription service is unavailable")
 	}

@@ -120,6 +120,11 @@ func DuplicateOperationID(v string) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldDuplicateOperationID, v))
 }
 
+// SubscriptionQuotaMode applies equality check predicate on the "subscription_quota_mode" field. It's identical to SubscriptionQuotaModeEQ.
+func SubscriptionQuotaMode(v string) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldSubscriptionQuotaMode, v))
+}
+
 // Platform applies equality check predicate on the "platform" field. It's identical to PlatformEQ.
 func Platform(v string) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldPlatform, v))
@@ -983,6 +988,71 @@ func DuplicateOperationIDEqualFold(v string) predicate.Group {
 // DuplicateOperationIDContainsFold applies the ContainsFold predicate on the "duplicate_operation_id" field.
 func DuplicateOperationIDContainsFold(v string) predicate.Group {
 	return predicate.Group(sql.FieldContainsFold(FieldDuplicateOperationID, v))
+}
+
+// SubscriptionQuotaModeEQ applies the EQ predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeEQ(v string) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldSubscriptionQuotaMode, v))
+}
+
+// SubscriptionQuotaModeNEQ applies the NEQ predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeNEQ(v string) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldSubscriptionQuotaMode, v))
+}
+
+// SubscriptionQuotaModeIn applies the In predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeIn(vs ...string) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldSubscriptionQuotaMode, vs...))
+}
+
+// SubscriptionQuotaModeNotIn applies the NotIn predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeNotIn(vs ...string) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldSubscriptionQuotaMode, vs...))
+}
+
+// SubscriptionQuotaModeGT applies the GT predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeGT(v string) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldSubscriptionQuotaMode, v))
+}
+
+// SubscriptionQuotaModeGTE applies the GTE predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeGTE(v string) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldSubscriptionQuotaMode, v))
+}
+
+// SubscriptionQuotaModeLT applies the LT predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeLT(v string) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldSubscriptionQuotaMode, v))
+}
+
+// SubscriptionQuotaModeLTE applies the LTE predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeLTE(v string) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldSubscriptionQuotaMode, v))
+}
+
+// SubscriptionQuotaModeContains applies the Contains predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeContains(v string) predicate.Group {
+	return predicate.Group(sql.FieldContains(FieldSubscriptionQuotaMode, v))
+}
+
+// SubscriptionQuotaModeHasPrefix applies the HasPrefix predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeHasPrefix(v string) predicate.Group {
+	return predicate.Group(sql.FieldHasPrefix(FieldSubscriptionQuotaMode, v))
+}
+
+// SubscriptionQuotaModeHasSuffix applies the HasSuffix predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeHasSuffix(v string) predicate.Group {
+	return predicate.Group(sql.FieldHasSuffix(FieldSubscriptionQuotaMode, v))
+}
+
+// SubscriptionQuotaModeEqualFold applies the EqualFold predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeEqualFold(v string) predicate.Group {
+	return predicate.Group(sql.FieldEqualFold(FieldSubscriptionQuotaMode, v))
+}
+
+// SubscriptionQuotaModeContainsFold applies the ContainsFold predicate on the "subscription_quota_mode" field.
+func SubscriptionQuotaModeContainsFold(v string) predicate.Group {
+	return predicate.Group(sql.FieldContainsFold(FieldSubscriptionQuotaMode, v))
 }
 
 // PlatformEQ applies the EQ predicate on the "platform" field.

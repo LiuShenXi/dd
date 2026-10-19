@@ -1,0 +1,27 @@
+{
+  "started_utc": "2026-10-19T13:21:16.2397498Z",
+  "finished_utc": "2026-10-19T13:21:44.0228991Z",
+  "command": "go test -tags=integration -json -count=1 -timeout=10m -run <six exact SubscriptionQuotaMigrations tests> ./internal/repository",
+  "toolchain": "go1.27.0 windows/amd64",
+  "postgres_image": "postgres:18.1-alpine3.23",
+  "redis_image": "redis:8.4-alpine",
+  "docker_endpoint": "npipe:////./pipe/docker_engine",
+  "ci_fail_if_no_docker": true,
+  "original_testmain": true,
+  "synthetic_only": true,
+  "source_sha256": "1acf7154e0b1fc5381bff6da0d983eff6bc9e48898c2e7bd5b8b1d40c9093c5d",
+  "migration_sha256": {
+    "245_subscription_quota_structure.sql": "5178370b6280b3254245c6f5e182035ebfa87b7be9934aa2b2d760c46591034e",
+    "246_subscription_quota_usage_links.sql": "e6acd989e5a5248d0dbca2bf57423607ce0b7dafc9d66cf4169acedc227a775b",
+    "247_subscription_quota_usage_index_notx.sql": "b35aec76e2462bd8b9189f67c09674b870e65794779565169dc012cfc6bb3991",
+    "248_subscription_quota_usage_validate.sql": "8f57b902fdd15b934e807cfee96b7b0098d64c56831f49fb0365ef5fe75a0e92",
+    "249_subscription_quota_protected_groups.sql": "d8706cdb505889ca59e215ea767829b05205a5a72ecbc9123fcea05921bcb494"
+  },
+  "migrations_stable_during_run": true,
+  "exit_code": 1,
+  "top_level_passes": [],
+  "skip_count": 0,
+  "failure_count": 1,
+  "log": "I1-migration-20261019T132116Z.jsonl",
+  "acceptance": false
+}

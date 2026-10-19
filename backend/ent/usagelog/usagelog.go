@@ -44,6 +44,10 @@ const (
 	FieldGroupID = "group_id"
 	// FieldSubscriptionID holds the string denoting the subscription_id field in the database.
 	FieldSubscriptionID = "subscription_id"
+	// FieldSubscriptionTermID holds the string denoting the subscription_term_id field in the database.
+	FieldSubscriptionTermID = "subscription_term_id"
+	// FieldSubscriptionQuotaRequestID holds the string denoting the subscription_quota_request_id field in the database.
+	FieldSubscriptionQuotaRequestID = "subscription_quota_request_id"
 	// FieldCarpoolTermID holds the string denoting the carpool_term_id field in the database.
 	FieldCarpoolTermID = "carpool_term_id"
 	// FieldCarpoolCycleID holds the string denoting the carpool_cycle_id field in the database.
@@ -181,6 +185,8 @@ var Columns = []string{
 	FieldBillingMode,
 	FieldGroupID,
 	FieldSubscriptionID,
+	FieldSubscriptionTermID,
+	FieldSubscriptionQuotaRequestID,
 	FieldCarpoolTermID,
 	FieldCarpoolCycleID,
 	FieldCarpoolAdmittedAt,
@@ -382,6 +388,16 @@ func ByGroupID(opts ...sql.OrderTermOption) OrderOption {
 // BySubscriptionID orders the results by the subscription_id field.
 func BySubscriptionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSubscriptionID, opts...).ToFunc()
+}
+
+// BySubscriptionTermID orders the results by the subscription_term_id field.
+func BySubscriptionTermID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubscriptionTermID, opts...).ToFunc()
+}
+
+// BySubscriptionQuotaRequestID orders the results by the subscription_quota_request_id field.
+func BySubscriptionQuotaRequestID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubscriptionQuotaRequestID, opts...).ToFunc()
 }
 
 // ByCarpoolTermID orders the results by the carpool_term_id field.

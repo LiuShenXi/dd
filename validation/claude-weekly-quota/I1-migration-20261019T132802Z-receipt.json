@@ -1,0 +1,48 @@
+{
+  "started_utc": "2026-10-19T13:28:02.7252686Z",
+  "finished_utc": "2026-10-19T13:28:52.5676804Z",
+  "command": "go test -tags=integration -json -count=1 -timeout=10m -run <recorded exact test names> ./internal/repository",
+  "requested_tests": [
+    "TestSubscriptionQuotaMigrations_EmptyDatabaseAndReplay",
+    "TestSubscriptionQuotaMigrations_Legacy297UpgradePreservesAllRows",
+    "TestSubscriptionQuotaMigrations_GroupModeAndCompositeOwnership",
+    "TestSubscriptionQuotaMigrations_Exact168HoursAndNumericBoundaries",
+    "TestSubscriptionQuotaMigrations_ImmutableTermsAndLedger",
+    "TestSubscriptionQuotaMigrations_UnknownUsageAndUsageLogLinks",
+    "TestSubscriptionQuotaMigrations_OnlineIndexFailureRestoresTimeouts",
+    "TestSubscriptionQuotaMigrations_OnlineInvalidIndexRecovery",
+    "TestSubscriptionQuotaProtectedConcurrentGPTPrepare"
+  ],
+  "toolchain": "go1.27.0 windows/amd64",
+  "postgres_image": "postgres:18.1-alpine3.23",
+  "redis_image": "redis:8.4-alpine",
+  "docker_endpoint": "npipe:////./pipe/docker_engine",
+  "ci_fail_if_no_docker": true,
+  "original_testmain": true,
+  "synthetic_only": true,
+  "source_sha256": "4b98d0dc8578c707b86d0c0e9fad4a39f196ae9eb219b4b3e4360dd446d9df69",
+  "migration_sha256": {
+    "245_subscription_quota_structure.sql": "5178370b6280b3254245c6f5e182035ebfa87b7be9934aa2b2d760c46591034e",
+    "246_subscription_quota_usage_links.sql": "e6acd989e5a5248d0dbca2bf57423607ce0b7dafc9d66cf4169acedc227a775b",
+    "247_subscription_quota_usage_index_notx.sql": "87cae92870c2b4530c45c037a4a36f121ab1e384891335dfbf0b5dd473df6eaa",
+    "248_subscription_quota_usage_validate.sql": "8f57b902fdd15b934e807cfee96b7b0098d64c56831f49fb0365ef5fe75a0e92",
+    "249_subscription_quota_protected_groups.sql": "bc251873cad7335058222aa803462e9ddb42ee89d54f6f160a5147314dec2b00"
+  },
+  "migrations_stable_during_run": true,
+  "exit_code": 0,
+  "top_level_passes": [
+    "TestSubscriptionQuotaMigrations_EmptyDatabaseAndReplay",
+    "TestSubscriptionQuotaMigrations_Legacy297UpgradePreservesAllRows",
+    "TestSubscriptionQuotaMigrations_GroupModeAndCompositeOwnership",
+    "TestSubscriptionQuotaMigrations_Exact168HoursAndNumericBoundaries",
+    "TestSubscriptionQuotaMigrations_ImmutableTermsAndLedger",
+    "TestSubscriptionQuotaMigrations_UnknownUsageAndUsageLogLinks",
+    "TestSubscriptionQuotaMigrations_OnlineIndexFailureRestoresTimeouts",
+    "TestSubscriptionQuotaMigrations_OnlineInvalidIndexRecovery",
+    "TestSubscriptionQuotaProtectedConcurrentGPTPrepare"
+  ],
+  "skip_count": 0,
+  "failure_count": 0,
+  "log": "I1-migration-20261019T132802Z.jsonl",
+  "acceptance": true
+}

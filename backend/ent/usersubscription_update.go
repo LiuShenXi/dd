@@ -85,6 +85,27 @@ func (_u *UserSubscriptionUpdate) SetNillableGroupID(v *int64) *UserSubscription
 	return _u
 }
 
+// SetQuotaRevision sets the "quota_revision" field.
+func (_u *UserSubscriptionUpdate) SetQuotaRevision(v int64) *UserSubscriptionUpdate {
+	_u.mutation.ResetQuotaRevision()
+	_u.mutation.SetQuotaRevision(v)
+	return _u
+}
+
+// SetNillableQuotaRevision sets the "quota_revision" field if the given value is not nil.
+func (_u *UserSubscriptionUpdate) SetNillableQuotaRevision(v *int64) *UserSubscriptionUpdate {
+	if v != nil {
+		_u.SetQuotaRevision(*v)
+	}
+	return _u
+}
+
+// AddQuotaRevision adds value to the "quota_revision" field.
+func (_u *UserSubscriptionUpdate) AddQuotaRevision(v int64) *UserSubscriptionUpdate {
+	_u.mutation.AddQuotaRevision(v)
+	return _u
+}
+
 // SetStartsAt sets the "starts_at" field.
 func (_u *UserSubscriptionUpdate) SetStartsAt(v time.Time) *UserSubscriptionUpdate {
 	_u.mutation.SetStartsAt(v)
@@ -471,6 +492,12 @@ func (_u *UserSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if _u.mutation.DeletedAtCleared() {
 		_spec.ClearField(usersubscription.FieldDeletedAt, field.TypeTime)
 	}
+	if value, ok := _u.mutation.QuotaRevision(); ok {
+		_spec.SetField(usersubscription.FieldQuotaRevision, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedQuotaRevision(); ok {
+		_spec.AddField(usersubscription.FieldQuotaRevision, field.TypeInt64, value)
+	}
 	if value, ok := _u.mutation.StartsAt(); ok {
 		_spec.SetField(usersubscription.FieldStartsAt, field.TypeTime, value)
 	}
@@ -728,6 +755,27 @@ func (_u *UserSubscriptionUpdateOne) SetNillableGroupID(v *int64) *UserSubscript
 	if v != nil {
 		_u.SetGroupID(*v)
 	}
+	return _u
+}
+
+// SetQuotaRevision sets the "quota_revision" field.
+func (_u *UserSubscriptionUpdateOne) SetQuotaRevision(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.ResetQuotaRevision()
+	_u.mutation.SetQuotaRevision(v)
+	return _u
+}
+
+// SetNillableQuotaRevision sets the "quota_revision" field if the given value is not nil.
+func (_u *UserSubscriptionUpdateOne) SetNillableQuotaRevision(v *int64) *UserSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetQuotaRevision(*v)
+	}
+	return _u
+}
+
+// AddQuotaRevision adds value to the "quota_revision" field.
+func (_u *UserSubscriptionUpdateOne) AddQuotaRevision(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.AddQuotaRevision(v)
 	return _u
 }
 
@@ -1146,6 +1194,12 @@ func (_u *UserSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *UserSu
 	}
 	if _u.mutation.DeletedAtCleared() {
 		_spec.ClearField(usersubscription.FieldDeletedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.QuotaRevision(); ok {
+		_spec.SetField(usersubscription.FieldQuotaRevision, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedQuotaRevision(); ok {
+		_spec.AddField(usersubscription.FieldQuotaRevision, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.StartsAt(); ok {
 		_spec.SetField(usersubscription.FieldStartsAt, field.TypeTime, value)

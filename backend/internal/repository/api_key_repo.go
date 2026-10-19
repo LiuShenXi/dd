@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"log/slog"
 	"strings"
 	"time"
@@ -177,6 +178,7 @@ func (r *apiKeyRepository) GetByKeyForAuth(ctx context.Context, key string) (*se
 				group.FieldIsExclusive,
 				group.FieldStatus,
 				group.FieldSubscriptionType,
+				group.FieldSubscriptionQuotaMode,
 				group.FieldRateMultiplier,
 				group.FieldDailyLimitUsd,
 				group.FieldWeeklyLimitUsd,
@@ -257,6 +259,11 @@ func (r *apiKeyRepository) projectCarpoolBilling(ctx context.Context, key *servi
 	var groupID int64
 	if err := rows.Scan(&groupID); err != nil {
 		return nil, fmt.Errorf("read carpool billing binding: %w", err)
+	}
+	if key.GroupID != nil && key.Group != nil && *key.GroupID == key.Group.ID && key.Group.IsTermQuota() {
+		// Mode recognition must survive missing, expired or cancelled Claude
+		// rights. The quota admission owns availability; GPT binding stays intact.
+		return key, nil
 	}
 	if key.GroupID == nil || *key.GroupID != groupID || key.Group == nil || key.Group.ID != groupID ||
 		key.Group.Platform != service.PlatformOpenAI || key.Group.SubscriptionType != service.SubscriptionTypeStandard {
@@ -1003,6 +1010,7 @@ func groupEntityToService(g *dbent.Group) *service.Group {
 		Hydrated:                        true,
 		DuplicateOperationID:            derefString(g.DuplicateOperationID),
 		SubscriptionType:                g.SubscriptionType,
+		SubscriptionQuotaMode:           domain.NormalizeSubscriptionQuotaMode(g.SubscriptionQuotaMode),
 		DailyLimitUSD:                   g.DailyLimitUsd,
 		WeeklyLimitUSD:                  g.WeeklyLimitUsd,
 		MonthlyLimitUSD:                 g.MonthlyLimitUsd,

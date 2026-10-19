@@ -230,6 +230,12 @@ func applyMigrationsFS(ctx context.Context, db *sql.DB, fsys fs.FS) error {
 		}
 
 		if nonTx {
+			if name == "247_subscription_quota_usage_index_notx.sql" {
+				if err := applySubscriptionQuotaOnlineIndexMigration(ctx, lockConn, name, content, checksum); err != nil {
+					return err
+				}
+				continue
+			}
 			if err := prepareNonTransactionalMigration(ctx, lockConn, name); err != nil {
 				return fmt.Errorf("prepare migration %s: %w", name, err)
 			}
@@ -292,6 +298,8 @@ type migrationConnection interface {
 
 func prepareNonTransactionalMigration(ctx context.Context, db migrationConnection, name string) error {
 	switch name {
+	case "247_subscription_quota_usage_index_notx.sql":
+		return dropInvalidIndexIfPresent(ctx, db, "usage_logs_subscription_term_time")
 	case paymentOrdersOutTradeNoUniqueMigration:
 		return preparePaymentOrdersOutTradeNoUniqueMigration(ctx, db)
 	case schedulerOutboxPendingDedupKeyMigration:
@@ -516,6 +524,9 @@ func validateMigrationExecutionMode(name, content string) (bool, error) {
 	for _, stmt := range statements {
 		normalizedStmt := strings.ToUpper(stripSQLLineComment(strings.TrimSpace(stmt)))
 		if normalizedStmt == "" {
+			continue
+		}
+		if subscriptionQuotaOnlineIndexTimeoutStatement(normalizedName, normalizedStmt) {
 			continue
 		}
 

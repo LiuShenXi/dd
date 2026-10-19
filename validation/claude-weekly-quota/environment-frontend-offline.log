@@ -1,0 +1,92 @@
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +973
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 973, reused 217, downloaded 0, added 0
+Progress: resolved 973, reused 419, downloaded 0, added 0
+Progress: resolved 973, reused 636, downloaded 0, added 0
+Progress: resolved 973, reused 959, downloaded 0, added 2
+Progress: resolved 973, reused 969, downloaded 0, added 17
+Progress: resolved 973, reused 971, downloaded 0, added 60
+Progress: resolved 973, reused 972, downloaded 0, added 106
+Progress: resolved 973, reused 972, downloaded 0, added 134
+Progress: resolved 973, reused 972, downloaded 0, added 235
+Progress: resolved 973, reused 972, downloaded 0, added 293
+Progress: resolved 973, reused 972, downloaded 0, added 366
+Progress: resolved 973, reused 972, downloaded 0, added 418
+Progress: resolved 973, reused 972, downloaded 0, added 450
+Progress: resolved 973, reused 972, downloaded 0, added 472
+Progress: resolved 973, reused 972, downloaded 0, added 516
+Progress: resolved 973, reused 972, downloaded 0, added 564
+Progress: resolved 973, reused 972, downloaded 0, added 596
+Progress: resolved 973, reused 972, downloaded 0, added 631
+Progress: resolved 973, reused 972, downloaded 0, added 679
+Progress: resolved 973, reused 972, downloaded 0, added 717
+Progress: resolved 973, reused 972, downloaded 0, added 788
+Progress: resolved 973, reused 972, downloaded 0, added 848
+Progress: resolved 973, reused 972, downloaded 0, added 880
+Progress: resolved 973, reused 972, downloaded 0, added 941
+Progress: resolved 973, reused 972, downloaded 0, added 942
+Progress: resolved 973, reused 972, downloaded 0, added 951
+Progress: resolved 973, reused 972, downloaded 0, added 954
+Progress: resolved 973, reused 972, downloaded 0, added 960
+Progress: resolved 973, reused 972, downloaded 0, added 961
+Progress: resolved 973, reused 972, downloaded 0, added 963
+Progress: resolved 973, reused 972, downloaded 0, added 964
+Progress: resolved 973, reused 972, downloaded 0, added 965
+Progress: resolved 973, reused 972, downloaded 0, added 966
+Progress: resolved 973, reused 972, downloaded 0, added 967
+Progress: resolved 973, reused 972, downloaded 0, added 968
+Progress: resolved 973, reused 972, downloaded 0, added 969
+Progress: resolved 973, reused 972, downloaded 0, added 970
+Progress: resolved 973, reused 972, downloaded 0, added 971
+Progress: resolved 973, reused 972, downloaded 0, added 972
+Progress: resolved 973, reused 972, downloaded 0, added 973
+Progress: resolved 973, reused 972, downloaded 0, added 973, done
+
+dependencies:
++ @airwallex/components-sdk 1.30.2
++ @lobehub/icons 4.0.2
++ @stripe/stripe-js 9.0.1
++ @tanstack/vue-virtual 3.13.23
++ @vueuse/core 10.11.1
++ axios 1.18.1
++ chart.js 4.5.1
++ dompurify 3.4.14
++ driver.js 1.4.0
++ file-saver 2.0.5
++ marked 17.0.1
++ pinia 2.3.1
++ qrcode 1.5.4
++ vue 3.5.26
++ vue-chartjs 5.3.3
++ vue-draggable-plus 0.6.1
++ vue-i18n 9.14.5
++ vue-router 4.6.4
++ xlsx 0.18.5
+
+devDependencies:
++ @intlify/message-compiler 9.14.5
++ @types/dompurify 3.2.0
++ @types/file-saver 2.0.7
++ @types/mdx 2.0.13
++ @types/node 20.19.27
++ @types/qrcode 1.5.6
++ @typescript-eslint/eslint-plugin 7.18.0
++ @typescript-eslint/parser 7.18.0
++ @vitejs/plugin-vue 5.2.4
++ @vitest/coverage-v8 2.1.9
++ @vue/test-utils 2.4.6
++ autoprefixer 10.4.23
++ eslint 8.57.1
++ eslint-plugin-vue 9.33.0
++ jsdom 24.1.3
++ postcss 8.5.23
++ tailwindcss 3.4.19
++ typescript 5.6.3
++ vite 5.4.21
++ vite-plugin-checker 0.9.3
++ vitest 2.1.9
++ vue-tsc 2.2.12
+
+Done in 47.8s

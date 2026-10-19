@@ -91,6 +91,7 @@ type Config struct {
 	APIKeyAuth              APIKeyAuthCacheConfig         `mapstructure:"api_key_auth_cache"`
 	SubscriptionCache       SubscriptionCacheConfig       `mapstructure:"subscription_cache"`
 	SubscriptionMaintenance SubscriptionMaintenanceConfig `mapstructure:"subscription_maintenance"`
+	SubscriptionQuota       SubscriptionQuotaConfig       `mapstructure:"subscription_quota"`
 	Dashboard               DashboardCacheConfig          `mapstructure:"dashboard_cache"`
 	DashboardAgg            DashboardAggregationConfig    `mapstructure:"dashboard_aggregation"`
 	UsageCleanup            UsageCleanupConfig            `mapstructure:"usage_cleanup"`
@@ -1720,6 +1721,19 @@ type SubscriptionCacheConfig struct {
 	JitterPercent int `mapstructure:"jitter_percent"`
 }
 
+// SubscriptionQuotaConfig separates issuance, generation and recovery. R1
+// recognizes term groups but cannot enable issuance or generation.
+type SubscriptionQuotaConfig struct {
+	IssueEnabled      bool          `mapstructure:"issue_enabled"`
+	AdmissionEnabled  bool          `mapstructure:"admission_enabled"`
+	RecoveryEnabled   bool          `mapstructure:"recovery_enabled"`
+	EnabledGroupIDs   []int64       `mapstructure:"enabled_group_ids"`
+	ProtectedGroupIDs []int64       `mapstructure:"protected_group_ids"`
+	RecoveryBatchSize int           `mapstructure:"recovery_batch_size"`
+	RecoveryInterval  time.Duration `mapstructure:"recovery_interval"`
+	RequestStaleGrace time.Duration `mapstructure:"request_stale_grace"`
+}
+
 // SubscriptionMaintenanceConfig 订阅窗口维护后台任务配置。
 // 用于将“请求路径触发的维护动作”有界化，避免高并发下 goroutine 膨胀。
 type SubscriptionMaintenanceConfig struct {
@@ -2010,6 +2024,14 @@ func configureConfigSource(setConfigFile, addConfigPath func(string)) {
 
 func setDefaults() {
 	viper.SetDefault("run_mode", RunModeStandard)
+	viper.SetDefault("subscription_quota.issue_enabled", false)
+	viper.SetDefault("subscription_quota.admission_enabled", false)
+	viper.SetDefault("subscription_quota.recovery_enabled", true)
+	viper.SetDefault("subscription_quota.enabled_group_ids", []int64{})
+	viper.SetDefault("subscription_quota.protected_group_ids", []int64{})
+	viper.SetDefault("subscription_quota.recovery_batch_size", 100)
+	viper.SetDefault("subscription_quota.recovery_interval", "30s")
+	viper.SetDefault("subscription_quota.request_stale_grace", "1m")
 
 	// Server
 	viper.SetDefault("server.host", "0.0.0.0")
@@ -2678,6 +2700,16 @@ func setEnvReachableDefaults() {
 }
 
 func (c *Config) Validate() error {
+	if c.SubscriptionQuota.IssueEnabled || c.SubscriptionQuota.AdmissionEnabled {
+		return fmt.Errorf("subscription_quota issuance/admission cannot be enabled in the R1 compatibility version")
+	}
+	for _, ids := range [][]int64{c.SubscriptionQuota.EnabledGroupIDs, c.SubscriptionQuota.ProtectedGroupIDs} {
+		for _, id := range ids {
+			if id <= 0 {
+				return fmt.Errorf("subscription_quota group IDs must be positive")
+			}
+		}
+	}
 	forwardedClientIPHeaders, err := NormalizeForwardedClientIPHeaders(c.Security.ForwardedClientIPHeaders)
 	if err != nil {
 		return fmt.Errorf("security.forwarded_client_ip_headers: %w", err)

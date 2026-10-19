@@ -204,6 +204,20 @@ func (_c *GroupCreate) SetNillableDuplicateOperationID(v *string) *GroupCreate {
 	return _c
 }
 
+// SetSubscriptionQuotaMode sets the "subscription_quota_mode" field.
+func (_c *GroupCreate) SetSubscriptionQuotaMode(v string) *GroupCreate {
+	_c.mutation.SetSubscriptionQuotaMode(v)
+	return _c
+}
+
+// SetNillableSubscriptionQuotaMode sets the "subscription_quota_mode" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableSubscriptionQuotaMode(v *string) *GroupCreate {
+	if v != nil {
+		_c.SetSubscriptionQuotaMode(*v)
+	}
+	return _c
+}
+
 // SetPlatform sets the "platform" field.
 func (_c *GroupCreate) SetPlatform(v string) *GroupCreate {
 	_c.mutation.SetPlatform(v)
@@ -1075,6 +1089,10 @@ func (_c *GroupCreate) defaults() error {
 		v := group.DefaultStatus
 		_c.mutation.SetStatus(v)
 	}
+	if _, ok := _c.mutation.SubscriptionQuotaMode(); !ok {
+		v := group.DefaultSubscriptionQuotaMode
+		_c.mutation.SetSubscriptionQuotaMode(v)
+	}
 	if _, ok := _c.mutation.Platform(); !ok {
 		v := group.DefaultPlatform
 		_c.mutation.SetPlatform(v)
@@ -1269,6 +1287,14 @@ func (_c *GroupCreate) check() error {
 	if v, ok := _c.mutation.DuplicateOperationID(); ok {
 		if err := group.DuplicateOperationIDValidator(v); err != nil {
 			return &ValidationError{Name: "duplicate_operation_id", err: fmt.Errorf(`ent: validator failed for field "Group.duplicate_operation_id": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.SubscriptionQuotaMode(); !ok {
+		return &ValidationError{Name: "subscription_quota_mode", err: errors.New(`ent: missing required field "Group.subscription_quota_mode"`)}
+	}
+	if v, ok := _c.mutation.SubscriptionQuotaMode(); ok {
+		if err := group.SubscriptionQuotaModeValidator(v); err != nil {
+			return &ValidationError{Name: "subscription_quota_mode", err: fmt.Errorf(`ent: validator failed for field "Group.subscription_quota_mode": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Platform(); !ok {
@@ -1496,6 +1522,10 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.DuplicateOperationID(); ok {
 		_spec.SetField(group.FieldDuplicateOperationID, field.TypeString, value)
 		_node.DuplicateOperationID = &value
+	}
+	if value, ok := _c.mutation.SubscriptionQuotaMode(); ok {
+		_spec.SetField(group.FieldSubscriptionQuotaMode, field.TypeString, value)
+		_node.SubscriptionQuotaMode = value
 	}
 	if value, ok := _c.mutation.Platform(); ok {
 		_spec.SetField(group.FieldPlatform, field.TypeString, value)
@@ -2018,6 +2048,18 @@ func (u *GroupUpsert) SetStatus(v string) *GroupUpsert {
 // UpdateStatus sets the "status" field to the value that was provided on create.
 func (u *GroupUpsert) UpdateStatus() *GroupUpsert {
 	u.SetExcluded(group.FieldStatus)
+	return u
+}
+
+// SetSubscriptionQuotaMode sets the "subscription_quota_mode" field.
+func (u *GroupUpsert) SetSubscriptionQuotaMode(v string) *GroupUpsert {
+	u.Set(group.FieldSubscriptionQuotaMode, v)
+	return u
+}
+
+// UpdateSubscriptionQuotaMode sets the "subscription_quota_mode" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateSubscriptionQuotaMode() *GroupUpsert {
+	u.SetExcluded(group.FieldSubscriptionQuotaMode)
 	return u
 }
 
@@ -3148,6 +3190,20 @@ func (u *GroupUpsertOne) SetStatus(v string) *GroupUpsertOne {
 func (u *GroupUpsertOne) UpdateStatus() *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetSubscriptionQuotaMode sets the "subscription_quota_mode" field.
+func (u *GroupUpsertOne) SetSubscriptionQuotaMode(v string) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetSubscriptionQuotaMode(v)
+	})
+}
+
+// UpdateSubscriptionQuotaMode sets the "subscription_quota_mode" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateSubscriptionQuotaMode() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateSubscriptionQuotaMode()
 	})
 }
 
@@ -4594,6 +4650,20 @@ func (u *GroupUpsertBulk) SetStatus(v string) *GroupUpsertBulk {
 func (u *GroupUpsertBulk) UpdateStatus() *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetSubscriptionQuotaMode sets the "subscription_quota_mode" field.
+func (u *GroupUpsertBulk) SetSubscriptionQuotaMode(v string) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetSubscriptionQuotaMode(v)
+	})
+}
+
+// UpdateSubscriptionQuotaMode sets the "subscription_quota_mode" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateSubscriptionQuotaMode() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateSubscriptionQuotaMode()
 	})
 }
 

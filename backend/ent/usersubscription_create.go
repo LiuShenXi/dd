@@ -79,6 +79,20 @@ func (_c *UserSubscriptionCreate) SetGroupID(v int64) *UserSubscriptionCreate {
 	return _c
 }
 
+// SetQuotaRevision sets the "quota_revision" field.
+func (_c *UserSubscriptionCreate) SetQuotaRevision(v int64) *UserSubscriptionCreate {
+	_c.mutation.SetQuotaRevision(v)
+	return _c
+}
+
+// SetNillableQuotaRevision sets the "quota_revision" field if the given value is not nil.
+func (_c *UserSubscriptionCreate) SetNillableQuotaRevision(v *int64) *UserSubscriptionCreate {
+	if v != nil {
+		_c.SetQuotaRevision(*v)
+	}
+	return _c
+}
+
 // SetStartsAt sets the "starts_at" field.
 func (_c *UserSubscriptionCreate) SetStartsAt(v time.Time) *UserSubscriptionCreate {
 	_c.mutation.SetStartsAt(v)
@@ -326,6 +340,10 @@ func (_c *UserSubscriptionCreate) defaults() error {
 		v := usersubscription.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.QuotaRevision(); !ok {
+		v := usersubscription.DefaultQuotaRevision
+		_c.mutation.SetQuotaRevision(v)
+	}
 	if _, ok := _c.mutation.Status(); !ok {
 		v := usersubscription.DefaultStatus
 		_c.mutation.SetStatus(v)
@@ -365,6 +383,9 @@ func (_c *UserSubscriptionCreate) check() error {
 	}
 	if _, ok := _c.mutation.GroupID(); !ok {
 		return &ValidationError{Name: "group_id", err: errors.New(`ent: missing required field "UserSubscription.group_id"`)}
+	}
+	if _, ok := _c.mutation.QuotaRevision(); !ok {
+		return &ValidationError{Name: "quota_revision", err: errors.New(`ent: missing required field "UserSubscription.quota_revision"`)}
 	}
 	if _, ok := _c.mutation.StartsAt(); !ok {
 		return &ValidationError{Name: "starts_at", err: errors.New(`ent: missing required field "UserSubscription.starts_at"`)}
@@ -436,6 +457,10 @@ func (_c *UserSubscriptionCreate) createSpec() (*UserSubscription, *sqlgraph.Cre
 	if value, ok := _c.mutation.DeletedAt(); ok {
 		_spec.SetField(usersubscription.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
+	}
+	if value, ok := _c.mutation.QuotaRevision(); ok {
+		_spec.SetField(usersubscription.FieldQuotaRevision, field.TypeInt64, value)
+		_node.QuotaRevision = value
 	}
 	if value, ok := _c.mutation.StartsAt(); ok {
 		_spec.SetField(usersubscription.FieldStartsAt, field.TypeTime, value)
@@ -651,6 +676,24 @@ func (u *UserSubscriptionUpsert) SetGroupID(v int64) *UserSubscriptionUpsert {
 // UpdateGroupID sets the "group_id" field to the value that was provided on create.
 func (u *UserSubscriptionUpsert) UpdateGroupID() *UserSubscriptionUpsert {
 	u.SetExcluded(usersubscription.FieldGroupID)
+	return u
+}
+
+// SetQuotaRevision sets the "quota_revision" field.
+func (u *UserSubscriptionUpsert) SetQuotaRevision(v int64) *UserSubscriptionUpsert {
+	u.Set(usersubscription.FieldQuotaRevision, v)
+	return u
+}
+
+// UpdateQuotaRevision sets the "quota_revision" field to the value that was provided on create.
+func (u *UserSubscriptionUpsert) UpdateQuotaRevision() *UserSubscriptionUpsert {
+	u.SetExcluded(usersubscription.FieldQuotaRevision)
+	return u
+}
+
+// AddQuotaRevision adds v to the "quota_revision" field.
+func (u *UserSubscriptionUpsert) AddQuotaRevision(v int64) *UserSubscriptionUpsert {
+	u.Add(usersubscription.FieldQuotaRevision, v)
 	return u
 }
 
@@ -951,6 +994,27 @@ func (u *UserSubscriptionUpsertOne) SetGroupID(v int64) *UserSubscriptionUpsertO
 func (u *UserSubscriptionUpsertOne) UpdateGroupID() *UserSubscriptionUpsertOne {
 	return u.Update(func(s *UserSubscriptionUpsert) {
 		s.UpdateGroupID()
+	})
+}
+
+// SetQuotaRevision sets the "quota_revision" field.
+func (u *UserSubscriptionUpsertOne) SetQuotaRevision(v int64) *UserSubscriptionUpsertOne {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.SetQuotaRevision(v)
+	})
+}
+
+// AddQuotaRevision adds v to the "quota_revision" field.
+func (u *UserSubscriptionUpsertOne) AddQuotaRevision(v int64) *UserSubscriptionUpsertOne {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.AddQuotaRevision(v)
+	})
+}
+
+// UpdateQuotaRevision sets the "quota_revision" field to the value that was provided on create.
+func (u *UserSubscriptionUpsertOne) UpdateQuotaRevision() *UserSubscriptionUpsertOne {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.UpdateQuotaRevision()
 	})
 }
 
@@ -1449,6 +1513,27 @@ func (u *UserSubscriptionUpsertBulk) SetGroupID(v int64) *UserSubscriptionUpsert
 func (u *UserSubscriptionUpsertBulk) UpdateGroupID() *UserSubscriptionUpsertBulk {
 	return u.Update(func(s *UserSubscriptionUpsert) {
 		s.UpdateGroupID()
+	})
+}
+
+// SetQuotaRevision sets the "quota_revision" field.
+func (u *UserSubscriptionUpsertBulk) SetQuotaRevision(v int64) *UserSubscriptionUpsertBulk {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.SetQuotaRevision(v)
+	})
+}
+
+// AddQuotaRevision adds v to the "quota_revision" field.
+func (u *UserSubscriptionUpsertBulk) AddQuotaRevision(v int64) *UserSubscriptionUpsertBulk {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.AddQuotaRevision(v)
+	})
+}
+
+// UpdateQuotaRevision sets the "quota_revision" field to the value that was provided on create.
+func (u *UserSubscriptionUpsertBulk) UpdateQuotaRevision() *UserSubscriptionUpsertBulk {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.UpdateQuotaRevision()
 	})
 }
 

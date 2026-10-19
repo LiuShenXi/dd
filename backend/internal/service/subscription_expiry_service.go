@@ -189,6 +189,9 @@ func (s *SubscriptionExpiryService) smtpConfigured(ctx context.Context) bool {
 }
 
 func (s *SubscriptionExpiryService) sendExpiryReminderIfDue(ctx context.Context, sub *UserSubscription) {
+	if legacySubscriptionModeError(sub) != nil {
+		return
+	}
 	if sub == nil || sub.User == nil || sub.Group == nil || sub.User.Email == "" {
 		return
 	}

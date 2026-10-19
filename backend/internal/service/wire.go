@@ -826,9 +826,15 @@ func ProvideBillingCacheService(
 	cfg *config.Config,
 	userPlatformQuotaRepo UserPlatformQuotaRepository,
 	carpoolService *CarpoolService,
+	protectedGroupRepo SubscriptionQuotaProtectedGroupRepository,
 ) *BillingCacheService {
 	svc := NewBillingCacheService(cache, userRepo, subRepo, apiKeyRepo, rpmCache, rateRepo, cfg, userPlatformQuotaRepo)
 	svc.SetCarpoolGatewayBilling(carpoolService)
+	var protectedIDs []int64
+	if cfg != nil {
+		protectedIDs = cfg.SubscriptionQuota.ProtectedGroupIDs
+	}
+	svc.SetSubscriptionQuotaProtectedGroups(NewSubscriptionQuotaProtectedGroupService(protectedGroupRepo, protectedIDs))
 	return svc
 }
 

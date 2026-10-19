@@ -1,7 +1,7 @@
 {
-  "checked_at_utc": "2026-10-19T13:06:21.803196+00:00",
+  "checked_at_utc": "2026-10-19T13:32:35.149929+00:00",
   "base_revision": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
-  "head": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
+  "head": "311d11718aae939eccdd794d85044c99e8e92b26",
   "branch": "codex/claude-weekly-quota",
   "baseline_is_ancestor": true,
   "production_migrations_checked": 297,
