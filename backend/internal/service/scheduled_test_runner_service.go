@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/robfig/cron/v3"
 )
@@ -14,6 +15,7 @@ const scheduledTestDefaultMaxWorkers = 10
 
 // ScheduledTestRunnerService periodically scans due test plans and executes them.
 type ScheduledTestRunnerService struct {
+	backgroundJobs *backgroundjobs.Gate
 	planRepo       ScheduledTestPlanRepository
 	scheduledSvc   *ScheduledTestService
 	accountTestSvc *AccountTestService
@@ -87,8 +89,16 @@ func (s *ScheduledTestRunnerService) Stop() {
 func (s *ScheduledTestRunnerService) runScheduled() {
 	// Delay 10s so execution lands at ~:10 of each minute instead of :00.
 	time.Sleep(10 * time.Second)
+	s.runDue()
+}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+func (s *ScheduledTestRunnerService) runDue() {
+	ctx, done, ok := s.backgroundJobs.Enter(context.Background())
+	if !ok {
+		return
+	}
+	defer done()
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
 
 	now := time.Now()

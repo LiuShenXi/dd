@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/releasedrain"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/response"
 	"github.com/Wei-Shaw/sub2api/internal/server/middleware"
@@ -27,6 +28,25 @@ type releaseControlRequest struct {
 func registerReleaseRoutes(r *gin.Engine, controller *releasedrain.Controller, adminAuth middleware.AdminAuthMiddleware, auditLog middleware.AuditLogMiddleware, invalidator releaseAuthInvalidator) {
 	admin := r.Group("/api/v1/admin/release", gin.HandlerFunc(adminAuth), gin.HandlerFunc(auditLog))
 	admin.GET("/status", func(c *gin.Context) { response.Success(c, controller.Status()) })
+	admin.POST("/background/activate", func(c *gin.Context) {
+		var body struct {
+			InstanceID string `json:"instance_id"`
+		}
+		decoder := json.NewDecoder(http.MaxBytesReader(c.Writer, c.Request.Body, 1024))
+		decoder.DisallowUnknownFields()
+		var trailing any
+		if err := decoder.Decode(&body); err != nil || len(body.InstanceID) != 32 || !errors.Is(decoder.Decode(&trailing), io.EOF) {
+			middleware.AbortWithError(c, http.StatusBadRequest, "INVALID_RELEASE_REQUEST", "A valid background instance_id is required")
+			return
+		}
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+		defer cancel()
+		if err := controller.ActivateBackground(ctx, body.InstanceID); err != nil {
+			releaseError(c, err)
+			return
+		}
+		response.Success(c, controller.Status())
+	})
 	admin.POST("/drain", func(c *gin.Context) {
 		status, err := controller.Drain()
 		if err != nil {
@@ -112,7 +132,7 @@ func decodeReleaseRequest(c *gin.Context) (releaseControlRequest, bool) {
 }
 
 func releaseError(c *gin.Context, err error) {
-	if errors.Is(err, releasedrain.ErrState) || errors.Is(err, releasedrain.ErrBusy) {
+	if errors.Is(err, releasedrain.ErrState) || errors.Is(err, releasedrain.ErrBusy) || errors.Is(err, backgroundjobs.ErrBusy) || errors.Is(err, backgroundjobs.ErrIdentity) {
 		middleware.AbortWithError(c, http.StatusConflict, "RELEASE_STATE_CONFLICT", err.Error())
 		return
 	}

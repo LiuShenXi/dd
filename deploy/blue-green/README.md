@@ -1,5 +1,11 @@
 # Sub2API Blue-Green Operations
 
+For the current two-domain **host Nginx** topology, use
+[the durable host release controller](HOST_RELEASE.md). The legacy `deploy.sh`
+below is disabled before side effects because its deadline could stop live
+streams or pending usage. The remaining contents are historical router-Compose
+documentation, not commands to apply to the current host topology.
+
 This copy was recovered read-only from the BWH deployment on 2026-09-18.
 It is retained for compatibility and rollback review, not automatically run by
 the local upgrade. Read [the 0.2.6 upgrade record](../../docs/UPGRADE_0_2_6.md)

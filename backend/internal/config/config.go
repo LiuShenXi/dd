@@ -1042,6 +1042,13 @@ type GatewayConfig struct {
 	// ConcurrencySlotTTLMinutes: 并发槽位过期时间（分钟）
 	// 应大于最长 LLM 请求时间，防止请求完成前槽位过期
 	ConcurrencySlotTTLMinutes int `mapstructure:"concurrency_slot_ttl_minutes"`
+	// Exclusive retains legacy single-process startup cleanup. Preserve is required
+	// whenever another process may own live account/user slots or wait counters.
+	ConcurrencyStartupCleanupMode string `mapstructure:"concurrency_startup_cleanup_mode"`
+	// Coordinated holds autonomous external jobs until explicit release activation
+	// and owns one PostgreSQL leader session through the end of all claimed work.
+	BackgroundJobMode       string `mapstructure:"background_job_mode"`
+	BackgroundJobsStartHeld bool   `mapstructure:"background_jobs_start_held"`
 	// SessionIdleTimeoutMinutes: 会话空闲超时时间（分钟），默认 5 分钟
 	// 用于 Anthropic OAuth/SetupToken 账号的会话数量限制功能
 	// 空闲超过此时间的会话将被自动释放
@@ -2540,6 +2547,9 @@ func setDefaults() {
 	viper.SetDefault("gateway.idle_conn_timeout_seconds", 90) // 空闲连接超时（秒）
 	viper.SetDefault("gateway.max_upstream_clients", 5000)
 	viper.SetDefault("gateway.client_idle_ttl_seconds", 900)
+	viper.SetDefault("gateway.concurrency_startup_cleanup_mode", "exclusive")
+	viper.SetDefault("gateway.background_job_mode", "legacy")
+	viper.SetDefault("gateway.background_jobs_start_held", true)
 	viper.SetDefault("gateway.concurrency_slot_ttl_minutes", 30) // 并发槽位过期时间（支持超长请求）
 	viper.SetDefault("gateway.stream_data_interval_timeout", 180)
 	viper.SetDefault("gateway.stream_keepalive_interval", 10)
@@ -3424,6 +3434,16 @@ func (c *Config) Validate() error {
 	}
 	if c.Gateway.ClientIdleTTLSeconds <= 0 {
 		return fmt.Errorf("gateway.client_idle_ttl_seconds must be positive")
+	}
+	switch c.Gateway.ConcurrencyStartupCleanupMode {
+	case "", "exclusive", "preserve":
+	default:
+		return fmt.Errorf("gateway.concurrency_startup_cleanup_mode must be exclusive or preserve")
+	}
+	switch c.Gateway.BackgroundJobMode {
+	case "", "legacy", "coordinated":
+	default:
+		return fmt.Errorf("gateway.background_job_mode must be legacy or coordinated")
 	}
 	if c.Gateway.ConcurrencySlotTTLMinutes <= 0 {
 		return fmt.Errorf("gateway.concurrency_slot_ttl_minutes must be positive")

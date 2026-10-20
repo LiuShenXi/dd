@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/alitto/pond/v2"
+
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 )
 
 // MonitorScheduler 调度器接口，供 ChannelMonitorService 在 CRUD 时回调，
@@ -46,6 +48,7 @@ type monitorRunnerSvc interface {
 // ChannelMonitorService.RunDailyMaintenance（复用 leader lock + heartbeat），
 // 不在 runner 职责内。
 type ChannelMonitorRunner struct {
+	backgroundJobs *backgroundjobs.Gate
 	svc            monitorRunnerSvc
 	settingService *SettingService
 
@@ -263,14 +266,26 @@ func (r *ChannelMonitorRunner) fire(ctx context.Context, task *scheduledMonitor)
 			return
 		}
 	}
+	// Scheduling cancellation stops future submissions. As before, an accepted
+	// probe finishes naturally; only loss of its distributed leader cancels it.
+	if ctx.Err() != nil {
+		return
+	}
+	jobCtx, done, ok := r.backgroundJobs.Enter(context.WithoutCancel(ctx))
+	if !ok {
+		return
+	}
 	if !r.tryAcquireInFlight(task.id) {
+		done()
 		slog.Debug("channel_monitor: skip already in-flight",
 			"monitor_id", task.id, "name", task.name)
 		return
 	}
 	if _, ok := r.pool.TrySubmit(func() {
-		r.runOne(task.id, task.name)
+		defer done()
+		r.runOneContext(jobCtx, task.id, task.name)
 	}); !ok {
+		done()
 		// 池满：丢弃本次检测，但必须释放已占用的 inFlight 槽，否则该 monitor 会被永久卡住。
 		r.releaseInFlight(task.id)
 		slog.Warn("channel_monitor: worker pool full, skip submission",
@@ -300,7 +315,11 @@ func (r *ChannelMonitorRunner) releaseInFlight(id int64) {
 // runOne 执行单个监控的检测。普通错误只记日志；API key 解密失败会撤销任务。
 // 任务结束时（含 panic recover）必须释放 in-flight 槽。
 func (r *ChannelMonitorRunner) runOne(id int64, name string) {
-	ctx, cancel := context.WithTimeout(context.Background(), monitorRequestTimeout+monitorPingTimeout+monitorRunOneBuffer)
+	r.runOneContext(context.Background(), id, name)
+}
+
+func (r *ChannelMonitorRunner) runOneContext(parent context.Context, id int64, name string) {
+	ctx, cancel := context.WithTimeout(parent, monitorRequestTimeout+monitorPingTimeout+monitorRunOneBuffer)
 	defer cancel()
 
 	defer r.releaseInFlight(id)

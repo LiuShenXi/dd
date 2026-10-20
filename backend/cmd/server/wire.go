@@ -14,6 +14,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/Wei-Shaw/sub2api/internal/handler"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 	"github.com/Wei-Shaw/sub2api/internal/repository"
 	"github.com/Wei-Shaw/sub2api/internal/securityaudit"
 	"github.com/Wei-Shaw/sub2api/internal/server"
@@ -133,8 +134,12 @@ func provideCleanup(
 	subscriptionQuotaRecovery *service.SubscriptionQuotaRecoveryService,
 	subscriptionQuotaRollout *service.SubscriptionQuotaRolloutService,
 	concurrency *service.ConcurrencyService,
+	backgroundJobs *backgroundjobs.Gate,
 ) func() {
 	return func() {
+		if backgroundJobs != nil {
+			backgroundJobs.Hold()
+		}
 		if subscriptionQuotaRollout != nil {
 			subscriptionQuotaRollout.Stop()
 		}

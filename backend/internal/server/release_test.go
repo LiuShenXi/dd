@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/releasedrain"
 	"github.com/Wei-Shaw/sub2api/internal/server/middleware"
 	coderws "github.com/coder/websocket"
@@ -133,4 +134,41 @@ func TestReleaseDrainKeepsUpgradedWebSocketActiveUntilClose(t *testing.T) {
 	}
 	require.Eventually(t, func() bool { return controller.Status().ActiveHTTP == 0 }, time.Second, time.Millisecond)
 	require.NoError(t, controller.LockMigration(status.OperationID))
+}
+
+func TestReleaseBackgroundActivationAuthenticatesIdentityAndState(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	controller := releasedrain.New(false, 4, nil)
+	gate := backgroundjobs.New("legacy", nil)
+	gate.Hold()
+	controller.SetBackgroundGate(gate)
+	r.Use(middleware.ReleaseDrain(controller, 5*time.Millisecond))
+	auth := middleware.AdminAuthMiddleware(func(c *gin.Context) {
+		if c.GetHeader("Authorization") != "test-admin" {
+			c.AbortWithStatus(401)
+			return
+		}
+		c.Next()
+	})
+	registerReleaseRoutes(r, controller, auth, middleware.AuditLogMiddleware(func(c *gin.Context) { c.Next() }), nil)
+	request := func(body string, authorized bool) int {
+		req := httptest.NewRequest("POST", "/api/v1/admin/release/background/activate", strings.NewReader(body))
+		if authorized {
+			req.Header.Set("Authorization", "test-admin")
+		}
+		w := httptest.NewRecorder()
+		r.ServeHTTP(w, req)
+		return w.Code
+	}
+	body := fmt.Sprintf(`{"instance_id":%q}`, gate.Status().InstanceID)
+	require.Equal(t, 401, request(body, false))
+	require.Equal(t, 400, request(`{"instance_id":"bad","unknown":true}`, true))
+	require.Equal(t, 409, request(`{"instance_id":"00000000000000000000000000000000"}`, true))
+	require.Equal(t, "held", gate.Status().State)
+	require.Equal(t, 200, request(body, true))
+	require.Equal(t, "active", gate.Status().State)
+	_, err := controller.Drain()
+	require.NoError(t, err)
+	require.Equal(t, 409, request(body, true), "registered control route bypasses queue, but cannot activate a draining process")
 }
