@@ -57,7 +57,7 @@
           <span v-if="row.fee_rate > 0" class="ml-1 text-xs text-gray-400" :title="t('payment.orders.fee') + ': ' + row.fee_rate + '%'">
             ({{ row.fee_rate }}%)
           </span>
-          <div v-if="row.amount !== row.pay_amount" class="text-xs text-gray-500">
+          <div v-if="!row.subscription_quota_snapshot && row.amount !== row.pay_amount" class="text-xs text-gray-500">
             {{ t('payment.orders.creditedAmount') }}: {{ creditedAmountSymbol }}{{ row.amount.toFixed(2) }}
           </div>
         </div>
@@ -229,7 +229,7 @@ const orderTypeFilterOptions = computed(() => [
 ])
 
 function canRefundRow(order: PaymentOrder): boolean {
-  return canRefund(order.status)
+  return !order.subscription_quota_snapshot && canRefund(order.status)
 }
 
 function formatDateTime(dateStr: string): string {

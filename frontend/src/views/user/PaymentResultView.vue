@@ -44,7 +44,7 @@
               <span class="font-medium text-gray-900 dark:text-white">{{ order.out_trade_no }}</span>
             </div>
             <div v-if="hasAmountFields(order)" class="flex justify-between">
-              <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.baseAmount') }}</span>
+              <span class="text-gray-500 dark:text-gray-400">{{ t(isTermOrder ? 'subscriptionQuota.salePrice' : 'payment.orders.baseAmount') }}</span>
               <span class="font-medium text-gray-900 dark:text-white">{{ formatGatewayAmount(baseAmount) }}</span>
             </div>
             <div v-if="hasAmountFields(order) && order.fee_rate > 0" class="flex justify-between">
@@ -55,7 +55,7 @@
               <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</span>
               <span class="font-bold text-primary-600 dark:text-primary-400">{{ formatGatewayAmount(order.pay_amount) }}</span>
             </div>
-            <div v-if="hasAmountFields(order) && order.amount !== order.pay_amount" class="flex justify-between">
+            <div v-if="hasAmountFields(order) && !order.subscription_quota_snapshot && order.amount !== order.pay_amount" class="flex justify-between">
               <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.creditedAmount') }}</span>
               <span class="font-medium text-gray-900 dark:text-white">{{ order.order_type === 'balance' ? '$' + order.amount.toFixed(2) : formatGatewayAmount(order.amount) }}</span>
             </div>
@@ -68,6 +68,7 @@
               <OrderStatusBadge :status="displayOrderStatus(order.status)" />
             </div>
           </div>
+          <SubscriptionQuotaOrderSummary v-if="hasAmountFields(order)" class="mt-3" :snapshot="order.subscription_quota_snapshot" />
         </div>
         <!-- EasyPay return info (when no order loaded) -->
         <div v-else-if="returnInfo" class="rounded-xl bg-white p-5 shadow-sm dark:bg-dark-800">
@@ -88,7 +89,7 @@
         </div>
         <!-- Actions -->
         <div class="flex gap-3">
-          <button class="btn btn-secondary flex-1" @click="router.push('/purchase')">{{ t('payment.result.backToRecharge') }}</button>
+          <button class="btn btn-secondary flex-1" @click="router.push('/purchase')">{{ t(isTermOrder ? 'subscriptionQuota.backToPlans' : 'payment.result.backToRecharge') }}</button>
           <button class="btn btn-primary flex-1" @click="router.push('/orders')">{{ t('payment.result.viewOrders') }}</button>
         </div>
       </template>
@@ -100,6 +101,7 @@
 import { ref, computed, onBeforeUnmount, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import SubscriptionQuotaOrderSummary from '@/components/payment/SubscriptionQuotaOrderSummary.vue'
 import OrderStatusBadge from '@/components/payment/OrderStatusBadge.vue'
 import {
   PAYMENT_RECOVERY_STORAGE_KEY,
@@ -110,7 +112,7 @@ import { usePaymentStore } from '@/stores/payment'
 import { useAuthStore } from '@/stores/auth'
 import { paymentAPI } from '@/api/payment'
 import type { PublicOrderVerifyResult } from '@/api/payment'
-import type { OrderStatus, PaymentOrder } from '@/types/payment'
+import type { OrderStatus, PaymentOrder, PublicOrderResult } from '@/types/payment'
 import { formatPaymentAmount, normalizePaymentCurrency } from '@/components/payment/currency'
 import { normalizePaymentMethodForDisplay, paymentMethodI18nKey } from './paymentUx'
 
@@ -121,7 +123,8 @@ const router = useRouter()
 const paymentStore = usePaymentStore()
 const authStore = useAuthStore()
 
-type ResolvedOrder = PaymentOrder | PublicOrderVerifyResult
+type DetailedOrder = PaymentOrder | PublicOrderResult
+type ResolvedOrder = DetailedOrder | PublicOrderVerifyResult
 
 const order = ref<ResolvedOrder | null>(null)
 const loading = ref(true)
@@ -144,7 +147,9 @@ let statusRefreshTimer: ReturnType<typeof setTimeout> | null = null
 let userBalanceRefreshStarted = false
 const refreshAttempts = ref(0)
 
-/** 充值金额 = pay_amount / (1 + fee_rate/100)，fee_rate=0 时等于 pay_amount */
+const isTermOrder = computed(() => hasAmountFields(order.value) && order.value.subscription_quota_snapshot?.mode === 'term')
+
+/** 支付基础金额 = pay_amount / (1 + fee_rate/100)，fee_rate=0 时等于 pay_amount */
 const baseAmount = computed(() => {
   if (!hasAmountFields(order.value)) return 0
   const feeRate = Number(order.value.fee_rate) || 0
@@ -217,15 +222,15 @@ function refreshUserBalanceForSuccessfulOrder(nextOrder: ResolvedOrder | null): 
   })
 }
 
-function hasOrderId(nextOrder: ResolvedOrder | null): nextOrder is PaymentOrder {
+function hasOrderId(nextOrder: ResolvedOrder | null): nextOrder is DetailedOrder {
   return !!nextOrder && 'id' in nextOrder && typeof nextOrder.id === 'number'
 }
 
-function hasAmountFields(nextOrder: ResolvedOrder | null): nextOrder is PaymentOrder {
+function hasAmountFields(nextOrder: ResolvedOrder | null): nextOrder is DetailedOrder {
   return !!nextOrder && 'pay_amount' in nextOrder && typeof nextOrder.pay_amount === 'number' && 'amount' in nextOrder && typeof nextOrder.amount === 'number'
 }
 
-function hasPaymentType(nextOrder: ResolvedOrder | null): nextOrder is PaymentOrder {
+function hasPaymentType(nextOrder: ResolvedOrder | null): nextOrder is DetailedOrder {
   return !!nextOrder && 'payment_type' in nextOrder && typeof nextOrder.payment_type === 'string' && nextOrder.payment_type.trim() !== ''
 }
 

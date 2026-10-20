@@ -314,8 +314,9 @@ func ProvideSubscriptionQuotaHandler(svc *service.SubscriptionQuotaService) *Sub
 	return NewSubscriptionQuotaHandler(svc)
 }
 
-func ProvideAdminSubscriptionQuotaHandler(svc *service.SubscriptionQuotaService, resolution *service.SubscriptionQuotaResolutionService) *admin.SubscriptionQuotaHandler {
+func ProvideAdminSubscriptionQuotaHandler(svc *service.SubscriptionQuotaService, resolution *service.SubscriptionQuotaResolutionService, rollout *service.SubscriptionQuotaRolloutService) *admin.SubscriptionQuotaHandler {
 	h := admin.NewSubscriptionQuotaHandler(svc)
 	h.SetRequestAdministration(svc, resolution)
+	h.SetRollout(rollout)
 	return h
 }

@@ -3,6 +3,8 @@ import { flushPromises, shallowMount } from '@vue/test-utils'
 import PaymentView from '../PaymentView.vue'
 import { PAYMENT_RECOVERY_STORAGE_KEY } from '@/components/payment/paymentFlow'
 import { formatPaymentAmount } from '@/components/payment/currency'
+import PaymentStatusPanel from '@/components/payment/PaymentStatusPanel.vue'
+import { quotaOrderSnapshot } from '@/__tests__/subscriptionQuotaFixtures'
 import AmountInput from '@/components/payment/AmountInput.vue'
 import SubscriptionPlanCard from '@/components/payment/SubscriptionPlanCard.vue'
 import en from '@/i18n/locales/en'
@@ -884,6 +886,25 @@ describe('PaymentView subscription feature flag', () => {
     expect(wrapper.text()).not.toContain('payment.billingUnavailable')
     expect(wrapper.text()).not.toContain('payment.rechargeAccount')
     expect(wrapper.findAllComponents(SubscriptionPlanCard).length).toBeGreaterThan(0)
+    wrapper.unmount()
+  })
+})
+
+describe('Claude purchase confirmation', () => {
+  it('keeps sale price and exact allowance separate, then uses the server order snapshot', async () => {
+    appStoreState.setPublicSettings({ subscription_enabled: true })
+    translate.mockImplementation((key: string) => key)
+    const wrapper = await mountSubscriptionConfirm({ plan: { quota_mode: 'term', default_quota_usd: '300.00000003', validity_days: 7, price: 9.99, group_platform: 'anthropic' } })
+    expect(wrapper.get('[data-testid="purchase-term-quota"]').text()).toContain('$300.00000003 USD')
+    expect(wrapper.text()).not.toContain('payment.planCard.unlimited')
+    expect(wrapper.text()).toContain('9.99')
+    const frozen = quotaOrderSnapshot({ quota_usd: '100.00000001' })
+    createOrder.mockResolvedValue({ order_id: 42, amount: 9.99, pay_amount: 9.99, fee_rate: 0, expires_at: '2099-01-01T00:10:00Z', qr_code: 'https://pay.example.invalid/42', subscription_quota_snapshot: frozen })
+    const pay = wrapper.findAll('button').find(button => button.text().includes('payment.createOrder'))!
+    await pay.trigger('click'); await flushPromises()
+    expect(createOrder).toHaveBeenCalledWith(expect.objectContaining({ amount: 9.99, plan_id: 7, order_type: 'subscription' }))
+    expect(createOrder.mock.calls[0][0]).not.toHaveProperty('quota_usd')
+    expect(wrapper.getComponent(PaymentStatusPanel).props('quotaSnapshot')).toEqual(frozen)
     wrapper.unmount()
   })
 })

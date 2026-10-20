@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-4">
+    <SubscriptionQuotaOrderSummary :snapshot="orderQuotaSnapshot ?? quotaSnapshot" />
     <!-- ═══ Terminal States: show result, user clicks to return ═══ -->
 
     <!-- Success -->
@@ -21,7 +22,7 @@
                 <span class="font-medium text-gray-900 dark:text-white">{{ paidOrder.out_trade_no }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.amount') }}</span>
+                <span class="text-gray-500 dark:text-gray-400">{{ t(paidOrder.subscription_quota_snapshot ? 'subscriptionQuota.salePrice' : 'payment.orders.amount') }}</span>
                 <span class="font-medium text-gray-900 dark:text-white">{{ creditedAmountSymbol }}{{ paidOrder.amount.toFixed(2) }}</span>
               </div>
               <div class="flex justify-between">
@@ -226,7 +227,8 @@ import { paymentAPI } from '@/api/payment'
 import { extractI18nErrorMessage } from '@/utils/apiError'
 import { getPaymentPopupFeatures, isBuiltInAlipayMethod, isBuiltInWxpayMethod } from '@/components/payment/providerConfig'
 import { currencySymbol, formatPaymentAmount, normalizePaymentCurrency } from '@/components/payment/currency'
-import type { PaymentOrder } from '@/types/payment'
+import SubscriptionQuotaOrderSummary from './SubscriptionQuotaOrderSummary.vue'
+import type { SubscriptionQuotaOrderSnapshot, PaymentOrder } from '@/types/payment'
 import Icon from '@/components/icons/Icon.vue'
 import QRCode from 'qrcode'
 import alipayIcon from '@/assets/icons/alipay.svg'
@@ -239,6 +241,7 @@ import {
 } from './alipayDeepLink'
 
 const props = defineProps<{
+  quotaSnapshot?: SubscriptionQuotaOrderSnapshot | null
   orderId: number
   amount?: number
   payAmount?: number
@@ -265,6 +268,7 @@ const qrCanvas = ref<HTMLCanvasElement | null>(null)
 const qrUrl = ref('')
 const remainingSeconds = ref(0)
 const cancelling = ref(false)
+const orderQuotaSnapshot = ref<SubscriptionQuotaOrderSnapshot | null>(null)
 const paidOrder = ref<PaymentOrder | null>(null)
 const deepLinkState = ref<AlipayDeepLinkState>('idle')
 const deepLinkFallbackVisible = ref(false)
@@ -426,6 +430,7 @@ async function pollStatus() {
     if (outcome.value) return
     order = await tryRecoverPendingOrder(order)
     if (outcome.value) return
+    orderQuotaSnapshot.value = order.subscription_quota_snapshot ?? null
     if (isSuccessStatus(order.status)) {
       cleanup()
       paidOrder.value = order

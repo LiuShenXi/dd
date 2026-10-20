@@ -7,6 +7,7 @@ import (
 	"time"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 )
 
@@ -103,5 +104,29 @@ func TestAdminSubscriptionPlansForResponseIncludesCompositeGroupInfo(t *testing.
 	}
 	if !got[0].CreatedAt.Equal(now) || !got[0].UpdatedAt.Equal(now) {
 		t.Fatalf("expected created_at/updated_at to be preserved, got %v / %v", got[0].CreatedAt, got[0].UpdatedAt)
+	}
+}
+
+func TestAdminPaymentQuotaProjectionI5(t *testing.T) {
+	quota := "125.12345678"
+	plan := &dbent.SubscriptionPlan{ID: 9, GroupID: 7, TermQuotaUsd: &quota, Price: 5}
+	projected := adminSubscriptionPlansForResponse([]*dbent.SubscriptionPlan{plan}, map[int64]service.PlanGroupInfo{7: {QuotaMode: "term"}})
+	if len(projected) != 1 || projected[0].QuotaMode != "term" || projected[0].DefaultQuotaUSD == nil || *projected[0].DefaultQuotaUSD != quota || projected[0].Price != 5 {
+		t.Fatalf("allowance must be projected independently of sale price: %#v", projected)
+	}
+	snapshot := domain.SubscriptionQuotaOrderSnapshot{SchemaVersion: 1, Mode: "term", GroupID: 7, Platform: "anthropic", DurationSeconds: 604800, QuotaUSD: quota, SourcePlanID: 9, PlanName: "Original", GroupName: "Claude"}
+	order := &dbent.PaymentOrder{SubscriptionQuotaSnapshot: snapshot.Map()}
+	result := sanitizeAdminPaymentOrderForResponse(order)
+	if result.SubscriptionQuotaSnapshot == nil || result.SubscriptionQuotaSnapshot.QuotaUSD != quota {
+		t.Fatalf("missing frozen order quota: %#v", result)
+	}
+	order.SubscriptionQuotaSnapshot["provider_key_secret"] = "private"
+	result = sanitizeAdminPaymentOrderForResponse(order)
+	body, err := json.Marshal(result)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.SubscriptionQuotaSnapshot != nil || strings.Contains(string(body), "private") {
+		t.Fatalf("malformed snapshot leaked: %s", body)
 	}
 }

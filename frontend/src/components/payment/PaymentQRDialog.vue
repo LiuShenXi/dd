@@ -38,13 +38,14 @@
       </div>
       <p class="text-lg font-bold text-gray-900 dark:text-white">{{ t('payment.result.success') }}</p>
       <div v-if="paidOrder" class="w-full rounded-xl bg-gray-50 p-4 dark:bg-dark-800">
+        <SubscriptionQuotaOrderSummary :snapshot="paidOrder.subscription_quota_snapshot" class="mb-3" />
         <div class="space-y-2 text-sm">
           <div class="flex justify-between">
             <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</span>
             <span class="font-medium text-gray-900 dark:text-white">#{{ paidOrder.id }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.amount') }}</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ t(paidOrder.subscription_quota_snapshot ? 'subscriptionQuota.salePrice' : 'payment.orders.amount') }}</span>
             <span class="font-medium text-gray-900 dark:text-white">{{ creditedAmountSymbol }}{{ paidOrder.amount.toFixed(2) }}</span>
           </div>
           <div class="flex justify-between">
@@ -73,6 +74,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
+import SubscriptionQuotaOrderSummary from './SubscriptionQuotaOrderSummary.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { usePaymentStore } from '@/stores/payment'

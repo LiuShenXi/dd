@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -25,6 +24,9 @@ import (
 )
 
 type subscriptionQuotaI4Environment struct {
+	Stage                                                                   string
+	ConversionGroup, ConversionKeyID                                        int64
+	ConversionKey                                                           string
 	PasswordHash                                                            string
 	BridgePID                                                               int
 	BridgePID2                                                              int
@@ -51,7 +53,7 @@ func subscriptionQuotaI4PrivatePath(t *testing.T) string {
 	}
 	abs, err := filepath.Abs(dir)
 	require.NoError(t, err)
-	root := filepath.Join(os.Getenv("LOCALAPPDATA"), "Codex", "PrivateTests", "claude-weekly-quota")
+	root := subscriptionQuotaPrivateRoot(t)
 	rel, err := filepath.Rel(root, abs)
 	require.NoError(t, err)
 	require.NotEqual(t, "..", rel)
@@ -62,7 +64,7 @@ func subscriptionQuotaI4PrivatePath(t *testing.T) string {
 
 func (e *subscriptionQuotaI4Environment) redact(raw []byte) string {
 	s := string(raw)
-	for _, secret := range []string{e.JWT, e.ProviderKey, e.Password, e.PasswordHash, e.AKey, e.AKey2, e.BKey, e.GPTKey, e.AGroup2Key, e.BoundaryKey} {
+	for _, secret := range []string{e.JWT, e.ProviderKey, e.Password, e.PasswordHash, e.AKey, e.AKey2, e.BKey, e.GPTKey, e.AGroup2Key, e.BoundaryKey, e.ConversionKey} {
 		if secret != "" {
 			s = strings.ReplaceAll(s, secret, "[synthetic-secret-redacted]")
 		}
@@ -74,13 +76,7 @@ func (e *subscriptionQuotaI4Environment) docker(t *testing.T, input io.Reader, a
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
-	docker := "C:/Program Files/Docker/Docker/resources/bin/docker.exe"
-	if _, err := os.Stat(docker); err != nil {
-		docker = "docker"
-	}
-	command := exec.CommandContext(ctx, docker, append([]string{"--host", "npipe:////./pipe/docker_engine"}, args...)...)
-	command.Stdin = input
-	out, err := command.CombinedOutput()
+	out, err := subscriptionQuotaDockerOutput(ctx, input, args...)
 	require.NoError(t, err, "task-only Docker operation %s: %s", args[0], e.redact(out))
 	return out
 }
@@ -97,6 +93,11 @@ func TestSubscriptionQuotaI4PrepareEnvironment(t *testing.T) {
 	_, err := os.Stat(private)
 	require.True(t, os.IsNotExist(err), "never overwrite an existing synthetic fixture")
 	e := &subscriptionQuotaI4Environment{RunID: "cwq-i4-" + strings.ReplaceAll(uuid.NewString(), "-", "")[:16], Database: "synthetic_i4", Image: os.Getenv("CWQ_I4_IMAGE"), Source: os.Getenv("CWQ_I4_SOURCE"), ProviderImage: os.Getenv("CWQ_I4_PROVIDER_IMAGE"), Network: os.Getenv("CWQ_I4_NETWORK")}
+	e.Stage = os.Getenv("CWQ_RUNTIME_STAGE")
+	if e.Stage == "" {
+		e.Stage = "I4"
+	}
+	require.Contains(t, []string{"I4", "I6"}, e.Stage)
 	require.NotEmpty(t, os.Getenv("CWQ_I4_PUBLIC_MANIFEST"))
 	t.Cleanup(func() {
 		if t.Failed() {
@@ -108,14 +109,18 @@ func TestSubscriptionQuotaI4PrepareEnvironment(t *testing.T) {
 			t.Logf("failed I4 setup resource identities retained privately at %s; run=%s postgres=%s redis=%s provider=%s application=%s volume=%s", private, e.RunID, e.Postgres, e.Redis, e.Provider, e.Application, e.Volume)
 		}
 	})
-	require.True(t, strings.HasPrefix(e.Image, "sub2api:claude-weekly-i4-candidate-"))
+	imagePrefix := "sub2api:claude-weekly-i4-candidate-"
+	if e.Stage == "I6" {
+		imagePrefix = "sub2api:claude-weekly-i6-r2-"
+	}
+	require.True(t, strings.HasPrefix(e.Image, imagePrefix))
 	require.True(t, strings.HasPrefix(e.ProviderImage, "claude-weekly-quota-provider:"))
 	require.True(t, strings.HasPrefix(e.Network, "cwq-env-"))
 	require.Len(t, e.Source, 64)
 	require.Equal(t, "true", strings.TrimSpace(string(e.docker(t, nil, "network", "inspect", "--format", "{{.Internal}}", e.Network))))
 	var labels map[string]string
 	require.NoError(t, json.Unmarshal(e.docker(t, nil, "image", "inspect", "--format", "{{json .Config.Labels}}", e.Image), &labels))
-	require.Equal(t, "I4-isolated-candidate", labels["com.monas.claude-quota-stage"])
+	require.Equal(t, e.Stage+"-isolated-candidate", labels["com.monas.claude-quota-stage"])
 	require.Equal(t, e.Source, labels["com.monas.source-sha256"])
 	e.ImageID = strings.TrimSpace(string(e.docker(t, nil, "image", "inspect", "--format", "{{.Id}}", e.Image)))
 	e.ProviderID = strings.TrimSpace(string(e.docker(t, nil, "image", "inspect", "--format", "{{.Id}}", e.ProviderImage)))
@@ -178,6 +183,15 @@ func TestSubscriptionQuotaI4PrepareEnvironment(t *testing.T) {
 	require.NoError(t, f.db.QueryRow(`INSERT INTO accounts(name,platform,type,credentials,extra,status,concurrency,schedulable) VALUES('I4 synthetic OpenAI provider','openai','apikey',$1,'{"openai_passthrough":true}','active',16,true) RETURNING id`, credentials).Scan(&e.GPTAccount))
 	_, err = f.db.Exec(`INSERT INTO account_groups(account_id,group_id) VALUES($1,$2)`, e.GPTAccount, e.GPTGroup)
 	require.NoError(t, err)
+	if e.Stage == "I6" {
+		_, err = f.db.Exec(`UPDATE accounts SET extra=extra || '{"openai_apikey_responses_websockets_v2_mode":"http_bridge"}' WHERE id=$1`, e.GPTAccount)
+		require.NoError(t, err)
+		require.NoError(t, f.db.QueryRow(`INSERT INTO groups(name,platform,subscription_type) VALUES('I6 controlled conversion synthetic','anthropic','standard') RETURNING id`).Scan(&e.ConversionGroup))
+		e.ConversionKey = "sk-cwq-i6-conversion-" + uuid.NewString()
+		require.NoError(t, f.db.QueryRow(`INSERT INTO api_keys(user_id,group_id,key,name,quota,rate_limit_5h,rate_limit_1d,rate_limit_7d) VALUES($1,$2,$3,'I6 synthetic conversion',1000000,1000000,1000000,1000000) RETURNING id`, e.B, e.ConversionGroup, e.ConversionKey).Scan(&e.ConversionKeyID))
+		_, err = f.db.Exec(`INSERT INTO account_groups(account_id,group_id) VALUES($1,$2)`, e.Account, e.ConversionGroup)
+		require.NoError(t, err)
+	}
 	parsed, err := url.Parse(integrationDSN)
 	require.NoError(t, err)
 	var database string
@@ -203,7 +217,7 @@ func TestSubscriptionQuotaI4PrepareEnvironment(t *testing.T) {
 	var ready bool
 	for attempt := 0; attempt < 60; attempt++ {
 		// pg_isready is intentionally allowed to return nonzero while init runs.
-		cmd := exec.Command("C:/Program Files/Docker/Docker/resources/bin/docker.exe", "--host", "npipe:////./pipe/docker_engine", "exec", e.Postgres, "pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-d", e.Database)
+		cmd := subscriptionQuotaDockerCommand(context.Background(), "exec", e.Postgres, "pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-d", e.Database)
 		if cmd.Run() == nil {
 			ready = true
 			break
@@ -223,16 +237,25 @@ func TestSubscriptionQuotaI4PrepareEnvironment(t *testing.T) {
 	for _, value := range []string{"SKIP_SETUP=true", "RUN_MODE=standard", "SERVER_HOST=0.0.0.0", "SERVER_PORT=8080", "SERVER_MODE=release", "DEFAULT_CLAUDE_SUBSCRIPTION_CONCURRENCY=3", "DATABASE_HOST=" + e.RunID + "-pg", "DATABASE_PORT=5432", "DATABASE_USER=postgres", "DATABASE_DBNAME=" + e.Database, "DATABASE_SSLMODE=disable", "REDIS_HOST=" + e.RunID + "-redis", "REDIS_DB=0", "JWT_SECRET=" + e.JWT, "SUBSCRIPTION_QUOTA_ISSUE_ENABLED=true", "SUBSCRIPTION_QUOTA_ADMISSION_ENABLED=true", "SUBSCRIPTION_QUOTA_ENABLED_GROUP_IDS=" + strconv.FormatInt(e.Group, 10) + "," + strconv.FormatInt(e.Group2, 10), "SUBSCRIPTION_QUOTA_RECOVERY_ENABLED=true", "SUBSCRIPTION_QUOTA_RECOVERY_INTERVAL=1s", "SUBSCRIPTION_QUOTA_RECOVERY_ITEM_TIMEOUT=5s", "DASHBOARD_AGG_ENABLED=false", "PRICING_DATA_DIR=/app/data/pricing", "CARPOOL_BACKGROUND_ENABLED=true", "SECURITY_URL_ALLOWLIST_ENABLED=false", "SECURITY_URL_ALLOWLIST_ALLOW_PRIVATE_HOSTS=true", "SECURITY_URL_ALLOWLIST_ALLOW_INSECURE_HTTP=true", "TZ=UTC"} {
 		args = append(args, "--env", value)
 	}
+	if e.Stage == "I6" {
+		for _, value := range []string{
+			"GATEWAY_OPENAI_WS_MODE_ROUTER_V2_ENABLED=true",
+			"SUBSCRIPTION_QUOTA_ROLLOUT_REPLICA_ID=app-1",
+			"SUBSCRIPTION_QUOTA_ROLLOUT_EXPECTED_REPLICA_IDS=app-1,app-2",
+			"SUBSCRIPTION_QUOTA_PROTECTED_GROUP_IDS=" + strconv.FormatInt(e.ConversionGroup, 10),
+			"SUBSCRIPTION_QUOTA_ENABLED_GROUP_IDS=" + fmt.Sprintf("%d,%d,%d", e.Group, e.Group2, e.ConversionGroup),
+		} {
+			args = append(args, "--env", value)
+		}
+	}
 	e.Application = strings.TrimSpace(string(e.docker(t, nil, append(args, e.Image)...)))
-	bridge := exec.Command(os.Getenv("CWQ_I4_PWSH"), "-NoProfile", "-NonInteractive", "-File", os.Getenv("CWQ_I4_BRIDGE_SCRIPT"), "-ContainerID", e.Application, "-Port", strconv.Itoa(port), "-PrivateDir", filepath.Dir(private))
-	bridgeOutput, err := bridge.CombinedOutput()
-	require.NoError(t, err, "start task-only Hidden loopback bridge: %s", e.redact(bridgeOutput))
-	e.BridgePID, err = strconv.Atoi(strings.TrimSpace(string(bridgeOutput)))
-	require.NoError(t, err)
+	e.BridgePID = subscriptionQuotaStartBridge(t, e, e.Application, port, filepath.Dir(private))
 	encoded, err := json.MarshalIndent(e, "", "  ")
 	require.NoError(t, err)
 	require.NoError(t, os.WriteFile(private, encoded, 0600))
 	public := map[string]any{"stage": "I4 diagnostic synthetic environment", "run_id": e.RunID, "url": e.URL, "image": e.Image, "image_id": e.ImageID, "source_sha256": e.Source, "provider_image": e.ProviderImage, "provider_id": e.ProviderID, "network": e.Network, "postgres": e.Postgres, "redis": e.Redis, "provider": e.Provider, "application": e.Application, "volume": e.Volume, "database_host_ports": []any{}, "application_bind": "127.0.0.1", "external_egress": false, "synthetic_only": true, "private_fixture_path": private, "admin_email": e.AdminEmail, "a_email": e.AEmail, "b_email": e.BEmail, "a_quota": "100.00000000", "b_quota": "300.00000000"}
+	public["stage"] = e.Stage + " isolated synthetic environment"
+	public["controlled_conversion_group"] = e.ConversionGroup
 	public["loopback_bridge_pid"] = e.BridgePID
 	public["claude_default_concurrency"] = 3
 	public["a_claude_override"] = 2

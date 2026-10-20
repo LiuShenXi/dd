@@ -8,7 +8,6 @@ import (
 	"net"
 	"net/url"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 	"testing"
@@ -35,10 +34,6 @@ func TestSubscriptionQuotaR1ImageRecovery(t *testing.T) {
 	f := newSubscriptionQuotaR1ImageFixture(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	docker := "C:/Program Files/Docker/Docker/resources/bin/docker.exe"
-	if _, err := os.Stat(docker); err != nil {
-		docker = "docker"
-	}
 	parsed, err := url.Parse(integrationDSN)
 	require.NoError(t, err)
 	password, _ := parsed.User.Password()
@@ -56,8 +51,7 @@ func TestSubscriptionQuotaR1ImageRecovery(t *testing.T) {
 		return value
 	}
 	run := func(arguments ...string) ([]byte, error) {
-		args := append([]string{"--host", "npipe:////./pipe/docker_engine"}, arguments...)
-		return exec.CommandContext(ctx, docker, args...).CombinedOutput()
+		return subscriptionQuotaDockerCommand(ctx, arguments...).CombinedOutput()
 	}
 	must := func(action string, arguments ...string) string {
 		t.Helper()
@@ -110,7 +104,7 @@ func TestSubscriptionQuotaR1ImageRecovery(t *testing.T) {
 		cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cleanupCancel()
 		cleanup := func(arguments ...string) {
-			_, _ = exec.CommandContext(cleanupCtx, docker, append([]string{"--host", "npipe:////./pipe/docker_engine"}, arguments...)...).CombinedOutput()
+			_, _ = subscriptionQuotaDockerCommand(cleanupCtx, arguments...).CombinedOutput()
 		}
 		if container != "" {
 			cleanup("rm", "--force", container)
@@ -168,7 +162,7 @@ func TestSubscriptionQuotaR1ImageRecovery(t *testing.T) {
 	require.Equal(t, expectedGPTBalance, gptRemaining)
 	body := `{"model":"claude-sonnet-4","messages":[{"role":"user","content":"synthetic-no-upstream"}],"max_tokens":1}`
 	httpRequest := "POST /v1/messages HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\nAuthorization: Bearer " + claudeKey + "\r\nContent-Type: application/json\r\nContent-Length: " + strconv.Itoa(len(body)) + "\r\n\r\n" + body
-	httpCommand := exec.CommandContext(ctx, docker, "--host", "npipe:////./pipe/docker_engine", "exec", "--interactive", container, "nc", "-w", "3", "127.0.0.1", "8080")
+	httpCommand := subscriptionQuotaDockerCommand(ctx, "exec", "--interactive", container, "nc", "-w", "3", "127.0.0.1", "8080")
 	httpCommand.Stdin = strings.NewReader(httpRequest)
 	response, httpErr := httpCommand.CombinedOutput()
 	require.NoError(t, httpErr, "internal synthetic HTTP exchange: %s", redact(response))

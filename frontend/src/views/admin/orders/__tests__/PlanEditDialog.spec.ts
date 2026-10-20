@@ -1,7 +1,9 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent } from 'vue'
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 
+import { adminPaymentAPI } from '@/api/admin/payment'
+import { deferred } from '@/__tests__/subscriptionQuotaFixtures'
 import PlanEditDialog from '../PlanEditDialog.vue'
 import type { AdminGroup } from '@/types'
 
@@ -193,4 +195,65 @@ describe('PlanEditDialog', () => {
     expect(options).toContain('OpenAI + Claude + Gemini + Grok — composite (1.2x)')
     expect(options).not.toContain('Standard OpenAI — openai (1x)')
   })
+})
+
+beforeEach(() => { vi.clearAllMocks() })
+describe('Claude plan configuration', () => {
+  const termGroup = () => groupFixture({ id: 6, name: 'Claude', platform: 'anthropic', subscription_quota_mode: 'term' })
+  async function prepareTerm() {
+    const wrapper = mountDialog({ groups: [termGroup()] })
+    await wrapper.get('select').setValue('6')
+    await wrapper.find('input[type="number"]').setValue('9.99')
+    return wrapper
+  }
+  it.each(['', '0', '-1', '1e2', '1.123456789', ' 10', '01'])('rejects invalid exact-money input %j before sending', async amount => {
+    const wrapper = await prepareTerm(); await wrapper.get('[data-testid="plan-default-quota"]').setValue(amount)
+    await wrapper.get('form').trigger('submit'); await flushPromises()
+    expect(adminPaymentAPI.createPlan).not.toHaveBeenCalled()
+    expect(wrapper.get('[role="alert"]').text()).toContain('subscriptionQuota.invalidAmount')
+    wrapper.unmount()
+  })
+  it('separates the sale price from an exact positive allowance and fixes seven days without client mode input', async () => {
+    const wrapper = await prepareTerm()
+    expect(wrapper.find('[data-testid="plan-fixed-duration"]').exists()).toBe(true)
+    expect(wrapper.text()).not.toContain('payment.admin.unlimited')
+    await wrapper.get('[data-testid="plan-default-quota"]').setValue('0.00000001')
+    await wrapper.get('form').trigger('submit'); await flushPromises()
+    const payload = vi.mocked(adminPaymentAPI.createPlan).mock.calls[0][0]
+    expect(payload).toMatchObject({ group_id: 6, price: 9.99, default_quota_usd: '0.00000001', validity_days: 7, validity_unit: 'days' })
+    expect(payload).not.toHaveProperty('quota_mode')
+    wrapper.unmount()
+  })
+  it('preserves native windows validity and sends no term allowance', async () => {
+    const wrapper = mountDialog({ groups: [groupFixture({ id: 1 })] })
+    await wrapper.get('select').setValue('1'); await wrapper.find('input[type="number"]').setValue('10')
+    await wrapper.get('form').trigger('submit'); await flushPromises()
+    const payload = vi.mocked(adminPaymentAPI.createPlan).mock.calls[0][0]
+    expect(payload).toMatchObject({ price: 10, validity_days: 30, validity_unit: 'days' })
+    expect(payload).not.toHaveProperty('default_quota_usd')
+    expect(wrapper.find('[data-testid="plan-default-quota"]').exists()).toBe(false)
+    wrapper.unmount()
+  })
+  it.each(['resolve', 'reject'])('ignores a stale save %s after closing and reopening another form', async outcome => {
+    const old = deferred<never>(), current = deferred<never>()
+    vi.mocked(adminPaymentAPI.createPlan).mockReturnValueOnce(old.promise).mockReturnValueOnce(current.promise)
+    const wrapper = await prepareTerm(); await wrapper.get('[data-testid="plan-default-quota"]').setValue('100'); await wrapper.get('form').trigger('submit')
+    await wrapper.setProps({ show: false }); await wrapper.setProps({ show: true }); await wrapper.get('select').setValue('6'); await wrapper.find('input[type="number"]').setValue('20'); await wrapper.get('[data-testid="plan-default-quota"]').setValue('300'); await wrapper.get('form').trigger('submit')
+    if (outcome === 'resolve') old.resolve(undefined as never); else old.reject(new Error('old failure'))
+    await flushPromises()
+    expect(wrapper.emitted('close')).toBeUndefined()
+    expect(wrapper.get('button[type="submit"]').attributes('disabled')).toBeDefined()
+    current.resolve(undefined as never); await flushPromises()
+    expect(wrapper.emitted('close')).toHaveLength(1)
+    wrapper.unmount()
+  })
+})
+
+it('can repair an existing term plan without a hidden windows duration blocking the fixed seven days', async () => {
+  const wrapper = mountDialog({ groups: [groupFixture({ id: 6, platform: 'anthropic', subscription_quota_mode: 'term' })] })
+  await wrapper.setProps({ plan: { id: 7, name: 'Existing Claude', group_id: 6, description: 'Card', quota_mode: 'term', default_quota_usd: '123.45678901', price: 9.99, validity_days: 0, validity_unit: 'months', sort_order: 0, for_sale: false, features: [] } })
+  expect((wrapper.get('[data-testid="plan-default-quota"]').element as HTMLInputElement).value).toBe('123.45678901')
+  await wrapper.get('form').trigger('submit'); await flushPromises()
+  expect(adminPaymentAPI.updatePlan).toHaveBeenCalledWith(7, expect.objectContaining({ default_quota_usd: '123.45678901', validity_days: 7, validity_unit: 'days' }))
+  wrapper.unmount()
 })

@@ -68,6 +68,8 @@ var ProviderSet = wire.NewSet(
 	NewClaudeConcurrencyPolicyRepository,
 	NewSubscriptionQuotaProtectedGroupRepository,
 	NewSubscriptionQuotaRepository,
+	NewSubscriptionQuotaPaymentRepository,
+	NewSubscriptionQuotaRolloutRepository,
 	NewSubscriptionQuotaResolutionRepository,
 	NewUserRepository,
 	NewAPIKeyRepository,

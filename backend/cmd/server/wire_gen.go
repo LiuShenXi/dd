@@ -248,7 +248,8 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	paymentConfigService := service.ProvidePaymentConfigService(client, settingRepository, encryptionKey)
 	registry := payment.ProvideRegistry()
 	defaultLoadBalancer := payment.ProvideDefaultLoadBalancer(client, encryptionKey)
-	paymentService := service.ProvidePaymentService(client, registry, defaultLoadBalancer, redeemService, subscriptionService, paymentConfigService, userRepository, groupRepository, affiliateService, notificationEmailService)
+	subscriptionQuotaPaymentRepository := repository.NewSubscriptionQuotaPaymentRepository(db)
+	paymentService := service.ProvidePaymentService(client, registry, defaultLoadBalancer, redeemService, subscriptionService, paymentConfigService, userRepository, groupRepository, affiliateService, notificationEmailService, subscriptionQuotaPaymentRepository, configConfig)
 	settingHandler := handler.ProvideAdminSettingHandler(settingService, emailService, turnstileService, aliyunCaptchaService, opsService, paymentConfigService, paymentService, userAttributeService, notificationEmailService, totpService, userService)
 	opsHandler := admin.NewOpsHandler(opsService)
 	updateCache := repository.NewUpdateCache(redisClient)
@@ -261,7 +262,9 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	adminSubscriptionHandler := admin.NewSubscriptionHandler(subscriptionService)
 	subscriptionQuotaResolutionRepository := repository.NewSubscriptionQuotaResolutionRepository(db)
 	subscriptionQuotaResolutionService := service.ProvideSubscriptionQuotaResolutionService(subscriptionQuotaResolutionRepository, gatewayService)
-	adminSubscriptionQuotaHandler := handler.ProvideAdminSubscriptionQuotaHandler(subscriptionQuotaService, subscriptionQuotaResolutionService)
+	subscriptionQuotaRolloutRepository := repository.NewSubscriptionQuotaRolloutRepository(db)
+	subscriptionQuotaRolloutService := service.ProvideSubscriptionQuotaRolloutService(subscriptionQuotaRolloutRepository, configConfig)
+	adminSubscriptionQuotaHandler := handler.ProvideAdminSubscriptionQuotaHandler(subscriptionQuotaService, subscriptionQuotaResolutionService, subscriptionQuotaRolloutService)
 	usageCleanupRepository := repository.NewUsageCleanupRepository(client, db)
 	usageCleanupService := service.ProvideUsageCleanupService(usageCleanupRepository, timingWheelService, dashboardAggregationService, configConfig)
 	adminUsageHandler := admin.NewUsageHandler(usageService, apiKeyService, adminService, usageCleanupService)
@@ -372,7 +375,7 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	v := provideCleanup(client, redisClient, opsMetricsCollector, opsAggregationService, opsAlertEvaluatorService, opsCleanupService, opsScheduledReportService, opsSystemLogSink, opsService, opsIngressRejectAggregator, apiKeyService, authCacheInvalidationWorker, schedulerSnapshotService, tokenRefreshService, accountExpiryService, cnProviderBalanceCheckService, openAICodexVersionSyncService, proxyExpiryService, subscriptionExpiryService, usageCleanupService, idempotencyCleanupService, batchImageCleanupService, batchImageWorkerRuntime, pricingService, emailQueueService, billingCacheService, usageRecordWorkerPool, subscriptionService, oAuthService, openAIOAuthService, geminiOAuthService, antigravityOAuthService, grokOAuthService, openAIGatewayService, scheduledTestRunnerService, backupService, paymentOrderExpiryService, channelMonitorRunner, channelMonitorV2Aggregator, userPlatformQuotaUsageFlusher, upstreamBillingProbeService, ollamaCloudUsageService, auditLogService, openAIQuotaAutoResetService, promptService, pluginManager, carpoolService, carpoolResetService, subscriptionQuotaRecoveryService, concurrencyService)
+	v := provideCleanup(client, redisClient, opsMetricsCollector, opsAggregationService, opsAlertEvaluatorService, opsCleanupService, opsScheduledReportService, opsSystemLogSink, opsService, opsIngressRejectAggregator, apiKeyService, authCacheInvalidationWorker, schedulerSnapshotService, tokenRefreshService, accountExpiryService, cnProviderBalanceCheckService, openAICodexVersionSyncService, proxyExpiryService, subscriptionExpiryService, usageCleanupService, idempotencyCleanupService, batchImageCleanupService, batchImageWorkerRuntime, pricingService, emailQueueService, billingCacheService, usageRecordWorkerPool, subscriptionService, oAuthService, openAIOAuthService, geminiOAuthService, antigravityOAuthService, grokOAuthService, openAIGatewayService, scheduledTestRunnerService, backupService, paymentOrderExpiryService, channelMonitorRunner, channelMonitorV2Aggregator, userPlatformQuotaUsageFlusher, upstreamBillingProbeService, ollamaCloudUsageService, auditLogService, openAIQuotaAutoResetService, promptService, pluginManager, carpoolService, carpoolResetService, subscriptionQuotaRecoveryService, subscriptionQuotaRolloutService, concurrencyService)
 	application := &Application{
 		Server:        httpServer,
 		PromptAudit:   promptService,
@@ -459,9 +462,13 @@ func provideCleanup(
 	carpool *service.CarpoolService,
 	carpoolReset *service.CarpoolResetService,
 	subscriptionQuotaRecovery *service.SubscriptionQuotaRecoveryService,
+	subscriptionQuotaRollout *service.SubscriptionQuotaRolloutService,
 	concurrency *service.ConcurrencyService,
 ) func() {
 	return func() {
+		if subscriptionQuotaRollout != nil {
+			subscriptionQuotaRollout.Stop()
+		}
 
 		if usageRecordWorkerPool != nil {
 			usageRecordWorkerPool.Stop()

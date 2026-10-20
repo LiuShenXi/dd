@@ -149,3 +149,21 @@ describe("SubscriptionPlanCard", () => {
     expect(badge?.element.parentElement?.textContent).toContain("/ 30payment.days");
   });
 });
+
+describe('Claude term plan card', () => {
+  it('shows exact independent allowance and fixed duration without native unlimited limits', () => {
+    const wrapper = mountPlanCard('anthropic', { quota_mode: 'term', default_quota_usd: '100.00000001', price: 9.99, validity_days: 7, validity_unit: 'days', daily_limit_usd: 999 })
+    expect(wrapper.get('[data-testid="plan-term-quota"]').text()).toContain('$100.00000001 USD')
+    expect(wrapper.text()).toContain('9.99')
+    expect(wrapper.text()).not.toContain('999')
+    expect(wrapper.text()).not.toContain('payment.planCard.unlimited')
+    expect(wrapper.text()).toContain('/ 7payment.days')
+    wrapper.unmount()
+  })
+  it.each([null, '0', '-1', '1e2'])('prevents purchase when the term allowance is %j', async quota => {
+    const wrapper = mountPlanCard('anthropic', { quota_mode: 'term', default_quota_usd: quota })
+    expect(wrapper.get('button').attributes('disabled')).toBeDefined()
+    await wrapper.get('button').trigger('click'); expect(wrapper.emitted('select')).toBeUndefined()
+    wrapper.unmount()
+  })
+})

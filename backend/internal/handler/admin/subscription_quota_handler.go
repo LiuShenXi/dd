@@ -20,6 +20,7 @@ type SubscriptionQuotaAdminService interface {
 }
 
 type SubscriptionQuotaHandler struct {
+	rollout    SubscriptionQuotaRolloutAdmin
 	service    SubscriptionQuotaAdminService
 	requests   SubscriptionQuotaRequestQuery
 	resolution SubscriptionQuotaRequestResolver

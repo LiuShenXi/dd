@@ -49,6 +49,7 @@ func userScopeRemaining(result UserScopeResult, started time.Time) time.Duration
 func newUserScopeKeeper(parent context.Context, cache UserScopedConcurrencyCache, op UserScopeOperation, result UserScopeResult, started time.Time) (*userScopeKeeper, error) {
 	remaining := userScopeRemaining(result, started)
 	if remaining <= 0 {
+		observeClaudeScopeOperation("safety_deadline", op.Kind, UserScopeResult{}, nil)
 		return nil, ErrTermConcurrencyUnavailable
 	}
 	ctx, cancel := context.WithCancelCause(parent)
@@ -68,6 +69,7 @@ func (k *userScopeKeeper) run(remaining time.Duration) {
 		case <-k.stop:
 			return
 		case <-deadline.C:
+			observeClaudeScopeOperation("safety_deadline", k.op.Kind, UserScopeResult{}, nil)
 			k.cancel(ErrTermConcurrencyUnavailable)
 			return
 		case <-ticker.C:
@@ -75,15 +77,18 @@ func (k *userScopeKeeper) run(remaining time.Duration) {
 			ctx, cancel := context.WithTimeout(context.Background(), ClaudeConcurrencyOperationTimeout)
 			result, err := k.cache.RenewScope(ctx, k.op)
 			cancel()
+			observeClaudeScopeOperation("renew", k.op.Kind, result, err)
 			if err != nil {
 				continue
 			}
 			if result.Status != UserScopeAcquired {
+				observeClaudeScopeOperation("lost_lease", k.op.Kind, result, nil)
 				k.cancel(ErrTermConcurrencyUnavailable)
 				return
 			}
 			remaining = userScopeRemaining(result, started)
 			if remaining <= 0 {
+				observeClaudeScopeOperation("safety_deadline", k.op.Kind, UserScopeResult{}, nil)
 				k.cancel(ErrTermConcurrencyUnavailable)
 				return
 			}
@@ -103,7 +108,9 @@ func (k *userScopeKeeper) finish() { close(k.stop); <-k.done; k.cancel(nil) }
 func releaseUserScope(cache UserScopedConcurrencyCache, op UserScopeOperation) {
 	ctx, cancel := context.WithTimeout(context.Background(), ClaudeConcurrencyOperationTimeout)
 	defer cancel()
-	if _, err := cache.ReleaseScope(ctx, op); err != nil {
+	result, err := cache.ReleaseScope(ctx, op)
+	observeClaudeScopeOperation("cleanup", op.Kind, result, err)
+	if err != nil {
 		logger.LegacyPrintf("service.concurrency", "Claude scope cleanup remains unconfirmed user_id=%d kind=%s error=%v", op.UserID, op.Kind, err)
 	}
 }
@@ -147,7 +154,9 @@ func (s *ConcurrencyService) AcquireClaudeSubscriptionLease(parent context.Conte
 	result, started, err := s.claudePolicyOperation(ctx, userID, func(inner context.Context, limit int) (UserScopeResult, error) {
 		op := active
 		op.Limit = limit
-		return cache.TryAcquireScope(inner, op)
+		result, err := cache.TryAcquireScope(inner, op)
+		observeClaudeScopeOperation("acquire", op.Kind, result, err)
+		return result, err
 	})
 	if err != nil {
 		return nil, err
@@ -173,7 +182,9 @@ func (s *ConcurrencyService) AcquireClaudeSubscriptionLease(parent context.Conte
 	result, started, err = s.claudePolicyOperation(waitCtx, userID, func(inner context.Context, limit int) (UserScopeResult, error) {
 		op := waiting
 		op.Limit = max(1, CalculateMaxWait(limit)-limit)
-		return cache.TryEnqueueScope(inner, op)
+		result, err := cache.TryEnqueueScope(inner, op)
+		observeClaudeScopeOperation("enqueue", op.Kind, result, err)
+		return result, err
 	})
 	if err != nil {
 		return nil, err
@@ -215,7 +226,9 @@ func (s *ConcurrencyService) AcquireClaudeSubscriptionLease(parent context.Conte
 			op := active
 			op.TicketID = waiting.MemberID
 			op.Limit = limit
-			return cache.PromoteScope(inner, op)
+			result, err := cache.PromoteScope(inner, op)
+			observeClaudeScopeOperation("promote", op.Kind, result, err)
+			return result, err
 		})
 		if err != nil {
 			if parent.Err() != nil {

@@ -100,6 +100,7 @@ func TestProvideCleanup_WithMinimalDependencies_NoPanic(t *testing.T) {
 		nil, // carpool
 		nil, // carpoolReset
 		nil, // subscriptionQuotaRecovery
+		nil, // subscriptionQuotaRollout
 		nil, // independent Claude concurrency cache
 	)
 

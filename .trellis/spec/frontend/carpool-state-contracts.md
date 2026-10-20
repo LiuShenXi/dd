@@ -14,6 +14,7 @@ Apply to carpool financial/admin modals, user DTOs, renewal choices and announce
 
 - Opening/closing/replacing a modal invalidates prior actions. Old success, failure and finally callbacks cannot close the new modal, replace its errors or clear its submitting state.
 - Reuse an operation key for an exact retry; do not reuse it with edited payloads.
+- When a modal reset changes a watched scope such as `groupId`, invalidate/reset that scope synchronously before capturing the next lookup. A queued reset watcher must not invalidate the new user's group request and leave the modal permanently loading. `SubscriptionQuotaTermModal.spec.ts` covers direct user replacement as well as close/reopen transitions.
 - Renewal selects the latest enabled version of the same tier code. A disabled tier cannot silently become another tier.
 - Normalize nullable list responses at the API boundary while retaining the backend's `items: []` contract.
 - Announcement generation handles account changes; request sequences handle response reordering within one session. A version is acknowledged only after its required full-list refresh succeeds.

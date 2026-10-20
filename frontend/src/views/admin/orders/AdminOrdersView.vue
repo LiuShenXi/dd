@@ -21,7 +21,7 @@
       <!-- Table -->
       <OrderTable :orders="orders" :loading="ordersLoading" show-user>
         <template #actions="{ row }">
-          <div class="flex items-center gap-1">
+          <div class="flex flex-wrap items-center gap-1">
             <button @click="showOrderDetail(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-dark-600">
               <Icon name="eye" size="sm" />
               {{ t('common.view') }}
@@ -34,25 +34,28 @@
               <Icon name="refresh" size="sm" />
               {{ t('payment.admin.retry') }}
             </button>
-            <template v-if="row.status === 'REFUND_REQUESTED'">
-              <span v-if="row.refund_amount" class="rounded-full bg-purple-100 px-1.5 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">{{ creditedAmountSymbol }}{{ row.refund_amount.toFixed(2) }}</span>
-              <button @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20">
-                <Icon name="check" size="sm" />
-                {{ t('payment.admin.approveRefund') }}
+            <p v-if="row.subscription_quota_snapshot" class="basis-full max-w-xs text-xs text-gray-500 dark:text-gray-400">{{ t('subscriptionQuota.manualRefund') }}</p>
+            <template v-else>
+              <template v-if="row.status === 'REFUND_REQUESTED'">
+                <span v-if="row.refund_amount" class="rounded-full bg-purple-100 px-1.5 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">{{ creditedAmountSymbol }}{{ row.refund_amount.toFixed(2) }}</span>
+                <button @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20">
+                  <Icon name="check" size="sm" />
+                  {{ t('payment.admin.approveRefund') }}
+                </button>
+              </template>
+              <button v-else-if="row.status === 'REFUND_FAILED'" @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20">
+                <Icon name="refresh" size="sm" />
+                {{ t('payment.admin.retryRefund') }}
+              </button>
+              <button v-else-if="row.status === 'REFUND_PENDING'" :disabled="refundQueryingIds.has(row.id)" @click="handleQueryRefund(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-orange-600 hover:bg-orange-50 disabled:opacity-60 dark:text-orange-400 dark:hover:bg-orange-900/20">
+                <Icon name="refresh" size="sm" :class="refundQueryingIds.has(row.id) ? 'animate-spin' : ''" />
+                {{ t('payment.admin.queryRefundStatus') }}
+              </button>
+              <button v-else-if="row.status === 'COMPLETED' || row.status === 'PARTIALLY_REFUNDED'" @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
+                <Icon name="dollar" size="sm" />
+                {{ t('payment.admin.refund') }}
               </button>
             </template>
-            <button v-else-if="row.status === 'REFUND_FAILED'" @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20">
-              <Icon name="refresh" size="sm" />
-              {{ t('payment.admin.retryRefund') }}
-            </button>
-            <button v-else-if="row.status === 'REFUND_PENDING'" :disabled="refundQueryingIds.has(row.id)" @click="handleQueryRefund(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-orange-600 hover:bg-orange-50 disabled:opacity-60 dark:text-orange-400 dark:hover:bg-orange-900/20">
-              <Icon name="refresh" size="sm" :class="refundQueryingIds.has(row.id) ? 'animate-spin' : ''" />
-              {{ t('payment.admin.queryRefundStatus') }}
-            </button>
-            <button v-else-if="row.status === 'COMPLETED' || row.status === 'PARTIALLY_REFUNDED'" @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
-              <Icon name="dollar" size="sm" />
-              {{ t('payment.admin.refund') }}
-            </button>
           </div>
         </template>
       </OrderTable>
@@ -62,11 +65,13 @@
     <!-- Order Detail Dialog -->
     <BaseDialog :show="showDetailDialog" :title="t('payment.admin.orderDetail')" width="wide" @close="showDetailDialog = false">
       <div v-if="selectedOrder" class="space-y-4">
+        <SubscriptionQuotaOrderSummary :snapshot="selectedOrder.subscription_quota_snapshot" />
+        <p v-if="selectedOrder.subscription_quota_snapshot" class="text-sm text-gray-500 dark:text-gray-400">{{ t('subscriptionQuota.manualRefund') }}</p>
         <div class="grid grid-cols-2 gap-4">
           <div><p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</p><p class="font-mono text-sm font-medium text-gray-900 dark:text-white">#{{ selectedOrder.id }}</p></div>
           <div><p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderNo') }}</p><p class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedOrder.out_trade_no }}</p></div>
           <div><p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.orders.status') }}</p><OrderStatusBadge :status="selectedOrder.status" /></div>
-          <div><p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.orders.amount') }}</p><p class="text-sm font-medium text-gray-900 dark:text-white">{{ creditedAmountSymbol }}{{ selectedOrder.amount.toFixed(2) }}</p></div>
+          <div><p class="text-xs text-gray-500 dark:text-gray-400">{{ t(selectedOrder.subscription_quota_snapshot ? 'subscriptionQuota.salePrice' : 'payment.orders.amount') }}</p><p class="text-sm font-medium text-gray-900 dark:text-white">{{ creditedAmountSymbol }}{{ selectedOrder.amount.toFixed(2) }}</p></div>
           <div><p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.orders.payAmount') }}</p><p class="text-sm font-medium text-gray-900 dark:text-white">{{ paymentAmountSymbol(selectedOrder) }}{{ selectedOrder.pay_amount.toFixed(2) }}</p></div>
           <div><p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.orders.paymentMethod') }}</p><p class="text-sm text-gray-700 dark:text-gray-300">{{ t('payment.methods.' + selectedOrder.payment_type, selectedOrder.payment_type) }}</p></div>
           <div><p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.feeRate') }}</p><p class="text-sm text-gray-700 dark:text-gray-300">{{ selectedOrder.fee_rate }}%</p></div>
@@ -111,7 +116,7 @@
       </div>
     </BaseDialog>
 
-    <AdminRefundDialog :show="showRefundDialog" :order="selectedOrder" :submitting="refundSubmitting" :require-force="refundRequireForce" :warning="refundWarning" @confirm="handleRefund" @cancel="closeRefundDialog" />
+    <AdminRefundDialog :show="showRefundDialog" :order="refundOrder" :submitting="refundSubmitting" :require-force="refundRequireForce" :warning="refundWarning" @confirm="handleRefund" @cancel="closeRefundDialog" />
   </AppLayout>
 </template>
 
@@ -131,6 +136,7 @@ import Icon from '@/components/icons/Icon.vue'
 import AdminRefundDialog from '@/components/admin/payment/AdminRefundDialog.vue'
 import OrderStatusBadge from '@/components/payment/OrderStatusBadge.vue'
 import OrderTable from '@/components/payment/OrderTable.vue'
+import SubscriptionQuotaOrderSummary from '@/components/payment/SubscriptionQuotaOrderSummary.vue'
 import { currencySymbol } from '@/components/payment/currency'
 
 interface AuditLog {
@@ -150,6 +156,7 @@ const orderSearch = ref('')
 const orderFilters = reactive({ status: '', payment_type: '', order_type: '' })
 const orderPagination = reactive({ page: 1, page_size: 20, total: 0 })
 const selectedOrder = ref<PaymentOrder | null>(null)
+const refundOrder = ref<PaymentOrder | null>(null)
 const showDetailDialog = ref(false)
 const showRefundDialog = ref(false)
 const refundSubmitting = ref(false)
@@ -221,6 +228,7 @@ async function showOrderDetail(order: PaymentOrder) {
   showDetailDialog.value = true
   try {
     const res = await adminPaymentAPI.getOrder(order.id)
+    if (!showDetailDialog.value || selectedOrder.value?.id !== order.id) return
     const data = res.data as unknown as Record<string, unknown>
     if (data.order) selectedOrder.value = data.order as PaymentOrder
     orderAuditLogs.value = ((data.auditLogs || data.audit_logs || []) as unknown) as AuditLog[]
@@ -238,7 +246,13 @@ async function handleRetryOrder(order: PaymentOrder) {
 }
 
 function openRefundDialog(order: PaymentOrder) {
-  selectedOrder.value = order
+  if (order.subscription_quota_snapshot) {
+    closeRefundDialog()
+    appStore.showError(t('subscriptionQuota.manualRefund'))
+    return
+  }
+  if (refundSubmitting.value) return
+  refundOrder.value = order
   refundRequireForce.value = false
   refundWarning.value = ''
   showRefundDialog.value = true
@@ -246,6 +260,7 @@ function openRefundDialog(order: PaymentOrder) {
 
 function closeRefundDialog() {
   showRefundDialog.value = false
+  refundOrder.value = null
   refundRequireForce.value = false
   refundWarning.value = ''
 }
@@ -255,10 +270,16 @@ function isRefundPendingWarning(warning: string | undefined): boolean {
 }
 
 async function handleRefund(data: { amount: number; reason: string; deduct_balance: boolean; force: boolean }) {
-  if (!selectedOrder.value) return
+  if (!showRefundDialog.value || !refundOrder.value || refundSubmitting.value) return
+  if (refundOrder.value.subscription_quota_snapshot) {
+    closeRefundDialog()
+    appStore.showError(t('subscriptionQuota.manualRefund'))
+    return
+  }
+  const order = refundOrder.value
   refundSubmitting.value = true
   try {
-    const res = await adminPaymentAPI.refundOrder(selectedOrder.value.id, { amount: data.amount, reason: data.reason, deduct_balance: data.deduct_balance, force: data.force })
+    const res = await adminPaymentAPI.refundOrder(order.id, { amount: data.amount, reason: data.reason, deduct_balance: data.deduct_balance, force: data.force })
     if (res.data.success) {
       appStore.showSuccess(t('payment.admin.refundSuccess'))
       closeRefundDialog()
@@ -285,6 +306,11 @@ async function handleRefund(data: { amount: number; reason: string; deduct_balan
 }
 
 async function handleQueryRefund(order: PaymentOrder) {
+  if (order.subscription_quota_snapshot) {
+    appStore.showError(t('subscriptionQuota.manualRefund'))
+    return
+  }
+  if (refundQueryingIds.value.has(order.id)) return
   refundQueryingIds.value = new Set(refundQueryingIds.value).add(order.id)
   try {
     const res = await adminPaymentAPI.queryRefund(order.id)

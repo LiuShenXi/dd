@@ -43,6 +43,9 @@ func (s *SubscriptionService) rejectLegacyQuotaGroup(ctx context.Context, groupI
 	if err != nil {
 		return err
 	}
+	if group != nil && group.Status == domain.SubscriptionQuotaMaintenanceStatus {
+		return ErrSubscriptionQuotaRolloutBlocked
+	}
 	if group == nil || group.EffectiveSubscriptionQuotaMode() != domain.SubscriptionQuotaModeWindows {
 		return ErrLegacySubscriptionOperationUnsupported
 	}

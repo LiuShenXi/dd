@@ -20,18 +20,19 @@ type SubscriptionQuotaBacklog struct {
 }
 type SubscriptionQuotaMetricsSnapshot struct {
 	SubscriptionQuotaBacklog
-	RecoveryRuns         uint64            `json:"recovery_runs"`
-	RecoveryFailures     uint64            `json:"recovery_failures"`
-	KnownPersisted       uint64            `json:"known_persisted"`
-	UnknownTransitions   uint64            `json:"unknown_transitions"`
-	Admission            map[string]uint64 `json:"admission_total"`
-	Settlement           map[string]uint64 `json:"settlement_total"`
-	LedgerMismatch       uint64            `json:"ledger_mismatch_total"`
-	UsageLogMissing      uint64            `json:"usage_log_missing_total"`
-	RecoveryRetries      uint64            `json:"recovery_retries_total"`
-	OverageUSD           string            `json:"overage_usd"`
-	ScopeLockWaitCount   uint64            `json:"scope_lock_wait_count"`
-	ScopeLockWaitSeconds float64           `json:"scope_lock_wait_seconds"`
+	ClaudeConcurrency    ClaudeConcurrencyMetricsSnapshot `json:"claude_concurrency"`
+	RecoveryRuns         uint64                           `json:"recovery_runs"`
+	RecoveryFailures     uint64                           `json:"recovery_failures"`
+	KnownPersisted       uint64                           `json:"known_persisted"`
+	UnknownTransitions   uint64                           `json:"unknown_transitions"`
+	Admission            map[string]uint64                `json:"admission_total"`
+	Settlement           map[string]uint64                `json:"settlement_total"`
+	LedgerMismatch       uint64                           `json:"ledger_mismatch_total"`
+	UsageLogMissing      uint64                           `json:"usage_log_missing_total"`
+	RecoveryRetries      uint64                           `json:"recovery_retries_total"`
+	OverageUSD           string                           `json:"overage_usd"`
+	ScopeLockWaitCount   uint64                           `json:"scope_lock_wait_count"`
+	ScopeLockWaitSeconds float64                          `json:"scope_lock_wait_seconds"`
 }
 
 var subscriptionQuotaMetrics struct {
@@ -46,6 +47,7 @@ var subscriptionQuotaMetrics struct {
 
 func GetSubscriptionQuotaMetricsSnapshot() SubscriptionQuotaMetricsSnapshot {
 	s := SubscriptionQuotaMetricsSnapshot{RecoveryRuns: subscriptionQuotaMetrics.runs.Load(), RecoveryFailures: subscriptionQuotaMetrics.failures.Load(), KnownPersisted: subscriptionQuotaMetrics.known.Load(), UnknownTransitions: subscriptionQuotaMetrics.unknown.Load()}
+	s.ClaudeConcurrency = GetClaudeConcurrencyMetricsSnapshot()
 	if backlog := subscriptionQuotaMetrics.backlog.Load(); backlog != nil {
 		s.SubscriptionQuotaBacklog = *backlog
 	}
@@ -160,6 +162,7 @@ func (s *SubscriptionQuotaRecoveryService) observeBatch(ctx context.Context, run
 		}
 	}
 	metrics := GetSubscriptionQuotaMetricsSnapshot()
+	slog.Info("claude concurrency metrics", "operations_total", metrics.ClaudeConcurrency.Operations)
 	// Same process snapshot + structured log convention as idempotency metrics.
 	slog.Info("subscription quota recovery metrics", "pending_known", metrics.Known, "reconcile_required", metrics.Reconcile, "admitted", metrics.Admitted, "pending_statistics", metrics.PendingLogs, "oldest_known_seconds", metrics.OldestKnownSeconds, "recovery_runs", metrics.RecoveryRuns, "recovery_failures", metrics.RecoveryFailures, "ledger_mismatch_total", metrics.LedgerMismatch, "usage_log_missing_total", metrics.UsageLogMissing, "recovery_retries_total", metrics.RecoveryRetries, "overage_usd", metrics.OverageUSD, "scope_lock_wait_seconds", metrics.ScopeLockWaitSeconds, "scope_lock_wait_count", metrics.ScopeLockWaitCount)
 }

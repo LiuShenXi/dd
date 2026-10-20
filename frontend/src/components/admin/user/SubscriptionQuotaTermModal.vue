@@ -10,6 +10,10 @@
       <form v-if="groupId" class="space-y-4" @submit.prevent="submit">
         <label class="block"><span class="input-label">{{ t('subscriptionQuota.resolution') }}</span><select v-model="operation" class="input" data-testid="quota-operation"><option value="open">{{ t('subscriptionQuota.open') }}</option><option value="renew">{{ t('subscriptionQuota.renew') }}</option></select></label>
         <p v-if="operation === 'renew'" class="text-sm text-amber-700 dark:text-amber-300">{{ t('subscriptionQuota.renewHint') }}</p>
+        <label class="block"><span class="input-label">{{ t('subscriptionQuota.plan') }}</span><select v-model.number="planId" class="input" :disabled="plansLoading" data-testid="quota-plan"><option :value="0">{{ t('subscriptionQuota.manualAmount') }}</option><option v-for="plan in availablePlans" :key="plan.id" :value="plan.id">{{ plan.name }} · {{ formatQuotaUSD(plan.default_quota_usd) }} USD</option></select></label>
+        <p v-if="plansError" role="alert" class="text-sm text-amber-700">{{ t('subscriptionQuota.plansFailed') }} <button type="button" class="underline" @click="loadPlans">{{ t('subscriptionQuota.retry') }}</button></p>
+        <p class="input-hint">{{ t('subscriptionQuota.planHint') }}</p>
+        <div v-if="selectedPlan" class="flex flex-wrap items-center gap-2 text-xs"><span>{{ t('subscriptionQuota.planDefault') }}: {{ formatQuotaUSD(selectedPlan.default_quota_usd) }} USD</span><button type="button" class="underline" data-testid="quota-use-default" @click="copyPlanDefault">{{ t('subscriptionQuota.usePlanDefault') }}</button></div>
         <label class="block"><span class="input-label">{{ t('subscriptionQuota.amount') }}</span><input v-model="amount" inputmode="decimal" type="text" class="input" required aria-describedby="claude-quota-amount-hint" data-testid="quota-amount" /><span id="claude-quota-amount-hint" class="input-hint">{{ t('subscriptionQuota.amountHint') }}</span></label>
         <label class="block"><span class="input-label">{{ t('subscriptionQuota.notes') }}</span><textarea v-model="notes" class="input" rows="2" data-testid="quota-notes" /></label>
         <button type="button" class="btn btn-secondary" :disabled="previewing || mutationBusy || !valid" data-testid="quota-preview" @click="requestPreview">{{ previewing ? t('subscriptionQuota.loading') : t('subscriptionQuota.preview') }}</button>
@@ -29,6 +33,8 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import ClaudeQuotaCard from '@/components/subscription/ClaudeQuotaCard.vue'
+import { adminPaymentAPI } from '@/api/admin/payment'
+import type { SubscriptionPlan } from '@/types/payment'
 import groupsAPI from '@/api/admin/groups'
 import { adminSubscriptionQuotaAPI as api } from '@/api/admin/subscriptionQuota'
 import { useAuthStore } from '@/stores/auth'
@@ -43,6 +49,9 @@ const emit = defineEmits<{ (e: 'close'): void; (e: 'success'): void }>()
 const { t } = useI18n()
 const auth = useAuthStore()
 const groups = ref<AdminGroup[]>([]), groupId = ref(0)
+const plans = ref<SubscriptionPlan[]>([]), planId = ref(0), plansLoading = ref(false), plansError = ref(false)
+const availablePlans = computed(() => plans.value.filter(plan => plan.group_id === groupId.value && plan.quota_mode === 'term' && validQuotaInput(plan.default_quota_usd ?? '')))
+const selectedPlan = computed(() => availablePlans.value.find(plan => plan.id === planId.value))
 const amount = ref(''), notes = ref(''), operation = ref<'open' | 'renew'>('open')
 const summary = ref<SubscriptionQuotaSummary | null>(null), preview = ref<SubscriptionQuotaPreview | null>(null)
 const terms = ref<SubscriptionQuotaTerm[]>([]), nextCursor = ref<string | null>(null)
@@ -54,13 +63,26 @@ const base = () => JSON.stringify([props.show, props.user?.id, auth.user?.id, gr
 // A read/form edit must not release an already-sent mutation on the same scope.
 const mutationLock = useQuotaMutationMutex('claude-term', () => JSON.stringify([auth.user?.id, props.user?.id, groupId.value]))
 const mutationBusy = mutationLock.busy
-const draft = computed(() => ({ group_id: groupId.value, operation: operation.value, quota_usd: amount.value, ...(notes.value ? { notes: notes.value } : {}) }))
+const draft = computed(() => ({ group_id: groupId.value, operation: operation.value, quota_usd: amount.value, ...(planId.value ? { plan_id: planId.value } : {}), ...(notes.value ? { notes: notes.value } : {}) }))
 const identity = useQuotaRequestIdentity(base)
+const planIdentity = useQuotaRequestIdentity(() => JSON.stringify([props.show, props.user?.id, auth.user?.id]))
 const actions = useQuotaRequestIdentity(() => JSON.stringify([base(), draft.value]))
 const cancellation = useQuotaRequestIdentity(() => JSON.stringify([base(), cancelTarget.value, cancelReason.value]))
 const valid = computed(() => validQuotaInput(amount.value))
 let previewFingerprint = '', keyFingerprint = '', operationKey = '', cancelFingerprint = '', cancelKey = ''
 function label(value: string) { return quotaStatusLabel(value, t) }
+function copyPlanDefault() {
+  if (selectedPlan.value?.default_quota_usd) amount.value = selectedPlan.value.default_quota_usd
+}
+watch(planId, copyPlanDefault, { flush: 'sync' })
+async function loadPlans() {
+  if (!props.show || !props.user) return
+  const current = planIdentity.capture()
+  plansLoading.value = true; plansError.value = false
+  try { const result = await adminPaymentAPI.getPlans(); if (current()) plans.value = result.data ?? [] }
+  catch { if (current()) plansError.value = true }
+  finally { if (current()) plansLoading.value = false }
+}
 async function loadSummary() {
   if (!props.show || !props.user || !groupId.value) return
   const current = identity.capture('summary'), userId = props.user.id, id = groupId.value
@@ -121,16 +143,18 @@ async function cancelCard() {
   finally { releaseMutation(); if (current()) cancelling.value = false }
 }
 watch(() => JSON.stringify([props.show, props.user?.id, auth.user?.id]), async () => {
-  identity.invalidate(); actions.invalidate(); cancellation.invalidate()
+  identity.invalidate(); actions.invalidate(); cancellation.invalidate(); planIdentity.invalidate()
+  plans.value = []; planId.value = 0; plansLoading.value = false; plansError.value = false
   groupId.value = 0; groups.value = []; summary.value = null; terms.value = []; preview.value = null; saved.value = null
   amount.value = ''; notes.value = ''; operation.value = 'open'; loading.value = false; groupsLoading.value = false; previewing.value = false; submitting.value = false; cancelling.value = false; loadError.value = ''; error.value = ''; cancelTarget.value = null
   if (!props.show || !props.user) return
+  void loadPlans()
   const current = identity.capture('groups'); groupsLoading.value = true
   try { const data = await groupsAPI.getAll('anthropic'); if (current()) { groups.value = data.filter(group => group.subscription_quota_mode === 'term' && group.subscription_type === 'subscription'); groupsLoading.value = false; groupId.value = groups.value.some(group => group.id === props.initialGroupId) ? props.initialGroupId! : groups.value[0]?.id ?? 0 } }
   catch (err) { if (current()) loadError.value = quotaError(err) }
   finally { if (current()) groupsLoading.value = false }
 }, { immediate: true, flush: 'sync' })
-watch(groupId, () => { identity.invalidate(); summary.value = null; terms.value = []; saved.value = null; cancelTarget.value = null; loading.value = false; void loadSummary() })
+watch(groupId, () => { planId.value = 0; identity.invalidate(); summary.value = null; terms.value = []; saved.value = null; cancelTarget.value = null; loading.value = false; void loadSummary() }, { flush: 'sync' })
 watch(() => JSON.stringify(draft.value), () => { actions.invalidate(); preview.value = null; error.value = ''; previewing.value = false; submitting.value = false; previewFingerprint = ''; keyFingerprint = ''; operationKey = '' }, { flush: 'sync' })
 watch(() => JSON.stringify([cancelTarget.value, cancelReason.value]), () => { cancellation.invalidate(); cancelling.value = false; cancelError.value = '' }, { flush: 'sync' })
 </script>

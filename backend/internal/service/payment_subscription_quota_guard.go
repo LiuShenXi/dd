@@ -28,6 +28,9 @@ func (s *PaymentService) rejectLegacyQuotaOrder(ctx context.Context, order *dben
 		if err != nil {
 			return err
 		}
+		if group != nil && group.Status == domain.SubscriptionQuotaMaintenanceStatus {
+			return ErrSubscriptionQuotaRolloutBlocked
+		}
 		if group == nil || group.EffectiveSubscriptionQuotaMode() != domain.SubscriptionQuotaModeWindows {
 			return ErrLegacySubscriptionOperationUnsupported
 		}
@@ -39,6 +42,9 @@ func (s *PaymentService) rejectLegacyQuotaOrder(ctx context.Context, order *dben
 	group, err := s.entClient.Group.Get(ctx, *order.SubscriptionGroupID)
 	if err != nil {
 		return err
+	}
+	if group.Status == domain.SubscriptionQuotaMaintenanceStatus {
+		return ErrSubscriptionQuotaRolloutBlocked
 	}
 	if domain.NormalizeSubscriptionQuotaMode(group.SubscriptionQuotaMode) != domain.SubscriptionQuotaModeWindows {
 		return ErrLegacySubscriptionOperationUnsupported

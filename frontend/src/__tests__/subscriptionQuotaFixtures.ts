@@ -10,3 +10,7 @@ export function deferred<T>() {
   const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no })
   return { promise, resolve, reject }
 }
+
+export function quotaOrderSnapshot(overrides: Partial<import('@/types/payment').SubscriptionQuotaOrderSnapshot> = {}): import('@/types/payment').SubscriptionQuotaOrderSnapshot {
+  return { schema_version: 1, mode: 'term', group_id: 6, platform: 'anthropic', duration_seconds: 604800, quota_usd: '100.00000001', source_plan_id: 7, plan_name: 'Original plan', product_name: 'Original weekly card', group_name: 'Claude group', ...overrides }
+}

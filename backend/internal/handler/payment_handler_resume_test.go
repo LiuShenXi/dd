@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,6 +15,7 @@ import (
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/ent/enttest"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 	"github.com/gin-gonic/gin"
@@ -159,6 +161,7 @@ func TestVerifyOrderPublicReturnsLegacyOrderState(t *testing.T) {
 		"refund_requested_by",
 		"refund_request_reason",
 		"plan_id",
+		"subscription_quota_snapshot",
 	} {
 		require.NotContains(t, resp.Data, field)
 	}
@@ -252,6 +255,84 @@ func TestResolveOrderPublicByResumeTokenReturnsFrontendContractFields(t *testing
 	require.Contains(t, resp.Data, "created_at")
 	require.Contains(t, resp.Data, "expires_at")
 	require.Contains(t, resp.Data, "refund_amount")
+	require.Contains(t, resp.Data, "subscription_quota_snapshot")
+	require.Nil(t, resp.Data["subscription_quota_snapshot"], "legacy balance order has no term entitlement")
+}
+
+func TestResolveOrderPublicByResumeTokenFiltersFrozenQuota(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	const signingKey = "0123456789abcdef0123456789abcdef"
+	t.Setenv("PAYMENT_RESUME_SIGNING_KEY", signingKey)
+	db, err := sql.Open("sqlite", "file:payment_handler_frozen_quota?mode=memory&cache=shared")
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = db.Close() })
+	_, err = db.Exec("PRAGMA foreign_keys = ON")
+	require.NoError(t, err)
+	client := enttest.NewClient(t, enttest.WithOptions(dbent.Driver(entsql.OpenDB(dialect.SQLite, db))))
+	t.Cleanup(func() { _ = client.Close() })
+	user, err := client.User.Create().SetEmail("resume-quota@example.invalid").SetPasswordHash("hash").Save(context.Background())
+	require.NoError(t, err)
+	configSvc := service.NewPaymentConfigService(client, nil, []byte(signingKey))
+	h := NewPaymentHandler(service.NewPaymentService(client, payment.NewRegistry(), nil, nil, nil, configSvc, nil, nil, nil), nil)
+	resume := service.NewPaymentResumeService([]byte(signingKey))
+	snapshot := domain.SubscriptionQuotaOrderSnapshot{SchemaVersion: 1, Mode: "term", GroupID: 7, Platform: "anthropic", DurationSeconds: 604800, QuotaUSD: "125.12345678", SourcePlanID: 9, PlanName: "Frozen plan", GroupName: "Claude"}
+	for _, scenario := range []string{"valid", "malformed", "future_version", "unknown_field"} {
+		t.Run(scenario, func(t *testing.T) {
+			frozen := snapshot.Map()
+			switch scenario {
+			case "malformed":
+				frozen["quota_usd"] = 125.12345678
+			case "future_version":
+				frozen["schema_version"] = 99
+			case "unknown_field":
+				frozen["api_key"] = "private-snapshot-key"
+			}
+			order, err := client.PaymentOrder.Create().SetUserID(user.ID).SetUserEmail(user.Email).SetUserName("private-user-name").
+				SetAmount(12.34).SetPayAmount(86.38).SetRechargeCode("private-redeem-" + scenario).SetOutTradeNo("resume-quota-" + scenario).
+				SetPaymentType(payment.TypeAlipay).SetPaymentTradeNo("private-provider-trade").SetOrderType(payment.OrderTypeSubscription).
+				SetStatus(service.OrderStatusCompleted).SetExpiresAt(time.Now().Add(time.Hour)).SetPaidAt(time.Now()).SetCompletedAt(time.Now()).
+				SetClientIP("127.0.0.1").SetSrcHost("synthetic.invalid").SetSubscriptionQuotaSnapshot(frozen).
+				SetProviderSnapshot(map[string]any{"currency": "CNY", "merchant_secret": "private-merchant-key"}).Save(context.Background())
+			require.NoError(t, err)
+			token, err := resume.CreateToken(service.ResumeTokenClaims{OrderID: order.ID, UserID: user.ID, PaymentType: payment.TypeAlipay, CanonicalReturnURL: "https://synthetic.invalid/payment/result"})
+			require.NoError(t, err)
+			call := func(path, body string, action gin.HandlerFunc) map[string]any {
+				w := httptest.NewRecorder()
+				ctx, _ := gin.CreateTestContext(w)
+				ctx.Request = httptest.NewRequest(http.MethodPost, path, bytes.NewBufferString(body))
+				ctx.Request.Header.Set("Content-Type", "application/json")
+				action(ctx)
+				require.Equal(t, http.StatusOK, w.Code, w.Body.String())
+				require.NotContains(t, w.Body.String(), "private-", "response must not expose provider/order private fields or unknown snapshot fields")
+				var envelope struct {
+					Data map[string]any `json:"data"`
+				}
+				require.NoError(t, json.Unmarshal(w.Body.Bytes(), &envelope))
+				return envelope.Data
+			}
+			result := call("/api/v1/payment/public/orders/resolve", fmt.Sprintf(`{"resume_token":%q}`, token), h.ResolveOrderPublicByResumeToken)
+			require.Equal(t, payment.OrderTypeSubscription, result["order_type"])
+			require.Equal(t, 12.34, result["amount"])
+			require.Equal(t, 86.38, result["pay_amount"])
+			require.Equal(t, "CNY", result["currency"])
+			require.Contains(t, result, "subscription_quota_snapshot")
+			if scenario == "valid" {
+				want, err := json.Marshal(snapshot)
+				require.NoError(t, err)
+				actual, err := json.Marshal(result["subscription_quota_snapshot"])
+				require.NoError(t, err)
+				require.JSONEq(t, string(want), string(actual))
+			} else {
+				require.Nil(t, result["subscription_quota_snapshot"])
+			}
+			anonymous := call("/api/v1/payment/public/orders/verify", fmt.Sprintf(`{"out_trade_no":%q}`, order.OutTradeNo), h.VerifyOrderPublic)
+			require.Equal(t, true, anonymous["paid"])
+			require.Len(t, anonymous, 7, "anonymous lookup keeps only its original seven status/timestamp fields")
+			for _, field := range []string{"subscription_quota_snapshot", "amount", "pay_amount", "order_type", "user_id", "plan_id", "provider_snapshot"} {
+				require.NotContains(t, anonymous, field)
+			}
+		})
+	}
 }
 
 func TestResolveOrderPublicByResumeTokenReturnsBadRequestForMismatchedToken(t *testing.T) {

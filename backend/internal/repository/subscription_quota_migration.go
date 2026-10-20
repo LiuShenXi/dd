@@ -11,10 +11,13 @@ import (
 )
 
 // No general session-setting escape hatch is added to the migration runner.
-// These are the complete, bounded statements in this one online migration.
+// These are the complete, bounded statements in the quota online migrations.
 func subscriptionQuotaOnlineIndexTimeoutStatement(name, statement string) bool {
-	if name != "247_subscription_quota_usage_index_notx.sql" {
+	if name != "247_subscription_quota_usage_index_notx.sql" && name != "254_subscription_quota_history_indexes_notx.sql" {
 		return false
+	}
+	if name == "254_subscription_quota_history_indexes_notx.sql" && statement == "SET STATEMENT_TIMEOUT = '120S'" {
+		return true
 	}
 	switch statement {
 	case "SET LOCK_TIMEOUT = '5S'", "SET STATEMENT_TIMEOUT = '5MIN'", "RESET LOCK_TIMEOUT", "RESET STATEMENT_TIMEOUT":

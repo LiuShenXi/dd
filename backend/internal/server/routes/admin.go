@@ -706,6 +706,10 @@ func registerSubscriptionQuotaRoutes(admin *gin.RouterGroup, h *handler.Handlers
 	admin.POST("/subscription-quota/terms/:term_id/cancel", h.Admin.SubscriptionQuota.CancelTerm)
 	admin.GET("/subscription-quota/requests", h.Admin.SubscriptionQuota.ListRequests)
 	admin.POST("/subscription-quota/requests/:request_id/resolve", h.Admin.SubscriptionQuota.ResolveRequest)
+	admin.GET("/groups/:id/subscription-quota/rollout", h.Admin.SubscriptionQuota.GetRollout)
+	admin.POST("/groups/:id/subscription-quota/rollout/maintenance", h.Admin.SubscriptionQuota.MaintainRollout)
+	admin.POST("/groups/:id/subscription-quota/rollout/preview", h.Admin.SubscriptionQuota.PreviewRollout)
+	admin.POST("/groups/:id/subscription-quota/rollout/convert", h.Admin.SubscriptionQuota.ConvertRollout)
 }
 
 func registerSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {

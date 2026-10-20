@@ -34,8 +34,12 @@
             <span v-if="row.original_price" class="ml-1 text-xs text-gray-400 line-through">{{ planCurrencySymbol(row.currency) }}{{ row.original_price.toFixed(2) }}</span>
           </div>
         </template>
-        <template #cell-validity_days="{ value, row }">
-          <span class="text-sm">{{ value }} {{ t('payment.admin.' + (row.validity_unit || 'days')) }}</span>
+        <template #cell-default_quota_usd="{ row }">
+          <span v-if="row.quota_mode === 'term'" class="text-sm">{{ formatQuotaUSD(row.default_quota_usd) }} USD</span>
+          <span v-else class="text-gray-400">—</span>
+        </template>
+        <template #cell-validity_days="{ row }">
+          <span class="text-sm">{{ row.quota_mode === 'term' ? t('subscriptionQuota.fixedDuration') : planValiditySuffix(row, t) }}</span>
         </template>
         <template #cell-for_sale="{ value, row }">
           <button
@@ -92,6 +96,8 @@ import Icon from '@/components/icons/Icon.vue'
 import GroupBadge from '@/components/common/GroupBadge.vue'
 import PlanEditDialog from './PlanEditDialog.vue'
 import { currencySymbol } from '@/components/payment/currency'
+import { planValiditySuffix } from '@/components/payment/validity'
+import { formatQuotaUSD } from '@/utils/claudeQuota'
 import { platformTextClass } from '@/utils/platformColors'
 
 const { t } = useI18n()
@@ -147,6 +153,7 @@ const planColumns = computed((): Column[] => [
   { key: 'name', label: t('payment.admin.planName') },
   { key: 'group_id', label: t('payment.admin.group') },
   { key: 'price', label: t('payment.admin.price') },
+  { key: 'default_quota_usd', label: t('subscriptionQuota.defaultAmount') },
   { key: 'validity_days', label: t('payment.admin.validity') },
   { key: 'for_sale', label: t('payment.admin.forSale') },
   { key: 'sort_order', label: t('payment.admin.sortOrder') },

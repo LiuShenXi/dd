@@ -1725,15 +1725,17 @@ type SubscriptionCacheConfig struct {
 // SubscriptionQuotaConfig separates issuance, generation and recovery. R1
 // recognizes term groups. Admission additionally requires startup capability checks.
 type SubscriptionQuotaConfig struct {
-	IssueEnabled        bool          `mapstructure:"issue_enabled"`
-	AdmissionEnabled    bool          `mapstructure:"admission_enabled"`
-	RecoveryEnabled     bool          `mapstructure:"recovery_enabled"`
-	EnabledGroupIDs     []int64       `mapstructure:"enabled_group_ids"`
-	ProtectedGroupIDs   []int64       `mapstructure:"protected_group_ids"`
-	RecoveryBatchSize   int           `mapstructure:"recovery_batch_size"`
-	RecoveryInterval    time.Duration `mapstructure:"recovery_interval"`
-	RecoveryItemTimeout time.Duration `mapstructure:"recovery_item_timeout"`
-	RequestStaleGrace   time.Duration `mapstructure:"request_stale_grace"`
+	RolloutReplicaID          string        `mapstructure:"rollout_replica_id"`
+	RolloutExpectedReplicaIDs []string      `mapstructure:"rollout_expected_replica_ids"`
+	IssueEnabled              bool          `mapstructure:"issue_enabled"`
+	AdmissionEnabled          bool          `mapstructure:"admission_enabled"`
+	RecoveryEnabled           bool          `mapstructure:"recovery_enabled"`
+	EnabledGroupIDs           []int64       `mapstructure:"enabled_group_ids"`
+	ProtectedGroupIDs         []int64       `mapstructure:"protected_group_ids"`
+	RecoveryBatchSize         int           `mapstructure:"recovery_batch_size"`
+	RecoveryInterval          time.Duration `mapstructure:"recovery_interval"`
+	RecoveryItemTimeout       time.Duration `mapstructure:"recovery_item_timeout"`
+	RequestStaleGrace         time.Duration `mapstructure:"request_stale_grace"`
 }
 
 // SubscriptionMaintenanceConfig 订阅窗口维护后台任务配置。
@@ -2026,6 +2028,8 @@ func configureConfigSource(setConfigFile, addConfigPath func(string)) {
 
 func setDefaults() {
 	viper.SetDefault("run_mode", RunModeStandard)
+	viper.SetDefault("subscription_quota.rollout_replica_id", "")
+	viper.SetDefault("subscription_quota.rollout_expected_replica_ids", []string{})
 	viper.SetDefault("subscription_quota.issue_enabled", false)
 	viper.SetDefault("subscription_quota.admission_enabled", false)
 	viper.SetDefault("subscription_quota.recovery_enabled", true)

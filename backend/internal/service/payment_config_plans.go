@@ -2,12 +2,14 @@ package service
 
 import (
 	"context"
+	"entgo.io/ent/dialect"
 	"fmt"
 	"strings"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/ent/group"
 	"github.com/Wei-Shaw/sub2api/ent/subscriptionplan"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 )
@@ -75,6 +77,7 @@ func validatePlanPatch(req UpdatePlanRequest) error {
 
 // PlanGroupInfo holds the group details needed for subscription plan display.
 type PlanGroupInfo struct {
+	QuotaMode          string   `json:"quota_mode"`
 	Platform           string   `json:"platform"`
 	Name               string   `json:"name"`
 	RateMultiplier     float64  `json:"rate_multiplier"`
@@ -109,6 +112,7 @@ func (s *PaymentConfigService) GetGroupInfoMap(ctx context.Context, plans []*dbe
 	for _, g := range groups {
 		m[int64(g.ID)] = PlanGroupInfo{
 			Platform:           g.Platform,
+			QuotaMode:          domain.NormalizeSubscriptionQuotaMode(g.SubscriptionQuotaMode),
 			Name:               g.Name,
 			RateMultiplier:     g.RateMultiplier,
 			PeakRateEnabled:    g.PeakRateEnabled,
@@ -129,7 +133,39 @@ func (s *PaymentConfigService) ListPlans(ctx context.Context) ([]*dbent.Subscrip
 }
 
 func (s *PaymentConfigService) ListPlansForSale(ctx context.Context) ([]*dbent.SubscriptionPlan, error) {
-	return s.entClient.SubscriptionPlan.Query().Where(subscriptionplan.ForSaleEQ(true)).Order(subscriptionplan.BySortOrder()).All(ctx)
+	plans, err := s.entClient.SubscriptionPlan.Query().Where(subscriptionplan.ForSaleEQ(true)).Order(subscriptionplan.BySortOrder()).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if len(plans) == 0 {
+		return []*dbent.SubscriptionPlan{}, nil
+	}
+	ids := make([]int64, 0, len(plans))
+	for _, plan := range plans {
+		ids = append(ids, plan.GroupID)
+	}
+	groups, err := s.entClient.Group.Query().Where(group.IDIn(ids...)).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	byID := make(map[int64]*dbent.Group, len(groups))
+	for _, g := range groups {
+		byID[g.ID] = g
+	}
+	visible := make([]*dbent.SubscriptionPlan, 0, len(plans))
+	for _, plan := range plans {
+		g := byID[plan.GroupID]
+		if g == nil {
+			continue
+		}
+		if domain.NormalizeSubscriptionQuotaMode(g.SubscriptionQuotaMode) != domain.SubscriptionQuotaModeWindows {
+			if _, err := validatePlanQuota(g, plan.ValidityDays, plan.ValidityUnit, true, plan.TermQuotaUsd); err != nil || g.Status != "active" || g.DeletedAt != nil {
+				continue
+			}
+		}
+		visible = append(visible, plan)
+	}
+	return visible, nil
 }
 
 func (s *PaymentConfigService) CreatePlan(ctx context.Context, req CreatePlanRequest) (*dbent.SubscriptionPlan, error) {
@@ -140,7 +176,24 @@ func (s *PaymentConfigService) CreatePlan(ctx context.Context, req CreatePlanReq
 	if err != nil {
 		return nil, err
 	}
-	b := s.entClient.SubscriptionPlan.Create().
+	tx, err := s.entClient.Tx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+	groupQuery := tx.Group.Query().Where(group.IDEQ(req.GroupID))
+	if s.entClient.Driver().Dialect() != dialect.SQLite {
+		groupQuery.ForShare()
+	}
+	g, err := groupQuery.Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	quota, err := validatePlanQuota(g, req.ValidityDays, req.ValidityUnit, req.ForSale, req.DefaultQuotaUSD)
+	if err != nil {
+		return nil, err
+	}
+	b := tx.SubscriptionPlan.Create().
 		SetGroupID(req.GroupID).SetName(req.Name).SetDescription(req.Description).
 		SetPrice(req.Price).SetCurrency(currency).SetValidityDays(req.ValidityDays).SetValidityUnit(req.ValidityUnit).
 		SetFeatures(req.Features).SetProductName(req.ProductName).
@@ -148,7 +201,18 @@ func (s *PaymentConfigService) CreatePlan(ctx context.Context, req CreatePlanReq
 	if req.OriginalPrice != nil {
 		b.SetOriginalPrice(*req.OriginalPrice)
 	}
-	return b.Save(ctx)
+	if quota != nil {
+		b.SetTermQuotaUsd(*quota)
+	}
+	plan, err := b.Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+	plan.Unwrap()
+	return plan, nil
 }
 
 // UpdatePlan updates a subscription plan by ID (patch semantics).
@@ -158,7 +222,51 @@ func (s *PaymentConfigService) UpdatePlan(ctx context.Context, id int64, req Upd
 	if err := validatePlanPatch(req); err != nil {
 		return nil, err
 	}
-	u := s.entClient.SubscriptionPlan.UpdateOneID(id)
+	tx, err := s.entClient.Tx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+	planQuery := tx.SubscriptionPlan.Query().Where(subscriptionplan.IDEQ(id))
+	if s.entClient.Driver().Dialect() != dialect.SQLite {
+		planQuery.ForUpdate()
+	}
+	current, err := planQuery.Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	groupID, days, unit, sale, quota := current.GroupID, current.ValidityDays, current.ValidityUnit, current.ForSale, current.TermQuotaUsd
+	if req.GroupID != nil {
+		groupID = *req.GroupID
+	}
+	if req.ValidityDays != nil {
+		days = *req.ValidityDays
+	}
+	if req.ValidityUnit != nil {
+		unit = *req.ValidityUnit
+	}
+	if req.ForSale != nil {
+		sale = *req.ForSale
+	}
+	if req.DefaultQuotaUSD != nil {
+		quota = req.DefaultQuotaUSD
+	}
+	groupQuery := tx.Group.Query().Where(group.IDEQ(groupID))
+	if s.entClient.Driver().Dialect() != dialect.SQLite {
+		groupQuery.ForShare()
+	}
+	g, err := groupQuery.Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	quota, err = validatePlanQuota(g, days, unit, sale, quota)
+	if err != nil {
+		return nil, err
+	}
+	u := tx.SubscriptionPlan.UpdateOneID(id)
+	if quota != nil {
+		u.SetTermQuotaUsd(*quota)
+	}
 	if req.GroupID != nil {
 		u.SetGroupID(*req.GroupID)
 	}
@@ -199,7 +307,15 @@ func (s *PaymentConfigService) UpdatePlan(ctx context.Context, id int64, req Upd
 	if req.SortOrder != nil {
 		u.SetSortOrder(*req.SortOrder)
 	}
-	return u.Save(ctx)
+	plan, err := u.Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+	plan.Unwrap()
+	return plan, nil
 }
 
 func (s *PaymentConfigService) DeletePlan(ctx context.Context, id int64) error {
@@ -221,4 +337,57 @@ func (s *PaymentConfigService) GetPlan(ctx context.Context, id int64) (*dbent.Su
 		return nil, infraerrors.NotFound("PLAN_NOT_FOUND", "subscription plan not found")
 	}
 	return plan, nil
+}
+
+// validateTermPlanDuration accepts the UI's canonical unit and existing plans'
+// singular spelling; both describe the same fixed 168-hour entitlement.
+func validateTermPlanDuration(days int, unit string) error {
+	if days != 7 || (unit != "days" && unit != "day") {
+		return infraerrors.BadRequest("TERM_PLAN_DURATION_INVALID", "Claude quota plans must have exactly seven days")
+	}
+	return nil
+}
+
+// validatePlanQuota keeps sale price and the exact USD allowance independent.
+func validatePlanQuota(g *dbent.Group, days int, unit string, forSale bool, quota *string) (*string, error) {
+	var normalized *string
+	if quota != nil {
+		value, err := domain.NormalizeSubscriptionQuotaMoney(*quota)
+		if err != nil {
+			return nil, ErrSubscriptionQuotaInvalid
+		}
+		normalized = &value
+	}
+	if g == nil {
+		return nil, ErrSubscriptionQuotaGroupInvalid
+	}
+	mode := domain.NormalizeSubscriptionQuotaMode(g.SubscriptionQuotaMode)
+	if mode == domain.SubscriptionQuotaModeWindows {
+		return normalized, nil
+	}
+	if mode != domain.SubscriptionQuotaModeTerm || g.Platform != PlatformAnthropic || g.SubscriptionType != SubscriptionTypeSubscription || g.FallbackGroupID != nil || g.FallbackGroupIDOnInvalidRequest != nil {
+		return nil, ErrSubscriptionQuotaGroupInvalid
+	}
+	if err := validateTermPlanDuration(days, unit); err != nil {
+		return nil, err
+	}
+	if forSale && (g.Status != "active" || g.DeletedAt != nil) {
+		return nil, ErrSubscriptionQuotaGroupInvalid
+	}
+	if forSale && normalized == nil {
+		return nil, ErrSubscriptionQuotaRequired
+	}
+	return normalized, nil
+}
+
+// PlanDefaultQuotaUSD projects NUMERIC as canonical text for all plan APIs.
+func PlanDefaultQuotaUSD(plan *dbent.SubscriptionPlan) *string {
+	if plan == nil || plan.TermQuotaUsd == nil {
+		return nil
+	}
+	value, err := domain.NormalizeSubscriptionQuotaMoney(*plan.TermQuotaUsd)
+	if err != nil {
+		return nil
+	}
+	return &value
 }

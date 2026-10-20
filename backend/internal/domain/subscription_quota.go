@@ -174,12 +174,13 @@ type SubscriptionQuotaPageParams struct {
 	Limit    int
 }
 type SubscriptionQuotaSourceSnapshot struct {
-	SchemaVersion       int        `json:"schema_version"`
-	QuotaUSD            string     `json:"quota_usd"`
-	DurationHours       int        `json:"duration_hours"`
-	QuotaSource         string     `json:"quota_source"`
-	PlanID              *int64     `json:"plan_id"`
-	PlanName            string     `json:"plan_name,omitempty"`
-	PlanUpdatedAt       *time.Time `json:"plan_updated_at,omitempty"`
-	PlanDefaultQuotaUSD *string    `json:"plan_default_quota_usd,omitempty"`
+	OrderSnapshot       *SubscriptionQuotaOrderSnapshot `json:"order_snapshot,omitempty"`
+	SchemaVersion       int                             `json:"schema_version"`
+	QuotaUSD            string                          `json:"quota_usd"`
+	DurationHours       int                             `json:"duration_hours"`
+	QuotaSource         string                          `json:"quota_source"`
+	PlanID              *int64                          `json:"plan_id"`
+	PlanName            string                          `json:"plan_name,omitempty"`
+	PlanUpdatedAt       *time.Time                      `json:"plan_updated_at,omitempty"`
+	PlanDefaultQuotaUSD *string                         `json:"plan_default_quota_usd,omitempty"`
 }

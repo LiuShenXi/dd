@@ -230,7 +230,7 @@ func applyMigrationsFS(ctx context.Context, db *sql.DB, fsys fs.FS) error {
 		}
 
 		if nonTx {
-			if name == "247_subscription_quota_usage_index_notx.sql" {
+			if name == "247_subscription_quota_usage_index_notx.sql" || name == "254_subscription_quota_history_indexes_notx.sql" {
 				if err := applySubscriptionQuotaOnlineIndexMigration(ctx, lockConn, name, content, checksum); err != nil {
 					return err
 				}
@@ -300,6 +300,13 @@ func prepareNonTransactionalMigration(ctx context.Context, db migrationConnectio
 	switch name {
 	case "247_subscription_quota_usage_index_notx.sql":
 		return dropInvalidIndexIfPresent(ctx, db, "usage_logs_subscription_term_time")
+	case "254_subscription_quota_history_indexes_notx.sql":
+		for _, index := range []string{"subscription_quota_requests_reconciliation_hold", "subscription_quota_requests_backlog", "subscription_quota_ledger_term_total"} {
+			if err := dropInvalidIndexIfPresent(ctx, db, index); err != nil {
+				return err
+			}
+		}
+		return nil
 	case paymentOrdersOutTradeNoUniqueMigration:
 		return preparePaymentOrdersOutTradeNoUniqueMigration(ctx, db)
 	case schedulerOutboxPendingDedupKeyMigration:

@@ -1,7 +1,7 @@
 <template>
   <BaseDialog :show="show" :title="plan ? t('payment.admin.editPlan') : t('payment.admin.createPlan')" width="wide" @close="emit('close')">
     <form id="plan-form" @submit.prevent="handleSavePlan" class="space-y-4">
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label class="input-label">{{ t('payment.admin.planName') }} <span class="text-red-500">*</span></label>
           <input v-model="planForm.name" type="text" class="input" required />
@@ -26,7 +26,8 @@
         <div class="mb-2 flex items-center gap-2">
           <GroupBadge :name="selectedGroupInfo.name" :platform="selectedGroupInfo.platform" :rate-multiplier="selectedGroupInfo.rate_multiplier" />
         </div>
-        <div class="grid grid-cols-2 gap-2 text-xs">
+        <p v-if="isTermPlan" class="text-xs text-gray-600 dark:text-gray-300">{{ t('subscriptionQuota.termPlanHint') }}</p>
+        <div v-else class="grid grid-cols-2 gap-2 text-xs">
           <div><span class="text-gray-500">{{ t('payment.admin.dailyLimit') }}:</span> <span class="ml-1 font-medium text-gray-700 dark:text-gray-300">{{ selectedGroupInfo.daily_limit_usd != null ? '$' + selectedGroupInfo.daily_limit_usd : t('payment.admin.unlimited') }}</span></div>
           <div><span class="text-gray-500">{{ t('payment.admin.weeklyLimit') }}:</span> <span class="ml-1 font-medium text-gray-700 dark:text-gray-300">{{ selectedGroupInfo.weekly_limit_usd != null ? '$' + selectedGroupInfo.weekly_limit_usd : t('payment.admin.unlimited') }}</span></div>
           <div><span class="text-gray-500">{{ t('payment.admin.monthlyLimit') }}:</span> <span class="ml-1 font-medium text-gray-700 dark:text-gray-300">{{ selectedGroupInfo.monthly_limit_usd != null ? '$' + selectedGroupInfo.monthly_limit_usd : t('payment.admin.unlimited') }}</span></div>
@@ -34,9 +35,9 @@
       </div>
 
       <div><label class="input-label">{{ t('payment.admin.planDescription') }} <span class="text-red-500">*</span></label><textarea v-model="planForm.description" rows="2" class="input" required></textarea></div>
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label class="input-label">{{ t('payment.admin.price') }} <span class="text-red-500">*</span></label>
+          <label class="input-label">{{ t(isTermPlan ? 'subscriptionQuota.salePrice' : 'payment.admin.price') }} <span class="text-red-500">*</span></label>
           <input v-model.number="planForm.price" type="number" step="0.01" min="0.01" class="input" required />
           <p v-if="subscriptionCnyPreview" class="mt-1 text-xs font-medium text-primary-600 dark:text-primary-400">
             {{ t('payment.admin.subscriptionCnyPayPreview', { amount: subscriptionCnyPreview.amount }) }}
@@ -47,11 +48,18 @@
         </div>
         <div><label class="input-label">{{ t('payment.admin.originalPrice') }}</label><input v-model.number="planForm.original_price" type="number" step="0.01" min="0" class="input" /></div>
       </div>
-      <div class="grid grid-cols-2 gap-4">
+      <div v-if="isTermPlan" class="space-y-2">
+        <label for="plan-default-quota" class="input-label">{{ t('subscriptionQuota.defaultAmount') }} <span class="text-red-500">*</span></label>
+        <input id="plan-default-quota" v-model="planForm.default_quota_usd" type="text" inputmode="decimal" class="input" required aria-describedby="plan-default-quota-hint" data-testid="plan-default-quota" />
+        <p id="plan-default-quota-hint" class="input-hint">{{ t('subscriptionQuota.defaultHint') }}</p>
+        <p v-if="quotaError" role="alert" class="text-sm text-red-600">{{ t('subscriptionQuota.invalidAmount') }}</p>
+        <p class="text-sm" data-testid="plan-fixed-duration">{{ t('subscriptionQuota.fixedDuration') }}</p>
+      </div>
+      <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div><label class="input-label">{{ t('payment.admin.validity') }} <span class="text-red-500">*</span></label><input v-model.number="planForm.validity_days" type="number" min="1" class="input" required /></div>
         <div><label class="input-label">{{ t('payment.admin.validityUnit') }} <span class="text-red-500">*</span></label><Select v-model="planForm.validity_unit" :options="validityUnitOptions" /></div>
       </div>
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div><label class="input-label">{{ t('payment.admin.sortOrder') }}</label><input v-model.number="planForm.sort_order" type="number" min="0" class="input" /></div>
         <div>
           <label class="input-label">{{ t('payment.admin.currency') }}</label>
@@ -68,6 +76,9 @@
         <label class="text-sm text-gray-700 dark:text-gray-300">{{ t('payment.admin.forSale') }}</label>
         <button
           type="button"
+          role="switch"
+          :aria-checked="planForm.for_sale"
+          :aria-label="t('payment.admin.forSale')"
           :class="[
             'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
             planForm.for_sale ? 'bg-primary-500' : 'bg-gray-300 dark:bg-dark-600'
@@ -104,6 +115,7 @@ import BaseDialog from '@/components/common/BaseDialog.vue'
 import Select from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
 import GroupBadge from '@/components/common/GroupBadge.vue'
+import { validQuotaInput } from '@/utils/claudeQuota'
 import { platformTextClass } from '@/utils/platformColors'
 
 const props = defineProps<{
@@ -122,7 +134,9 @@ const { t } = useI18n()
 const appStore = useAppStore()
 
 const saving = ref(false)
-const planForm = reactive({ name: '', group_id: null as number | null, description: '', price: 0, original_price: 0, currency: '', validity_days: 30, validity_unit: 'days', sort_order: 0, for_sale: true })
+const quotaError = ref(false)
+let modalGeneration = 0
+const planForm = reactive({ default_quota_usd: '', name: '', group_id: null as number | null, description: '', price: 0, original_price: 0, currency: '', validity_days: 30, validity_unit: 'days', sort_order: 0, for_sale: true })
 const planFeaturesText = ref('')
 
 const validityUnitOptions = computed(() => [
@@ -145,6 +159,9 @@ const selectedGroupInfo = computed(() => {
   if (!planForm.group_id) return null
   return props.groups.find(g => g.id === planForm.group_id) || null
 })
+
+const isTermPlan = computed(() => selectedGroupInfo.value?.subscription_quota_mode === 'term')
+watch(() => planForm.default_quota_usd, () => { quotaError.value = false })
 
 function roundCnyAmount(value: number): number {
   return Math.round(value * 100) / 100
@@ -172,16 +189,17 @@ const subscriptionCnyPreview = computed(() => {
 })
 
 // Reset form when dialog opens
-watch(() => props.show, (visible) => {
+watch(() => [props.show, props.plan?.id] as const, ([visible]) => {
+  modalGeneration++; saving.value = false; quotaError.value = false
   if (!visible) return
   if (props.plan) {
-    Object.assign(planForm, { name: props.plan.name, group_id: props.plan.group_id, description: props.plan.description, price: props.plan.price, original_price: props.plan.original_price || 0, currency: props.plan.currency || '', validity_days: props.plan.validity_days, validity_unit: props.plan.validity_unit || 'days', sort_order: props.plan.sort_order || 0, for_sale: props.plan.for_sale })
+    Object.assign(planForm, { default_quota_usd: props.plan.default_quota_usd ?? '', name: props.plan.name, group_id: props.plan.group_id, description: props.plan.description, price: props.plan.price, original_price: props.plan.original_price || 0, currency: props.plan.currency || '', validity_days: props.plan.validity_days, validity_unit: props.plan.validity_unit || 'days', sort_order: props.plan.sort_order || 0, for_sale: props.plan.for_sale })
     planFeaturesText.value = (props.plan.features || []).join('\n')
   } else {
-    Object.assign(planForm, { name: '', group_id: null, description: '', price: 0, original_price: 0, currency: '', validity_days: 30, validity_unit: 'days', sort_order: 0, for_sale: true })
+    Object.assign(planForm, { default_quota_usd: '', name: '', group_id: null, description: '', price: 0, original_price: 0, currency: '', validity_days: 30, validity_unit: 'days', sort_order: 0, for_sale: true })
     planFeaturesText.value = ''
   }
-})
+}, { immediate: true, flush: 'sync' })
 
 /** Build request payload with snake_case keys matching backend JSON tags */
 function buildPlanPayload() {
@@ -193,8 +211,9 @@ function buildPlanPayload() {
     price: planForm.price,
     original_price: planForm.original_price || 0,
     currency: planForm.currency.trim().toUpperCase(),
-    validity_days: planForm.validity_days,
-    validity_unit: planForm.validity_unit,
+    validity_days: isTermPlan.value ? 7 : planForm.validity_days,
+    validity_unit: isTermPlan.value ? 'days' : planForm.validity_unit,
+    ...(isTermPlan.value ? { default_quota_usd: planForm.default_quota_usd } : {}),
     sort_order: planForm.sort_order,
     for_sale: planForm.for_sale,
     features,
@@ -202,6 +221,8 @@ function buildPlanPayload() {
 }
 
 async function handleSavePlan() {
+  if (saving.value) return
+  if (isTermPlan.value && !validQuotaInput(planForm.default_quota_usd)) { quotaError.value = true; return }
   if (!planForm.group_id) {
     appStore.showError(t('payment.admin.groupRequired'))
     return
@@ -210,19 +231,21 @@ async function handleSavePlan() {
     appStore.showError(t('payment.admin.priceRequired'))
     return
   }
-  if (!planForm.validity_days || planForm.validity_days < 1) {
+  if (!isTermPlan.value && (!planForm.validity_days || planForm.validity_days < 1)) {
     appStore.showError(t('payment.admin.validityRequired'))
     return
   }
+  const currentGeneration = modalGeneration, targetId = props.plan?.id, data = buildPlanPayload()
+  const current = () => currentGeneration === modalGeneration && props.show && props.plan?.id === targetId
   saving.value = true
   try {
-    const data = buildPlanPayload()
-    if (props.plan) { await adminPaymentAPI.updatePlan(props.plan.id, data) }
+    if (targetId) { await adminPaymentAPI.updatePlan(targetId, data) }
     else { await adminPaymentAPI.createPlan(data) }
+    if (!current()) return
     appStore.showSuccess(t('common.saved'))
     emit('close')
     emit('saved')
-  } catch (err: unknown) { appStore.showError(extractApiErrorMessage(err, t('common.error'))) }
-  finally { saving.value = false }
+  } catch (err: unknown) { if (current()) appStore.showError(extractApiErrorMessage(err, t('common.error'))) }
+  finally { if (current()) saving.value = false }
 }
 </script>

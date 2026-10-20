@@ -30,7 +30,13 @@ vi.mock('vue-i18n', async (importOriginal) => {
   return {
     ...actual,
     useI18n: () => ({
-      t: (key: string) => key,
+      t: (key: string) => ({
+        'subscriptionQuota.fixedDuration': '有效期固定 168 小时（七天）',
+        'payment.days': '天',
+        'payment.weeks': '周',
+        'payment.months': '个月',
+        'payment.perMonth': '月',
+      } as Record<string, string>)[key] ?? key,
     }),
   }
 })
@@ -41,9 +47,26 @@ const DataTableStub = {
     <div>
       <div v-for="row in data" :key="row.id">
         <slot name="cell-price" :value="row.price" :row="row" />
+        <span data-testid="validity"><slot name="cell-validity_days" :value="row.validity_days" :row="row" /></span>
       </div>
     </div>
   `,
+}
+
+function mountView() {
+  return mount(AdminPaymentPlansView, {
+    global: {
+      plugins: [createPinia()],
+      stubs: {
+        AppLayout: { template: '<div><slot /></div>' },
+        DataTable: DataTableStub,
+        ConfirmDialog: true,
+        GroupBadge: true,
+        Icon: true,
+        PlanEditDialog: true,
+      },
+    },
+  })
 }
 
 describe('AdminPaymentPlansView', () => {
@@ -83,24 +106,33 @@ describe('AdminPaymentPlansView', () => {
   })
 
   it('uses the configured currency symbol and keeps legacy prices in USD', async () => {
-    const wrapper = mount(AdminPaymentPlansView, {
-      global: {
-        plugins: [createPinia()],
-        stubs: {
-          AppLayout: { template: '<div><slot /></div>' },
-          DataTable: DataTableStub,
-          ConfirmDialog: true,
-          GroupBadge: true,
-          Icon: true,
-          PlanEditDialog: true,
-        },
-      },
-    })
+    const wrapper = mountView()
 
     await flushPromises()
 
     expect(wrapper.text()).toContain('¥499.00CNY')
     expect(wrapper.text()).toContain('¥599.00')
     expect(wrapper.text()).toContain('$10.00')
+  })
+
+  it('shows fixed term hours and formats legacy singular/plural windows durations', async () => {
+    getPlans.mockResolvedValue({ data: [
+      { id: 1, quota_mode: 'term', validity_days: 7, validity_unit: 'day' },
+      { id: 2, quota_mode: 'term', validity_days: 7, validity_unit: 'days' },
+      { id: 3, quota_mode: 'windows', validity_days: 30, validity_unit: 'day' },
+      { id: 4, quota_mode: 'windows', validity_days: 30, validity_unit: 'days' },
+      { id: 5, quota_mode: 'windows', validity_days: 2, validity_unit: 'week' },
+      { id: 6, quota_mode: 'windows', validity_days: 2, validity_unit: 'weeks' },
+      { id: 7, quota_mode: 'windows', validity_days: 3, validity_unit: 'month' },
+      { id: 8, quota_mode: 'windows', validity_days: 3, validity_unit: 'months' },
+    ] })
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.findAll('[data-testid="validity"]').map(cell => cell.text())).toEqual([
+      '有效期固定 168 小时（七天）', '有效期固定 168 小时（七天）',
+      '30天', '30天', '2周', '2周', '3个月', '3个月',
+    ])
+    expect(wrapper.text()).not.toContain('payment.admin.day')
   })
 })

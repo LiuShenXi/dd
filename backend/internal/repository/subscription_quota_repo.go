@@ -153,19 +153,20 @@ func subscriptionQuotaResolveSource(ctx context.Context, q subscriptionQuotaQuer
 		if groupID != p.GroupID || days != 7 || unit != "day" {
 			return snapshot, service.ErrSubscriptionQuotaInput
 		}
-		if !quota.Valid {
-			return snapshot, service.ErrSubscriptionQuotaRequired
-		}
-		normalized, err := domain.NormalizeSubscriptionQuotaMoney(quota.String)
-		if err != nil {
-			return snapshot, service.ErrSubscriptionQuotaInvalid
-		}
 		snapshot.PlanName = name
 		snapshot.PlanUpdatedAt = &updated
-		snapshot.PlanDefaultQuotaUSD = &normalized
-		if p.QuotaUSD == nil {
-			snapshot.QuotaUSD = normalized
-			snapshot.QuotaSource = "plan_default"
+		if quota.Valid {
+			normalized, err := domain.NormalizeSubscriptionQuotaMoney(quota.String)
+			if err != nil {
+				return snapshot, service.ErrSubscriptionQuotaInvalid
+			}
+			snapshot.PlanDefaultQuotaUSD = &normalized
+			if p.QuotaUSD == nil {
+				snapshot.QuotaUSD = normalized
+				snapshot.QuotaSource = "plan_default"
+			}
+		} else if p.QuotaUSD == nil {
+			return snapshot, service.ErrSubscriptionQuotaRequired
 		}
 	}
 	if p.QuotaUSD != nil {
@@ -226,7 +227,7 @@ func subscriptionQuotaReplay(ctx context.Context, tx *sql.Tx, scope, key string,
 	op.Response.Replayed = true
 	return &op.Response, nil
 }
-func subscriptionQuotaSaveOperation(ctx context.Context, tx *sql.Tx, scope, key, kind string, actor int64, intent json.RawMessage, snapshot *domain.SubscriptionQuotaSourceSnapshot, response domain.SubscriptionQuotaMutationResult) error {
+func subscriptionQuotaSaveOperation(ctx context.Context, tx *sql.Tx, scope, key, kind string, actor *int64, intent json.RawMessage, snapshot *domain.SubscriptionQuotaSourceSnapshot, response domain.SubscriptionQuotaMutationResult) error {
 	data, err := json.Marshal(subscriptionQuotaOperation{SchemaVersion: 1, Intent: intent, Snapshot: snapshot, Response: response})
 	if err != nil {
 		return err
@@ -349,57 +350,25 @@ func (r *subscriptionQuotaRepository) OpenTerm(ctx context.Context, p domain.Sub
 	if p.ExpectedRevision != parent.revision {
 		return nil, service.ErrSubscriptionQuotaRevision
 	}
-	start, err := subscriptionQuotaSchedule(terms, p.Operation, now)
-	if err != nil {
-		return nil, err
-	}
-	expiry := start.Add(domain.SubscriptionQuotaDuration)
-	if parent.id == 0 {
-		err = tx.QueryRowContext(ctx, `INSERT INTO user_subscriptions(user_id,group_id,starts_at,expires_at,status,quota_revision,assigned_by,assigned_at,notes,created_at,updated_at) VALUES($1,$2,$3,$4,'active',0,$5,$6,$7,$6,$6) RETURNING id`, p.UserID, p.GroupID, start, expiry, p.ActorID, now, p.Notes).Scan(&parent.id)
-		if err != nil {
-			return nil, err
-		}
-	}
-	nextNo := int64(1)
-	for _, term := range terms {
-		if term.TermNo >= nextNo {
-			nextNo = term.TermNo + 1
-		}
-	}
-	state := "active"
-	if now.Before(start) {
-		state = "scheduled"
-	}
 	sourceJSON, err := json.Marshal(source)
 	if err != nil {
 		return nil, err
 	}
-	var termID int64
-	err = tx.QueryRowContext(ctx, `INSERT INTO subscription_quota_terms(subscription_id,user_id,group_id,term_no,quota_usd,starts_at,expires_at,lifecycle_state,source_kind,source_plan_id,source_snapshot,created_by,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'admin',$9,$10,$11,$12,$12) RETURNING id`, parent.id, p.UserID, p.GroupID, nextNo, source.QuotaUSD, start, expiry, state, p.PlanID, sourceJSON, p.ActorID, now).Scan(&termID)
+	response, err := subscriptionQuotaCreateTermTx(ctx, tx, p, parent, terms, now, source.QuotaUSD, sourceJSON, "admin", nil)
 	if err != nil {
 		return nil, err
 	}
-	term := domain.ProjectSubscriptionQuotaTerm(domain.SubscriptionQuotaTerm{ID: termID, SubscriptionID: parent.id, UserID: p.UserID, GroupID: p.GroupID, TermNo: nextNo, QuotaUSD: source.QuotaUSD, UsedUSD: "0", PendingUSD: "0", StartsAt: start, ExpiresAt: expiry, LifecycleState: state}, now)
-	terms = append(terms, term)
-	if err = subscriptionQuotaRefreshParent(ctx, tx, parent.id, terms, now); err != nil {
-		return nil, err
-	}
-	parent.revision++
-	if err = subscriptionQuotaInvalidateAuth(ctx, tx, p.UserID, p.GroupID); err != nil {
-		return nil, err
-	}
-	response := domain.SubscriptionQuotaMutationResult{Term: term, Summary: subscriptionQuotaSummary(p.GroupID, parent.revision, terms, now)}
 	kind := "open_term"
 	if p.Operation == "renew" {
 		kind = "renew_term"
 	}
-	if err = subscriptionQuotaSaveOperation(ctx, tx, scope, p.IdempotencyKey, kind, p.ActorID, intent, &source, response); err != nil {
+	if err = subscriptionQuotaSaveOperation(ctx, tx, scope, p.IdempotencyKey, kind, &p.ActorID, intent, &source, *response); err != nil {
 		return nil, err
 	}
 	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
-	return &response, nil
+	return response, nil
 }
 
 func (r *subscriptionQuotaRepository) CancelTerm(ctx context.Context, p domain.SubscriptionQuotaCancelParams) (*domain.SubscriptionQuotaMutationResult, error) {
@@ -491,7 +460,7 @@ func (r *subscriptionQuotaRepository) CancelTerm(ctx context.Context, p domain.S
 		return nil, err
 	}
 	response := domain.SubscriptionQuotaMutationResult{Term: terms[target], Summary: subscriptionQuotaSummary(groupID, parent.revision, terms, now)}
-	if err = subscriptionQuotaSaveOperation(ctx, tx, scope, p.IdempotencyKey, "cancel_term", p.ActorID, intent, nil, response); err != nil {
+	if err = subscriptionQuotaSaveOperation(ctx, tx, scope, p.IdempotencyKey, "cancel_term", &p.ActorID, intent, nil, response); err != nil {
 		return nil, err
 	}
 	if err = tx.Commit(); err != nil {
@@ -534,4 +503,51 @@ func subscriptionQuotaRefreshParent(ctx context.Context, tx *sql.Tx, parentID in
 	}
 	_, err := tx.ExecContext(ctx, `UPDATE user_subscriptions SET starts_at=$2,expires_at=$3,status=$4,quota_revision=quota_revision+1,updated_at=$5 WHERE id=$1`, parentID, start, expiry, status, now)
 	return err
+}
+
+// subscriptionQuotaCreateTermTx is the only card creation block used by both
+// manual issuance and paid fulfillment. Caller owns scope/parent/term/entity
+// locks and any issuance policy; the helper owns schedule, parent and outbox.
+func subscriptionQuotaCreateTermTx(ctx context.Context, tx *sql.Tx, p domain.SubscriptionQuotaOpenParams, parent subscriptionQuotaParent, terms []domain.SubscriptionQuotaTerm, now time.Time, quota string, sourceJSON []byte, sourceKind string, orderID *int64) (*domain.SubscriptionQuotaMutationResult, error) {
+	var actor *int64
+	if p.ActorID > 0 {
+		actor = &p.ActorID
+	}
+	start, err := subscriptionQuotaSchedule(terms, p.Operation, now)
+	if err != nil {
+		return nil, err
+	}
+	expiry := start.Add(domain.SubscriptionQuotaDuration)
+	if parent.id == 0 {
+		err = tx.QueryRowContext(ctx, `INSERT INTO user_subscriptions(user_id,group_id,starts_at,expires_at,status,quota_revision,assigned_by,assigned_at,notes,created_at,updated_at) VALUES($1,$2,$3,$4,'active',0,$5,$6,$7,$6,$6) RETURNING id`, p.UserID, p.GroupID, start, expiry, actor, now, p.Notes).Scan(&parent.id)
+		if err != nil {
+			return nil, err
+		}
+	}
+	nextNo := int64(1)
+	for _, term := range terms {
+		if term.TermNo >= nextNo {
+			nextNo = term.TermNo + 1
+		}
+	}
+	state := "active"
+	if now.Before(start) {
+		state = "scheduled"
+	}
+	var termID int64
+	err = tx.QueryRowContext(ctx, `INSERT INTO subscription_quota_terms(subscription_id,user_id,group_id,term_no,quota_usd,starts_at,expires_at,lifecycle_state,source_kind,source_plan_id,source_snapshot,created_by,created_at,updated_at,payment_order_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$13,$14) RETURNING id`, parent.id, p.UserID, p.GroupID, nextNo, quota, start, expiry, state, sourceKind, p.PlanID, sourceJSON, actor, now, orderID).Scan(&termID)
+	if err != nil {
+		return nil, err
+	}
+	term := domain.ProjectSubscriptionQuotaTerm(domain.SubscriptionQuotaTerm{ID: termID, SubscriptionID: parent.id, UserID: p.UserID, GroupID: p.GroupID, TermNo: nextNo, QuotaUSD: quota, UsedUSD: "0", PendingUSD: "0", StartsAt: start, ExpiresAt: expiry, LifecycleState: state}, now)
+	terms = append(terms, term)
+	if err = subscriptionQuotaRefreshParent(ctx, tx, parent.id, terms, now); err != nil {
+		return nil, err
+	}
+	parent.revision++
+	if err = subscriptionQuotaInvalidateAuth(ctx, tx, p.UserID, p.GroupID); err != nil {
+		return nil, err
+	}
+	response := domain.SubscriptionQuotaMutationResult{Term: term, Summary: subscriptionQuotaSummary(p.GroupID, parent.revision, terms, now)}
+	return &response, nil
 }

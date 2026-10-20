@@ -10,7 +10,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -45,6 +44,9 @@ func TestSubscriptionQuotaI4V2PrepareSecondInstance(t *testing.T) {
 	require.NoError(t, json.Unmarshal(e.docker(t, nil, "inspect", "--format", "{{json .Config.Env}}", e.Application), &environment))
 	args := []string{"run", "--detach", "--pull", "never", "--name", e.RunID + "-candidate-2", "--label", "com.codex.local-task=claude-weekly-quota", "--network", e.Network, "--read-only", "--user", "1000:1000", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--memory", "1536m", "--cpus", "2", "--pids-limit", "512", "--tmpfs", "/app/data:rw,size=128m,uid=1000,gid=1000", "--tmpfs", "/tmp:rw,size=64m,uid=1000,gid=1000"}
 	for _, value := range environment {
+		if e.Stage == "I6" && strings.HasPrefix(value, "SUBSCRIPTION_QUOTA_ROLLOUT_REPLICA_ID=") {
+			value = "SUBSCRIPTION_QUOTA_ROLLOUT_REPLICA_ID=app-2"
+		}
 		args = append(args, "--env", value)
 	}
 	e.Application2 = strings.TrimSpace(string(e.docker(t, nil, append(args, e.Image)...)))
@@ -53,11 +55,7 @@ func TestSubscriptionQuotaI4V2PrepareSecondInstance(t *testing.T) {
 	port := listener.Addr().(*net.TCPAddr).Port
 	require.NoError(t, listener.Close())
 	e.URL2 = "http://127.0.0.1:" + strconv.Itoa(port)
-	bridge := exec.Command(os.Getenv("CWQ_I4_PWSH"), "-NoProfile", "-NonInteractive", "-File", os.Getenv("CWQ_I4_BRIDGE_SCRIPT"), "-ContainerID", e.Application2, "-Port", strconv.Itoa(port), "-PrivateDir", filepath.Dir(subscriptionQuotaI4PrivatePath(t)))
-	output, err := bridge.CombinedOutput()
-	require.NoError(t, err, "second candidate bridge: %s", e.redact(output))
-	e.BridgePID2, err = strconv.Atoi(strings.TrimSpace(string(output)))
-	require.NoError(t, err)
+	e.BridgePID2 = subscriptionQuotaStartBridge(t, e, e.Application2, port, filepath.Dir(subscriptionQuotaI4PrivatePath(t)))
 	require.Eventually(t, func() bool {
 		response, err := (&http.Client{Timeout: time.Second}).Get(e.URL2 + "/health")
 		if err != nil {

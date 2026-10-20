@@ -131,9 +131,13 @@ func provideCleanup(
 	carpool *service.CarpoolService,
 	carpoolReset *service.CarpoolResetService,
 	subscriptionQuotaRecovery *service.SubscriptionQuotaRecoveryService,
+	subscriptionQuotaRollout *service.SubscriptionQuotaRolloutService,
 	concurrency *service.ConcurrencyService,
 ) func() {
 	return func() {
+		if subscriptionQuotaRollout != nil {
+			subscriptionQuotaRollout.Stop()
+		}
 		// Drain mandatory usage before budgeting shutdown of other services.
 		// Recovery and all database/cache resources remain available during drain.
 		if usageRecordWorkerPool != nil {

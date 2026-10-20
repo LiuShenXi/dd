@@ -375,7 +375,7 @@
                 value === 'active' ? 'badge-success' : 'badge-danger',
               ]"
             >
-              {{ t("admin.accounts.status." + value) }}
+              {{ value === "quota_maintenance" ? t("subscriptionQuota.rollout.maintenance") : t("admin.accounts.status." + value) }}
             </span>
           </template>
 
@@ -441,6 +441,15 @@
                 <span class="text-xs">{{
                   t("admin.groups.rpmOverrides")
                 }}</span>
+              </button>
+              <button
+                v-if="!authStore.isSimpleMode && row.platform === 'anthropic' && (row.subscription_quota_mode !== 'term' || row.status === 'quota_maintenance')"
+                data-testid="group-quota-rollout"
+                @click="rolloutGroup = row; showRolloutModal = true"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/20 dark:hover:text-orange-400"
+              >
+                <Icon name="shield" size="sm" />
+                <span class="text-xs">{{ t('subscriptionQuota.rollout.action') }}</span>
               </button>
               <button
                 @click="handleDelete(row)"
@@ -4254,6 +4263,13 @@
       @success="loadGroups"
     />
 
+    <SubscriptionQuotaRolloutModal
+      :show="showRolloutModal"
+      :group="rolloutGroup"
+      @close="showRolloutModal = false"
+      @changed="loadGroups"
+    />
+
     <!-- Group RPM Overrides Modal -->
     <GroupRPMOverridesModal
       :show="showRPMOverridesModal"
@@ -4299,6 +4315,7 @@ import Select from "@/components/common/Select.vue";
 import PlatformIcon from "@/components/common/PlatformIcon.vue";
 import Icon from "@/components/icons/Icon.vue";
 import GroupRateMultipliersModal from "@/components/admin/group/GroupRateMultipliersModal.vue";
+import SubscriptionQuotaRolloutModal from "@/components/admin/group/SubscriptionQuotaRolloutModal.vue";
 import GroupRPMOverridesModal from "@/components/admin/group/GroupRPMOverridesModal.vue";
 import GroupCapacityBadge from "@/components/common/GroupCapacityBadge.vue";
 import ReasoningEffortPolicyFields from "@/components/admin/group/ReasoningEffortPolicyFields.vue";
@@ -4832,6 +4849,8 @@ const deletingGroup = ref<AdminGroup | null>(null);
 const duplicatingGroupIds = reactive(new Set<number>());
 const showRateMultipliersModal = ref(false);
 const rateMultipliersGroup = ref<AdminGroup | null>(null);
+const showRolloutModal = ref(false);
+const rolloutGroup = ref<AdminGroup | null>(null);
 const showRPMOverridesModal = ref(false);
 const rpmOverridesGroup = ref<AdminGroup | null>(null);
 const sortableGroups = ref<AdminGroup[]>([]);
