@@ -1,0 +1,28 @@
+{
+  "read_only_except_normal_admin_login": true,
+  "admin_login": "http_401",
+  "database": {
+    "database_bytes": 2274039487,
+    "server_version_num": "180006",
+    "connections": 14,
+    "migration_rows": 297
+  },
+  "app_resources": {
+    "Memory": 402653184,
+    "MemorySwap": 805306368,
+    "NanoCpus": 0,
+    "CpuShares": 0,
+    "OomKillDisable": null
+  },
+  "app_stats": "sub2api2 131.1MiB / 384MiB 1.96%",
+  "active_jobs_schema": [
+    "auth_identity_migration_reports",
+    "batch_image_events",
+    "batch_image_items",
+    "batch_image_jobs",
+    "carpool_reset_batches",
+    "scheduled_test_plans",
+    "scheduled_test_results",
+    "schema_migrations"
+  ]
+}

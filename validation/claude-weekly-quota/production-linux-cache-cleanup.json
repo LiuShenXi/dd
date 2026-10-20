@@ -1,0 +1,7 @@
+{
+  "timestamp_utc": "2026-10-20T03:54:12.153283+00:00",
+  "scope": "completed release build Linux amd64 Go1.27.0 cache archives; immutable runtime image, binaries, logs and sources retained",
+  "files": 1012,
+  "bytes": 1153046656,
+  "free_bytes": 3552235520
+}

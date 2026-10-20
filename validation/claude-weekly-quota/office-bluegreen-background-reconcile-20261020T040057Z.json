@@ -1,0 +1,33 @@
+{
+  "pass": true,
+  "finished": "2026-10-20T04:00:57.374506+00:00",
+  "synthetic_only": true,
+  "production_modified": false,
+  "original_runtime_receipt_sha256": "b5ae4488a7cc12c169f7d36757e8dbe521bffd3a39f1bae828693bd3620aeba4",
+  "original_runtime_receipt_unchanged": true,
+  "original_snapshot_manifest_sha256": "fdc241a78b31941ed7adb1c48364934316b0681f99a8f5b737ea6fe491caef76",
+  "candidate_image": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+  "container_id": "8564c75437a009980680951a02326ccce26e934a701f96d0fb24118a19f22e7d",
+  "old_process_remained_stopped_restart_no": true,
+  "old_instance_id": "7eb462fdd49e6f0723a9cb8090246597",
+  "new_instance_id": "20e8df013bd408ae7d320a33e7c0aaec",
+  "new_process_started_at": "2026-10-20T04:00:52.693886048Z",
+  "steps": [
+    "normal_login_pair_0600",
+    "restart_same_synthetic_green",
+    "http_open_jobs_held",
+    "helper_background_activated",
+    "both_routes_exact_new_instance",
+    "actual_refresh_rotated_pair",
+    "new_access_token_both_routes_200",
+    "already_active_state_pair_route_and_accounting_unchanged"
+  ],
+  "source_sha256": {
+    "deploy/blue-green/scripts/background-reconcile.py": "69fe83fead918542e9925194bd521c5b8310c3f3be50dd928fccb26232f57a8f",
+    "deploy/blue-green/scripts/host-release.py": "13f2468b5d352429a316108675212a5161e86295f165c822fb23b2378cb63f03",
+    "validation/claude-weekly-quota/blue-green-background-reconcile-proof.py": "f874e074d9d6a7173af0523b27122558333820967a0f1f60093f324337137514"
+  },
+  "timeline_sha256": "605d7d883ab5abfae1103e65393d7b806adf402615d1a9a8819f209c04ae2ddc",
+  "private_evidence": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-reconcile-20261020",
+  "limitation": "Early expiry was simulated only in local pair scheduling metadata; JWT bytes unchanged before actual refresh."
+}

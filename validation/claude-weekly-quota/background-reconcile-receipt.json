@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-10-20T03:55:46.106717+00:00",
+  "status": "source_frozen_unit_checks_passed_host_install_pending",
+  "scope": "Independent completed-release background reconciliation and normal token rotation; no frozen release-controller/collector changes, no production actions, no Go builds.",
+  "files": {
+    "deploy/blue-green/scripts/background-reconcile.py": {
+      "sha256": "69fe83fead918542e9925194bd521c5b8310c3f3be50dd928fccb26232f57a8f"
+    },
+    "deploy/blue-green/scripts/test_background_reconcile.py": {
+      "sha256": "6fad4de4f09a7d46d1eb47ff3401011f119754ebfd09832d3f9a8439fb4d64a0"
+    },
+    "deploy/blue-green/systemd/sub2api-background-reconcile.service": {
+      "sha256": "5fa1094687020171deb2222befe00cea18761667052ac539ab18e74919c0c183"
+    },
+    "deploy/blue-green/systemd/sub2api-background-reconcile.timer": {
+      "sha256": "54ed413167aeb55515f8f17ae094fdb1f5e888c4a831f325d8e3b42cce07f4f4"
+    },
+    "deploy/blue-green/BACKGROUND_RECONCILE.md": {
+      "sha256": "bc25e01f0796855449472713e4fdac8713f91d11c860e67cb003dc4ac73c8579"
+    }
+  },
+  "frozen_dependencies": {
+    "deploy/blue-green/scripts/host-release.py": {
+      "unchanged_from_commit": "cace0104c",
+      "sha256": "13f2468b5d352429a316108675212a5161e86295f165c822fb23b2378cb63f03"
+    },
+    "deploy/blue-green/scripts/main-server-inflight.py": {
+      "unchanged_from_commit": "cace0104c",
+      "sha256": "46c389eef0dd2bbfb4d33ca7eded9ac4f7b0a0412eb39bdd601a36263a85aeb5"
+    }
+  },
+  "validation": [
+    {
+      "command": "python3 deploy/blue-green/scripts/test_background_reconcile.py -q",
+      "result": "PASS",
+      "tests": 24
+    },
+    {
+      "command": "python3 deploy/blue-green/scripts/test_host_release.py -q",
+      "result": "PASS",
+      "tests": 31
+    },
+    {
+      "command": "python3 deploy/blue-green/scripts/test_release_guards.py -q",
+      "result": "PASS",
+      "tests": 13
+    },
+    {
+      "command": "python3 -m py_compile deploy/blue-green/scripts/background-reconcile.py deploy/blue-green/scripts/test_background_reconcile.py",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check and explicit ignored-file whitespace check",
+      "result": "PASS"
+    }
+  ],
+  "pending": [
+    "Coordinator source review",
+    "Deployment-host systemd-analyze verify",
+    "Normal admin login pair installation and actual host refresh/background activation acceptance"
+  ],
+  "boundaries": [
+    "Same controller flock covers all state checks and writes.",
+    "Only active/null-transition with exact previous process stopped and restart disabled can reconcile.",
+    "No HTTP gate changes, routing, container starts/restarts or migrations.",
+    "Token refresh goes only to direct loopback, once per invocation.",
+    "Unknown refresh outcome retains durable marker and requires normal login; pair-to-token interrupted write is repaired without repeated rotation.",
+    "Non-active controller phases remain operator-owned, including interrupted background activation."
+  ]
+}

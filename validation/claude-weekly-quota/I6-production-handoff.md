@@ -1,5 +1,11 @@
 # I6 production handoff — prepared 2026-10-20
 
+> Superseded topology: the user subsequently authorized production release and
+> blue/green setup, completed 2026-10-20 03:58:50 UTC. Read
+> `production-deployment-20261020.md` for live operation. The single-instance
+> sequence below is historical. Business allocations are still required before
+> converting real groups; code deployment is complete.
+
 This is the reviewable operating sequence for the current single-instance
 `main-server` deployment. It is not a record of a production release. Final image
 identities and local acceptance are recorded separately in the office receipts.

@@ -1,0 +1,82 @@
+{
+  "pass": true,
+  "started": "2026-10-20T03:54:34.000944+00:00",
+  "finished": "2026-10-20T03:55:12.293416+00:00",
+  "synthetic_only": true,
+  "production_modified": false,
+  "candidate_image": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+  "old_image": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+  "candidate_labels": {
+    "com.monas.deployment": "host-nginx-blue-green",
+    "com.monas.runtime-r0-oci-index": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+    "com.monas.source-sha256": "26926f6a20ed8bbe360c582aca51f3e491c54d61c5e6f18ddb16715c538b39cc",
+    "description": "Sub2API - AI API Gateway Platform",
+    "maintainer": "Wei-Shaw <github.com/Wei-Shaw>",
+    "org.opencontainers.image.created": "2026-10-20T03:46:25.991186+00:00",
+    "org.opencontainers.image.revision": "cace0104c6bbda896b321506ead009da4cfe8ac5",
+    "org.opencontainers.image.source": "https://github.com/Wei-Shaw/sub2api",
+    "org.opencontainers.image.title": "Monas Claude weekly quota",
+    "org.opencontainers.image.version": "2.8.13-monas-bps.13"
+  },
+  "postgres_version_num": "180006",
+  "nginx_image": "sha256:a5127daff3d6f4606be3100a252419bfa84fd6ee5cd74d0feaca1a5068f97dcf",
+  "controller_sha256": "13f2468b5d352429a316108675212a5161e86295f165c822fb23b2378cb63f03",
+  "harness_sha256": "4e4d2cfb636eb71e47009405c4a66eef94ca8426c35c8b70a9cd40900c08c32b",
+  "inflight_collector_sha256": "46c389eef0dd2bbfb4d33ca7eded9ac4f7b0a0412eb39bdd601a36263a85aeb5",
+  "timeline_sha256": "a4dd8350b0569eea5ebccdf8d65326498872208ed675e9e189075253a19bca4d",
+  "private_evidence": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v4-20261020",
+  "processes": {
+    "blue": {
+      "id": "5ab8bcc35b9ce18d9803fed97e0f041f273255cdde75fa719645ba4d61693cae",
+      "image": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+      "started_at": "2026-10-20T03:54:34.479240179Z",
+      "finished_at": "2026-10-20T03:55:10.031499376Z",
+      "running": false,
+      "restart_policy": "no"
+    },
+    "green": {
+      "id": "8564c75437a009980680951a02326ccce26e934a701f96d0fb24118a19f22e7d",
+      "image": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+      "started_at": "2026-10-20T03:54:41.299479251Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "running": true,
+      "restart_policy": "no"
+    },
+    "nginx": {
+      "id": "dd65f947e254f8df9bbfbae65d998d14701c199b112e06f0a7ed8d81970ade8b",
+      "image": "sha256:a5127daff3d6f4606be3100a252419bfa84fd6ee5cd74d0feaca1a5068f97dcf",
+      "started_at": "2026-10-20T03:54:34.116984512Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "running": true,
+      "restart_policy": "no"
+    }
+  },
+  "completed_model_upstream_counts": {
+    "sub2api.synthetic.invalid:39080": 3,
+    "sub2api.synthetic.invalid:39081": 2,
+    "teamsub2.synthetic.invalid:39080": 5,
+    "teamsub2.synthetic.invalid:39081": 2
+  },
+  "nginx_effective_sha256": "060d00e8a513a4531de453c086e815fee177467c7c7d358a0953ab2335be78eb",
+  "nginx_access_sha256": "684ee2caba013b7b1ac628697830c8221576987697de0b9bc5bf709b2a2a9ac1",
+  "provider_audit_sha256": "3b50f511d5fb51821b7649da4ffb6fee691411b2c06b237b0ce447252909ea0c",
+  "controller_state_sha256": "b83e8cc80aef1a3d69e07141402819f3eef4ca5e947672ad82578c9e82ba91dc",
+  "settlement": {
+    "gpt_completed": 7,
+    "claude_completed": 7,
+    "new_gpt_rows": 7,
+    "original_cycle_only": true,
+    "gpt_cost": "0.00012250",
+    "gpt_balance_exact": true,
+    "gpt_ledger_exact": true,
+    "gpt_dedup_count": 7,
+    "gpt_native_unchanged": true,
+    "legacy_claude_balance_exact": true,
+    "term_wallets_unchanged": true
+  },
+  "limitations": [
+    "Synthetic HTTP/1.1, real TLS HTTP/2 and WebSocket transports; no production requests or production data",
+    "R0 upgrade exercises legacy Claude balance, not term-quota conversion",
+    "Nginx local image is arm64 1.27.1; production binary topology checked separately"
+  ]
+}

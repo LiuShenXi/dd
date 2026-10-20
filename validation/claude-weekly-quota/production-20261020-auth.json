@@ -1,0 +1,10 @@
+{
+  "login": "success",
+  "release_status": {
+    "operation_id": "",
+    "state": "open",
+    "active_http": 2,
+    "pending_usage": 0,
+    "queued_http": 0
+  }
+}

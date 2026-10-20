@@ -1,0 +1,31 @@
+{
+  "pass": true,
+  "time": "2026-10-20T03:44:06.818535+00:00",
+  "synthetic_only": true,
+  "collector_sha256": "46c389eef0dd2bbfb4d33ca7eded9ac4f7b0a0412eb39bdd601a36263a85aeb5",
+  "real_database_counts": {
+    "backup_running": 0,
+    "restore_running": 0,
+    "batch_active": 0
+  },
+  "calibrations": [
+    {
+      "state": "processing",
+      "exit_code": 0,
+      "detached_image_tasks": 1
+    },
+    {
+      "state": "completed",
+      "exit_code": 0,
+      "detached_image_tasks": 0
+    },
+    {
+      "state": "unknown-synthetic",
+      "exit_code": 1,
+      "detached_image_tasks": null
+    }
+  ],
+  "exact_synthetic_key_deleted": true,
+  "transport": "Original production collector; actual Docker shared namespace resolved and raw RESP through loopback byte bridge",
+  "private_evidence": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v3-20261020"
+}

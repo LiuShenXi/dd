@@ -1,5 +1,10 @@
 # I6 retained obligations — updated 2026-10-20
 
+> Latest update: the user explicitly authorized commits and deployment after
+> this review. Those actions and uninterrupted blue/green setup are complete;
+> see `production-deployment-20261020.md`. Historical approval blockers below
+> no longer apply. Real group conversion/issuance still needs explicit business inputs.
+
 This review incorporates completed F1 runtime and F2/F3 rollback/browser
 results, F4 actual admin-orders CUA PASS and the complete production-version
 PostgreSQL 18.6 rehearsal through 300k history. Local implementation and validation

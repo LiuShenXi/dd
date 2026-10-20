@@ -1,0 +1,44 @@
+{
+  "started_utc": "2026-10-20T03:46:25.991186+00:00",
+  "head": "cace0104c6bbda896b321506ead009da4cfe8ac5",
+  "source_sha256": "26926f6a20ed8bbe360c582aca51f3e491c54d61c5e6f18ddb16715c538b39cc",
+  "frontend_dist_sha256": "27e20aee4b1a066adfc079d51df9654ca105f5a2e4ac386d14b612107624d5f6",
+  "version": "2.8.13-monas-claude-weekly.1",
+  "target": "linux/amd64",
+  "builder_sha256": "3243241072dce9095054a2e9ce3d07b8bbbcc035d697583323b8b17ab870f8d0",
+  "status": "built_pending_runtime_acceptance",
+  "operations": [
+    {
+      "name": "server",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "release-cli",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "image",
+      "exit_code": 0,
+      "log_sha256": "c6e1d4b42bb9dea93574a7d316faeb5af29acd51113d97aa24d9d0fa21bf2cb7"
+    },
+    {
+      "name": "version",
+      "exit_code": 0,
+      "log_sha256": "dbd2ec825a5145f970116898b5f9def117a52795842800bf2a5f8d5ee1af4046"
+    }
+  ],
+  "runtime_base_image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+  "runtime_recipe_sha256": "9c1b4062ae3f5f285b6d2c021274dc6f132a5edf4bc5e682e14d435418f55207",
+  "go_version": "go version go1.27.0 darwin/arm64",
+  "image": "sub2api:2.8.13-monas-claude-weekly.1-cace0104c6bb",
+  "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+  "binaries": {
+    "sub2api": "68f7a0b6414e6b8586f8e3b4631cb67b998cf2a581b22b6e3a0388ed7391f958",
+    "carpool-release": "e3f22952c7b304d8f25e4feb33a60932ce5493e1275f5d32492faf9e108a8308"
+  },
+  "source_after_sha256": "26926f6a20ed8bbe360c582aca51f3e491c54d61c5e6f18ddb16715c538b39cc",
+  "runtime_base_layers_retained": true,
+  "finished_utc": "2026-10-20T03:48:46.943102+00:00"
+}

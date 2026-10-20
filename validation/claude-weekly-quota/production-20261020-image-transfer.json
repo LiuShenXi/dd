@@ -1,0 +1,9 @@
+{
+  "timestamp_utc": "2026-10-20T03:51:32.535965+00:00",
+  "compressed_bytes": 413140266,
+  "compressed_sha256": "7d1c256712ab99bbbf0a7437506128987228ca3b2f3cd35b08de1d42a6dcfc07",
+  "remote_sha256_verified": true,
+  "remote_image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+  "head": "cace0104c6bbda896b321506ead009da4cfe8ac5",
+  "containers_started": false
+}

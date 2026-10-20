@@ -1,0 +1,14 @@
+{
+  "prepared": true,
+  "containers_started": false,
+  "data_services_recreated": false,
+  "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+  "compose_sha256": "d8c30d524e41226902fcf043af4c327749cb83f9df7a5bfcf2dde47aa8783abc",
+  "inherited_environment_exact_except_explicit_release_flags": true,
+  "application_settings_source_container": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+  "separate_log_directories": true,
+  "app_only_services": [
+    "blue",
+    "green"
+  ]
+}

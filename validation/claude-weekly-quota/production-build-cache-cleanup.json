@@ -1,0 +1,158 @@
+{
+  "scope": "rebuildable Darwin ARM64 cache archives for this repository, generated during this turn; source, logs, fixtures and other package caches retained",
+  "utc": "2026-10-20T03:43:08.609884+00:00",
+  "deleted": [
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/66/663f13b8135d938d7d586f4d417d7f017d336b54dea009d60b8b760c8502b16f-d",
+      "bytes": 93333042,
+      "mtime": 1792466956.464063,
+      "sha256": "663f13b8135d938d7d586f4d417d7f017d336b54dea009d60b8b760c8502b16f"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/68/68ff23fac08bbaf4b1432ebda84aa6be03d2b1103005ae6a97eaa312b62cf1ac-d",
+      "bytes": 253476938,
+      "mtime": 1792467177.049315,
+      "sha256": "68ff23fac08bbaf4b1432ebda84aa6be03d2b1103005ae6a97eaa312b62cf1ac"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/67/6725ca0548241dad1a9d95807d31c12d239d677fe6741dec30e39b172b3d25d7-d",
+      "bytes": 32863526,
+      "mtime": 1792467190.064566,
+      "sha256": "6725ca0548241dad1a9d95807d31c12d239d677fe6741dec30e39b172b3d25d7"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/bd/bdffe02a1da95dcaddfcdda2778c748c3d9b6444c8e2e21768f32136a622e9f9-d",
+      "bytes": 16883210,
+      "mtime": 1792466958.95642,
+      "sha256": "bdffe02a1da95dcaddfcdda2778c748c3d9b6444c8e2e21768f32136a622e9f9"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ae/ae38b0ca7991a15ea7c5bda7b8862b878be35da105cea746bd9813bfd3efffee-d",
+      "bytes": 10732724,
+      "mtime": 1792467215.352532,
+      "sha256": "ae38b0ca7991a15ea7c5bda7b8862b878be35da105cea746bd9813bfd3efffee"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/c7/c7c5cc8b981a181b8a4687d02ee673fb53b5176c942bc3dcbce440f6ac10b4ac-d",
+      "bytes": 253478036,
+      "mtime": 1792467272.598062,
+      "sha256": "c7c5cc8b981a181b8a4687d02ee673fb53b5176c942bc3dcbce440f6ac10b4ac"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/c7/c78b7df59b45e45a324755b295f1b2ea70c428ea4dc2e29ac0f65cce4e9055c2-d",
+      "bytes": 20881466,
+      "mtime": 1792466960.63213,
+      "sha256": "c78b7df59b45e45a324755b295f1b2ea70c428ea4dc2e29ac0f65cce4e9055c2"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/c9/c97c70fcca2c3495b0f4eb2ab0e72f933b93b82cbe2b36dce32ceb53d43ed2b1-d",
+      "bytes": 32863526,
+      "mtime": 1792467275.111925,
+      "sha256": "c97c70fcca2c3495b0f4eb2ab0e72f933b93b82cbe2b36dce32ceb53d43ed2b1"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/fb/fb281e7f53d71e9d8386c636734bccc773bcadf51f4a9731e207eb91a568436f-d",
+      "bytes": 32863526,
+      "mtime": 1792467720.218389,
+      "sha256": "fb281e7f53d71e9d8386c636734bccc773bcadf51f4a9731e207eb91a568436f"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/c1/c1100bf7b05192c2b834cdf08f8a1664a748fb2b70eacbcefe3029d0ee026c5b-d",
+      "bytes": 231049004,
+      "mtime": 1792466917.126123,
+      "sha256": "c1100bf7b05192c2b834cdf08f8a1664a748fb2b70eacbcefe3029d0ee026c5b"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ec/ecd1bd3204ac5a05f2778ad232b925e551ec66fb00cfab08b7e32b0d4f6d8474-d",
+      "bytes": 88733914,
+      "mtime": 1792467474.348467,
+      "sha256": "ecd1bd3204ac5a05f2778ad232b925e551ec66fb00cfab08b7e32b0d4f6d8474"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/18/188f56ab1a74d9e880de661b6da216805c73ac45a7b128de09f3a63eae0e59fe-d",
+      "bytes": 10563286,
+      "mtime": 1792466974.107374,
+      "sha256": "188f56ab1a74d9e880de661b6da216805c73ac45a7b128de09f3a63eae0e59fe"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/4d/4d08c9b6ac769cfbc88b0cedd68ee8ea3b7a05f8b9d66150b0a7b3978efadc1f-d",
+      "bytes": 10732684,
+      "mtime": 1792466961.052608,
+      "sha256": "4d08c9b6ac769cfbc88b0cedd68ee8ea3b7a05f8b9d66150b0a7b3978efadc1f"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/6b/6bc81ffa6505b810bd9219494f676263ad4a6856a88f857f346ebf748ad0db81-d",
+      "bytes": 93341038,
+      "mtime": 1792467143.719494,
+      "sha256": "6bc81ffa6505b810bd9219494f676263ad4a6856a88f857f346ebf748ad0db81"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/5e/5e7a0a6bed2754c156d0ddcdd996915ae13ab29b6eecd6cab26a69c458028718-d",
+      "bytes": 253503702,
+      "mtime": 1792467714.60754,
+      "sha256": "5e7a0a6bed2754c156d0ddcdd996915ae13ab29b6eecd6cab26a69c458028718"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/0f/0f0b1ef68facf9ae6a94d64be037d4d31ac0dc7655b16c9b61416a87979d4be4-d",
+      "bytes": 12960146,
+      "mtime": 1792467223.498119,
+      "sha256": "0f0b1ef68facf9ae6a94d64be037d4d31ac0dc7655b16c9b61416a87979d4be4"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/a0/a03fcff015172da12e036992b634a6a2aa2c0eb86d0f4c3deafa327e9a142f03-d",
+      "bytes": 16883250,
+      "mtime": 1792467213.084958,
+      "sha256": "a03fcff015172da12e036992b634a6a2aa2c0eb86d0f4c3deafa327e9a142f03"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/d5/d5028aaa53015fb84e7699198039726aeb5ef19072e1f2925b6729911e13dbab-d",
+      "bytes": 20881504,
+      "mtime": 1792467464.153003,
+      "sha256": "d5028aaa53015fb84e7699198039726aeb5ef19072e1f2925b6729911e13dbab"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/b7/b71126966f49d03cf09b0af37120605b1ba6d2a596aa5cae2701c1810656b79a-d",
+      "bytes": 16884894,
+      "mtime": 1792467736.400413,
+      "sha256": "b71126966f49d03cf09b0af37120605b1ba6d2a596aa5cae2701c1810656b79a"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/db/db0f0b52ce903401addf2c1b4847adaafb87490063df6a77e1965186cfef82dd-d",
+      "bytes": 93343386,
+      "mtime": 1792467679.698035,
+      "sha256": "db0f0b52ce903401addf2c1b4847adaafb87490063df6a77e1965186cfef82dd"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/c3/c3686a3ab1c5d68d6dedccc41b27e41b3380ba06fb503d2ed5b820dfa75c6377-d",
+      "bytes": 20881506,
+      "mtime": 1792467214.887249,
+      "sha256": "c3686a3ab1c5d68d6dedccc41b27e41b3380ba06fb503d2ed5b820dfa75c6377"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/cd/cd1ae0c7f150e2c311f24bc2f4f06aeb0f33934690e00ecb1d2bcf3e49517826-d",
+      "bytes": 10732768,
+      "mtime": 1792467738.640045,
+      "sha256": "cd1ae0c7f150e2c311f24bc2f4f06aeb0f33934690e00ecb1d2bcf3e49517826"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/cc/cc196f65320b52dc4f5704f7146f9b8a64d6bfd37fb5db0f113b2365ff684df7-d",
+      "bytes": 20881548,
+      "mtime": 1792467738.114926,
+      "sha256": "cc196f65320b52dc4f5704f7146f9b8a64d6bfd37fb5db0f113b2365ff684df7"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/79/79f93d49602b7454fbf6febadab6af728c5b3845d6066454aac8934f935b2680-d",
+      "bytes": 16883250,
+      "mtime": 1792467462.154941,
+      "sha256": "79f93d49602b7454fbf6febadab6af728c5b3845d6066454aac8934f935b2680"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/1d/1d6b90ec61de72c24f12f206b745343523e03908490a6dc7cb843ab45528146d-d",
+      "bytes": 93334604,
+      "mtime": 1792467460.363573,
+      "sha256": "1d6b90ec61de72c24f12f206b745343523e03908490a6dc7cb843ab45528146d"
+    }
+  ],
+  "bytes_freed": 1758966478,
+  "free_after": 3060072448
+}

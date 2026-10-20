@@ -1,0 +1,12 @@
+{
+  "pass": false,
+  "started": "2026-10-20T03:53:33.670727+00:00",
+  "finished": "2026-10-20T03:53:33.671028+00:00",
+  "candidate": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+  "error_type": "AssertionError",
+  "reason": "insufficient isolated runtime headroom",
+  "synthetic_only": true,
+  "production_modified": false,
+  "private_evidence": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v4-20261020",
+  "timeline_sha256": "d45b508ee9106fe2c694865db1fe30f915495b5f94e561d62f82cbd6389efb86"
+}

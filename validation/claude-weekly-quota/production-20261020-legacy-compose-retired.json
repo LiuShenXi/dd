@@ -1,0 +1,14 @@
+{
+  "timestamp_utc": "2026-10-20T04:00:15.089598+00:00",
+  "legacy_app_service_removed": true,
+  "old_running": false,
+  "old_restart_policy": "no",
+  "remaining_services": [
+    "postgres",
+    "redis"
+  ],
+  "data_service_definitions_unchanged": true,
+  "before_sha256": "269ff5f945386f660eb24ace02bd7079ca87c9e70577cfa8aff51936dd105b61",
+  "after_sha256": "eb0279aadf22ab756a8d41b389b8c0547dee39757f188e2fe5d35eb57462fe2b",
+  "containers_recreated": false
+}

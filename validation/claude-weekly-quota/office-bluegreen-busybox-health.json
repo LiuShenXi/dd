@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "exit_code": 0,
+  "checked_utc": "2026-10-20T03:36:43.541746+00:00",
+  "synthetic_only": true,
+  "production_modified": false,
+  "scope": "Exact R0-base BusyBox wget shell expression, substituted isolated application port39080 for8080",
+  "headers": {
+    "/health": {
+      "wget_exit": 0,
+      "header_lines": [
+        "HTTP/1.1 200 OK"
+      ]
+    },
+    "/v1/models": {
+      "wget_exit": 1,
+      "header_lines": [
+        "HTTP/1.1 401 Unauthorized"
+      ]
+    }
+  },
+  "shell_expression_sha256": "b5b70e1a4527c53ad450d04d49a728fb32d0326b3564fe0ebd6f7ff74db369a1"
+}

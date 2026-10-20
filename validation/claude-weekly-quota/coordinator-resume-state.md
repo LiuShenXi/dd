@@ -1,4 +1,23 @@
-# Resume checkpoint — I5/I6 office implementation
+# Resume checkpoint — production released
+
+Current request is complete: commits and main-server deployment authorized by
+the user, completed 2026-10-20 03:58:50 UTC. Read coordinator-current-status.md
+and production-deployment-20261020.md. No commit approval remains pending.
+No push/main merge was performed. App commit cace0104c, version
+2.8.13-monas-claude-weekly.1, active sub2api2-green:29081; old sub2api2 is stopped
+with restart=no. Never restart R0. Private app-only Compose/controller state is
+under /opt/sub2api2/blue-green. Original Compose now contains only PG/Redis;
+their containers were never restarted. Background reconcile timer enabled.
+Normal private token-pair refresh verified; password unchanged. Unknown refresh
+outcomes require normal login, not replay or token fabrication.
+
+Final-image runtime/restart proof passed; fixtures backed up and removed,
+images/native drivers/evidence retained. Business term conversion is separate:
+issue/admission=false, recovery=true, term groups/cards/rollouts=0. Obtain explicit
+targets/quotas/sale policy before that action. Do not infer quotas from balances.
+Trellis scripts/developer identity are missing; no unrelated journal is used.
+
+## Historical checkpoint before deployment authorization (superseded)
 
 Current checkout: `/Users/shenxi/Desktop/WORK-SPACE/dd`.
 Branch: `codex/claude-weekly-quota`, baseline HEAD/origin

@@ -1,0 +1,39 @@
+{
+  "server_version_num": "180006",
+  "observations": [
+    {
+      "stage": "numeric(20,10)",
+      "rows": 100000,
+      "filenode": "20732",
+      "relation_bytes": 5218304,
+      "duration_ms": 0
+    },
+    {
+      "stage": "numeric(22,10)",
+      "rows": 100000,
+      "filenode": "20732",
+      "relation_bytes": 5218304,
+      "duration_ms": 2.15
+    },
+    {
+      "stage": "numeric(30,10)",
+      "rows": 100000,
+      "filenode": "20732",
+      "relation_bytes": 5218304,
+      "duration_ms": 0.189
+    }
+  ],
+  "values_unchanged": true,
+  "pass": true,
+  "checked_utc": "2026-10-20T03:31:16.509684+00:00",
+  "elapsed_total_seconds": 0.22916104200703558,
+  "row_count": 100000,
+  "same_filenode": true,
+  "scope": "Isolated unlogged scratch table, numeric precision widening at constant scale only; not all production migration timings or production-data rehearsal",
+  "synthetic_only": true,
+  "production_modified": false,
+  "postgres_image_reference": "postgres@sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd",
+  "scratch_table_dropped": true,
+  "sql_sha256": "bce58f33f8520289bc5fe80837280e25b9bda508733d38465ac2e40c8238766b",
+  "raw_log_sha256": "bdbbcb7caab6d76004715bb0ae9b9c10942cea4079eab95f634caaa225cbb93d"
+}

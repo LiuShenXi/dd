@@ -1,4 +1,25 @@
-# Current delivery status — 2026-10-20 I5/I6 office continuation
+# Current delivery status — 2026-10-20 production released
+
+The user subsequently authorized commit, production deployment and uninterrupted
+blue/green setup. All are complete at 03:58:50 UTC. Commits: I5/I6 `63ecd0831`,
+acceptance `7a75ac924`, blue/green `cace0104c`, restart recovery `a7e6b6de6`.
+No push/main merge. main-server now serves both domains from sub2api2-green:29081,
+version 2.8.13-monas-claude-weekly.1, image
+sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0.
+Old R0 naturally drained/stopped, restart=no; PG/Redis never restarted. All307
+migration checksums match, all450 public health samples passed, actual admin UI
+and two-domain asset/instance checks passed. New background ownership is active;
+the verified reconcile timer is enabled with real normal token refresh.
+
+Final-image protocol/rollback/ledger and separate restart/reconcile/refresh
+acceptance passed. See production-deployment-20261020.md and bound receipts.
+Issue/admission remain off, recovery on; no real group conversion/card issuance.
+Business allocations remain a separate decision. Existing password worked; no
+reset or secrets stored in Git/memory. Task bookkeeping is manual because
+Trellis scripts/developer identity are missing. Historical approval blockers
+below are superseded and must not prevent already-authorized release work.
+
+## Historical local acceptance before deployment authorization
 
 The latest instruction resumes the Claude carpool task on
 `codex/claude-weekly-quota`. The initial fetch found HEAD/current remote at
