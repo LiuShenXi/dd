@@ -4,8 +4,8 @@
   "title": "Claude 逐用户独立周卡架构与 Sol 开发交接",
   "status": "in_progress",
   "architectureStatus": "implemented_and_released",
-  "implementationStatus": "production_UI_acceptance_reopened",
-  "deploymentStatus": "production_deployed_compatible_mode_bluegreen",
+  "implementationStatus": "production_UI_open_key_call_settlement_verified",
+  "deploymentStatus": "production_blue_group7_enabled",
   "implementationThreadId": "01a156dd-6ebc-7740-aed4-499e0d847477",
   "createdAt": "2026-10-19",
   "updatedAt": "2026-10-20",
@@ -26,12 +26,12 @@
     "implement.md",
     "sol-handoff.md"
   ],
-  "notes": "User explicitly authorized commits and deployment. Main-server blue/green release completed 2026-10-20T03:58:50Z with natural drain, PG/Redis unchanged, compatible feature flags. Runtime/restart/refresh evidence passed. No push/main merge or real business conversion. Trellis scripts/developer identity absent; metadata maintained manually without another developer journal.",
+  "notes": "User authorized commits and production deployment. Group7 enabled and administrator UI card/key/real call verified. Latest UI reduction in progress. No push or main merge. Trellis scripts/developer identity absent; metadata maintained manually.",
   "I4": "accepted",
-  "current_iteration": "production_ui_activation",
+  "current_iteration": "user_requested_UI_reduction",
   "implementation_status_entry": "validation/claude-weekly-quota/coordinator-current-status.md",
   "implementation_resume_entry": "validation/claude-weekly-quota/coordinator-resume-state.md",
-  "latest_scope": "Use actual production UI to open an administrator Claude card, repair blockers and document the verified workflow; user does not require a separate page.",
+  "latest_scope": "Remove user concurrency banner and embedded per-card usage; reuse existing usage statistics, verify and deploy.",
   "continuation_entry": "validation/claude-weekly-quota/office-continuation-20261020.md",
   "I5": "local_acceptance_complete",
   "I6": "local_acceptance_complete_including_PG18.6_300k",
@@ -42,8 +42,15 @@
     "productionImage": "sub2api:2.8.13-monas-bps.13",
     "productionSourceRoot": "C:/Users/Administrator/.codex/worktrees/web-search-history-compat/dd"
   },
-  "businessRolloutStatus": "first_configuration_in_progress",
+  "businessRolloutStatus": "new_group7_active_admin_test_card_verified_customers_manually_issued_by_admin",
   "productionImageId": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
   "productionReceipt": "validation/claude-weekly-quota/production-deployment-20261020.md",
-  "finalProductionBuildReceipt": "validation/claude-weekly-quota/production-20261020-build.json"
+  "finalProductionBuildReceipt": "validation/claude-weekly-quota/production-20261020-build.json",
+  "productionActiveSlot": "blue",
+  "productionContainerId": "778ebf12a69854d7afd4e25e58f49b036f7683c88738f36a40f6550bfe296147",
+  "businessEnabledGroupIds": [
+    7
+  ],
+  "productionUIEvidence": "validation/claude-weekly-quota/ui-activation-20261020",
+  "userGuide": "docs/CLAUDE_WEEKLY_CARD_GUIDE.md"
 }

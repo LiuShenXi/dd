@@ -451,6 +451,18 @@ class HostReleaseTests(unittest.TestCase):
                 self.assertEqual(Path(self.c['upstream_file']).read_bytes(), before)
                 self.assertTrue(self.sys.info['green']['State']['Running'])
 
+    def test_slot_replacement_cannot_reuse_retired_container_with_new_start_time(self):
+        self.installed()
+        self.controller.release('green', 3)
+        old_id = self.controller.state['retirements']['blue']['identity']['container_id']
+        self.replace_retired_blue()
+        self.sys.info['blue']['Id'] = old_id
+        before = Path(self.c['upstream_file']).read_bytes()
+        with self.assertRaises(host.ReleaseError):
+            self.controller.switch('blue')
+        self.assertEqual(Path(self.c['upstream_file']).read_bytes(), before)
+        self.assertTrue(self.sys.info['green']['State']['Running'])
+
     def test_stop_response_crash_resumes_by_inspection_without_second_stop(self):
         self.installed()
         self.sys.crash_stop_response = True

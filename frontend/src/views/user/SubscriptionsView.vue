@@ -1,7 +1,6 @@
 <template>
   <AppLayout>
     <div class="space-y-6">
-      <UserConcurrencyScopes v-if="auth.user" :source="auth.user" />
       <p v-if="termError" role="alert" class="text-sm text-red-600">{{ t('subscriptionQuota.loadFailed') }} <button type="button" class="underline" @click="loadTerms">{{ t('subscriptionQuota.retry') }}</button></p>
       <div v-if="termCards.length" class="grid gap-6 lg:grid-cols-2">
         <ClaudeQuotaCard v-for="card in termCards" :key="card.groupId" :summary="card.summary" :title="card.name" @refresh="refreshTerms">
@@ -264,7 +263,6 @@ import { useSubscriptionStore } from '@/stores/subscriptions'
 import { useQuotaRequestIdentity } from '@/composables/useQuotaRequestIdentity'
 import ClaudeQuotaCard from '@/components/subscription/ClaudeQuotaCard.vue'
 import ClaudeQuotaHistory from '@/components/subscription/ClaudeQuotaHistory.vue'
-import UserConcurrencyScopes from '@/components/common/UserConcurrencyScopes.vue'
 import subscriptionsAPI from '@/api/subscriptions'
 import type { UserSubscription } from '@/types'
 import type { NormalizedUserSubscription, SubscriptionQuotaSummary } from '@/types/subscriptionQuota'

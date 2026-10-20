@@ -154,7 +154,6 @@
 
         <!-- Result Content -->
         <div v-else-if="resultData" class="space-y-6">
-          <UserConcurrencyScopes v-if="resultData.claude_concurrency_status" :source="resultData" />
           <ClaudeQuotaCard v-if="claudeUsage" :summary="claudeUsage.quota_summary" @refresh="queryKey(true)" />
           <div v-if="claudeUsage && (resultData.quota || resultData.rate_limits?.length)" class="space-y-1"><h3 class="text-sm font-semibold">{{ t('subscriptionQuota.keyLimit') }}</h3><p class="text-xs text-gray-500">{{ t('subscriptionQuota.keyLimitHint') }}</p></div>
           <!-- Status Badge -->
@@ -421,7 +420,6 @@
 
 <script setup lang="ts">
 import ClaudeQuotaCard from '@/components/subscription/ClaudeQuotaCard.vue'
-import UserConcurrencyScopes from '@/components/common/UserConcurrencyScopes.vue'
 import { useQuotaRequestIdentity } from '@/composables/useQuotaRequestIdentity'
 import type { ClaudeKeyUsage } from '@/types/subscriptionQuota'
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'

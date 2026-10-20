@@ -21,3 +21,13 @@ stopped predecessor with a different container ID in a preserve-mode slot;
 keep foreign/incomplete/identical-process retirement guards. Application image
 and database schema are unchanged. Test both the second full release and denial
 of incomplete/unrecorded/same-container replacements before host installation.
+
+## User-directed UI reduction — 2026-10-20
+
+The user explicitly removes the concurrency banner and duplicate per-card usage
+table. The existing /usage page already shows the real group-7 test request,
+model, tokens, cost and group filter with server-side pagination. Remove the
+banner from SubscriptionsView and KeysView, including its page-only profile
+fetch. Keep compact term history, remove its usage fetch/table, and use the
+existing sidebar usage page. No new statistics UI/API or accounting changes.
+Verify affected views, build embedded frontend and release to inactive green.

@@ -1,6 +1,5 @@
 <template>
   <AppLayout>
-    <UserConcurrencyScopes v-if="keyConcurrency" :source="keyConcurrency" class="mb-4" />
     <TablePageLayout>
       <template #filters>
         <div class="flex flex-col gap-3">
@@ -1239,10 +1238,6 @@ import { keysAPI, authAPI, usageAPI, userGroupsAPI } from '@/api'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import BulkEditKeysModal from '@/components/keys/BulkEditKeysModal.vue'
-import UserConcurrencyScopes from '@/components/common/UserConcurrencyScopes.vue'
-import { useAuthStore } from '@/stores/auth'
-import { userAPI } from '@/api/user'
-import { useKeyPageConcurrency } from '@/composables/useKeyPageConcurrency'
 	import DataTable from '@/components/common/DataTable.vue'
 	import Pagination from '@/components/common/Pagination.vue'
 	import BaseDialog from '@/components/common/BaseDialog.vue'
@@ -1290,8 +1285,6 @@ interface GroupOption {
 }
 
 const appStore = useAppStore()
-const auth = useAuthStore()
-const { projection: keyConcurrency } = useKeyPageConcurrency(() => auth.user, () => auth.token, () => userAPI.getProfile())
 const onboardingStore = useOnboardingStore()
 const { copyToClipboard: clipboardCopy } = useClipboard()
 

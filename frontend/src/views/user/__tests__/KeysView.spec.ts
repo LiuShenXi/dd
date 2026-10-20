@@ -5,7 +5,6 @@ import { createPinia, setActivePinia } from 'pinia'
 
 import type { ApiKey, User } from '@/types'
 import { useAuthStore } from '@/stores/auth'
-import { deferred } from '@/__tests__/subscriptionQuotaFixtures'
 import { keysAPI } from '@/api'
 import KeysView from '../KeysView.vue'
 beforeEach(() => setActivePinia(createPinia()))
@@ -309,20 +308,13 @@ describe('user KeysView column settings', () => {
     updateKey.mockResolvedValue(createApiKey())
   })
 
-  it('loads current two-pool statistics immediately after login and accepts later periodic auth statistics', async () => {
-    const auth = useAuthStore(), response = deferred<User>()
+  it('does not fetch or render the removed page-wide concurrency banner', async () => {
+    const auth = useAuthStore()
     auth.user = { id: 1, concurrency: 5 } as User; auth.token = 'test-session'
-    getProfile.mockReturnValueOnce(response.promise)
     const wrapper = await mountView()
-    expect(getProfile).toHaveBeenCalledOnce()
-    expect(wrapper.get('[data-testid="legacy-scope-stats"]').text()).toBe('concurrencyScopes.unavailable / 5')
-    const fresh = { id: 1, concurrency: 5, legacy_current_concurrency: 2, legacy_concurrency_status: 'available', default_claude_subscription_concurrency: 3, effective_claude_subscription_concurrency: 3, claude_current_concurrency: 1, claude_waiting_count: 0, claude_concurrency_status: 'available' } as User
-    response.resolve(fresh); await flushPromises()
-    expect(wrapper.get('[data-testid="legacy-scope-stats"]').text()).toBe('2 / 5')
-    expect(wrapper.get('[data-testid="claude-scope-stats"]').text()).toBe('1 / 3')
-    expect(auth.user).not.toHaveProperty('claude_current_concurrency')
-    auth.user = { ...fresh, claude_current_concurrency: 2 }; await nextTick()
-    expect(wrapper.get('[data-testid="claude-scope-stats"]').text()).toBe('2 / 3')
+    expect(getProfile).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="legacy-scope-stats"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="claude-scope-stats"]').exists()).toBe(false)
     wrapper.unmount()
   })
 
