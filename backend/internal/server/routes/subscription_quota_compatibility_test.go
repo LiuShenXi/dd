@@ -46,7 +46,7 @@ func TestSubscriptionQuotaR1ActualRouterRejectsEveryGenerationAlias(t *testing.T
 			{"POST", "/v1/live"}, {"POST", "/v1/alpha/search"}, {"POST", "/v1/embeddings"},
 			{"POST", "/v1/videos"}, {"POST", "/v1/web_search"}, {"POST", "/contents/generations/tasks"},
 			{"POST", "/v1beta/models/claude:generateContent"}, {"POST", "/antigravity/v1/messages"},
-			{"POST", "/antigravity/v1beta/models/claude:generateContent"}, {"GET", "/v1/usage"},
+			{"POST", "/antigravity/v1beta/models/claude:generateContent"},
 		} {
 			t.Run(mode+route.path+route.method, func(t *testing.T) {
 				request := httptest.NewRequest(route.method, route.path, strings.NewReader(`{"model":"claude-sonnet"}`))

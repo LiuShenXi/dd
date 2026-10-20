@@ -118,6 +118,9 @@ func normalizeUserRole(role, fallback string) (string, error) {
 }
 
 func (s *adminServiceImpl) CreateUser(ctx context.Context, input *CreateUserInput) (*User, error) {
+	if input.ClaudeSubscriptionConcurrency != nil && !ValidClaudeSubscriptionConcurrency(*input.ClaudeSubscriptionConcurrency) {
+		return nil, ErrInvalidClaudeConcurrency
+	}
 	balance := 0.0
 	if input.Balance != nil {
 		balance = *input.Balance
@@ -132,15 +135,16 @@ func (s *adminServiceImpl) CreateUser(ctx context.Context, input *CreateUserInpu
 	}
 
 	user := &User{
-		Email:         input.Email,
-		Username:      input.Username,
-		Notes:         input.Notes,
-		Role:          role,
-		Balance:       balance,
-		Concurrency:   input.Concurrency,
-		RPMLimit:      input.RPMLimit,
-		Status:        StatusActive,
-		AllowedGroups: input.AllowedGroups,
+		ClaudeSubscriptionConcurrency: input.ClaudeSubscriptionConcurrency,
+		Email:                         input.Email,
+		Username:                      input.Username,
+		Notes:                         input.Notes,
+		Role:                          role,
+		Balance:                       balance,
+		Concurrency:                   input.Concurrency,
+		RPMLimit:                      input.RPMLimit,
+		Status:                        StatusActive,
+		AllowedGroups:                 input.AllowedGroups,
 
 		RestrictPublicGroups: input.RestrictPublicGroups,
 	}
@@ -149,6 +153,9 @@ func (s *adminServiceImpl) CreateUser(ctx context.Context, input *CreateUserInpu
 	}
 	if err := s.userRepo.Create(ctx, user); err != nil {
 		return nil, err
+	}
+	if user.ClaudeSubscriptionConcurrency != nil {
+		logger.LegacyPrintf("service.admin", "audit: user Claude concurrency created actor_admin_id=%d target_user_id=%d old_override=default new_override=%d", input.ActorAdminID, user.ID, *user.ClaudeSubscriptionConcurrency)
 	}
 	// 创建管理员属权限敏感操作，落审计日志（含操作者），便于事后追溯。
 	if user.Role == RoleAdmin {
@@ -195,6 +202,9 @@ func (s *adminServiceImpl) assignDefaultSubscriptions(ctx context.Context, userI
 }
 
 func (s *adminServiceImpl) UpdateUser(ctx context.Context, id int64, input *UpdateUserInput) (*User, error) {
+	if input.ClaudeSubscriptionConcurrency != nil && !ValidClaudeSubscriptionConcurrency(*input.ClaudeSubscriptionConcurrency) {
+		return nil, ErrInvalidClaudeConcurrency
+	}
 	// 校验用户专属分组倍率：必须 > 0（nil 合法，表示清除专属倍率）
 	if input.GroupRates != nil {
 		for groupID, rate := range input.GroupRates {
@@ -215,6 +225,7 @@ func (s *adminServiceImpl) UpdateUser(ctx context.Context, id int64, input *Upda
 	}
 
 	oldConcurrency := user.Concurrency
+	oldClaudeConcurrency := user.ClaudeSubscriptionConcurrency
 	oldStatus := user.Status
 	oldRole := user.Role
 	oldRPMLimit := user.RPMLimit
@@ -223,6 +234,11 @@ func (s *adminServiceImpl) UpdateUser(ctx context.Context, id int64, input *Upda
 	// fields 与下面的 input.X 判空条件一一对应：管理员没提交的列不写回，
 	// 避免这份快照回滚并发的扣费、状态变更或批量限额调整。
 	var fields UserUpdateFields
+	if input.ClaudeSubscriptionConcurrency != nil {
+		value := *input.ClaudeSubscriptionConcurrency
+		user.ClaudeSubscriptionConcurrency = &value
+		fields.ClaudeSubscriptionConcurrency = true
+	}
 
 	if input.Email != "" {
 		user.Email = input.Email
@@ -307,9 +323,13 @@ func (s *adminServiceImpl) UpdateUser(ctx context.Context, id int64, input *Upda
 	if s.authCacheInvalidator != nil {
 		// RPMLimit 直接参与 billing_cache_service.checkRPM 的三级级联，
 		// allowed_groups 参与 API Key 专属分组授权判断；不失效缓存会让修改在一个 L2 TTL 内失去效果。
-		if user.Concurrency != oldConcurrency || user.Status != oldStatus || user.Role != oldRole || user.RPMLimit != oldRPMLimit || user.RestrictPublicGroups != oldRestrictPublicGroups || !sameInt64Set(user.AllowedGroups, oldAllowedGroups) {
+		if fields.ClaudeSubscriptionConcurrency || user.Concurrency != oldConcurrency || user.Status != oldStatus || user.Role != oldRole || user.RPMLimit != oldRPMLimit || user.RestrictPublicGroups != oldRestrictPublicGroups || !sameInt64Set(user.AllowedGroups, oldAllowedGroups) {
 			s.authCacheInvalidator.InvalidateAuthCacheByUserID(ctx, user.ID)
 		}
+	}
+	if fields.ClaudeSubscriptionConcurrency {
+		logger.LegacyPrintf("service.admin", "audit: user Claude concurrency changed actor_admin_id=%d target_user_id=%d old_override=%s new_override=%d",
+			input.ActorAdminID, user.ID, claudeConcurrencyAuditValue(oldClaudeConcurrency), *user.ClaudeSubscriptionConcurrency)
 	}
 
 	concurrencyDiff := user.Concurrency - oldConcurrency

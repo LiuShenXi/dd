@@ -1,0 +1,34 @@
+{
+  "source_before": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "source_after": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+  "frontend_before": "f028ff844c2b1321e6f3f30cec8bbe02ed6191832196f765d9d7887876d1a776",
+  "frontend_after": "f028ff844c2b1321e6f3f30cec8bbe02ed6191832196f765d9d7887876d1a776",
+  "business_count": 75,
+  "business_sha256": "afcd0c9e634cc79db164b12104172b0cd059c59c904e870390f6db61b3cab33c",
+  "changed_source_files": [
+    {
+      "path": "backend/internal/repository/api_key_repo.go",
+      "sha256": "9091af64f2f6ff61d92a1b1c98723e92780b4a74a03c941d7ce2f45dbfd12405"
+    },
+    {
+      "path": "backend/internal/repository/api_key_repo_claude_concurrency_projection_integration_test.go",
+      "sha256": "aeaf7366bddff539d61613e8cf62c229eb7c356f310207f45d0001b391cc5689"
+    },
+    {
+      "path": "backend/internal/repository/api_key_repo_claude_concurrency_projection_unit_test.go",
+      "sha256": "127dd80bff81804d81ac5be6e5a33d02140e9490aee65003c80a114a605b6b92"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_http_metadata_i4_integration_test.go",
+      "sha256": "61dd473f0ac9113a4f130813248c4309806e2412cc82d6dd3fceadbcfa36679e"
+    },
+    {
+      "path": "backend/internal/service/admin_user_claude_concurrency_test.go",
+      "sha256": "e4d9bda7d3de98e78c7d1b86f5aa7a37ac7ea292cc553ec3bab8b1df456e1ad4"
+    },
+    {
+      "path": "backend/internal/service/api_key_auth_cache_impl.go",
+      "sha256": "11826f6a21c23eceb1267a492787a06d308a75ad2e278cc9bc02b652ac3f0c97"
+    }
+  ]
+}

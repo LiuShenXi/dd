@@ -704,6 +704,8 @@ func registerSubscriptionQuotaRoutes(admin *gin.RouterGroup, h *handler.Handlers
 	admin.POST("/users/:id/subscription-quota/terms/preview", h.Admin.SubscriptionQuota.Preview)
 	admin.POST("/users/:id/subscription-quota/terms", h.Admin.SubscriptionQuota.OpenTerm)
 	admin.POST("/subscription-quota/terms/:term_id/cancel", h.Admin.SubscriptionQuota.CancelTerm)
+	admin.GET("/subscription-quota/requests", h.Admin.SubscriptionQuota.ListRequests)
+	admin.POST("/subscription-quota/requests/:request_id/resolve", h.Admin.SubscriptionQuota.ResolveRequest)
 }
 
 func registerSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {

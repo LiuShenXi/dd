@@ -1,0 +1,11 @@
+{
+  "exit_code": 0,
+  "owned_source_stable": true,
+  "finished_utc": "2026-10-19T17:27:11.6690171Z",
+  "evidence_layer": "unit/actual local router and HTTP upstream; synthetic financial/Redis boundaries",
+  "includes_main_owned_gateway_usage_billing_file": true,
+  "top_level_passed": 75,
+  "all_tests_passed": 213,
+  "failed": 0,
+  "skipped": 0
+}

@@ -1,0 +1,45 @@
+{
+  "stage": "I4 preserved failure and correction index",
+  "failures": [
+    {
+      "receipt": "I4-pg-F1-20261019T175235Z-receipt.json",
+      "correction": "Wait actual GPT last-use publication before next full-row baseline; exclude no columns",
+      "status": "preserved superseded failure",
+      "cause": "Legitimate previous GPT deferred account timestamps crossed the next Claude full-row baseline",
+      "field_proof": "I4-foreign-account-async-20261019T175847Z.json",
+      "final_pass": "I4-pg-F2-20261019T180032Z-receipt.json"
+    },
+    {
+      "receipt": "I4-v2-MetadataAndUnsupportedRoutes-F2-20261019T180616Z-receipt.json",
+      "correction": "Explicit authentic metadata warmup and completed last-use before unchanged complete guard",
+      "status": "preserved fixture failure",
+      "cause": "Authenticated metadata legitimately touches only Key last_used_at/updated_at",
+      "field_proof": "I4-metadata-auth-side-effect-20261019T180755Z.json",
+      "final_pass": "I4-v2-MetadataAndUnsupportedRoutes-F2-20261019T180755Z-receipt.json"
+    },
+    {
+      "receipt": "I4-unit-race-F2-20261019T180119Z-receipt.json",
+      "baseline_proof": "I4-preexisting-cleanup-test-race.json",
+      "correction": "Atomic test stub counter; both tests retained, whole509 rerun",
+      "status": "preserved real race failure",
+      "cause": "Pre-existing test stub counter unsynchronized read/write, not a new business race",
+      "source_bridge": "coordinator-I4-F2-F3-test-only-bridge.json",
+      "final_pass": "I4-unit-race-F3-20261019T181120Z-receipt.json"
+    },
+    {
+      "status": "preserved diagnostic failure and configuration/observation correction",
+      "final_long_stream": "I4-v2-T68-F3-20261019T181135Z-receipt.json; actual final-image held973.0817914s PASS, independent observed and PostgreSQL detail receipts",
+      "correction": "I4-v2-T68-debug-20261019T172323Z-correction.json",
+      "cause": "RESP3 nested ZRANGE WITHSCORES test decoder, not lease failure",
+      "receipt": "I4-v2-T68-debug-20261019T172323Z-receipt.json"
+    }
+  ],
+  "validation_only_smoke_fixture_error": {
+    "actual_smoke": "I4-delay-proxy-smoke-20261019T181716Z.json",
+    "result": "assumed nonexistent summary.user_id; finally released the response; no business defect or UI pass claimed",
+    "correction": "Check actual summary current_term.id canonical DTO",
+    "action": "environment-I4-delay-proxy-smoke.ps1 first invocation"
+  },
+  "production_connected": false,
+  "updated_utc": "2026-10-19T18:29:59.6557540Z"
+}

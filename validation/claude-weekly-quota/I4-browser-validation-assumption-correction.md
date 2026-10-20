@@ -1,0 +1,7 @@
+# Admin override validation assumption correction
+
+Root's actual CUA validation first applied the prepared script's incorrect assumption that A's optional `claude-concurrency-input` must start with2. The actual edit dialog correctly showed current override2/effective2/default3/GPT5 in its policy panel, while the new-update input was empty and its visible hint said leaving it blank preserves policy. Preserve this as a **validation assumption failure**, not a missing override or business defect. The standalone Playwright script itself was never authorized/executed.
+
+The source contract is explicit: `UserEditModal.vue` initializes `claudeOverride` to an empty string on each target change; submit adds `claude_subscription_concurrency` only for a nonempty positive-integer input. Thus blank means omitted/no change; it neither copies the current policy into an update nor clears it. This is consistent with backend optional-field presence semantics. The policy panel is the current-value assertion target.
+
+Only validation artifacts were corrected: A panel default3/override2/effective2/GPT5 plus empty optional update input; after real C update to4, re-opened panel shows4 while the optional input starts empty again. The prepared script's original `inputValue() === '2'` / `ADMIN_EXISTING_OVERRIDE2` assertion is recorded here rather than silently reclassified as passed. No frontend/backend business or frozen test source was changed.

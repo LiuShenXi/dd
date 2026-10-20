@@ -10,19 +10,21 @@ import (
 )
 
 type User struct {
-	ID            int64      `json:"id"`
-	Email         string     `json:"email"`
-	Username      string     `json:"username"`
-	Role          string     `json:"role"`
-	Balance       float64    `json:"balance"`
-	FrozenBalance float64    `json:"frozen_balance"`
-	Concurrency   int        `json:"concurrency"`
-	Status        string     `json:"status"`
-	AllowedGroups []int64    `json:"allowed_groups"`
-	LastActiveAt  *time.Time `json:"last_active_at,omitempty"`
-	CreatedAt     time.Time  `json:"created_at"`
-	UpdatedAt     time.Time  `json:"updated_at"`
-	DeletedAt     *time.Time `json:"deleted_at,omitempty"`
+	service.ClaudeConcurrencyView
+	ClaudeSubscriptionConcurrency *int       `json:"claude_subscription_concurrency"`
+	ID                            int64      `json:"id"`
+	Email                         string     `json:"email"`
+	Username                      string     `json:"username"`
+	Role                          string     `json:"role"`
+	Balance                       float64    `json:"balance"`
+	FrozenBalance                 float64    `json:"frozen_balance"`
+	Concurrency                   int        `json:"concurrency"`
+	Status                        string     `json:"status"`
+	AllowedGroups                 []int64    `json:"allowed_groups"`
+	LastActiveAt                  *time.Time `json:"last_active_at,omitempty"`
+	CreatedAt                     time.Time  `json:"created_at"`
+	UpdatedAt                     time.Time  `json:"updated_at"`
+	DeletedAt                     *time.Time `json:"deleted_at,omitempty"`
 
 	// 余额不足通知
 	BalanceNotifyEnabled       bool               `json:"balance_notify_enabled"`
@@ -759,9 +761,11 @@ type UserSubscription struct {
 	UserID  int64 `json:"user_id"`
 	GroupID int64 `json:"group_id"`
 
-	StartsAt  time.Time `json:"starts_at"`
-	ExpiresAt time.Time `json:"expires_at"`
-	Status    string    `json:"status"`
+	StartsAt     time.Time                 `json:"starts_at"`
+	ExpiresAt    time.Time                 `json:"expires_at"`
+	Status       string                    `json:"status"`
+	QuotaMode    string                    `json:"quota_mode"`
+	QuotaSummary *SubscriptionQuotaSummary `json:"quota_summary"`
 
 	DailyWindowStart   *time.Time `json:"daily_window_start"`
 	WeeklyWindowStart  *time.Time `json:"weekly_window_start"`

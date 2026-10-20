@@ -1,0 +1,54 @@
+{
+  "stage": "I4 browser final environment appendix",
+  "image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+  "source_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+  "browser_url": "http://127.0.0.1:49441",
+  "fault_proxy_url": "http://127.0.0.1:54551",
+  "C_independent_SQL_and_proxy_checks": "pass",
+  "D_independent_SQL_foreign_provider_checks": "pass",
+  "T48_branch": "real client timeout then release and manual Retry, observed by root CUA; no claim of successful original held delivery",
+  "browser_DOM_authority": "root CUA receipts, separate from this environment appendix",
+  "all_proxy_rules_idle": true,
+  "resources_retained": true,
+  "private_credentials_outside_repository": true,
+  "I5": "deferred by user",
+  "I6": "deferred by user",
+  "production_deployment": "not authorized in this checkpoint",
+  "production_connected": false,
+  "new_model_calls": false,
+  "receipts": [
+    {
+      "file": "I4-browser-C-final-observed-20261020T000024Z.json",
+      "sha256": "7ce836eb41ee1dd8014bd8e053d50ad25dc25364b1306951ac1c108ecb38f1ec"
+    },
+    {
+      "file": "I4-browser-C-independent-verification.json",
+      "sha256": "7baabbc0858f7fee5481be524135e3c28e4a6d60d033c71d617d27d421549862"
+    },
+    {
+      "file": "I4-browser-D-Prepare-20261020T000014Z.json",
+      "sha256": "356e1c141a3976aeba3beca8ebdbaedfc77dd30f6ff1c7815eeab347ada5a0ac"
+    },
+    {
+      "file": "I4-browser-D-Start-20261020T000125Z.json",
+      "sha256": "4d3d4bebe71b5e8ff0226d92348b5e517d8678d360445c9eb8ca58b94d3c3b7d"
+    },
+    {
+      "file": "I4-browser-D-Observe-20261020T000434Z.json",
+      "sha256": "72ea6367b8926bb25f257d314a5bd87e7c5bde5afb016e94f7fca02ac8a58ff5"
+    },
+    {
+      "file": "I4-browser-D-final-independent.json",
+      "sha256": "127bbb2dec1117701c3a586650327bfbc932fac3e0e6bf47a61c6a9f2d703a6f"
+    },
+    {
+      "file": "I4-browser-proxy-final-idle.json",
+      "sha256": "03a49514e86e18aa60ca428f561d3d63fd439af219cfb3c8407868e6cc1c0dcf"
+    },
+    {
+      "file": "I4-browser-T48-D-protocol.md",
+      "sha256": "43d1784f5689f0d982d498250c00bb690a85265006934727a85f62e6e8bd0c4a"
+    }
+  ],
+  "recorded_utc": "2026-10-20T00:06:36.8849531Z"
+}

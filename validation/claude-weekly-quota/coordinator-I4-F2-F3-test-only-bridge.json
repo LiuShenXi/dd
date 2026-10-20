@@ -1,0 +1,23 @@
+{
+  "approved": true,
+  "checked_at_utc": "2026-10-19T18:11:19.546874+00:00",
+  "purpose": "Reuse the unchanged F2 application image with an explicitly identified F3 test driver",
+  "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "driver_source_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "candidate_image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "changed_files": [
+    "backend/internal/service/usage_cleanup_service_test.go"
+  ],
+  "before_manifest": "environment-I4-F2-aa71-source-freeze.json",
+  "after_manifest": "I4-main-F3-test-sync-source.json",
+  "compared_files": 4519,
+  "frontend_dist_sha256": "f028ff844c2b1321e6f3f30cec8bbe02ed6191832196f765d9d7887876d1a776",
+  "provider_source_sha256": "067695fb9d71892c3a5b1a8bbe3e3b629c0e42eca543a8fdd3fc5750ec1ec4ba",
+  "runtime_recipe_sha256": "bd33105b381ded70e070f95dfcbb5e765886d011c0e8ae9769d804a4d0a48867",
+  "unchanged_non_test_source": true,
+  "current_source_files_rehashed": true,
+  "running_image_verified": true,
+  "production_modified": false,
+  "reason": "Only a preexisting unit-test stub counter was made atomic; Go application builds exclude *_test.go files.",
+  "limitations": "Does not replace the failed F2 race result. Repeat the existing race inventory on F3; preserve each earlier receipt source hash. Any other source/provider/frontend change invalidates this bridge."
+}

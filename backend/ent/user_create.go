@@ -144,6 +144,20 @@ func (_c *UserCreate) SetNillableConcurrency(v *int) *UserCreate {
 	return _c
 }
 
+// SetClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field.
+func (_c *UserCreate) SetClaudeSubscriptionConcurrency(v int) *UserCreate {
+	_c.mutation.SetClaudeSubscriptionConcurrency(v)
+	return _c
+}
+
+// SetNillableClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field if the given value is not nil.
+func (_c *UserCreate) SetNillableClaudeSubscriptionConcurrency(v *int) *UserCreate {
+	if v != nil {
+		_c.SetClaudeSubscriptionConcurrency(*v)
+	}
+	return _c
+}
+
 // SetStatus sets the "status" field.
 func (_c *UserCreate) SetStatus(v string) *UserCreate {
 	_c.mutation.SetStatus(v)
@@ -718,6 +732,11 @@ func (_c *UserCreate) check() error {
 	if _, ok := _c.mutation.Concurrency(); !ok {
 		return &ValidationError{Name: "concurrency", err: errors.New(`ent: missing required field "User.concurrency"`)}
 	}
+	if v, ok := _c.mutation.ClaudeSubscriptionConcurrency(); ok {
+		if err := user.ClaudeSubscriptionConcurrencyValidator(v); err != nil {
+			return &ValidationError{Name: "claude_subscription_concurrency", err: fmt.Errorf(`ent: validator failed for field "User.claude_subscription_concurrency": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "User.status"`)}
 	}
@@ -828,6 +847,10 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Concurrency(); ok {
 		_spec.SetField(user.FieldConcurrency, field.TypeInt, value)
 		_node.Concurrency = value
+	}
+	if value, ok := _c.mutation.ClaudeSubscriptionConcurrency(); ok {
+		_spec.SetField(user.FieldClaudeSubscriptionConcurrency, field.TypeInt, value)
+		_node.ClaudeSubscriptionConcurrency = &value
 	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(user.FieldStatus, field.TypeString, value)
@@ -1277,6 +1300,30 @@ func (u *UserUpsert) AddConcurrency(v int) *UserUpsert {
 	return u
 }
 
+// SetClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field.
+func (u *UserUpsert) SetClaudeSubscriptionConcurrency(v int) *UserUpsert {
+	u.Set(user.FieldClaudeSubscriptionConcurrency, v)
+	return u
+}
+
+// UpdateClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field to the value that was provided on create.
+func (u *UserUpsert) UpdateClaudeSubscriptionConcurrency() *UserUpsert {
+	u.SetExcluded(user.FieldClaudeSubscriptionConcurrency)
+	return u
+}
+
+// AddClaudeSubscriptionConcurrency adds v to the "claude_subscription_concurrency" field.
+func (u *UserUpsert) AddClaudeSubscriptionConcurrency(v int) *UserUpsert {
+	u.Add(user.FieldClaudeSubscriptionConcurrency, v)
+	return u
+}
+
+// ClearClaudeSubscriptionConcurrency clears the value of the "claude_subscription_concurrency" field.
+func (u *UserUpsert) ClearClaudeSubscriptionConcurrency() *UserUpsert {
+	u.SetNull(user.FieldClaudeSubscriptionConcurrency)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *UserUpsert) SetStatus(v string) *UserUpsert {
 	u.Set(user.FieldStatus, v)
@@ -1699,6 +1746,34 @@ func (u *UserUpsertOne) AddConcurrency(v int) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateConcurrency() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateConcurrency()
+	})
+}
+
+// SetClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field.
+func (u *UserUpsertOne) SetClaudeSubscriptionConcurrency(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetClaudeSubscriptionConcurrency(v)
+	})
+}
+
+// AddClaudeSubscriptionConcurrency adds v to the "claude_subscription_concurrency" field.
+func (u *UserUpsertOne) AddClaudeSubscriptionConcurrency(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddClaudeSubscriptionConcurrency(v)
+	})
+}
+
+// UpdateClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateClaudeSubscriptionConcurrency() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateClaudeSubscriptionConcurrency()
+	})
+}
+
+// ClearClaudeSubscriptionConcurrency clears the value of the "claude_subscription_concurrency" field.
+func (u *UserUpsertOne) ClearClaudeSubscriptionConcurrency() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearClaudeSubscriptionConcurrency()
 	})
 }
 
@@ -2330,6 +2405,34 @@ func (u *UserUpsertBulk) AddConcurrency(v int) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateConcurrency() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateConcurrency()
+	})
+}
+
+// SetClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field.
+func (u *UserUpsertBulk) SetClaudeSubscriptionConcurrency(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetClaudeSubscriptionConcurrency(v)
+	})
+}
+
+// AddClaudeSubscriptionConcurrency adds v to the "claude_subscription_concurrency" field.
+func (u *UserUpsertBulk) AddClaudeSubscriptionConcurrency(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddClaudeSubscriptionConcurrency(v)
+	})
+}
+
+// UpdateClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateClaudeSubscriptionConcurrency() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateClaudeSubscriptionConcurrency()
+	})
+}
+
+// ClearClaudeSubscriptionConcurrency clears the value of the "claude_subscription_concurrency" field.
+func (u *UserUpsertBulk) ClearClaudeSubscriptionConcurrency() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearClaudeSubscriptionConcurrency()
 	})
 }
 

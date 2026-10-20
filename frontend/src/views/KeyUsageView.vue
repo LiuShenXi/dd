@@ -59,7 +59,7 @@
               :type="keyVisible ? 'text' : 'password'"
               :placeholder="t('keyUsage.placeholder')"
               class="input-ring w-full h-12 pl-12 pr-12 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 transition-all dark:border-dark-700 dark:bg-dark-900 dark:text-white dark:placeholder:text-dark-500"
-              @keydown.enter="queryKey"
+            @keydown.enter="queryKey()"
             />
             <button
               @click="keyVisible = !keyVisible"
@@ -75,7 +75,7 @@
             </button>
           </div>
           <button
-            @click="queryKey"
+            @click="queryKey()"
             :disabled="isQuerying"
             class="h-12 px-7 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-medium text-sm transition-all active:scale-[0.97] flex items-center gap-2 whitespace-nowrap disabled:opacity-60"
           >
@@ -119,7 +119,7 @@
                 class="input-ring text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-900 dark:border-dark-700 dark:bg-dark-900 dark:text-white"
               />
               <button
-                @click="queryKey"
+              @click="queryKey()"
                 class="text-xs px-3 py-1.5 rounded-lg bg-primary-500 text-white hover:bg-primary-600"
               >{{ t('keyUsage.apply') }}</button>
             </div>
@@ -154,6 +154,9 @@
 
         <!-- Result Content -->
         <div v-else-if="resultData" class="space-y-6">
+          <UserConcurrencyScopes v-if="resultData.claude_concurrency_status" :source="resultData" />
+          <ClaudeQuotaCard v-if="claudeUsage" :summary="claudeUsage.quota_summary" @refresh="queryKey(true)" />
+          <div v-if="claudeUsage && (resultData.quota || resultData.rate_limits?.length)" class="space-y-1"><h3 class="text-sm font-semibold">{{ t('subscriptionQuota.keyLimit') }}</h3><p class="text-xs text-gray-500">{{ t('subscriptionQuota.keyLimitHint') }}</p></div>
           <!-- Status Badge -->
           <div v-if="statusInfo" data-testid="key-usage-status" class="fade-up flex items-center justify-center mb-2">
             <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-dark-700 dark:bg-dark-900/90">
@@ -417,7 +420,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import ClaudeQuotaCard from '@/components/subscription/ClaudeQuotaCard.vue'
+import UserConcurrencyScopes from '@/components/common/UserConcurrencyScopes.vue'
+import { useQuotaRequestIdentity } from '@/composables/useQuotaRequestIdentity'
+import type { ClaudeKeyUsage } from '@/types/subscriptionQuota'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores'
 import { FeatureFlags, resolveFeatureFlag } from '@/utils/featureFlags'
@@ -461,6 +468,7 @@ const showLoading = ref(false)
 const showDatePicker = ref(false)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const resultData = ref<any>(null)
+const claudeUsage = computed<ClaudeKeyUsage | null>(() => resultData.value?.billing_scope === 'claude_subscription' && resultData.value?.quota_mode === 'term' ? resultData.value as ClaudeKeyUsage : null)
 const now = ref(new Date())
 let resetTimer: ReturnType<typeof setInterval> | null = null
 
@@ -520,8 +528,9 @@ function getDateParams(): string {
 
 function setDailyUsageDays(days: 7 | 30 | 90) {
   if (dailyUsageDays.value === days) return
+  const hadResults = !!resultData.value
   dailyUsageDays.value = days
-  if (resultData.value && apiKey.value.trim()) {
+  if (hadResults && apiKey.value.trim()) {
     queryKey()
   }
 }
@@ -556,13 +565,17 @@ function getRingOffset(ring: RingItem): number {
   return CIRCUMFERENCE - (Math.min(ring.pct, 100) / 100) * CIRCUMFERENCE
 }
 
-function triggerRingAnimation(items: RingItem[]) {
+function triggerRingAnimation(items: RingItem[], current: () => boolean = () => true) {
+  if (!current()) return
   ringAnimated.value = false
   displayPcts.value = items.map(() => 0)
 
   nextTick(() => {
+    if (!current()) return
     requestAnimationFrame(() => {
+      if (!current()) return
       setTimeout(() => {
+        if (!current()) return
         ringAnimated.value = true
 
         // Animate percentage numbers
@@ -571,6 +584,7 @@ function triggerRingAnimation(items: RingItem[]) {
         const targets = items.map(item => item.isBalance ? 0 : item.pct)
 
         function tick() {
+          if (!current()) return
           const elapsed = performance.now() - startTime
           const p = Math.min(elapsed / duration, 1)
           const ease = 1 - Math.pow(1 - p, 3)
@@ -588,6 +602,7 @@ function triggerRingAnimation(items: RingItem[]) {
 const statusInfo = computed(() => {
   const data = resultData.value
   if (!data) return null
+  if (claudeUsage.value) return null
 
   if (data.billing_type === 'carpool') {
     const statusMap: Record<string, string> = {
@@ -652,7 +667,7 @@ const ringItems = computed<RingItem[]>(() => {
         })
       }
     }
-  } else {
+  } else if (!claudeUsage.value) {
     if (data.billing_type !== 'carpool' && data.subscription) {
       const sub = data.subscription
       const limits = [
@@ -745,7 +760,7 @@ const detailRows = computed<DetailRow[]>(() => {
         })
       }
     }
-  } else {
+  } else if (!claudeUsage.value) {
     rows.push({
       iconBg: 'bg-emerald-500/10', iconColor: 'text-emerald-500', iconSvg: ICON_CHECK,
       // 订阅功能关闭后这一行只会是「钱包余额」，标签改用不带「订阅」字样的「计费方式」。
@@ -898,7 +913,9 @@ async function fetchUsage(key: string) {
   return await res.json()
 }
 
-async function queryKey() {
+const queryScope = () => JSON.stringify([apiKey.value.trim(), currentRange.value, customStartDate.value, customEndDate.value, dailyUsageDays.value])
+const queryIdentity = useQuotaRequestIdentity(queryScope)
+async function queryKey(preserve = false) {
   if (isQuerying.value) return
   const key = apiKey.value.trim()
   if (!key) {
@@ -907,30 +924,34 @@ async function queryKey() {
   }
 
   isQuerying.value = true
+  const current = queryIdentity.capture()
   showResults.value = true
-  showLoading.value = true
-  resultData.value = null
+  showLoading.value = !preserve
+  if (!preserve) resultData.value = null
 
   try {
     const data = await fetchUsage(key)
+    if (!current()) return
     resultData.value = data
     showLoading.value = false
     showDatePicker.value = true
 
     // Trigger ring animations after DOM update
     nextTick(() => {
-      triggerRingAnimation(ringItems.value)
+      if (current()) triggerRingAnimation(ringItems.value, current)
     })
 
     appStore.showSuccess(t('keyUsage.querySuccess'))
   } catch (err) {
-    showResults.value = false
+    if (!current()) return
+    if (!preserve) showResults.value = false
     showLoading.value = false
     appStore.showError((err as Error).message || t('keyUsage.queryFailedRetry'))
   } finally {
-    isQuerying.value = false
+    if (current()) isQuerying.value = false
   }
 }
+watch(queryScope, () => { queryIdentity.invalidate(); isQuerying.value = false; showLoading.value = false; showResults.value = false; resultData.value = null }, { flush: 'sync' })
 
 // ==================== Lifecycle ====================
 

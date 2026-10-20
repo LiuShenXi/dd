@@ -37,6 +37,7 @@ import adminComplianceAPI from './compliance'
 import auditAPI from './audit'
 import pluginsAPI from './plugins'
 import carpoolAPI from './carpool'
+import subscriptionQuotaAPI from './subscriptionQuota'
 
 /**
  * Unified admin API object for convenient access
@@ -75,7 +76,8 @@ export const adminAPI = {
   compliance: adminComplianceAPI,
   audit: auditAPI,
   plugins: pluginsAPI,
-  carpool: carpoolAPI
+  carpool: carpoolAPI,
+  subscriptionQuota: subscriptionQuotaAPI
 }
 
 export {

@@ -1,0 +1,59 @@
+{
+  "stage": "I4 isolated browser candidate F4 cutover",
+  "status": "pass",
+  "build_receipt": "environment-I4-F4-20261019T233914Z-build-receipt.json",
+  "url": "http://127.0.0.1:49441",
+  "old_application": "24d38063bd27b95da04fce8cef63e93b54de8f4530121114b557e72d3f97d60d",
+  "old_image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "new_image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+  "new_source_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+  "normal_old_app_stop": true,
+  "database_and_Redis_preserved": true,
+  "ledger_reset": false,
+  "external_upstream_called": false,
+  "generation_API_called": false,
+  "production_connected": false,
+  "started_utc": "2026-10-19T23:45:29.6982923Z",
+  "financial_fingerprint_before": "users|5db9b516c78f7943622b92542a08561b\nuser_subscriptions|482c0449eafaf7da7ba14fa7c325b4d6\nredeem_codes|d751713988987e9331980363e24189ce\nsubscription_quota_terms|177bf70ea05f3b7ff9b6091e13b79481\nsubscription_quota_requests|d751713988987e9331980363e24189ce\nsubscription_quota_ledger|d751713988987e9331980363e24189ce\nsubscription_quota_operations|1df93e5b7485c4b93a4c6b17275cffa2\naccounts|ea4e654795974952def2d132528d03f2\ncarpool_billing_bindings|1c23464dae1c2f7e03256da8c0677aa5\ncarpool_billing_requests|d751713988987e9331980363e24189ce\ncarpool_cycle_carryovers|d751713988987e9331980363e24189ce\ncarpool_cycles|4d12841022e64528df99f7f84f4c85e3\ncarpool_ledger|07e70e6cbc1e5f6d96e3787c3f08eeb6\ncarpool_operations|8f6804a9ff1dfdb3bda44378688f23c7\ncarpool_payments|d751713988987e9331980363e24189ce\ncarpool_plans|cefc993d84857566474013538e74c764\ncarpool_release_imports|d751713988987e9331980363e24189ce\ncarpool_reset_account_states|d751713988987e9331980363e24189ce\ncarpool_reset_announcement_outbox|d751713988987e9331980363e24189ce\ncarpool_reset_batches|d751713988987e9331980363e24189ce\ncarpool_reset_credits|d751713988987e9331980363e24189ce\ncarpool_reset_qualifications|d751713988987e9331980363e24189ce\ncarpool_reset_scope_states|d751713988987e9331980363e24189ce\ncarpool_reset_targets|d751713988987e9331980363e24189ce\ncarpool_terms|b5ed4188f9284d0e85e23653f6985991\npayment_audit_logs|d751713988987e9331980363e24189ce\npayment_orders|d751713988987e9331980363e24189ce\npayment_provider_instances|d751713988987e9331980363e24189ce\nkey_money_limits_identity|ffeb25a432c53e7c1f221898bb76c87c",
+  "provider_calls_before": 1,
+  "original_public_manifest_backup": "environment-I4-browser-F2-before-F4-20261019T234529Z.json",
+  "new_application": "0a67a57b15837214cded1741ddb7d0e054274b99edbb237a2734ab6236e7ec35",
+  "new_bridge_pid": 36736,
+  "public_key_projections": [
+    {
+      "key_label": "AKey",
+      "legacy": 5,
+      "default": 3,
+      "effective": 2,
+      "override": 2
+    },
+    {
+      "key_label": "AKey2",
+      "legacy": 5,
+      "default": 3,
+      "effective": 2,
+      "override": 2
+    },
+    {
+      "key_label": "GPTKey",
+      "legacy": 5,
+      "default": 3,
+      "effective": 2,
+      "override": 2
+    },
+    {
+      "key_label": "BKey",
+      "legacy": 5,
+      "default": 3,
+      "effective": 3,
+      "override": null
+    }
+  ],
+  "financial_fingerprint_after": "users|5db9b516c78f7943622b92542a08561b\nuser_subscriptions|482c0449eafaf7da7ba14fa7c325b4d6\nredeem_codes|d751713988987e9331980363e24189ce\nsubscription_quota_terms|177bf70ea05f3b7ff9b6091e13b79481\nsubscription_quota_requests|d751713988987e9331980363e24189ce\nsubscription_quota_ledger|d751713988987e9331980363e24189ce\nsubscription_quota_operations|1df93e5b7485c4b93a4c6b17275cffa2\naccounts|ea4e654795974952def2d132528d03f2\ncarpool_billing_bindings|1c23464dae1c2f7e03256da8c0677aa5\ncarpool_billing_requests|d751713988987e9331980363e24189ce\ncarpool_cycle_carryovers|d751713988987e9331980363e24189ce\ncarpool_cycles|4d12841022e64528df99f7f84f4c85e3\ncarpool_ledger|07e70e6cbc1e5f6d96e3787c3f08eeb6\ncarpool_operations|8f6804a9ff1dfdb3bda44378688f23c7\ncarpool_payments|d751713988987e9331980363e24189ce\ncarpool_plans|cefc993d84857566474013538e74c764\ncarpool_release_imports|d751713988987e9331980363e24189ce\ncarpool_reset_account_states|d751713988987e9331980363e24189ce\ncarpool_reset_announcement_outbox|d751713988987e9331980363e24189ce\ncarpool_reset_batches|d751713988987e9331980363e24189ce\ncarpool_reset_credits|d751713988987e9331980363e24189ce\ncarpool_reset_qualifications|d751713988987e9331980363e24189ce\ncarpool_reset_scope_states|d751713988987e9331980363e24189ce\ncarpool_reset_targets|d751713988987e9331980363e24189ce\ncarpool_terms|b5ed4188f9284d0e85e23653f6985991\npayment_audit_logs|d751713988987e9331980363e24189ce\npayment_orders|d751713988987e9331980363e24189ce\npayment_provider_instances|d751713988987e9331980363e24189ce\nkey_money_limits_identity|ffeb25a432c53e7c1f221898bb76c87c",
+  "financial_exactly_unchanged": true,
+  "provider_calls_after": 1,
+  "C_private_fields_preserved": true,
+  "old_container_retained_stopped": true,
+  "proxy_54551_target_unchanged": true,
+  "finished_utc": "2026-10-19T23:45:38.8555873Z"
+}

@@ -39,6 +39,7 @@ func (s *SubscriptionQuotaService) Admit(ctx context.Context, in domain.Subscrip
 		ObserveSubscriptionQuotaAdmission(ErrSubscriptionQuotaBillingUnavailable)
 		return nil, ErrSubscriptionQuotaBillingUnavailable
 	}
+	in.DefaultClaudeConcurrency = s.cfg.Default.ClaudeSubscriptionConcurrency
 	snapshot, err := repo.AdmitRequest(ctx, in)
 	if err != nil && infraerrors.Code(err) >= 500 && !strings.HasPrefix(infraerrors.Reason(err), "TERM_") {
 		return nil, ErrSubscriptionQuotaBillingUnavailable.WithCause(err)

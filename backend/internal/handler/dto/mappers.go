@@ -13,26 +13,35 @@ func UserFromServiceShallow(u *service.User) *User {
 	if u == nil {
 		return nil
 	}
+	view := u.ClaudeConcurrencyView
+	if view.ClaudeConcurrencyStatus == "" {
+		view.ClaudeConcurrencyStatus = "unavailable"
+	}
+	if view.LegacyConcurrencyStatus == "" {
+		view.LegacyConcurrencyStatus = "unavailable"
+	}
 	return &User{
-		ID:                         u.ID,
-		Email:                      u.Email,
-		Username:                   u.Username,
-		Role:                       u.Role,
-		Balance:                    u.Balance,
-		FrozenBalance:              u.FrozenBalance,
-		Concurrency:                u.Concurrency,
-		Status:                     u.Status,
-		AllowedGroups:              u.AllowedGroups,
-		LastActiveAt:               u.LastActiveAt,
-		CreatedAt:                  u.CreatedAt,
-		UpdatedAt:                  u.UpdatedAt,
-		BalanceNotifyEnabled:       u.BalanceNotifyEnabled,
-		BalanceNotifyThresholdType: u.BalanceNotifyThresholdType,
-		BalanceNotifyThreshold:     u.BalanceNotifyThreshold,
-		BalanceNotifyExtraEmails:   NotifyEmailEntriesFromService(u.BalanceNotifyExtraEmails),
-		TotalRecharged:             u.TotalRecharged,
-		RPMLimit:                   u.RPMLimit,
-		DeletedAt:                  u.DeletedAt,
+		ClaudeConcurrencyView:         view,
+		ClaudeSubscriptionConcurrency: u.ClaudeSubscriptionConcurrency,
+		ID:                            u.ID,
+		Email:                         u.Email,
+		Username:                      u.Username,
+		Role:                          u.Role,
+		Balance:                       u.Balance,
+		FrozenBalance:                 u.FrozenBalance,
+		Concurrency:                   u.Concurrency,
+		Status:                        u.Status,
+		AllowedGroups:                 u.AllowedGroups,
+		LastActiveAt:                  u.LastActiveAt,
+		CreatedAt:                     u.CreatedAt,
+		UpdatedAt:                     u.UpdatedAt,
+		BalanceNotifyEnabled:          u.BalanceNotifyEnabled,
+		BalanceNotifyThresholdType:    u.BalanceNotifyThresholdType,
+		BalanceNotifyThreshold:        u.BalanceNotifyThreshold,
+		BalanceNotifyExtraEmails:      NotifyEmailEntriesFromService(u.BalanceNotifyExtraEmails),
+		TotalRecharged:                u.TotalRecharged,
+		RPMLimit:                      u.RPMLimit,
+		DeletedAt:                     u.DeletedAt,
 	}
 }
 
@@ -887,6 +896,10 @@ func UserSubscriptionFromServiceAdmin(sub *service.UserSubscription) *AdminUserS
 }
 
 func userSubscriptionFromServiceBase(sub *service.UserSubscription) UserSubscription {
+	group := GroupFromServiceShallow(sub.Group)
+	if userSubscriptionQuotaMode(sub) == "term" && group != nil {
+		group.DailyLimitUSD, group.WeeklyLimitUSD, group.MonthlyLimitUSD = nil, nil, nil
+	}
 	return UserSubscription{
 		ID:                 sub.ID,
 		UserID:             sub.UserID,
@@ -894,6 +907,8 @@ func userSubscriptionFromServiceBase(sub *service.UserSubscription) UserSubscrip
 		StartsAt:           sub.StartsAt,
 		ExpiresAt:          sub.ExpiresAt,
 		Status:             sub.Status,
+		QuotaMode:          userSubscriptionQuotaMode(sub),
+		QuotaSummary:       SubscriptionQuotaSummaryFromDomain(sub.QuotaSummary),
 		DailyWindowStart:   sub.DailyWindowStart,
 		WeeklyWindowStart:  sub.WeeklyWindowStart,
 		MonthlyWindowStart: sub.MonthlyWindowStart,
@@ -904,7 +919,7 @@ func userSubscriptionFromServiceBase(sub *service.UserSubscription) UserSubscrip
 		UpdatedAt:          sub.UpdatedAt,
 		RevokedAt:          sub.DeletedAt,
 		User:               UserFromServiceShallow(sub.User),
-		Group:              GroupFromServiceShallow(sub.Group),
+		Group:              group,
 	}
 }
 

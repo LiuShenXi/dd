@@ -1,0 +1,54 @@
+{
+  "utc": "2026-10-19T17:26:28.7020318Z",
+  "original_receipt": "I4-v2-T68-debug-20261019T172323Z-receipt.json",
+  "classification": "test fixture RESP3 JSON shape error before duration/renewal/settlement assertions",
+  "planned_duration_minutes": 16,
+  "actual_test_elapsed_seconds": 3.18,
+  "actual_redis_renewal_observed_in_failed_test": false,
+  "actual_settlement_assertions_reached_in_failed_test": false,
+  "original_requests_preserved": true,
+  "manual_state_or_money_updates": false,
+  "post_failure_readonly_requests": [
+    {
+      "id": 25,
+      "status": "settled",
+      "term_id": 1,
+      "log_rows": 1,
+      "dedup_rows": 1,
+      "ledger_rows": 1,
+      "actual_cost_usd": "0.00060000",
+      "usage_log_recorded_at": "2026-10-20T01:23:43.896911+08:00"
+    },
+    {
+      "id": 26,
+      "status": "settled",
+      "term_id": 1,
+      "log_rows": 1,
+      "dedup_rows": 1,
+      "ledger_rows": 1,
+      "actual_cost_usd": "0.00060000",
+      "usage_log_recorded_at": "2026-10-20T01:23:43.88695+08:00"
+    }
+  ],
+  "post_failure_provider_calls": [
+    {
+      "sequence": 29,
+      "path": "/v1/messages",
+      "model": "claude-sonnet-4-5",
+      "stream": true,
+      "active": false,
+      "cancelled": false
+    },
+    {
+      "sequence": 30,
+      "path": "/v1/messages",
+      "model": "claude-sonnet-4-5",
+      "stream": true,
+      "active": false,
+      "cancelled": false
+    }
+  ],
+  "provider_gate_released_by_original_test_defer": true,
+  "current_card_reuse_basis": "Both original requests completed normally and are settled/acknowledged; there was no unknown/reconcile state to clear",
+  "acceptance": false
+}

@@ -109,6 +109,7 @@ func ProvideGatewayHandler(
 	concurrencyService *service.ConcurrencyService,
 	billingCacheService *service.BillingCacheService,
 	carpoolService *service.CarpoolService,
+	subscriptionQuotaService *service.SubscriptionQuotaService,
 	usageService *service.UsageService,
 	apiKeyService *service.APIKeyService,
 	usageRecordWorkerPool *service.UsageRecordWorkerPool,
@@ -124,6 +125,7 @@ func ProvideGatewayHandler(
 		errorPassthroughService, contentModerationService, userMsgQueueService, cfg, settingService)
 	h.securityAuditCoordinator = coordinator
 	h.carpoolService = carpoolService
+	h.SetSubscriptionQuotaSummaryReader(subscriptionQuotaService)
 	return h
 }
 
@@ -312,6 +314,8 @@ func ProvideSubscriptionQuotaHandler(svc *service.SubscriptionQuotaService) *Sub
 	return NewSubscriptionQuotaHandler(svc)
 }
 
-func ProvideAdminSubscriptionQuotaHandler(svc *service.SubscriptionQuotaService) *admin.SubscriptionQuotaHandler {
-	return admin.NewSubscriptionQuotaHandler(svc)
+func ProvideAdminSubscriptionQuotaHandler(svc *service.SubscriptionQuotaService, resolution *service.SubscriptionQuotaResolutionService) *admin.SubscriptionQuotaHandler {
+	h := admin.NewSubscriptionQuotaHandler(svc)
+	h.SetRequestAdministration(svc, resolution)
+	return h
 }

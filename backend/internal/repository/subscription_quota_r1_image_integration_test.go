@@ -215,7 +215,7 @@ func newSubscriptionQuotaR1ImageFixture(t *testing.T) *subscriptionQuotaBillingF
 	require.NoError(t, r.db.QueryRow(`INSERT INTO groups(name,platform,subscription_type) VALUES('Synthetic R1 native guard','anthropic','subscription') RETURNING id`).Scan(&r.nativeGroup))
 	_, err := r.db.Exec(`INSERT INTO user_subscriptions(user_id,group_id,starts_at,expires_at,daily_window_start,weekly_window_start,monthly_window_start,daily_usage_usd,weekly_usage_usd,monthly_usage_usd) VALUES($1,$2,clock_timestamp()-INTERVAL '1 day',clock_timestamp()+INTERVAL '1 year',clock_timestamp(),clock_timestamp(),clock_timestamp(),1.1234567890,7.8765432109,19.9999999999)`, r.userA, r.nativeGroup)
 	require.NoError(t, err)
-	r.cfg = &config.Config{RunMode: config.RunModeStandard, SubscriptionQuota: config.SubscriptionQuotaConfig{IssueEnabled: true, EnabledGroupIDs: []int64{r.group}}}
+	r.cfg = &config.Config{RunMode: config.RunModeStandard, Default: config.DefaultConfig{ClaudeSubscriptionConcurrency: 3}, SubscriptionQuota: config.SubscriptionQuotaConfig{IssueEnabled: true, EnabledGroupIDs: []int64{r.group}}}
 	r.repo = NewSubscriptionQuotaRepository(r.db)
 	r.api = service.NewSubscriptionQuotaService(r.repo, r.cfg)
 	f := &subscriptionQuotaBillingFixture{rights: r, db: r.db, port: r.repo.(service.SubscriptionQuotaBillingRepository)}

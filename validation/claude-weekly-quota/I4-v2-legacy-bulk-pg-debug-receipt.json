@@ -1,0 +1,19 @@
+{
+  "stage": "I4 v2 legacy bulk policy preservation",
+  "diagnostic": true,
+  "acceptance": false,
+  "source_stability_asserted": false,
+  "command": "go test -tags=integration -json -count=1 -timeout=5m -run '^TestSubscriptionQuotaConcurrencyV2LegacyBulkKeepsClaudePolicy$' ./internal/repository",
+  "exit_code": 0,
+  "top_passes": [
+    "TestSubscriptionQuotaConcurrencyV2LegacyBulkKeepsClaudePolicy"
+  ],
+  "failure_count": 0,
+  "skip_count": 0,
+  "log_sha256": "8ab5a968239b52eac3b7c1264a1a3f3f0ca8c454e99a0b77c914ace924219bd0",
+  "test_source_sha256": "b70f6dae197377887f0928d8d4854eaacf26f656e48676f6cc36bf35c361c5b7",
+  "real_postgresql": true,
+  "original_testmain": true,
+  "synthetic_only": true,
+  "production_connected": false
+}

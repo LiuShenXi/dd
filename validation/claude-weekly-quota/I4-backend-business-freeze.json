@@ -1,0 +1,316 @@
+{
+  "stage": "I4 backend business freeze before final complete-source test freeze",
+  "base_head": "9005acffad8f9b30975ea3dd27e82095eb9e5520",
+  "created_utc": "2026-10-19T23:35:00.1020898Z",
+  "changed_business_file_count": 75,
+  "changed_business_sha256": "afcd0c9e634cc79db164b12104172b0cd059c59c904e870390f6db61b3cab33c",
+  "includes_tests": false,
+  "includes_frontend": false,
+  "accepted": false,
+  "entries": [
+    {
+      "path": "backend/cmd/server/wire_gen.go",
+      "sha256": "c970f6009497d3be55350e1ab485111ff75443dfc939cff5ae4f75ba6e388dac"
+    },
+    {
+      "path": "backend/cmd/server/wire.go",
+      "sha256": "33ee3a4f92e6d6e5d635b0b515f87c2c2eecfece2ad15a173d1c0c943f871a9c"
+    },
+    {
+      "path": "backend/ent/migrate/schema.go",
+      "sha256": "45edeb6cdc24e175a3480db008d6b99a8799df1f8ac6e274882e5adc761f3c08"
+    },
+    {
+      "path": "backend/ent/mutation.go",
+      "sha256": "9c22fa7b0e9cdd5d3b528b889688ef263d0d47f02fc159dbab245e39b2b2565a"
+    },
+    {
+      "path": "backend/ent/runtime/runtime.go",
+      "sha256": "14a04208be7bacd2109bfc24b777499e415bac8e946dec5840deb3c284721252"
+    },
+    {
+      "path": "backend/ent/schema/user.go",
+      "sha256": "e5db25db88d84a6ba41fcaf4d2c119424f3498301ad733372677febac4dcefe8"
+    },
+    {
+      "path": "backend/ent/user_create.go",
+      "sha256": "fb124da4cb36351f162054628f1dafefb011171eae3fb98fc687421116428dc9"
+    },
+    {
+      "path": "backend/ent/user_update.go",
+      "sha256": "ec70eb9f7a5715dab890664112236c87c35a2250ca117dfe5fce27cd0bf24474"
+    },
+    {
+      "path": "backend/ent/user.go",
+      "sha256": "6d39e2b6bc547c27e519218a4bf9e53812697da7852cdd4536ea8aabaa29ba09"
+    },
+    {
+      "path": "backend/ent/user/user.go",
+      "sha256": "7ce9dc20f58bbbc43ba404bb94e4c96feaae09619207ca863bdecd52c6c54806"
+    },
+    {
+      "path": "backend/ent/user/where.go",
+      "sha256": "438c13d021e23ffa44546cb6da341bbe35564f096e026797927cadbf81b8a926"
+    },
+    {
+      "path": "backend/internal/config/config.go",
+      "sha256": "c6661afe7936d8d9db726045c6a4c6f7af9c5c721576a93cee5ecd56c7cb0d39"
+    },
+    {
+      "path": "backend/internal/domain/subscription_quota_billing.go",
+      "sha256": "a691be53da6a845753841775254ff9822349f2c1d332d2e113da63c7e08526d4"
+    },
+    {
+      "path": "backend/internal/domain/subscription_quota_resolution.go",
+      "sha256": "ded8b1a510b52dc41afcc4fce8837592b15d760c8f9f7ecff8e37b656b6a24ea"
+    },
+    {
+      "path": "backend/internal/domain/subscription_quota.go",
+      "sha256": "1ee8c6fc8cb4090675ff68af6a567d45858efb8038f64161d7f900de6ea5bbac"
+    },
+    {
+      "path": "backend/internal/handler/admin/subscription_handler.go",
+      "sha256": "9b1ec5d772b4e91ca20ef111924d2f19fac67faf6955e0dbde14e7f91ce4d326"
+    },
+    {
+      "path": "backend/internal/handler/admin/subscription_quota_handler.go",
+      "sha256": "e45d8a8b26ef0f19c24e953bb9c6c9be3bb8a894cc3ee53d362a808dfdd990ed"
+    },
+    {
+      "path": "backend/internal/handler/admin/subscription_quota_requests.go",
+      "sha256": "707256fcd1bb3e1b09f5e57e7482c7a18034f9d5db5b01f2de66a7d5dbee00b8"
+    },
+    {
+      "path": "backend/internal/handler/admin/user_claude_concurrency.go",
+      "sha256": "ee2a80881526fd921d53a916d748b8bf2239a0c0a857979b1437348cf3443c76"
+    },
+    {
+      "path": "backend/internal/handler/admin/user_handler.go",
+      "sha256": "c8b43861b5052b5bf2d614721dc709c438daa3a506426d912d1d91c2eade2b67"
+    },
+    {
+      "path": "backend/internal/handler/auth_handler.go",
+      "sha256": "8a26843a3fdaa8bc29add25a702b44d6bf577fd724cbc63fc05730bc612bd2e2"
+    },
+    {
+      "path": "backend/internal/handler/dto/mappers.go",
+      "sha256": "b69d0cf5bf576f680f42d57074c86d6a7393dabdda1ceb1411e7c26fafc21282"
+    },
+    {
+      "path": "backend/internal/handler/dto/subscription_quota_legacy.go",
+      "sha256": "63ffd19bb8e9ff821dcfd243ce326d9d6b6db2e9d083dcf8b3e24e96de75a5e5"
+    },
+    {
+      "path": "backend/internal/handler/dto/subscription_quota_request.go",
+      "sha256": "b32d17e33284704297c603536b3c99189f5bf33fce27547338463fafb86f4836"
+    },
+    {
+      "path": "backend/internal/handler/dto/types.go",
+      "sha256": "eb425c93666a44615af9719ea9ea4b0a867dfcee15d5e3f6d77fe6276a463f33"
+    },
+    {
+      "path": "backend/internal/handler/gateway_handler_chat_completions.go",
+      "sha256": "93af4eee75a371d326c6984f1ef876049251bfedd4db1c04a166d3a7b3c9a0c2"
+    },
+    {
+      "path": "backend/internal/handler/gateway_handler_responses.go",
+      "sha256": "8d84c906093dcc40460446386e4a41138f4d48530798b91af1d65f59b37d0ea5"
+    },
+    {
+      "path": "backend/internal/handler/gateway_handler.go",
+      "sha256": "f04f33caaf764881a077eae5a89f4a96611fe6ef99693dab06485324b94902c0"
+    },
+    {
+      "path": "backend/internal/handler/gateway_helper.go",
+      "sha256": "21f07c4951bab54629a2f5c709ebd53e432d5107ad0bd67beead99fef2aba007"
+    },
+    {
+      "path": "backend/internal/handler/subscription_handler.go",
+      "sha256": "17d8b323334b9d28713d655ef690cfa43552a26b3fc22b42fd3c6f2e2bb9d684"
+    },
+    {
+      "path": "backend/internal/handler/subscription_quota_usage.go",
+      "sha256": "b9219bd4eb40fb3a34adcacd70d39e28c3056d6c351e555418875b85e4b555e2"
+    },
+    {
+      "path": "backend/internal/handler/subscriptionquota/resolve.go",
+      "sha256": "93d0001f6b56d814e51e3c2d2a9f97968a52fe5626b1f63e583f81ac35c75804"
+    },
+    {
+      "path": "backend/internal/handler/wire.go",
+      "sha256": "ed6866ef53906522729b2196dac64b4fddce86b707d3597102723ab2bc40e4e4"
+    },
+    {
+      "path": "backend/internal/repository/api_key_repo.go",
+      "sha256": "9091af64f2f6ff61d92a1b1c98723e92780b4a74a03c941d7ce2f45dbfd12405"
+    },
+    {
+      "path": "backend/internal/repository/concurrency_cache.go",
+      "sha256": "6829d315ef9c47b585740ee711da88555727894f3dd45c5d5fd8e8f631b5ac4d"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_admission.go",
+      "sha256": "5631e2f3a6d4659983ae9718b67ffcb35f21249727949bfeac67a4f1208d1912"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_protected_group_repo.go",
+      "sha256": "de6d63afc3cbd3f31669527dd5fde8cd9b9d7c43be9de5486a8740c10397a9cd"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_readiness.go",
+      "sha256": "8ad78758e477af8ff2450f39c03ca0f095ddd9973adfb82c2efd6b364285e894"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_repo.go",
+      "sha256": "78b6743b115c71535e426fdc1af3afda3cfd6d619e65f412b674d3c5cdd3b218"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_request_read.go",
+      "sha256": "6398a5b86447596e122abedc399082ef7f0339aef632cebe51b99c73ac9a55f6"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_resolution.go",
+      "sha256": "7aa104f55da584b8173bd926837fb0b1c516ac943484ea01bede483c2f161941"
+    },
+    {
+      "path": "backend/internal/repository/user_concurrency_policy.go",
+      "sha256": "1dbc7018cb02b5d665a8e29ecf581cd0eb3b675cad45f88ca76eb15e15ef4c22"
+    },
+    {
+      "path": "backend/internal/repository/user_concurrency_scope_cache.go",
+      "sha256": "fca4adefafb3eab494b2949234da998ca09c03e7886487905159d970d6085bf4"
+    },
+    {
+      "path": "backend/internal/repository/user_repo.go",
+      "sha256": "6a327543229ef1449d604ea39a442671579501eb95350a7cc4780e0965a54eda"
+    },
+    {
+      "path": "backend/internal/repository/user_subscription_quota_projection.go",
+      "sha256": "208b037e3f4417f8f91cce6f1df5466ca413033f538e7be82d01f546a89f7c70"
+    },
+    {
+      "path": "backend/internal/repository/wire.go",
+      "sha256": "647051be9fb95e195a586f25a37118f718097a5c65da6ac855adaca0282e1d3c"
+    },
+    {
+      "path": "backend/internal/server/middleware/admin_auth.go",
+      "sha256": "3585534dddc7cf57e3a5773f246ea247ce786d89113f83e86a0bd2f0535908d6"
+    },
+    {
+      "path": "backend/internal/server/middleware/api_key_auth_google.go",
+      "sha256": "801b51310f82659c65f2f9bbcdf0b27dd1582dcb56828b23be9c086af7b4c884"
+    },
+    {
+      "path": "backend/internal/server/middleware/api_key_auth.go",
+      "sha256": "5238433282f54c1356b6f10c803ddf9d8891e984652abf5358143d98de1991cd"
+    },
+    {
+      "path": "backend/internal/server/middleware/auth_subject.go",
+      "sha256": "e7c0dae43bb2e7043ac54daca963df60085fc5d65829794d39280578a3d31b7c"
+    },
+    {
+      "path": "backend/internal/server/middleware/subscription_quota_guard.go",
+      "sha256": "a66deb110f298b4f23b6f26b2a516fd01f7a2f851346d2446ef0163721844cf2"
+    },
+    {
+      "path": "backend/internal/server/routes/admin.go",
+      "sha256": "d961844d67600c3c383affab12c8451568c4424a4299efe675d509bba7537a5a"
+    },
+    {
+      "path": "backend/internal/service/admin_service.go",
+      "sha256": "027d49701c0e16c6dc273a0da3fce7ecc10917cc8957f9cb6f9baa2ef7c656bc"
+    },
+    {
+      "path": "backend/internal/service/admin_user.go",
+      "sha256": "960c8dbb58accfa0cdf1bcb221968ff04aa2c8983a78f40636c554cdbd440c7b"
+    },
+    {
+      "path": "backend/internal/service/api_key_auth_cache_impl.go",
+      "sha256": "11826f6a21c23eceb1267a492787a06d308a75ad2e278cc9bc02b652ac3f0c97"
+    },
+    {
+      "path": "backend/internal/service/api_key_auth_cache.go",
+      "sha256": "2b5afe8413b0fd97b9f3ff2f4ecfbc5277d0e03221319e68c297eebaae3433de"
+    },
+    {
+      "path": "backend/internal/service/concurrency_service.go",
+      "sha256": "8c8b47e8af89f33116c49881928fa71ae43506ad3de7c6fdc14db7c5ff82e00f"
+    },
+    {
+      "path": "backend/internal/service/gateway_usage_billing.go",
+      "sha256": "291534f76d3b200ecab1654bb6220d59776aac30182df1219fc098d998d279df"
+    },
+    {
+      "path": "backend/internal/service/subscription_quota_administration.go",
+      "sha256": "782a6c8bf9aaba8a0c3414521ac603df68150636f26a18e3d127b268955ff39a"
+    },
+    {
+      "path": "backend/internal/service/subscription_quota_billing_service.go",
+      "sha256": "ebfb872bff659e68eb3e04f1622430f49076a80b28e9994a84e37033372e39a3"
+    },
+    {
+      "path": "backend/internal/service/subscription_quota_projection.go",
+      "sha256": "aa4c5be7f42bd9e63dcce4e1f9b3223e13be4c4ca932d64551ba573a0b2a00d9"
+    },
+    {
+      "path": "backend/internal/service/subscription_quota_protected_concurrency.go",
+      "sha256": "afb2aaa5302c916fab75e0dd9be1bb0c4052903e41e041d127468c6d92c27ba7"
+    },
+    {
+      "path": "backend/internal/service/subscription_quota_protected_groups.go",
+      "sha256": "990ae68b43e30d5bb86139ba37665b1d27575a4651500b33cef16ca12161a069"
+    },
+    {
+      "path": "backend/internal/service/subscription_quota_service.go",
+      "sha256": "afc97bbc86f00f98c701f17de5fb59d8f44034cfb8cb3a2443dd1364be02d05d"
+    },
+    {
+      "path": "backend/internal/service/subscription_service.go",
+      "sha256": "7698e375ee21508da27074fd5e65bb16838a6c5d1554c4d6436b57561fbcf706"
+    },
+    {
+      "path": "backend/internal/service/user_concurrency_projection.go",
+      "sha256": "04f151fc075267bc3a1c9d8b575cfc511f11a31ef2afacca559b73a523712c2c"
+    },
+    {
+      "path": "backend/internal/service/user_concurrency_scope_port.go",
+      "sha256": "1cab6e624d2904eacec85eb1d49d0f8f4d174ad1504970fb29b9521c4e7ee5e6"
+    },
+    {
+      "path": "backend/internal/service/user_concurrency_scope.go",
+      "sha256": "034bb461bf99cb26a476a996b913f16e6cd000813210dd51492a499a268f4a42"
+    },
+    {
+      "path": "backend/internal/service/user_service.go",
+      "sha256": "f677962a13d7d074fc7f58d3c4e3d077398a5219467824b444820547661e1276"
+    },
+    {
+      "path": "backend/internal/service/user_subscription.go",
+      "sha256": "f765af298d86cf823a58ad28a3d06e9d9bc5ddd2a6c34c3640b4ac164e6885c3"
+    },
+    {
+      "path": "backend/internal/service/user.go",
+      "sha256": "dd7f25e31ab13f10fa82c24f37d4827e4320a4f5bb16da04e75e661ba13cedae"
+    },
+    {
+      "path": "backend/internal/service/wire.go",
+      "sha256": "51f127269750a0c0dfb5237c340137324c2a6a6ed77995c976d9b881b5b6e9fa"
+    },
+    {
+      "path": "backend/internal/web/embed_on.go",
+      "sha256": "9031bc896e4a36bae067eb2632be5cfb560e8e82ad072cb7ccafd280cd18bad9"
+    },
+    {
+      "path": "backend/migrations/251_claude_subscription_concurrency.sql",
+      "sha256": "8c96cff07c89ef0ef8d8fff5f0690fab05125a763a8a4f3514a715380af87464"
+    },
+    {
+      "path": "deploy/config.example.yaml",
+      "sha256": "e6f14a6519f1dfbf3bccaa62a52a5a1cbfd4f18380c28fb80dc28b4090f24a53"
+    }
+  ],
+  "supersedes_digest": "d5a65b3b03db480b11c8e860eb8d1abf676fce4d8066fdbd4192bf88097e66a7",
+  "change_reason": "Nullable override is read before validating out-of-range default, preserving valid override priority",
+  "aggregate_encoding": "UTF-8 concatenation of entries in listed order: path + space + lowercase sha256 + LF",
+  "reopens_reason": "Native API Key auth User Select omitted Claude override; select column and v28 snapshot plus reject stale L2 before L1 promotion. No GPT policy changes."
+}

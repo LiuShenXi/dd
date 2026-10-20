@@ -131,19 +131,24 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 
 	service.SetOpsLatencyMs(c, service.OpsAuthLatencyMsKey, time.Since(requestStart).Milliseconds())
 
-	userReleaseFunc, err := h.concurrencyHelper.AcquireUserSlotWithWait(c, subject.UserID, subject.Concurrency, reqStream, &streamStarted)
+	userReleaseFunc, err := h.acquireGatewayUserSlotWithWait(c, apiKey, subject.UserID, subject.Concurrency, reqStream, &streamStarted)
 	if err != nil {
 		reqLog.Warn("gateway.responses.user_slot_acquire_failed", zap.Error(err))
 		h.handleConcurrencyError(c, err, "user", streamStarted)
 		return
 	}
-	userReleaseFunc = wrapReleaseOnDone(c.Request.Context(), userReleaseFunc)
 	if userReleaseFunc != nil {
 		defer userReleaseFunc()
+	}
+	if claudeTermGatewayKey(apiKey) {
+		requestCtx = c.Request.Context()
 	}
 
 	// 2. Re-check billing
 	if err := h.billingCacheService.CheckBillingEligibility(requestCtx, apiKey.User, apiKey, apiKey.Group, subscription, service.QuotaPlatform(requestCtx, apiKey)); err != nil {
+		if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+			return
+		}
 		reqLog.Info("gateway.responses.billing_check_failed", zap.Error(err))
 		status, code, message, retryAfter := billingErrorDetails(err)
 		if retryAfter > 0 {
@@ -171,10 +176,14 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 
 	for {
 		if requestCtx.Err() != nil {
+			h.writeClaudeLeaseLoss(c, apiKey, streamStarted)
 			return
 		}
 		selection, err := h.gatewayService.SelectAccountWithLoadAwareness(requestCtx, apiKey.GroupID, sessionHash, reqModel, fs.FailedAccountIDs, "", int64(0))
 		if err != nil {
+			if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+				return
+			}
 			if len(fs.FailedAccountIDs) == 0 {
 				cls := classifyNoAccountErrorFromGin(c, h.gatewayService, apiKey, reqModel, reqModel, effectiveAPIKeyPlatform(c, apiKey))
 				cls = classifySelectionFailureError(err, cls)
@@ -193,7 +202,9 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 			case FailoverContinue:
 				continue
 			case FailoverCanceled:
-				failoverClientGone(c)
+				if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+					failoverClientGone(c)
+				}
 				return
 			default:
 				if fs.LastFailoverErr != nil {
@@ -229,6 +240,10 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 				return
 			}
 		}
+		if claudeTermGatewayKey(apiKey) {
+			accountReleaseFunc = forwardCompletionRelease(accountReleaseFunc)
+			defer accountReleaseFunc()
+		}
 		// 终检与准入后绑定必须使用选号结果携带的门：门安装在调度栈的局部
 		// ctx 上（composite/fallback 还可能解析出与入口分组不同的门），直接用
 		// requestCtx 会退化为空操作。
@@ -253,7 +268,9 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 				reqLog.Warn("gateway.responses.bind_sticky_session_after_profit_admission_failed", zap.Int64("account_id", account.ID), zap.Error(err))
 			}
 		}
-		accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+		if !claudeTermGatewayKey(apiKey) {
+			accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+		}
 
 		// 5. Forward request
 		writerSizeBeforeForward := c.Writer.Size()
@@ -302,6 +319,9 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 
 		if err != nil {
 			h.submitSubscriptionQuotaUsageAfterError(c, termState, apiKey, account, subscription, result, pricingAt, clientRequestedUsageFields(c, channelMapping, reqModel, ""), body)
+			if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+				return
+			}
 			if termState != nil && h.writeSubscriptionQuotaForwardError(c, err, streamStarted) {
 				return
 			}
@@ -324,7 +344,9 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 					h.handleResponsesFailoverExhausted(c, fs.LastFailoverErr, streamStarted)
 					return
 				case FailoverCanceled:
-					failoverClientGone(c)
+					if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+						failoverClientGone(c)
+					}
 					return
 				}
 			}

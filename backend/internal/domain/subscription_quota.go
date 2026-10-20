@@ -150,16 +150,17 @@ type SubscriptionQuotaUsagePage struct {
 // Normalized intent is durable alongside the original resolution. Replay never
 // consults today's plan/default or rewrites the originally returned timestamps.
 type SubscriptionQuotaOpenParams struct {
-	UserID           int64   `json:"user_id"`
-	ActorID          int64   `json:"actor_id"`
-	GroupID          int64   `json:"group_id"`
-	Operation        string  `json:"operation"`
-	QuotaUSD         *string `json:"quota_usd"`
-	PlanID           *int64  `json:"plan_id"`
-	ExpectedRevision int64   `json:"expected_revision"`
-	Notes            string  `json:"notes"`
-	IdempotencyKey   string  `json:"-"`
-	IssueAllowed     bool    `json:"-"`
+	UserID                   int64   `json:"user_id"`
+	ActorID                  int64   `json:"actor_id"`
+	GroupID                  int64   `json:"group_id"`
+	Operation                string  `json:"operation"`
+	QuotaUSD                 *string `json:"quota_usd"`
+	PlanID                   *int64  `json:"plan_id"`
+	ExpectedRevision         int64   `json:"expected_revision"`
+	Notes                    string  `json:"notes"`
+	IdempotencyKey           string  `json:"-"`
+	IssueAllowed             bool    `json:"-"`
+	DefaultClaudeConcurrency int     `json:"-"`
 }
 type SubscriptionQuotaCancelParams struct {
 	TermID           int64  `json:"term_id"`

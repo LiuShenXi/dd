@@ -1,0 +1,6 @@
+{
+  "utc": "2026-10-19T16:46:17.3570911Z",
+  "action": "restart existing Docker Desktop Hidden after application crash",
+  "production": false,
+  "existing_container_policy": "Do not alter unrelated resources; Desktop may restart them per their pre-existing policies"
+}

@@ -103,6 +103,8 @@ current_term 可以为 null，last_term 提供最近结束卡的状态；历史�
 
 ## Gateway 接线矩阵
 
+并发 v2 补充：现有管理用户编辑 DTO 增加可选正整数 claude_subscription_concurrency；省略表示不修改，显式 null、0 和负数拒绝。原 concurrency 和 current_concurrency 保留 legacy_user 口径；增加 effective_claude_subscription_concurrency、claude_current_concurrency、claude_waiting_count。Redis 无法读取时当前值返回 null 并带不可用状态，不能显示假零。新字段在既有用户管理接口扩展，不增加周卡开卡金额字段或修改 GPT 上限。
+
 | 入口 | term 支持要求 |
 | --- | --- |
 | POST /v1/messages | SSE 与非 SSE、Kiro/API Key/OAuth 已有 Anthropic 账号分支都经过最终准入 |
@@ -127,6 +129,8 @@ current_term 可以为 null，last_term 提供最近结束卡的状态；历史�
 | 429 | TERM_QUOTA_EXHAUSTED | 本卡额度耗尽 |
 | 503 | TERM_BILLING_UNAVAILABLE / TERM_ADMISSION_RETRY | 依赖失效或边界竞争，未发上游 |
 | 503 | TERM_RECONCILIATION_PENDING | 当前卡有待核查消费，暂不接受新请求 |
+| 503 | TERM_CONCURRENCY_NOT_CONFIGURED / TERM_CONCURRENCY_UNAVAILABLE | Claude 独立并发配置或 Redis 依赖不可用，不降级 GPT 池 |
+| 429 | TERM_CONCURRENCY_QUEUE_FULL / TERM_CONCURRENCY_WAIT_TIMEOUT | Claude 并发等待满或超时，不影响 GPT 队列 |
 
 429 只在已知存在下一卡时给准确的 next_available_at；不能暗示到每周一会自动重置。错误日志使用分类值，保留用户可理解的信息而不泄露密钥、原始上游响应或他人 ID。
 

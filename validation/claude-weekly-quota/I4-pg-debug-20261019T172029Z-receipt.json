@@ -1,0 +1,42 @@
+{
+  "stage": "I4 actual candidate HTTP and PG",
+  "freeze": "debug",
+  "diagnostic": true,
+  "executable": "C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/bin/go.exe",
+  "arguments": [
+    "test",
+    "-tags=integration",
+    "-json",
+    "-count=1",
+    "-timeout=10m",
+    "-run",
+    "^TestSubscriptionQuotaI4(PrepareEnvironment|HTTPWalletMatrix)$",
+    "./internal/repository"
+  ],
+  "exit_code": 0,
+  "source_sha256": "34d2ee58e198b75da0a7c0b2d5dc5794e20e1f62eb91655193ab01928672d9c3",
+  "source_after_sha256": "5940787bfce428d4a39dee5b40e6a9617774301f3473ebe8e326fbadb03fcfbc",
+  "image_source_sha256": "d85b57f469ab0bc11c3b0c7cb02706442706eea5b4bbdd4d835b0d1d6bed763f",
+  "source_stable": false,
+  "expected_top_level_tests": 2,
+  "top_level_passes": [
+    "TestSubscriptionQuotaI4PrepareEnvironment",
+    "TestSubscriptionQuotaI4HTTPWalletMatrix"
+  ],
+  "pass_count_including_subtests": 26,
+  "failure_count": 0,
+  "skip_count": 0,
+  "functional_pass": true,
+  "acceptance": false,
+  "build_receipt": "environment-I4-debug-20261019T171758Z-build-receipt.json",
+  "log": "I4-pg-debug-20261019T172029Z.jsonl",
+  "persistent_environment": "C:\\Users\\Administrator\\.codex\\worktrees\\claude-weekly-quota\\dd\\validation\\claude-weekly-quota\\environment-I4-20261019T172029Z-active.json",
+  "original_TestMain_seed_database": true,
+  "new_PG18_persistent_clone": true,
+  "application_loopback_only": true,
+  "provider_external_egress": false,
+  "synthetic_only": true,
+  "production_connected": false,
+  "upstream_called": false,
+  "finished_utc": "2026-10-19T17:22:59.5855515Z"
+}

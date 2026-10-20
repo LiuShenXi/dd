@@ -73,6 +73,9 @@ func (r *subscriptionQuotaRepository) admitRequestOnce(ctx context.Context, p do
 	if err = subscriptionQuotaCheckEntities(ctx, tx, p.UserID, p.GroupID, 0, true); err != nil {
 		return nil, err
 	}
+	if err = subscriptionQuotaCheckClaudeConcurrency(ctx, tx, p.UserID, p.DefaultClaudeConcurrency); err != nil {
+		return nil, err
+	}
 	var userID, groupID int64
 	var status string
 	var expiry, w5, w1, w7 sql.NullTime

@@ -335,6 +335,9 @@ func (r *subscriptionQuotaRepository) OpenTerm(ctx context.Context, p domain.Sub
 	if err = subscriptionQuotaCheckEntities(ctx, tx, p.UserID, p.GroupID, p.ActorID, true); err != nil {
 		return nil, err
 	}
+	if err = subscriptionQuotaCheckClaudeConcurrency(ctx, tx, p.UserID, p.DefaultClaudeConcurrency); err != nil {
+		return nil, err
+	}
 	source, err := subscriptionQuotaResolveSource(ctx, tx, p, true)
 	if err != nil {
 		return nil, err

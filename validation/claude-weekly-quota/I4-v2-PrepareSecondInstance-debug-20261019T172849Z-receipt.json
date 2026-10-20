@@ -1,0 +1,33 @@
+{
+  "stage": "I4 v2 actual isolated runtime",
+  "scenario": "PrepareSecondInstance",
+  "freeze": "debug",
+  "diagnostic": true,
+  "executable": "C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/bin/go.exe",
+  "arguments": [
+    "test",
+    "-tags=integration",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^TestSubscriptionQuotaI4V2PrepareSecondInstance$",
+    "./internal/repository"
+  ],
+  "exit_code": 0,
+  "driver_source_sha256": "c40825ce61c4e5446ba5c70f40ab6a9f7bec81b39ea488b5aad0a5e3e7f7f427",
+  "driver_source_after_sha256": "c40825ce61c4e5446ba5c70f40ab6a9f7bec81b39ea488b5aad0a5e3e7f7f427",
+  "driver_source_stable": true,
+  "candidate_source_sha256": "d85b57f469ab0bc11c3b0c7cb02706442706eea5b4bbdd4d835b0d1d6bed763f",
+  "candidate_image_id": "sha256:64e6e22539f0c8cb1dea7c026c876f8acd607ca47e7f831b9751695b9f978bb3",
+  "environment_receipt": "environment-I4-20261019T172029Z-active.json",
+  "pass_count": 1,
+  "failure_count": 0,
+  "skip_count": 0,
+  "functional_pass": true,
+  "acceptance": false,
+  "log": "I4-v2-PrepareSecondInstance-debug-20261019T172849Z.jsonl",
+  "external_upstream_called": false,
+  "production_connected": false,
+  "finished_utc": "2026-10-19T17:29:34.8621156Z"
+}

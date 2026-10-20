@@ -1,0 +1,23 @@
+{
+  "id": "claude-weekly-quota-architecture",
+  "name": "claude-weekly-quota-architecture",
+  "title": "Claude 逐用户独立周卡架构与 Sol 开发交接",
+  "status": "planning",
+  "architectureStatus": "ready_for_implementation",
+  "implementationStatus": "tracked_in_implementation_thread",
+  "deploymentStatus": "tracked_in_implementation_thread",
+  "implementationThreadId": "01a1543f-6c74-7fe1-8395-69cd5c9da72f",
+  "createdAt": "2026-10-19",
+  "updatedAt": "2026-10-20",
+  "architectureVersion": 2,
+  "concurrencyIsolationRequired": true,
+  "creator": "codex",
+  "intendedImplementer": "Sol, assigned in the implementation thread",
+  "productionSourceCommit": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
+  "productionImage": "sub2api:2.8.13-monas-bps.13",
+  "productionSourceRoot": "C:/Users/Administrator/.codex/worktrees/web-search-history-compat/dd",
+  "suggestedBranch": "codex/claude-weekly-quota",
+  "currentTaskPointerChanged": false,
+  "relatedFiles": ["README.md", "prd.md", "design.md", "concurrency-isolation.md", "implement.md", "sol-handoff.md"],
+  "notes": "Architecture-only delivery. Production inspected read-only. Trellis task.py and get_context.py are absent; metadata created manually without changing other task state. Do not implement in the old root checkout. Verify live production again before I0."
+}

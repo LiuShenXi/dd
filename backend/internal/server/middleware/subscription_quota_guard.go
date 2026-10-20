@@ -22,8 +22,8 @@ func subscriptionQuotaProtectedGroup(cfg *config.Config, groupID int64) bool {
 	return false
 }
 
-// R1 permits discovery without accidentally reading an ordinary balance as a
-// Claude allowance. Usage remains unavailable until its term projection exists.
+// Metadata uses the authenticated identity and canonical term projection without
+// issuing a bill or granting generation rights.
 func subscriptionQuotaDiscoveryRequest(c *gin.Context) bool {
 	if c.Request.Method == http.MethodPost && (c.Request.URL.Path == "/v1/messages/count_tokens" || c.Request.URL.Path == "/messages/count_tokens") {
 		return true
@@ -32,7 +32,7 @@ func subscriptionQuotaDiscoveryRequest(c *gin.Context) bool {
 		return false
 	}
 	path := c.Request.URL.Path
-	return path == "/models" || strings.HasPrefix(path, "/models/") ||
+	return path == "/v1/usage" || path == "/models" || strings.HasPrefix(path, "/models/") ||
 		path == "/v1/models" || strings.HasPrefix(path, "/v1/models/") ||
 		path == "/backend-api/codex/models" || path == "/v1/sub2api/billing"
 }

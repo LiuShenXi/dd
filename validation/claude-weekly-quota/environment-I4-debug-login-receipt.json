@@ -1,0 +1,24 @@
+{
+  "url": "http://127.0.0.1:56699",
+  "candidate_stage": "debug old frontend",
+  "checks": [
+    {
+      "email": "i4-admin@example.invalid",
+      "status": 200,
+      "token_received": true
+    },
+    {
+      "email": "i4-a@example.invalid",
+      "status": 200,
+      "token_received": true
+    },
+    {
+      "email": "i4-b@example.invalid",
+      "status": 200,
+      "token_received": true
+    }
+  ],
+  "credentials_printed": false,
+  "external_upstream": false,
+  "utc": "2026-10-19T16:50:37.9621841Z"
+}

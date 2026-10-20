@@ -1,0 +1,77 @@
+{
+  "stage": "I4 C actual UI final SQL observations",
+  "image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+  "facts": {
+    "terms": [
+      {
+        "id": 5,
+        "term_no": 1,
+        "used_usd": "0.00000000",
+        "quota_usd": "100.00000000",
+        "starts_at": "2026-10-20T07:55:28.655025+08:00",
+        "expires_at": "2026-10-27T07:55:28.655025+08:00",
+        "cancelled_at": null,
+        "subscription_id": 5,
+        "duration_seconds": 604800.0
+      },
+      {
+        "id": 6,
+        "term_no": 2,
+        "used_usd": "0.00000000",
+        "quota_usd": "75.00000000",
+        "starts_at": "2026-10-27T07:55:28.655025+08:00",
+        "expires_at": "2026-11-03T07:55:28.655025+08:00",
+        "cancelled_at": null,
+        "subscription_id": 5,
+        "duration_seconds": 604800.0
+      }
+    ],
+    "balance": "0.00000000",
+    "parents": [
+      {
+        "id": 5,
+        "starts_at": "2026-10-20T07:55:28.655025+08:00",
+        "deleted_at": null,
+        "expires_at": "2026-11-03T07:55:28.655025+08:00",
+        "quota_revision": 2
+      }
+    ],
+    "user_id": 4,
+    "operations": [
+      {
+        "id": 5,
+        "kind": "open_term",
+        "request_fingerprint": "3ef3115581445156f435a77ba6c8e69841268f73f3f596d1a84efd41a89b901b",
+        "idempotency_key_sha256": "661cd7330bb375a2be8dc473cd02f87b4f88d238b2aaaafb19be517560450890"
+      },
+      {
+        "id": 6,
+        "kind": "renew_term",
+        "request_fingerprint": "24316b18db8b448d531572e5abd9f7eb112b34aa681e7abea1d723de1e6ad71f",
+        "idempotency_key_sha256": "099e269944ac7c5e0541995bcd4e55428377f8161355606d9f1cf9f0bfe2d015"
+      }
+    ],
+    "ledger_count": 0,
+    "request_count": 0,
+    "claude_override": 4,
+    "legacy_concurrency": 5
+  },
+  "checks": {
+    "legacy5": true,
+    "claude4": true,
+    "two_terms": true,
+    "two_operations": true,
+    "no_consumption": true,
+    "amounts100then75": true,
+    "full168h": true,
+    "contiguous": true,
+    "no_cancel_or_debit": true,
+    "parent_summary": true,
+    "one_open_one_renew": true
+  },
+  "final_pass": true,
+  "require_final": true,
+  "read_only": true,
+  "raw_idempotency_auth_payload_logged": false,
+  "observed_utc": "2026-10-20T00:00:01.1787017Z"
+}

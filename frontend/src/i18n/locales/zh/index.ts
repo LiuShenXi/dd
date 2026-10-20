@@ -6,6 +6,7 @@ import batchImage from './batchImage'
 import admin from './admin'
 import misc from './misc'
 import carpool from './carpool'
+import subscriptionQuota from './subscriptionQuota'
 
 export default {
   ...landing,
@@ -16,4 +17,5 @@ export default {
   admin,
   ...misc,
   ...carpool,
+  ...subscriptionQuota,
 }

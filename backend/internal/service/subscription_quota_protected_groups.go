@@ -76,10 +76,23 @@ func (s *SubscriptionQuotaProtectedGroupService) Admit(ctx context.Context, orig
 		return nil, ErrSubscriptionQuotaProtectedUnavailable
 	}
 	input := SubscriptionQuotaProtectedAdmission{RequestID: "protected:" + generateRequestID(), UserID: current.UserID, APIKeyID: current.ID, GroupID: protectedGroupID(current), SubscriptionType: current.Group.SubscriptionType}
+	prior, _ := ctx.Value(protectedConcurrencyContextKey{}).(*protectedConcurrencyState)
+	if prior != nil {
+		if prior.userID != input.UserID || prior.keyID != input.APIKeyID || prior.groupID != input.GroupID {
+			return nil, ErrSubscriptionQuotaProtectedUnavailable
+		}
+		input.RequestID = prior.request.id
+	}
 	admitCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	if err := s.repo.AdmitProtectedGroup(admitCtx, input); err != nil {
 		return nil, ErrSubscriptionQuotaProtectedUnavailable.WithCause(err)
+	}
+	if prior != nil {
+		prior.mu.Lock()
+		prior.attempted = true
+		prior.mu.Unlock()
+		return prior.request, nil
 	}
 	return &SubscriptionQuotaProtectedRequest{repo: s.repo, id: input.RequestID}, nil
 }

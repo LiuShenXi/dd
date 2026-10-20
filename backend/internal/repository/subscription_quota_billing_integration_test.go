@@ -126,7 +126,7 @@ func (f *subscriptionQuotaBillingFixture) requireCharge(t *testing.T, snapshot *
 
 func (f *subscriptionQuotaBillingFixture) admission(user, key int64) domain.SubscriptionQuotaAdmissionParams {
 	return domain.SubscriptionQuotaAdmissionParams{
-		UserID: user, APIKeyID: key, GroupID: f.rights.group, AccountID: f.account, ExpectedAccountType: service.AccountTypeAPIKey,
+		UserID: user, APIKeyID: key, GroupID: f.rights.group, AccountID: f.account, ExpectedAccountType: service.AccountTypeAPIKey, DefaultClaudeConcurrency: 3,
 		RequestID: service.NewSubscriptionQuotaAdmissionRequestID(),
 		FreezePricing: func(at time.Time) (json.RawMessage, error) {
 			// This is a repository durability fixture, not an alternate model

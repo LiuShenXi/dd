@@ -1,5 +1,8 @@
 <template>
   <AppLayout>
+    <div class="mb-4 flex flex-wrap gap-2"><button type="button" class="btn btn-secondary" @click="showQuotaRequests = !showQuotaRequests">{{ t('subscriptionQuota.requests') }}</button><button v-if="selectedFilterUser" type="button" class="btn btn-secondary" @click="quotaUser = selectedFilterUser; showQuotaModal = true">{{ t('subscriptionQuota.manage') }}</button></div>
+    <SubscriptionQuotaRequests v-if="showQuotaRequests" class="mb-6" />
+    <SubscriptionQuotaTermModal v-if="showQuotaModal" :show="showQuotaModal" :user="quotaUser" :initial-group-id="quotaGroup" @close="showQuotaModal = false; quotaUser = null" @success="loadSubscriptions" />
     <TablePageLayout>
       <template #filters>
         <!-- Top Toolbar: Left (search + filters) / Right (actions) -->
@@ -246,7 +249,8 @@
           </template>
 
           <template #cell-usage="{ row }">
-            <div class="min-w-[280px] space-y-2">
+            <ClaudeQuotaCard v-if="row.quota_mode === 'term'" class="min-w-[280px]" :summary="row.quota_summary ?? null" compact @refresh="loadSubscriptions" />
+            <div v-else class="min-w-[280px] space-y-2">
               <!-- Daily Usage -->
               <div v-if="row.group?.daily_limit_usd" class="usage-row">
                 <div class="flex items-center gap-2">
@@ -417,7 +421,8 @@
           </template>
 
           <template #cell-actions="{ row }">
-            <div class="flex items-center gap-1">
+            <button v-if="row.quota_mode === 'term'" type="button" class="btn btn-secondary" @click="quotaUser = { id: row.user_id, email: row.user?.email || `#${row.user_id}` }; quotaGroup = row.group_id; showQuotaModal = true">{{ t('subscriptionQuota.manage') }}</button>
+            <div v-else class="flex items-center gap-1">
               <button
                 v-if="row.status === 'active' || row.status === 'expired'"
                 @click="handleExtend(row)"
@@ -840,6 +845,10 @@
 </template>
 
 <script setup lang="ts">
+import SubscriptionQuotaRequests from '@/components/admin/subscription/SubscriptionQuotaRequests.vue'
+import SubscriptionQuotaTermModal from '@/components/admin/user/SubscriptionQuotaTermModal.vue'
+import ClaudeQuotaCard from '@/components/subscription/ClaudeQuotaCard.vue'
+import type { NormalizedUserSubscription } from '@/types/subscriptionQuota'
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
@@ -1007,7 +1016,9 @@ const statusOptions = computed(() => [
   { value: 'revoked', label: t('admin.subscriptions.status.revoked') }
 ])
 
-const subscriptions = ref<UserSubscription[]>([])
+const subscriptions = ref<NormalizedUserSubscription[]>([])
+const showQuotaRequests = ref(false), showQuotaModal = ref(false), quotaGroup = ref<number | undefined>()
+const quotaUser = ref<{ id: number; email: string } | null>(null)
 const groups = ref<Group[]>([])
 const loading = ref(false)
 let abortController: AbortController | null = null
@@ -1018,7 +1029,7 @@ const bulkActions: SubscriptionBulkAction[] = ['extend', 'reset_quota', 'revoke'
 const bulkAction = ref<SubscriptionBulkAction | null>(null)
 const bulkSubscriptions = ref<UserSubscription[]>([])
 const bulkTargets = computed(() => {
-  const selected = subscriptions.value.filter((subscription) => selectedIds.value.includes(subscription.id))
+  const selected = subscriptions.value.filter((subscription) => subscription.quota_mode !== 'term' && selectedIds.value.includes(subscription.id))
   return {
     extend: selected.filter((subscription) => ['active', 'expired'].includes(subscription.status)),
     reset_quota: selected.filter((subscription) => subscription.status === 'active'),
@@ -1029,7 +1040,7 @@ const bulkTargets = computed(() => {
 const getSubscriptionSelectionLabel = (subscription: UserSubscription) =>
   t('admin.subscriptions.bulk.selectSubscription', { id: subscription.id })
 const handleSelectedKeysUpdate = (keys: Array<string | number>) => {
-  const visibleIds = new Set(subscriptions.value.map((subscription) => subscription.id))
+  const visibleIds = new Set(subscriptions.value.filter(subscription => subscription.quota_mode !== 'term').map((subscription) => subscription.id))
   setSelectedIds(keys.filter((key): key is number => typeof key === 'number' && visibleIds.has(key)))
 }
 const openBulkAction = (action: SubscriptionBulkAction) => {
@@ -1117,7 +1128,7 @@ const platformFilterOptions = computed(() => [
 // Group options for assign (only subscription type groups)
 const subscriptionGroupOptions = computed(() =>
   groups.value
-    .filter((g) => g.subscription_type === 'subscription' && g.status === 'active')
+    .filter((g) => g.subscription_type === 'subscription' && g.status === 'active' && g.subscription_quota_mode !== 'term')
     .map((g) => ({
       value: g.id,
       label: g.name,

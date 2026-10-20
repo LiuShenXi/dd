@@ -186,8 +186,9 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 			}
 			c.Set(string(ContextKeyAPIKey), apiKey)
 			c.Set(string(ContextKeyUser), AuthSubject{
-				UserID:      apiKey.User.ID,
-				Concurrency: apiKey.User.Concurrency,
+				UserID:                        apiKey.User.ID,
+				Concurrency:                   apiKey.User.Concurrency,
+				ClaudeSubscriptionConcurrency: apiKey.User.ClaudeSubscriptionConcurrency,
 			})
 			c.Set(string(ContextKeyUserRole), apiKey.User.Role)
 			setGroupContext(c, apiKey.Group)
@@ -285,8 +286,9 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 		}
 		c.Set(string(ContextKeyAPIKey), apiKey)
 		c.Set(string(ContextKeyUser), AuthSubject{
-			UserID:      apiKey.User.ID,
-			Concurrency: apiKey.User.Concurrency,
+			UserID:                        apiKey.User.ID,
+			Concurrency:                   apiKey.User.Concurrency,
+			ClaudeSubscriptionConcurrency: apiKey.User.ClaudeSubscriptionConcurrency,
 		})
 		c.Set(string(ContextKeyUserRole), apiKey.User.Role)
 		setGroupContext(c, apiKey.Group)

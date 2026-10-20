@@ -1,0 +1,48 @@
+{
+  "stage": "I4 dedicated browser C read-only financial state",
+  "label": "after409-F4",
+  "environment": "environment-I4-20261019T180351Z-active.json",
+  "image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+  "facts": {
+    "terms": [
+      {
+        "id": 5,
+        "term_no": 1,
+        "revision": 0,
+        "used_usd": "0.00000000",
+        "quota_usd": "100.00000000",
+        "starts_at": "2026-10-20T07:55:28.655025+08:00",
+        "expires_at": "2026-10-27T07:55:28.655025+08:00",
+        "cancelled_at": null,
+        "subscription_id": 5
+      },
+      {
+        "id": 6,
+        "term_no": 2,
+        "revision": 0,
+        "used_usd": "0.00000000",
+        "quota_usd": "75.00000000",
+        "starts_at": "2026-10-27T07:55:28.655025+08:00",
+        "expires_at": "2026-11-03T07:55:28.655025+08:00",
+        "cancelled_at": null,
+        "subscription_id": 5
+      }
+    ],
+    "balance": "0.00000000",
+    "user_id": 4,
+    "term_hash": "1fe118d8e15aa663f3e7226d29e21db0",
+    "parent_hash": "8d78faefb7f47c07fbfb80e43840d404",
+    "ledger_count": 0,
+    "operation_hash": "bde6f6e121e75b8fba988bb002d09fde",
+    "claude_override": 4,
+    "operation_count": 2,
+    "legacy_concurrency": 5,
+    "user_financial_hash": "21fd10474254104f2922878ebb0c4ce8",
+    "billing_request_count": 0
+  },
+  "read_only": true,
+  "main_fixture_modified": false,
+  "production_connected": false,
+  "raw_auth_and_payload_logged": false,
+  "observed_utc": "2026-10-20T00:00:00.9847836Z"
+}

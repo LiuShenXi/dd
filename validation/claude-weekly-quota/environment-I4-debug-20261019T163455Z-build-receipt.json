@@ -1,0 +1,216 @@
+{
+  "stage": "I4 isolated candidate",
+  "freeze": "debug",
+  "diagnostic": true,
+  "source_sha256": "e19a9bdc4629e49f0c0c2fd0c8e04cf21585fbfff2d0a3af790499271a1eb51e",
+  "source_dirty": true,
+  "head": "9005acffad8f9b30975ea3dd27e82095eb9e5520",
+  "frontend_dist_sha256": "b657870fcdf990281b559656e5bd671843e0f626608a9bfd3e7dcc0d26d96542",
+  "image_tag": "sub2api:claude-weekly-i4-candidate-e19a9bdc4629",
+  "provider_tag": "claude-weekly-quota-provider:8f7296fb0a63",
+  "provider_source_sha256": "8f7296fb0a63e1852cb96cf3bad33146cd8e80acc30e1b1381d4e2c90b1d37c6",
+  "revision": "9005acffad8f9b30975ea3dd27e82095eb9e5520-dirty-I4-debug-e19a9bdc4629e49f0c0c2fd0c8e04cf21585fbfff2d0a3af790499271a1eb51e",
+  "linux_go": "go1.27.2 linux/amd64",
+  "cgo_enabled": 0,
+  "started_utc": "2026-10-19T16:34:58.6421128Z",
+  "operations": [
+    {
+      "name": "prepare",
+      "arguments": [
+        "exec",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+        "mkdir",
+        "-p",
+        "/output/i4-20261019t163455z",
+        "/output/tmp"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-prepare.log"
+    },
+    {
+      "name": "server",
+      "arguments": [
+        "exec",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+        "env",
+        "GOMAXPROCS=2",
+        "TMPDIR=/output/tmp",
+        "GOTMPDIR=/output/tmp",
+        "CGO_ENABLED=0",
+        "go",
+        "build",
+        "-p=2",
+        "-tags=embed",
+        "-trimpath",
+        "-buildvcs=false",
+        "-ldflags=-s -w -X main.Version=2.8.13-monas-claude-weekly-I4-local -X main.Commit=9005acffad8f9b30975ea3dd27e82095eb9e5520-dirty-I4-debug-e19a9bdc4629e49f0c0c2fd0c8e04cf21585fbfff2d0a3af790499271a1eb51e -X main.Date=2026-10-19T16:34:58Z -X main.BuildType=release",
+        "-o",
+        "/output/i4-20261019t163455z/sub2api",
+        "./cmd/server"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-server.log"
+    },
+    {
+      "name": "carpool-release",
+      "arguments": [
+        "exec",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+        "env",
+        "GOMAXPROCS=2",
+        "TMPDIR=/output/tmp",
+        "GOTMPDIR=/output/tmp",
+        "CGO_ENABLED=0",
+        "go",
+        "build",
+        "-p=2",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/output/i4-20261019t163455z/carpool-release",
+        "./cmd/carpool-release"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-carpool-release.log"
+    },
+    {
+      "name": "provider-compile",
+      "arguments": [
+        "exec",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+        "env",
+        "GOMAXPROCS=2",
+        "TMPDIR=/output/tmp",
+        "GOTMPDIR=/output/tmp",
+        "CGO_ENABLED=0",
+        "GO111MODULE=off",
+        "go",
+        "build",
+        "-p=2",
+        "-trimpath",
+        "-o",
+        "/output/i4-20261019t163455z/provider",
+        "/workspace/validation/claude-weekly-quota/environment-I4-provider/main.go"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-provider-compile.log"
+    },
+    {
+      "name": "copy-sub2api",
+      "arguments": [
+        "cp",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea:/output/i4-20261019t163455z/sub2api",
+        "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T163455Z\\candidate\\sub2api"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-copy-sub2api.log"
+    },
+    {
+      "name": "copy-carpool-release",
+      "arguments": [
+        "cp",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea:/output/i4-20261019t163455z/carpool-release",
+        "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T163455Z\\candidate\\carpool-release"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-copy-carpool-release.log"
+    },
+    {
+      "name": "copy-provider",
+      "arguments": [
+        "cp",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea:/output/i4-20261019t163455z/provider",
+        "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T163455Z\\provider\\provider"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-copy-provider.log"
+    },
+    {
+      "name": "provider-build",
+      "arguments": [
+        "build",
+        "--pull=false",
+        "--network=none",
+        "--tag",
+        "claude-weekly-quota-provider:8f7296fb0a63",
+        "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T163455Z\\provider"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-provider-build.log"
+    },
+    {
+      "name": "candidate-build",
+      "arguments": [
+        "build",
+        "--pull=false",
+        "--tag",
+        "sub2api:claude-weekly-i4-candidate-e19a9bdc4629",
+        "--build-arg",
+        "SOURCE_SHA256=e19a9bdc4629e49f0c0c2fd0c8e04cf21585fbfff2d0a3af790499271a1eb51e",
+        "--build-arg",
+        "REVISION=9005acffad8f9b30975ea3dd27e82095eb9e5520-dirty-I4-debug-e19a9bdc4629e49f0c0c2fd0c8e04cf21585fbfff2d0a3af790499271a1eb51e",
+        "--build-arg",
+        "BUILD_DATE=2026-10-19T16:36:10Z",
+        "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T163455Z\\candidate"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-candidate-build.log"
+    },
+    {
+      "name": "candidate-id",
+      "arguments": [
+        "image",
+        "inspect",
+        "--format",
+        "{{.Id}}",
+        "sub2api:claude-weekly-i4-candidate-e19a9bdc4629"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-candidate-id.log"
+    },
+    {
+      "name": "provider-id",
+      "arguments": [
+        "image",
+        "inspect",
+        "--format",
+        "{{.Id}}",
+        "claude-weekly-quota-provider:8f7296fb0a63"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-provider-id.log"
+    },
+    {
+      "name": "version",
+      "arguments": [
+        "run",
+        "--rm",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--user",
+        "1000:1000",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "sub2api:claude-weekly-i4-candidate-e19a9bdc4629",
+        "--version"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T163455Z-build-version.log"
+    }
+  ],
+  "production_connected": false,
+  "activation_authorized": false,
+  "status": "diagnostic_built",
+  "image_id": "sha256:765bff4631af982683c6547a242ab41c92b4a6c64658a96caa2f1282f5870ae2",
+  "provider_id": "sha256:bea8be5cf5d021bfcce8a075a922b68ab0ba6b75fb56883d54bf830cb7556170",
+  "runtime_recipe_sha256": "8f4440bfa8c7688e9564e48e901c21fee7c15e91ce792188fc4752bc0e6442e1",
+  "source_after_sha256": "346c5c092f16d458b71412c20fa5e7f656ac1fc652f5fb682055274a3af03bf1",
+  "source_stable": false,
+  "acceptance": false,
+  "finished_utc": "2026-10-19T16:36:18.4279938Z"
+}

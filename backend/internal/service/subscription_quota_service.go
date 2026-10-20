@@ -32,6 +32,9 @@ func NewSubscriptionQuotaService(repo SubscriptionQuotaRepository, cfg *config.C
 
 func (s *SubscriptionQuotaService) openParams(userID, actorID int64, in SubscriptionQuotaOpenInput, mutation bool) (domain.SubscriptionQuotaOpenParams, error) {
 	p := domain.SubscriptionQuotaOpenParams{UserID: userID, ActorID: actorID, GroupID: in.GroupID, Operation: in.Operation, PlanID: in.PlanID, Notes: in.Notes}
+	if s != nil && s.cfg != nil {
+		p.DefaultClaudeConcurrency = s.cfg.Default.ClaudeSubscriptionConcurrency
+	}
 	if userID <= 0 || actorID <= 0 || in.GroupID <= 0 || (in.Operation != "open" && in.Operation != "renew") || (in.PlanID != nil && *in.PlanID <= 0) || utf8.RuneCountInString(in.Notes) > 500 {
 		return p, ErrSubscriptionQuotaInput
 	}

@@ -21,11 +21,12 @@ def load(relative):
     return json.loads((ROOT / relative).read_text(encoding="utf-8-sig"))
 
 required = ["README.md", "prd.md", "design.md", "decisions.md", "data-model.md",
-            "billing-protocol.md", "api-contracts.md", "integration-contracts.md", "ui-contracts.md",
+            "billing-protocol.md", "concurrency-isolation.md", "api-contracts.md", "integration-contracts.md", "ui-contracts.md",
             "implement.md", "test-plan.md", "traceability.md", "migration-rollout.md", "operations.md",
             "sol-handoff.md", "task.json", "implement.jsonl", "check.jsonl", "contracts/openapi.json",
             "contracts/schema.sql.example", "evidence/production-baseline.json", "evidence/production-recheck.json",
-            "evidence/local-baseline.json", "evidence/code-index.md", "evidence/architecture-review.md", "tools/README.md"]
+            "evidence/local-baseline.json", "evidence/concurrency-production-recheck.json",
+            "evidence/code-index.md", "evidence/architecture-review.md", "tools/README.md"]
 for relative in required:
     require((ROOT / relative).is_file(), "required file missing: " + relative)
 
@@ -120,26 +121,30 @@ test = (ROOT / "test-plan.md").read_text(encoding="utf-8")
 trace = (ROOT / "traceability.md").read_text(encoding="utf-8")
 rids = re.findall(r"^\| (R\d{2}) \|", prd, re.M)
 tids = re.findall(r"^\| (T\d{2}) \|", test, re.M)
-require(rids == [f"R{x:02d}" for x in range(1, 19)], "requirement sequence mismatch")
-require(tids == [f"T{x:02d}" for x in range(1, 63)], "test sequence mismatch")
+require(rids == [f"R{x:02d}" for x in range(1, 20)], "requirement sequence mismatch")
+require(tids == [f"T{x:02d}" for x in range(1, 75)], "test sequence mismatch")
 require(set(tids).issubset(set(re.findall(r"\bT\d{2}\b", trace))), "unmapped acceptance case")
 require(set(rids).issubset(set(re.findall(r"\bR\d{2}\b", trace))), "unmapped requirement")
 
 prod = load("evidence/production-baseline.json")
 recheck = load("evidence/production-recheck.json")
+concurrency_recheck = load("evidence/concurrency-production-recheck.json")
 baseline = load("evidence/local-baseline.json")
 for key in ["image_id", "revision", "binary_sha256"]:
     require(prod[key] == recheck[key], "live snapshot drift: " + key)
+    require(prod[key] == concurrency_recheck[key], "concurrency live snapshot drift: " + key)
 require(baseline["head_matches_snapshot"], "source HEAD mismatch")
 require(not baseline["findings"], "source comparison has unresolved findings")
 require(not baseline["tracked_status"], "source tracked working tree not clean")
 require(all(f["line"] is not None and f["anchor"] for f in baseline["files"]), "empty code anchor")
+require([f["id"] for f in baseline["files"]] == [f"S{x:02d}" for x in range(1, 56)], "source anchor sequence mismatch")
 require(baseline["migration_counts"]["exact"] == len(prod["migrations"]), "migration comparison not all exact")
 
 sql = (ROOT / "contracts/schema.sql.example").read_text(encoding="utf-8")
 tables = re.findall(r"CREATE TABLE (subscription_quota_\w+)", sql)
 require(set(tables) == {"subscription_quota_terms", "subscription_quota_requests", "subscription_quota_ledger", "subscription_quota_operations"}, "SQL table set mismatch")
-for marker in ["pricing_snapshot JSONB", "usage_log_recorded_at TIMESTAMPTZ", "revision BIGINT", "INTERVAL '168 hours'", "actual_cost_usd IS NOT NULL AND actual_cost_usd = 0"]:
+for marker in ["pricing_snapshot JSONB", "usage_log_recorded_at TIMESTAMPTZ", "revision BIGINT", "INTERVAL '168 hours'", "actual_cost_usd IS NOT NULL AND actual_cost_usd = 0",
+               "claude_subscription_concurrency INTEGER", "claude_subscription_concurrency IS NULL OR claude_subscription_concurrency > 0"]:
     require(marker in sql, "SQL design field/guard missing: " + marker)
 
 counts.update(json_files=json_count, jsonl_records=jsonl_count, markdown_links=link_count,

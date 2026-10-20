@@ -54,7 +54,7 @@ func newSubscriptionQuotaDomainFixture(t *testing.T) *subscriptionQuotaDomainFix
 	_, err = f.db.ExecContext(ctx, `INSERT INTO api_keys(user_id,group_id,key,name) VALUES($1,$2,'synthetic-domain-claude-key-one','Synthetic Claude identity one'),($1,$2,'synthetic-domain-claude-key-two','Synthetic Claude identity two')`, f.userA, f.group)
 	require.NoError(t, err)
 	require.NoError(t, f.db.QueryRowContext(ctx, `INSERT INTO subscription_plans(group_id,name,price,term_quota_usd,validity_days,validity_unit,for_sale) VALUES($1,'Synthetic default plan',12.34,125.12345678,7,'day',false) RETURNING id`, f.group).Scan(&f.plan))
-	f.cfg = &config.Config{RunMode: config.RunModeStandard, SubscriptionQuota: config.SubscriptionQuotaConfig{IssueEnabled: true, EnabledGroupIDs: []int64{f.group, f.otherGroup}}}
+	f.cfg = &config.Config{RunMode: config.RunModeStandard, Default: config.DefaultConfig{ClaudeSubscriptionConcurrency: 3}, SubscriptionQuota: config.SubscriptionQuotaConfig{IssueEnabled: true, EnabledGroupIDs: []int64{f.group, f.otherGroup}}}
 	f.repo = NewSubscriptionQuotaRepository(f.db)
 	f.api = service.NewSubscriptionQuotaService(f.repo, f.cfg)
 	f.financialColumns = make(map[string][]string)

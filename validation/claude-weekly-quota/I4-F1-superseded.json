@@ -1,0 +1,12 @@
+{
+  "freeze": "I4-F1",
+  "source_sha256": "c4e6989e1dfa306bd0088f0dae0f2cea10eefd688c47c004b7c2c8b289672be8",
+  "status": "superseded",
+  "reason": "Admin List displayed concurrency was blocked by its preceding legacy GetUsersLoadBatch; main reopened only that display path for bounded projection",
+  "historical_build_receipt": "environment-I4-F1-20261019T175125Z-build-receipt.json",
+  "historical_build_actually_succeeded": true,
+  "subsequent_runs_are_diagnostic": true,
+  "I4_accepted": false,
+  "production_connected": false,
+  "created_utc": "2026-10-19T17:54:04.7616394Z"
+}

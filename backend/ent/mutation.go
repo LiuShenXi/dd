@@ -66071,83 +66071,85 @@ func (m *UsageLogMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op                            Op
-	typ                           string
-	id                            *int64
-	created_at                    *time.Time
-	updated_at                    *time.Time
-	deleted_at                    *time.Time
-	email                         *string
-	password_hash                 *string
-	role                          *string
-	balance                       *float64
-	addbalance                    *float64
-	frozen_balance                *float64
-	addfrozen_balance             *float64
-	concurrency                   *int
-	addconcurrency                *int
-	status                        *string
-	username                      *string
-	notes                         *string
-	totp_secret_encrypted         *string
-	totp_enabled                  *bool
-	totp_enabled_at               *time.Time
-	signup_source                 *string
-	last_login_at                 *time.Time
-	last_active_at                *time.Time
-	restrict_public_groups        *bool
-	balance_notify_enabled        *bool
-	balance_notify_threshold_type *string
-	balance_notify_threshold      *float64
-	addbalance_notify_threshold   *float64
-	balance_notify_extra_emails   *string
-	total_recharged               *float64
-	addtotal_recharged            *float64
-	rpm_limit                     *int
-	addrpm_limit                  *int
-	clearedFields                 map[string]struct{}
-	api_keys                      map[int64]struct{}
-	removedapi_keys               map[int64]struct{}
-	clearedapi_keys               bool
-	redeem_codes                  map[int64]struct{}
-	removedredeem_codes           map[int64]struct{}
-	clearedredeem_codes           bool
-	subscriptions                 map[int64]struct{}
-	removedsubscriptions          map[int64]struct{}
-	clearedsubscriptions          bool
-	assigned_subscriptions        map[int64]struct{}
-	removedassigned_subscriptions map[int64]struct{}
-	clearedassigned_subscriptions bool
-	announcement_reads            map[int64]struct{}
-	removedannouncement_reads     map[int64]struct{}
-	clearedannouncement_reads     bool
-	allowed_groups                map[int64]struct{}
-	removedallowed_groups         map[int64]struct{}
-	clearedallowed_groups         bool
-	usage_logs                    map[int64]struct{}
-	removedusage_logs             map[int64]struct{}
-	clearedusage_logs             bool
-	attribute_values              map[int64]struct{}
-	removedattribute_values       map[int64]struct{}
-	clearedattribute_values       bool
-	promo_code_usages             map[int64]struct{}
-	removedpromo_code_usages      map[int64]struct{}
-	clearedpromo_code_usages      bool
-	payment_orders                map[int64]struct{}
-	removedpayment_orders         map[int64]struct{}
-	clearedpayment_orders         bool
-	auth_identities               map[int64]struct{}
-	removedauth_identities        map[int64]struct{}
-	clearedauth_identities        bool
-	pending_auth_sessions         map[int64]struct{}
-	removedpending_auth_sessions  map[int64]struct{}
-	clearedpending_auth_sessions  bool
-	platform_quotas               map[int64]struct{}
-	removedplatform_quotas        map[int64]struct{}
-	clearedplatform_quotas        bool
-	done                          bool
-	oldValue                      func(context.Context) (*User, error)
-	predicates                    []predicate.User
+	op                                 Op
+	typ                                string
+	id                                 *int64
+	created_at                         *time.Time
+	updated_at                         *time.Time
+	deleted_at                         *time.Time
+	email                              *string
+	password_hash                      *string
+	role                               *string
+	balance                            *float64
+	addbalance                         *float64
+	frozen_balance                     *float64
+	addfrozen_balance                  *float64
+	concurrency                        *int
+	addconcurrency                     *int
+	claude_subscription_concurrency    *int
+	addclaude_subscription_concurrency *int
+	status                             *string
+	username                           *string
+	notes                              *string
+	totp_secret_encrypted              *string
+	totp_enabled                       *bool
+	totp_enabled_at                    *time.Time
+	signup_source                      *string
+	last_login_at                      *time.Time
+	last_active_at                     *time.Time
+	restrict_public_groups             *bool
+	balance_notify_enabled             *bool
+	balance_notify_threshold_type      *string
+	balance_notify_threshold           *float64
+	addbalance_notify_threshold        *float64
+	balance_notify_extra_emails        *string
+	total_recharged                    *float64
+	addtotal_recharged                 *float64
+	rpm_limit                          *int
+	addrpm_limit                       *int
+	clearedFields                      map[string]struct{}
+	api_keys                           map[int64]struct{}
+	removedapi_keys                    map[int64]struct{}
+	clearedapi_keys                    bool
+	redeem_codes                       map[int64]struct{}
+	removedredeem_codes                map[int64]struct{}
+	clearedredeem_codes                bool
+	subscriptions                      map[int64]struct{}
+	removedsubscriptions               map[int64]struct{}
+	clearedsubscriptions               bool
+	assigned_subscriptions             map[int64]struct{}
+	removedassigned_subscriptions      map[int64]struct{}
+	clearedassigned_subscriptions      bool
+	announcement_reads                 map[int64]struct{}
+	removedannouncement_reads          map[int64]struct{}
+	clearedannouncement_reads          bool
+	allowed_groups                     map[int64]struct{}
+	removedallowed_groups              map[int64]struct{}
+	clearedallowed_groups              bool
+	usage_logs                         map[int64]struct{}
+	removedusage_logs                  map[int64]struct{}
+	clearedusage_logs                  bool
+	attribute_values                   map[int64]struct{}
+	removedattribute_values            map[int64]struct{}
+	clearedattribute_values            bool
+	promo_code_usages                  map[int64]struct{}
+	removedpromo_code_usages           map[int64]struct{}
+	clearedpromo_code_usages           bool
+	payment_orders                     map[int64]struct{}
+	removedpayment_orders              map[int64]struct{}
+	clearedpayment_orders              bool
+	auth_identities                    map[int64]struct{}
+	removedauth_identities             map[int64]struct{}
+	clearedauth_identities             bool
+	pending_auth_sessions              map[int64]struct{}
+	removedpending_auth_sessions       map[int64]struct{}
+	clearedpending_auth_sessions       bool
+	platform_quotas                    map[int64]struct{}
+	removedplatform_quotas             map[int64]struct{}
+	clearedplatform_quotas             bool
+	done                               bool
+	oldValue                           func(context.Context) (*User, error)
+	predicates                         []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -66643,6 +66645,76 @@ func (m *UserMutation) AddedConcurrency() (r int, exists bool) {
 func (m *UserMutation) ResetConcurrency() {
 	m.concurrency = nil
 	m.addconcurrency = nil
+}
+
+// SetClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field.
+func (m *UserMutation) SetClaudeSubscriptionConcurrency(i int) {
+	m.claude_subscription_concurrency = &i
+	m.addclaude_subscription_concurrency = nil
+}
+
+// ClaudeSubscriptionConcurrency returns the value of the "claude_subscription_concurrency" field in the mutation.
+func (m *UserMutation) ClaudeSubscriptionConcurrency() (r int, exists bool) {
+	v := m.claude_subscription_concurrency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldClaudeSubscriptionConcurrency returns the old "claude_subscription_concurrency" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldClaudeSubscriptionConcurrency(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldClaudeSubscriptionConcurrency is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldClaudeSubscriptionConcurrency requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldClaudeSubscriptionConcurrency: %w", err)
+	}
+	return oldValue.ClaudeSubscriptionConcurrency, nil
+}
+
+// AddClaudeSubscriptionConcurrency adds i to the "claude_subscription_concurrency" field.
+func (m *UserMutation) AddClaudeSubscriptionConcurrency(i int) {
+	if m.addclaude_subscription_concurrency != nil {
+		*m.addclaude_subscription_concurrency += i
+	} else {
+		m.addclaude_subscription_concurrency = &i
+	}
+}
+
+// AddedClaudeSubscriptionConcurrency returns the value that was added to the "claude_subscription_concurrency" field in this mutation.
+func (m *UserMutation) AddedClaudeSubscriptionConcurrency() (r int, exists bool) {
+	v := m.addclaude_subscription_concurrency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearClaudeSubscriptionConcurrency clears the value of the "claude_subscription_concurrency" field.
+func (m *UserMutation) ClearClaudeSubscriptionConcurrency() {
+	m.claude_subscription_concurrency = nil
+	m.addclaude_subscription_concurrency = nil
+	m.clearedFields[user.FieldClaudeSubscriptionConcurrency] = struct{}{}
+}
+
+// ClaudeSubscriptionConcurrencyCleared returns if the "claude_subscription_concurrency" field was cleared in this mutation.
+func (m *UserMutation) ClaudeSubscriptionConcurrencyCleared() bool {
+	_, ok := m.clearedFields[user.FieldClaudeSubscriptionConcurrency]
+	return ok
+}
+
+// ResetClaudeSubscriptionConcurrency resets all changes to the "claude_subscription_concurrency" field.
+func (m *UserMutation) ResetClaudeSubscriptionConcurrency() {
+	m.claude_subscription_concurrency = nil
+	m.addclaude_subscription_concurrency = nil
+	delete(m.clearedFields, user.FieldClaudeSubscriptionConcurrency)
 }
 
 // SetStatus sets the "status" field.
@@ -68083,7 +68155,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 25)
+	fields := make([]string, 0, 26)
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
 	}
@@ -68110,6 +68182,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.concurrency != nil {
 		fields = append(fields, user.FieldConcurrency)
+	}
+	if m.claude_subscription_concurrency != nil {
+		fields = append(fields, user.FieldClaudeSubscriptionConcurrency)
 	}
 	if m.status != nil {
 		fields = append(fields, user.FieldStatus)
@@ -68185,6 +68260,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.FrozenBalance()
 	case user.FieldConcurrency:
 		return m.Concurrency()
+	case user.FieldClaudeSubscriptionConcurrency:
+		return m.ClaudeSubscriptionConcurrency()
 	case user.FieldStatus:
 		return m.Status()
 	case user.FieldUsername:
@@ -68244,6 +68321,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldFrozenBalance(ctx)
 	case user.FieldConcurrency:
 		return m.OldConcurrency(ctx)
+	case user.FieldClaudeSubscriptionConcurrency:
+		return m.OldClaudeSubscriptionConcurrency(ctx)
 	case user.FieldStatus:
 		return m.OldStatus(ctx)
 	case user.FieldUsername:
@@ -68347,6 +68426,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetConcurrency(v)
+		return nil
+	case user.FieldClaudeSubscriptionConcurrency:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetClaudeSubscriptionConcurrency(v)
 		return nil
 	case user.FieldStatus:
 		v, ok := value.(string)
@@ -68477,6 +68563,9 @@ func (m *UserMutation) AddedFields() []string {
 	if m.addconcurrency != nil {
 		fields = append(fields, user.FieldConcurrency)
 	}
+	if m.addclaude_subscription_concurrency != nil {
+		fields = append(fields, user.FieldClaudeSubscriptionConcurrency)
+	}
 	if m.addbalance_notify_threshold != nil {
 		fields = append(fields, user.FieldBalanceNotifyThreshold)
 	}
@@ -68500,6 +68589,8 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedFrozenBalance()
 	case user.FieldConcurrency:
 		return m.AddedConcurrency()
+	case user.FieldClaudeSubscriptionConcurrency:
+		return m.AddedClaudeSubscriptionConcurrency()
 	case user.FieldBalanceNotifyThreshold:
 		return m.AddedBalanceNotifyThreshold()
 	case user.FieldTotalRecharged:
@@ -68536,6 +68627,13 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddConcurrency(v)
 		return nil
+	case user.FieldClaudeSubscriptionConcurrency:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddClaudeSubscriptionConcurrency(v)
+		return nil
 	case user.FieldBalanceNotifyThreshold:
 		v, ok := value.(float64)
 		if !ok {
@@ -68568,6 +68666,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldDeletedAt) {
 		fields = append(fields, user.FieldDeletedAt)
 	}
+	if m.FieldCleared(user.FieldClaudeSubscriptionConcurrency) {
+		fields = append(fields, user.FieldClaudeSubscriptionConcurrency)
+	}
 	if m.FieldCleared(user.FieldTotpSecretEncrypted) {
 		fields = append(fields, user.FieldTotpSecretEncrypted)
 	}
@@ -68599,6 +68700,9 @@ func (m *UserMutation) ClearField(name string) error {
 	switch name {
 	case user.FieldDeletedAt:
 		m.ClearDeletedAt()
+		return nil
+	case user.FieldClaudeSubscriptionConcurrency:
+		m.ClearClaudeSubscriptionConcurrency()
 		return nil
 	case user.FieldTotpSecretEncrypted:
 		m.ClearTotpSecretEncrypted()
@@ -68649,6 +68753,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldConcurrency:
 		m.ResetConcurrency()
+		return nil
+	case user.FieldClaudeSubscriptionConcurrency:
+		m.ResetClaudeSubscriptionConcurrency()
 		return nil
 	case user.FieldStatus:
 		m.ResetStatus()

@@ -28,6 +28,19 @@ type SubscriptionQuotaResolveResult struct {
 	Replayed bool                     `json:"replayed"`
 }
 
+type SubscriptionQuotaRequestPage struct {
+	Items      []SubscriptionQuotaRequest `json:"items"`
+	NextCursor *string                    `json:"next_cursor"`
+	HasMore    bool                       `json:"has_more"`
+}
+
+type SubscriptionQuotaRequestQueryParams struct {
+	SubscriptionQuotaPageParams
+	Status  string
+	UserID  int64
+	GroupID int64
+}
+
 // PrepareKnown is an internal pure callback, invoked only after the repository
 // has serialized and rechecked the unknown request. It is never an HTTP field.
 type SubscriptionQuotaResolutionParams struct {

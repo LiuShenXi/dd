@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"sync"
 
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/Wei-Shaw/sub2api/internal/service"
@@ -356,6 +357,9 @@ var (
 
 type concurrencyCache struct {
 	rdb                 *redis.Client
+	scopeClient         *redis.Client
+	scopeClientMu       sync.Mutex
+	scopeClientClosed   bool
 	slotTTLSeconds      int // 槽位过期时间（秒）
 	waitQueueTTLSeconds int // 等待队列过期时间（秒）
 }

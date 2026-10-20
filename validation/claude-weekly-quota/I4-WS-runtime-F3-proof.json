@@ -1,0 +1,48 @@
+{
+  "Claude_debit": "0.00120000",
+  "Live_provider_calls": 0,
+  "Live_success_claimed": false,
+  "actual_Live_route_status": 403,
+  "configuration_differences": [
+    "dedicated mode_router_v2_enabled=true",
+    "synthetic OpenAI apikey account http_bridge"
+  ],
+  "driver_file": "environment-I4-ws-proof/main.go",
+  "external_upstream_called": false,
+  "finished_utc": "2026-10-19T18:12:55.7793198Z",
+  "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "pass": true,
+  "stage": "I4 actual GPT WS HTTP-bridge two turns with Claude concurrent",
+  "started_utc": "2026-10-19T18:12:51.9473378Z",
+  "synthetic_only": true,
+  "turns": [
+    {
+      "Claude_all_fact_fingerprint_unchanged": true,
+      "Claude_slots_during_turn": 2,
+      "GPT_slot_after_turn": 0,
+      "GPT_slot_during_turn": 1,
+      "events": [
+        "response.created",
+        "response.output_text.delta",
+        "response.completed"
+      ],
+      "synthetic_provider_sequence": 3,
+      "turn": 1
+    },
+    {
+      "Claude_all_fact_fingerprint_unchanged": true,
+      "Claude_slots_during_turn": 2,
+      "GPT_slot_after_turn": 0,
+      "GPT_slot_during_turn": 1,
+      "events": [
+        "response.created",
+        "response.output_text.delta",
+        "response.completed"
+      ],
+      "synthetic_provider_sequence": 4,
+      "turn": 2
+    }
+  ],
+  "users_native_balance_unchanged": true
+}

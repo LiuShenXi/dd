@@ -1,0 +1,32 @@
+{
+  "stage": "I4 actual Redis-fault post-test read-only observation",
+  "synthetic_only": true,
+  "production_connected": false,
+  "environment": "environment-I4-20261019T180032Z-active.json",
+  "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "provider_call_observed": {
+    "sequence": 40,
+    "path": "/v1/messages",
+    "model": "claude-sonnet-4-5",
+    "stream": true,
+    "active": false,
+    "cancelled": true
+  },
+  "postgres_observed": {
+    "status": "reconcile_required",
+    "term_id": 7,
+    "user_id": 5,
+    "dedup_rows": 0,
+    "ledger_rows": 0,
+    "term_used_usd": "0.00000000",
+    "request_row_id": 30,
+    "actual_cost_usd": null,
+    "actual_cost_is_null": true,
+    "last_error_category": "usage_incomplete"
+  },
+  "unknown_preserved_without_SQL_reset": true,
+  "observation_pass": true,
+  "meaning": "Actual provider request cancelled=true is independently observed, not inferred from active=0; unknown cost remains SQL NULL and no debit/dedup exists.",
+  "observed_utc": "2026-10-19T18:09:56.1785867Z"
+}

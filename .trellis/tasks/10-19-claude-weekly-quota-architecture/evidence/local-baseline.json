@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-10-19T12:55:24.332296+00:00",
+  "checked_at_utc": "2026-10-19T16:46:18.367090+00:00",
   "source_root": "C:/Users/Administrator/.codex/worktrees/web-search-history-compat/dd",
   "production_snapshot_time": "2026-10-19T12:31:36.132136+00:00",
   "head": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
@@ -2266,6 +2266,86 @@
       "line": 285,
       "anchor": "func (r *usageCleanupRepository) DeleteUsageLogsBatch(ctx context.Context, filters service.UsageCleanupFilters, limit int) (int64, error) {",
       "purpose": "统计补写需尊重已完成的日志清理"
+    },
+    {
+      "id": "S48",
+      "path": "backend/ent/schema/user.go",
+      "sha256_raw_worktree": "91e76482045d7b268511f8e9f6e5d6b2053ea60fcc630f19a5086b35530d66f1",
+      "sha256_git_blob": "91e76482045d7b268511f8e9f6e5d6b2053ea60fcc630f19a5086b35530d66f1",
+      "anchor_pattern": "field.Int\\(\"concurrency\"\\)",
+      "line": 55,
+      "anchor": "field.Int(\"concurrency\").",
+      "purpose": "现有用户只有共享并发上限；新增独立 Claude 覆盖值"
+    },
+    {
+      "id": "S49",
+      "path": "backend/internal/repository/concurrency_cache.go",
+      "sha256_raw_worktree": "18baec9e04ef85ef6875718a40eb78b35714fc2a545f07f50abdaedb6ddf94d7",
+      "sha256_git_blob": "18baec9e04ef85ef6875718a40eb78b35714fc2a545f07f50abdaedb6ddf94d7",
+      "anchor_pattern": "userSlotKeyPrefix =",
+      "line": 30,
+      "anchor": "userSlotKeyPrefix = \"concurrency:user:\"",
+      "purpose": "现有 Redis 用户槽与队列按 user_id 共用；Claude 新 scope 独立"
+    },
+    {
+      "id": "S50",
+      "path": "backend/internal/service/concurrency_service.go",
+      "sha256_raw_worktree": "2fc0db74eb333a3a9a021778b02228efbf1b49a1a23ea0b47dadfeeed52e906b",
+      "sha256_git_blob": "2fc0db74eb333a3a9a021778b02228efbf1b49a1a23ea0b47dadfeeed52e906b",
+      "anchor_pattern": "^func .* AcquireUserSlot\\(",
+      "line": 381,
+      "anchor": "func (s *ConcurrencyService) AcquireUserSlot(ctx context.Context, userID int64, maxConcurrency int) (*AcquireResult, error) {",
+      "purpose": "保留 GPT 旧接口并添加显式 scope 的租约接口"
+    },
+    {
+      "id": "S51",
+      "path": "backend/internal/handler/gateway_helper.go",
+      "sha256_raw_worktree": "18ba089a95681c8ab61ebcec03acaaad8feea993db9dc3386791809b287ce5e4",
+      "sha256_git_blob": "18ba089a95681c8ab61ebcec03acaaad8feea993db9dc3386791809b287ce5e4",
+      "anchor_pattern": "^func .* AcquireUserSlotWithWait\\(",
+      "line": 270,
+      "anchor": "func (h *ConcurrencyHelper) AcquireUserSlotWithWait(c *gin.Context, userID int64, maxConcurrency int, isStream bool, streamStarted *bool) (func(), error) {",
+      "purpose": "用户槽、等待、Key 统计和释放统一接线"
+    },
+    {
+      "id": "S52",
+      "path": "backend/internal/handler/openai_gateway_handler.go",
+      "sha256_raw_worktree": "e12559cc3015e09972acdb030fa987bd58b81f3283ecfe84a6f5720dfc31dfb2",
+      "sha256_git_blob": "e12559cc3015e09972acdb030fa987bd58b81f3283ecfe84a6f5720dfc31dfb2",
+      "anchor_pattern": "^func .* acquireResponsesUserSlot\\(",
+      "line": 2073,
+      "anchor": "func (h *OpenAIGatewayHandler) acquireResponsesUserSlot(",
+      "purpose": "GPT HTTP 和 WS 并发原行为回归"
+    },
+    {
+      "id": "S53",
+      "path": "backend/internal/handler/admin/user_handler.go",
+      "sha256_raw_worktree": "4bdcbea47922027cd4fae761175444bde4530bf4021400260807ac14c06e529a",
+      "sha256_git_blob": "4bdcbea47922027cd4fae761175444bde4530bf4021400260807ac14c06e529a",
+      "anchor_pattern": "^type UserWithConcurrency",
+      "line": 23,
+      "anchor": "type UserWithConcurrency struct {",
+      "purpose": "管理用户独立 Claude 设置和 scope 统计投影"
+    },
+    {
+      "id": "S54",
+      "path": "backend/internal/service/ops_concurrency.go",
+      "sha256_raw_worktree": "e8a622c9ecda3e8dcf2423b481ba633e6b379fa38e79731e4f1f491d7fb73af9",
+      "sha256_git_blob": "e8a622c9ecda3e8dcf2423b481ba633e6b379fa38e79731e4f1f491d7fb73af9",
+      "anchor_pattern": "^func .* GetConcurrencyStats\\(",
+      "line": 117,
+      "anchor": "func (s *OpsService) GetConcurrencyStats(",
+      "purpose": "现有平台并发视图属于账号聚合，不能当用户隔离"
+    },
+    {
+      "id": "S55",
+      "path": "frontend/src/components/admin/user/UserEditModal.vue",
+      "sha256_raw_worktree": "05d32f5d135bb7d7920f0a199b54926a6feb222507638a61fae2d5962caa706c",
+      "sha256_git_blob": "05d32f5d135bb7d7920f0a199b54926a6feb222507638a61fae2d5962caa706c",
+      "anchor_pattern": "concurrency",
+      "line": 45,
+      "anchor": "<label class=\"input-label\">{{ t('admin.users.columns.concurrency') }}</label>",
+      "purpose": "用户管理表单增加独立 Claude 上限，保留旧字段"
     }
   ],
   "findings": [],

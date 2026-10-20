@@ -62,20 +62,7 @@ func subscriptionQuotaReplayResolution(ctx context.Context, tx *sql.Tx, scope, k
 }
 
 func subscriptionQuotaReadRequestProjection(ctx context.Context, q subscriptionQuotaQuerier, id int64) (domain.SubscriptionQuotaRequest, error) {
-	var out domain.SubscriptionQuotaRequest
-	var cost, category sql.NullString
-	var settled sql.NullTime
-	err := q.QueryRowContext(ctx, `SELECT id,request_id,user_id,group_id,term_id,api_key_id,status,revision,actual_cost_usd::text,admitted_at,updated_at,settled_at,last_error_category FROM subscription_quota_requests WHERE id=$1`, id).Scan(&out.ID, &out.RequestID, &out.UserID, &out.GroupID, &out.TermID, &out.APIKeyID, &out.Status, &out.Revision, &cost, &out.AdmittedAt, &out.UpdatedAt, &settled, &category)
-	if cost.Valid {
-		out.ActualCostUSD = &cost.String
-	}
-	if settled.Valid {
-		out.SettledAt = &settled.Time
-	}
-	if category.Valid {
-		out.LastErrorCategory = &category.String
-	}
-	return out, err
+	return subscriptionQuotaScanRequestProjection(q.QueryRowContext(ctx, `SELECT `+subscriptionQuotaRequestProjectionColumns+` FROM subscription_quota_requests WHERE id=$1`, id))
 }
 
 func subscriptionQuotaValidateResolvedKnown(stored domain.SubscriptionQuotaKnownUsage, in domain.SubscriptionQuotaKnownUsage) error {

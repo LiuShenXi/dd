@@ -1,0 +1,182 @@
+{
+  "checked_at_utc": "2026-10-19T16:49:41.879695+00:00",
+  "action": "non-destructive architecture v2 merge",
+  "source": "C:\\WORK-SPACE\\dd\\.trellis\\tasks\\10-19-claude-weekly-quota-architecture",
+  "destination": "C:\\Users\\Administrator\\.codex\\worktrees\\claude-weekly-quota\\dd\\.trellis\\tasks\\10-19-claude-weekly-quota-architecture",
+  "manifest_entries_verified": 32,
+  "files_copied": 33,
+  "preserved_destination_only_files": [
+    "evidence/local-baseline.recheck.json"
+  ],
+  "prior_accepted_head": "9005acffad8f9b30975ea3dd27e82095eb9e5520",
+  "acceptance_scenarios": 74,
+  "business_code_modified": false,
+  "production_modified": false,
+  "files": [
+    {
+      "path": "api-contracts.md",
+      "before_sha256": "4628a5c2f1fb3a2361714f842ec621fb9f88c962e7fab8a9af9c6d1bf200f05d",
+      "after_sha256": "921329cdf2bdb146fb4ef37c41d47d64bad76db6ed5a5eeda598b413d6c7a24e"
+    },
+    {
+      "path": "billing-protocol.md",
+      "before_sha256": "a072020822760cf0cc600d46f71582a46ef191264aaa6183f5b094cd6adee611",
+      "after_sha256": "70d1f74de5d603298c9745a2db9d9317d5afc2fa76c12c472d980a7510540e6c"
+    },
+    {
+      "path": "check.jsonl",
+      "before_sha256": "1fcddecdc38d06799cecd0d5adc0606a436caf9d542fabf22a53c08dfc84e8db",
+      "after_sha256": "f541067a5e4ccbd079d26c931d027ab88d98c9c95b3edd9edef01380b84837b8"
+    },
+    {
+      "path": "concurrency-isolation.md",
+      "before_sha256": null,
+      "after_sha256": "414d716ec6f320c48d6c66d90b34814a7e1b52cd1cd354cb690f20a97cf02da0"
+    },
+    {
+      "path": "contracts/openapi.json",
+      "before_sha256": "d88683628d6264b49e8f71491c0eb01e825f4d3158b91882c71060a63c06a8d8",
+      "after_sha256": "d88683628d6264b49e8f71491c0eb01e825f4d3158b91882c71060a63c06a8d8"
+    },
+    {
+      "path": "contracts/schema.sql.example",
+      "before_sha256": "a23c52915cc3a5a7b728e8ac01d052800ae3db4fef893b1c6e4474dda1e2fadd",
+      "after_sha256": "890b3c7d68ed0b3489409ccfa5ba55f60684a15822b0ebce38f4b08216c81316"
+    },
+    {
+      "path": "data-model.md",
+      "before_sha256": "c23de1c3a662e3fb1e52c595e61c0055676455ef9568f9cb480f6a06ef3cad48",
+      "after_sha256": "6e755f4d4fd6748ef8efc05abcdf203eb9df6ef15d595e5f0b6c9fee521d2c2c"
+    },
+    {
+      "path": "decisions.md",
+      "before_sha256": "3f8aec084ef432e0447771c15501bac147ce3db283b47675f18f32147d37fcde",
+      "after_sha256": "701a63b244b743338e2a648e946f9949eae7e24ae952d97997e64a55e266ca1d"
+    },
+    {
+      "path": "design.md",
+      "before_sha256": "2afcfb869c56753055ec17820123bb4fbd9f30b99d0bf541305a76204619b978",
+      "after_sha256": "f21c354bf87a81859892b1218de97a36dc624f6ef3885104ddb515c4af8195d3"
+    },
+    {
+      "path": "evidence/architecture-review.md",
+      "before_sha256": "f63e46bd4ba804d1b711b2b897a1788c486bf0ca683394586a224f2f24bc547e",
+      "after_sha256": "7c7abd036e2bb86be795af94da9a00cb8865a51fb5d84b71d66b861b0f33c97c"
+    },
+    {
+      "path": "evidence/code-index.md",
+      "before_sha256": "35c2bdba3d549179aa9c8a5a46e99ef1698f2e7f9c277bf315249301915a1362",
+      "after_sha256": "aa4a2b3d724f2af80dc383fa5f07a83af63c7d9ee98201466b5293f80babfb79"
+    },
+    {
+      "path": "evidence/concurrency-production-recheck.json",
+      "before_sha256": null,
+      "after_sha256": "a7745fa9ccf81d2ab04d4872d2e0876044fa0420db5f5a0fecf053b9c281661d"
+    },
+    {
+      "path": "evidence/local-baseline.json",
+      "before_sha256": "1df0e05174562e2a16bc4e33da9cb536a34e04e7b821cd4514f0ab201f4ce308",
+      "after_sha256": "698024a6eecf4fe31ecedd287fbadcf86ae8c6169d358d5ff2a64323aff561b2"
+    },
+    {
+      "path": "evidence/package-manifest.json",
+      "before_sha256": "a834d1dca3de5b262a9a771fbda11ef8a04dc3f56e5500e86db2fcaf2ca5de41",
+      "after_sha256": "517ae36bba0e4a4d5df89e8c74c4d5ab83a6c0e94b29330ea8826b641667cca7"
+    },
+    {
+      "path": "evidence/production-baseline.json",
+      "before_sha256": "45475d6e422ee5c0e5fab08ce0f6a857b42962519b815a0049d35c91c8bc4ecb",
+      "after_sha256": "45475d6e422ee5c0e5fab08ce0f6a857b42962519b815a0049d35c91c8bc4ecb"
+    },
+    {
+      "path": "evidence/production-recheck.json",
+      "before_sha256": "f154dcc5aa3a338428cfe9e3afe47c153760b65219c06b06390415873449154a",
+      "after_sha256": "f154dcc5aa3a338428cfe9e3afe47c153760b65219c06b06390415873449154a"
+    },
+    {
+      "path": "evidence/validation-receipt.json",
+      "before_sha256": "6cc1b33e39a5e9c7e4b7619a1b6844226cdb91c3977b64ae0cccc398b6eef6c1",
+      "after_sha256": "fd9eb52134db4de6b8146eeab014058f44297d277eae5f6e5c14dc0c50414c1e"
+    },
+    {
+      "path": "implement.jsonl",
+      "before_sha256": "d80dbb9a8d94678b8e6d550d76208b2d38d658de9a99420c35912ba6971eae91",
+      "after_sha256": "000e1b5eced7c98f5b3d528c80dbe684e0d7be1c976734f147f744fc4e21f708"
+    },
+    {
+      "path": "implement.md",
+      "before_sha256": "2de53e9adf083b0e8e55e6cd387d9ef8dbfcf8bc816623888de38b411bdd113e",
+      "after_sha256": "7b5af5cf0d0b93d093b10b1bf900316bb023e835a411470ea9466e7722267a0d"
+    },
+    {
+      "path": "integration-contracts.md",
+      "before_sha256": "75fd1e4da5958122b2f3953c9d667511bf6f12acdf87eb9fa445b214a56433c9",
+      "after_sha256": "75fd1e4da5958122b2f3953c9d667511bf6f12acdf87eb9fa445b214a56433c9"
+    },
+    {
+      "path": "migration-rollout.md",
+      "before_sha256": "a06d0806bfc47d683dc06b371d4718a6baf97a76a1d4464c658e20f13ee66da8",
+      "after_sha256": "00e8c8302928a892ce1af1e1fb7b1079edffc719650b4e65faa9f8dc442c3847"
+    },
+    {
+      "path": "operations.md",
+      "before_sha256": "ae68c27990000492a228f43189e4e8441bd588f35ab84e60ace25e5dec75430c",
+      "after_sha256": "9b1b837efa3be99fccb3ae3a5beef7bda4fae4c0d51125ae3ca04fc04d03f6ed"
+    },
+    {
+      "path": "prd.md",
+      "before_sha256": "6984d00ae13f271c5ec32e6f8c585cf9f4a7f9740c62c63985602f6ae56f34d0",
+      "after_sha256": "ddf156bf3197f6f27e67500a1a21006c2ac5e0f5a5cc4c7a916c876b355bd264"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "1b65a29d5ace3d13ae663e3b737abd7ceacbfb129062b8239e48f81875f65424",
+      "after_sha256": "2be8b25e476aee034517220c7feb0f909f4cfefe0cd7579d74b0e303e14a69b6"
+    },
+    {
+      "path": "sol-handoff.md",
+      "before_sha256": "7b46b6f1918f89f7d1272abbe527bf26395ddffc8a16f8103bcbd02e31cf553a",
+      "after_sha256": "84efa8acb43e646f8beec7d4cf732f884c8813de3b0b65102325cc4b3ed3cec5"
+    },
+    {
+      "path": "task.json",
+      "before_sha256": "aab82f3b335ac745af9b3462bc7e0e7f6f11671f31103f232a160f20f2e41e54",
+      "after_sha256": "ff16a5d1c0edc08f33dc4c34deb016d7db6c94e7e019d2ecc4574b0ce1afa4cb"
+    },
+    {
+      "path": "test-plan.md",
+      "before_sha256": "334bdeb9948fe143b80989977425f3473cbf29f57f1fbfba12be5a8e80084894",
+      "after_sha256": "93fe62755d57a12c23ae405458dcec000083c6994f6a7b01a9f9c63c35c9bebe"
+    },
+    {
+      "path": "tools/build_openapi.py",
+      "before_sha256": "86290c7b8d0a5ec7ffa80d8370fe917ca693ddc9cf4cd34e4e0ba12377723af9",
+      "after_sha256": "86290c7b8d0a5ec7ffa80d8370fe917ca693ddc9cf4cd34e4e0ba12377723af9"
+    },
+    {
+      "path": "tools/README.md",
+      "before_sha256": "0504a5e6bbe739f697db0abd1f89f73be1b43fc3bd762cea748fae20d5659870",
+      "after_sha256": "56f125137b3d0dcc5c7d258f7347cbd5b98961128706f4a719636d826f6c4e49"
+    },
+    {
+      "path": "tools/validate_package.py",
+      "before_sha256": "bffcfa615e6ce81dcd81866df051a6eb9b8a31bd5f7c966a2df82cf84e3ddaca",
+      "after_sha256": "de56fd6696631b6929d36316d108c2e415346fe55af771cd42d431ce7675538e"
+    },
+    {
+      "path": "tools/verify_baseline.py",
+      "before_sha256": "09e3db032eacff1da8df485b5a35efd8493e124c34f5e60bd7a6d37a74b28c2e",
+      "after_sha256": "4b0bf85f59d8d2752b821f18f8cf3ae1a016a1d3f14abe81c4958d329d84a9d1"
+    },
+    {
+      "path": "traceability.md",
+      "before_sha256": "cb849bb75eb72d885f7f7584cbc0daf4352e3a60ce38492744db41cc81a82f61",
+      "after_sha256": "1e849e2476916f794e787a849e26a84df034dc37692622df4e23fc28faa61307"
+    },
+    {
+      "path": "ui-contracts.md",
+      "before_sha256": "f05dc4b9e5ad17a4c009cd03ae66de2121b774286ba4836658cec9df36c24636",
+      "after_sha256": "dfe2bb2d8d52647b4161f38944a168da9810d2b6484c7d8dc427e7344a63997a"
+    }
+  ]
+}

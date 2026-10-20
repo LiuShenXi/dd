@@ -1,0 +1,11 @@
+{
+  "checked_at_utc": "2026-10-19T17:06:03.393538+00:00",
+  "production_action": "read-only docker image inspect/save",
+  "tag": "sub2api:2.8.13-monas-bps.13",
+  "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+  "private_archive": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\r0-image\\production-r0-20261019T170157Z.tar.gz",
+  "archive_bytes": 350061701,
+  "archive_sha256": "b674eede6f68d30e432e241554dfdb817773887b114696286ffad1a6a70b6531",
+  "local_load_verified": false,
+  "production_modified": false
+}

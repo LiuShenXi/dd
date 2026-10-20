@@ -100,6 +100,7 @@ func TestProvideCleanup_WithMinimalDependencies_NoPanic(t *testing.T) {
 		nil, // carpool
 		nil, // carpoolReset
 		nil, // subscriptionQuotaRecovery
+		nil, // independent Claude concurrency cache
 	)
 
 	require.NotPanics(t, func() {

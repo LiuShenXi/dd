@@ -1,0 +1,197 @@
+[
+  {
+    "path": "C:\\ProgramData\\CodexTaskRuntime\\claude-weekly-quota\\I4-20261019T171000Z\\i4-loopback-bridge.exe",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\ProgramData\\CodexTaskRuntime\\claude-weekly-quota\\I4-delay-proxy-1a51f4e8c2df4e83aa4550b69706b052\\i4-delay-proxy.exe",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\ProgramData\\CodexTaskRuntime\\claude-weekly-quota\\I4-delay-proxy-dfa2c137c4d94571ba2a11cd0be000d1\\i4-delay-proxy.exe",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\ProgramData\\CodexTaskRuntime\\claude-weekly-quota\\I4-ui-proxy-b6c967f096ad4f06ad8a337eedbe1440\\i4-ui-proxy.exe",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T163632Z\\synthetic-fixture.json",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T172029Z\\synthetic-fixture.json",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T175235Z\\synthetic-fixture.json",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T180032Z\\synthetic-fixture.json",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T180351Z\\synthetic-fixture.json",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T180642Z\\synthetic-fixture.json",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T234019Z\\synthetic-fixture.json",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T163455Z\\candidate",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T163455Z\\candidate\\carpool-release",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T163455Z\\candidate\\sub2api",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T163455Z\\provider",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T163455Z\\provider\\provider",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T171758Z\\candidate",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T171758Z\\candidate\\carpool-release",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T171758Z\\candidate\\sub2api",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T171758Z\\provider",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T171758Z\\provider\\provider",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T175125Z\\candidate",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T175125Z\\candidate\\carpool-release",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T175125Z\\candidate\\sub2api",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T175125Z\\provider",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T175125Z\\provider\\provider",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T175928Z\\candidate",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T175928Z\\candidate\\carpool-release",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T175928Z\\candidate\\sub2api",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T175928Z\\provider",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T175928Z\\provider\\provider",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T233914Z\\candidate",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T233914Z\\candidate\\carpool-release",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T233914Z\\candidate\\sub2api",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T233914Z\\provider",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T233914Z\\provider\\provider",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\pg-production-image\\production-postgres-20261019T180857Z.tar.gz",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\r0-image\\production-r0-20261019T170157Z.tar.gz",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  },
+  {
+    "path": "C:\\WORK-SPACE\\dd\\.trellis\\tasks\\10-19-claude-weekly-quota-architecture",
+    "exists_locally": true,
+    "migration_policy": "not copied to Git or portable evidence; rebuild isolated resources on the next machine"
+  }
+]

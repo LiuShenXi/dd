@@ -1,7 +1,7 @@
 {
   "production_enabled": false,
   "baseline_revision": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
-  "scope": "code, isolated synthetic tests, release/rollback rehearsal only",
+  "scope": "Latest user direction: finish current I4, commit and push feature branch, then hand off for continued work at office. I5/I6 and production deployment are deferred this round.",
   "tests": [
     {
       "id": "T01",
@@ -724,42 +724,74 @@
       "id": "T45",
       "scenario": "Messages、Chat、Responses 及全部别名",
       "required_assertions": "流式和非流式均有准入快照和结算",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-pg-debug-20261019T172029Z-receipt.json",
+        "I4-pg-F2-20261019T180032Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Current F2 image: six aliases x JSON/SSE x two users, two A Keys and interleaved synthetic GPT; exact once-only request/ledger/dedup/log and opposite-wallet assertions."
     },
     {
       "id": "T46",
       "scenario": "跨组 fallback、强制平台、未支持收费入口",
       "required_assertions": "明确拒绝，GPT 原能力仍正常",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "I4-windows-F2-20261019T175936Z-receipt.json",
+        "I4-v2-MetadataAndUnsupportedRoutes-F2-20261019T180755Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
       ],
-      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+      "acceptance_note": "Registered route negatives and current-image metadata/unsupported-entry tests passed. Normal auth last-use metadata is not a charge; the original full-row failure and explicit warmup diagnosis remain recorded."
     },
     {
       "id": "T47",
       "scenario": "慢预览、关闭 A 打开 B、A 的 finally 迟到",
       "required_assertions": "B 不被旧结果覆盖",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-ui-20261019T174120Z-receipt.json",
+        "I4-cua-browser-20261019T2303Z/receipt.json",
+        "I4-browser-independent-evidence-review.md"
+      ],
+      "acceptance_note": "Actual user Chrome/CUA and two independent real-backend preview gates: late A success and late A error cannot replace B draft, preview or pending state. F2 image used unchanged final F4 frontend assets. Earlier 30-second timeout diagnostics retained; do not use mismatched screenshot names as final-state proof."
     },
     {
       "id": "T48",
       "scenario": "页面倒计时到零且网络未返回",
       "required_assertions": "不自行发额度、清零或假装已重置",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-ui-20261019T174120Z-receipt.json",
+        "I4-cua-browser-20261019T2303Z/receipt.json",
+        "I4-browser-independent-evidence-review.md"
+      ],
+      "acceptance_note": "Actual F4 Chrome at the real database time boundary: while server refresh was held and subsequently timed out, original 13/0/0/13 and queued17 stayed visible. Only a fresh server response after explicit Retry selected17/0/0/17. Both synthetic historical fixture terms are complete168h; no existing card window was shortened or reset."
     },
     {
       "id": "T49",
       "scenario": "中英文、窄屏、键盘、多个 Key",
       "required_assertions": "所有页面同一额度来源，Key 限额另标",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-ui-20261019T174120Z-receipt.json",
+        "I4-pg-debug-20261019T172029Z-receipt.json",
+        "I4-cua-browser-20261019T2303Z/receipt.json",
+        "I4-browser-independent-evidence-review.md"
+      ],
+      "acceptance_note": "Actual Chrome A/B profiles, A two Claude Keys and GPT Key, CN/EN390px settled layout and modal keyboard focus/Escape checked. Public Key field omission was found, fixed via native selected field plus auth snapshotv28, and rerun on F4; A/A2/GPT-ownerA now override2, B default3. GPT stays5. Earlier projection failure and transition screenshot retained."
     },
     {
       "id": "T50",
@@ -898,6 +930,196 @@
         "environment-I1-F3-20261019T133930Z-race-receipt.json"
       ],
       "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+    },
+    {
+      "id": "T63",
+      "scenario": "同用户 GPT 上限 5、Claude 上限 2",
+      "required_assertions": "可同时执行 5 加 2；不另套共享总上限",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-redis-policy-debug-20261019T173048Z-receipt.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Two real application instances and Redis prove same-user GPT5 plus Claude2 concurrently without a shared user cap; these are synthetic test policy values."
+    },
+    {
+      "id": "T64",
+      "scenario": "GPT 活跃与等待均满",
+      "required_assertions": "Claude 仍可获取其空闲槽和等待位置",
+      "status": "passed",
+      "evidence": [
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Actual GPT active5/waiting20 full while Claude admits independently; overflow and ownership checked."
+    },
+    {
+      "id": "T65",
+      "scenario": "Claude 活跃与等待均满",
+      "required_assertions": "GPT 原请求仍可获取空闲槽；两池数量不互减",
+      "status": "passed",
+      "evidence": [
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Actual Claude active2/waiting20 full while a freed GPT slot admits its replacement; counts remain separate."
+    },
+    {
+      "id": "T66",
+      "scenario": "多 Claude Key、多个 term 组、续卡边界",
+      "required_assertions": "同用户 Claude 总上限不乘 Key/组/卡数；旧在途槽仍计入",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-T68-debug-20261019T172448Z-observed.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-v2-CrossCardLeaseBoundary-F2-20261019T180722Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Two Keys and two Claude term groups share one user pool. Actual leases survive card expiry; late cost stays on original card and next card remains untouched until a new admission."
+    },
+    {
+      "id": "T67",
+      "scenario": "等待成功、取消、超时、重复清理",
+      "required_assertions": "仅清理原 scope ticket，不泄漏、不负数、不清别人等待",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-redis-policy-debug-20261019T173048Z-receipt.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Real Redis promotion, cancellation, timeout, repeated/late cleanup and actual full queues preserve ticket ownership and avoid resurrection."
+    },
+    {
+      "id": "T68",
+      "scenario": "长 SSE 超过原 15 分钟 TTL",
+      "required_assertions": "新 lease 持续续租，不提前放行超额；丢租不偷偷重建",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-T68-debug-20261019T172448Z-observed.json",
+        "I4-v2-T68-F3-20261019T181135Z-receipt.json",
+        "I4-v2-T68-F3-20261019T181135Z-observed.json",
+        "coordinator-I4-T68-postgres-observed.json",
+        "coordinator-I4-T68-review.json",
+        "coordinator-I4-F2-F3-test-only-bridge.json"
+      ],
+      "acceptance_note": "Final F2 application with approved F3 test-only bridge: actual SSE973.0817914s, 62 original-UUID renewals, no third upstream/admission after15min; two original-term settlements each0.00060000 with one ledger/dedup and log acknowledgment, independently re-read by coordinator. Full other-wallet guards passed. Historical older-image T68 evidence remains diagnostic."
+    },
+    {
+      "id": "T69",
+      "scenario": "转发失败、panic、客户端取消、同组账号切换",
+      "required_assertions": "用户 lease 不重复申请或提前释放，账号槽正确交接，最终只释放一次",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-gateway-T69-final-receipt.json",
+        "I4-windows-F2-20261019T175936Z-receipt.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-RedisFaultCancelsActualUpstream-F2-20261019T180809Z-receipt.json",
+        "I4-unit-race-F3-20261019T181120Z-receipt.json",
+        "coordinator-I4-F2-F3-test-only-bridge.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Combined explicit layers: actual local Router panic/cancel/pre-send account handoff with synthetic ports, real Redis cleanup/renewal, and actual-image upstream cancellation. This is not a claim of one real-PG handler-panic test."
+    },
+    {
+      "id": "T70",
+      "scenario": "两实例同时申请并发与等待容量",
+      "required_assertions": "Redis 原子上限有效，多副本不各放一份",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-redis-policy-debug-20261019T173048Z-receipt.json",
+        "I4-v2-PrepareSecondInstance-debug-20261019T172849Z-receipt.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Two real application instances plus independent Redis clients enforce shared active/waiting capacities."
+    },
+    {
+      "id": "T71",
+      "scenario": "Claude Redis 申请或续租故障",
+      "required_assertions": "明确失败或取消转发并处理用量，不降级 GPT 槽，不改 GPT 故障路径",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-redis-policy-debug-20261019T173048Z-receipt.json",
+        "I4-v2-tcp-blackhole-fixed.log",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-RedisFaultCancelsActualUpstream-F2-20261019T180809Z-receipt.json",
+        "I4-v2-RedisFault-observed-20261019T180956Z.json",
+        "I4-unit-race-F3-20261019T181120Z-receipt.json",
+        "coordinator-I4-F2-F3-test-only-bridge.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Actual Redis failure cancels provider before lease expiry; independently observed cancelled=true, SQL NULL actual cost, reconciliation state, zero debit/dedup/used and unchanged legacy keys."
+    },
+    {
+      "id": "T72",
+      "scenario": "带旧池在途请求启用或回退",
+      "required_assertions": "先排空；混合版本不启用；GPT 槽与 WS ingress 不清空",
+      "status": "not_run",
+      "evidence": [],
+      "acceptance_note": "Added by user-authorized v2 concurrency scope; architecture validation is not execution evidence."
+    },
+    {
+      "id": "T73",
+      "scenario": "独立上限修改、旧缓存、批量改原 concurrency",
+      "required_assertions": "Claude 上限按自己的规则更新；原批量操作不改 Claude；UI 未知不显示假零",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-ui-20261019T174120Z-receipt.json",
+        "I4-v2-legacy-bulk-pg-debug-receipt.json",
+        "I4-windows-F2-20261019T175936Z-receipt.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-MetadataAndUnsupportedRoutes-F2-20261019T180755Z-receipt.json",
+        "I4-unit-race-F3-20261019T181120Z-receipt.json",
+        "coordinator-I4-F2-F3-test-only-bridge.json",
+        "I4-readonly-evidence-gap-review.md",
+        "I4-cua-browser-20261019T2303Z/receipt.json",
+        "I4-browser-independent-evidence-review.md"
+      ],
+      "acceptance_note": "Actual F4 admin C changed independent Claude default3 to override4 while GPT remained5. Actual A/B and public Key projections plus native PG/Redis cold/L1/L2/v27-to-v28 tests passed. Existing omitted-input/no-change, invalid overrides, original bulk concurrency and policy tests retained. This does not accept I6 pool activation/rollback."
+    },
+    {
+      "id": "T74",
+      "scenario": "GPT HTTP/WS/live 与 Claude 全部别名交错",
+      "required_assertions": "GPT 原槽及重取规则不变；Claude HTTP 走新 scope；未支持 Claude WS 仍拒绝",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-pg-debug-20261019T172029Z-receipt.json",
+        "I4-windows-F2-20261019T175936Z-receipt.json",
+        "I4-pg-F2-20261019T180032Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-WS-runtime-F3-proof.json",
+        "I4-unit-race-F3-20261019T181120Z-receipt.json",
+        "coordinator-I4-F2-F3-test-only-bridge.json",
+        "I4-readonly-evidence-gap-review.md",
+        "I4-WS-runtime-F3-invocation.json",
+        "I4-WS-runtime-F3-postgres-observed.json"
+      ],
+      "acceptance_note": "Current image aliases and interleaved GPT HTTP/WS HTTP-bridge passed; legacy WS/live lease and Kiro normalization regressions passed. Actual Linux live route refuses with zero provider calls; no external live-provider success is claimed."
     }
   ],
   "iterations": [
@@ -923,6 +1145,34 @@
       "status": "accepted",
       "receipt": "coordinator-I3-review.md",
       "source_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe"
+    },
+    {
+      "id": "I4",
+      "status": "accepted",
+      "receipt": "coordinator-I4-review.md",
+      "source_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+      "candidate_image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9"
     }
-  ]
+  ],
+  "architecture_version": "v2",
+  "concurrency_v2_status": "I4 default3/per-user override and independent pools accepted with actual browser and isolated tests. I6 activation/rollback/operational metrics remain pending.",
+  "production_deployment_authorized": true,
+  "remote_push_authorized": true,
+  "production_card_issuance_authorized": false,
+  "production_model_consumption_authorized": false,
+  "production_claude_default_concurrency": 3,
+  "production_concurrency_policy": "User explicitly selected Claude default 3 with positive per-user overrides; GPT settings unchanged",
+  "current_iteration": "I4 accepted for commit/push. I5 and I6 remain pending; product is not production-ready.",
+  "historical_acceptance_scope": "Each pass retains its actual iteration, source, image and test layer. F2/F3 complex runtime evidence is explicitly reused only for unchanged F4 paths; no claim of 74 final-release passes.",
+  "diagnostic_progress_updated_utc": "2026-10-19T17:47:47.919276+00:00",
+  "production_deployed": false,
+  "remote_branch_pushed": false,
+  "status_counts": {
+    "passed": 62,
+    "not_run": 7,
+    "partial": 5
+  },
+  "I4_gate_accepted": true,
+  "frozen_evidence_updated_utc": "2026-10-20T00:09:53.446636+00:00",
+  "current_round_production_deployment_deferred": true
 }

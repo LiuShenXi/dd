@@ -11,6 +11,7 @@ import (
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/pagination"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/timezone"
@@ -47,6 +48,7 @@ type SubscriptionService struct {
 	groupRepo           GroupRepository
 	userSubRepo         UserSubscriptionRepository
 	billingCacheService *BillingCacheService
+	quotaSummaryReader  SubscriptionQuotaSummaryReader
 	entClient           *dbent.Client
 
 	// L1 缓存：加速中间件热路径的订阅查询
@@ -757,7 +759,15 @@ func (s *SubscriptionService) ExtendSubscription(ctx context.Context, subscripti
 
 // GetByID 根据ID获取订阅
 func (s *SubscriptionService) GetByID(ctx context.Context, id int64) (*UserSubscription, error) {
-	return s.userSubRepo.GetByID(ctx, id)
+	sub, err := s.userSubRepo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := s.projectQuotaRows(ctx, []UserSubscription{*sub}, false)
+	if err != nil {
+		return nil, err
+	}
+	return &rows[0], nil
 }
 
 // GetActiveSubscription 获取用户对特定分组的有效订阅
@@ -808,7 +818,7 @@ func (s *SubscriptionService) ListUserSubscriptions(ctx context.Context, userID 
 	}
 	normalizeExpiredWindows(subs)
 	normalizeSubscriptionStatus(subs)
-	return subs, nil
+	return s.projectQuotaRows(ctx, subs, false)
 }
 
 // ListActiveUserSubscriptions 获取用户的所有有效订阅
@@ -818,7 +828,7 @@ func (s *SubscriptionService) ListActiveUserSubscriptions(ctx context.Context, u
 		return nil, err
 	}
 	normalizeExpiredWindows(subs)
-	return subs, nil
+	return s.projectQuotaRows(ctx, subs, true)
 }
 
 // ListGroupSubscriptions 获取分组的所有订阅
@@ -830,7 +840,8 @@ func (s *SubscriptionService) ListGroupSubscriptions(ctx context.Context, groupI
 	}
 	normalizeExpiredWindows(subs)
 	normalizeSubscriptionStatus(subs)
-	return subs, pag, nil
+	subs, err = s.projectQuotaRows(ctx, subs, false)
+	return subs, pag, err
 }
 
 // List 获取所有订阅（分页，支持筛选和排序）
@@ -842,7 +853,8 @@ func (s *SubscriptionService) List(ctx context.Context, page, pageSize int, user
 	}
 	normalizeExpiredWindows(subs)
 	normalizeSubscriptionStatus(subs)
-	return subs, pag, nil
+	subs, err = s.projectQuotaRows(ctx, subs, false)
+	return subs, pag, err
 }
 
 // normalizeExpiredWindows 将已过期窗口的数据清零（仅影响返回数据，不影响数据库）
@@ -1133,13 +1145,15 @@ func (s *SubscriptionService) RecordUsage(ctx context.Context, subscriptionID in
 
 // SubscriptionProgress 订阅进度
 type SubscriptionProgress struct {
-	ID            int64                `json:"id"`
-	GroupName     string               `json:"group_name"`
-	ExpiresAt     time.Time            `json:"expires_at"`
-	ExpiresInDays int                  `json:"expires_in_days"`
-	Daily         *UsageWindowProgress `json:"daily,omitempty"`
-	Weekly        *UsageWindowProgress `json:"weekly,omitempty"`
-	Monthly       *UsageWindowProgress `json:"monthly,omitempty"`
+	ID            int64                            `json:"id"`
+	GroupName     string                           `json:"group_name"`
+	ExpiresAt     time.Time                        `json:"expires_at"`
+	ExpiresInDays int                              `json:"expires_in_days"`
+	Daily         *UsageWindowProgress             `json:"daily,omitempty"`
+	Weekly        *UsageWindowProgress             `json:"weekly,omitempty"`
+	Monthly       *UsageWindowProgress             `json:"monthly,omitempty"`
+	QuotaMode     string                           `json:"quota_mode"`
+	QuotaSummary  *domain.SubscriptionQuotaSummary `json:"quota_summary"`
 }
 
 // UsageWindowProgress 使用窗口进度
@@ -1167,6 +1181,12 @@ func (s *SubscriptionService) GetSubscriptionProgress(ctx context.Context, subsc
 			return nil, err
 		}
 	}
+	sub.Group = group
+	rows, err := s.projectQuotaRows(ctx, []UserSubscription{*sub}, false)
+	if err != nil {
+		return nil, err
+	}
+	sub = &rows[0]
 
 	return s.calculateProgress(sub, group), nil
 }
@@ -1178,6 +1198,14 @@ func (s *SubscriptionService) calculateProgress(sub *UserSubscription, group *Gr
 		GroupName:     group.Name,
 		ExpiresAt:     sub.ExpiresAt,
 		ExpiresInDays: sub.DaysRemaining(),
+		QuotaMode:     "windows",
+	}
+	if group.HasTermQuotaMode() {
+		progress.QuotaMode, progress.QuotaSummary = "term", sub.QuotaSummary
+		if sub.QuotaSummary != nil && sub.QuotaSummary.CurrentTerm != nil {
+			progress.ExpiresAt = sub.QuotaSummary.CurrentTerm.ExpiresAt
+		}
+		return progress
 	}
 
 	// 日进度
@@ -1267,7 +1295,7 @@ func (s *SubscriptionService) calculateProgress(sub *UserSubscription, group *Gr
 // GetUserSubscriptionsWithProgress 获取用户所有订阅及进度
 func (s *SubscriptionService) GetUserSubscriptionsWithProgress(ctx context.Context, userID int64) ([]SubscriptionProgress, error) {
 	// ListActiveByUserID 已使用 .WithGroup() eager-load Group 关联，1 次查询获取所有数据
-	subs, err := s.userSubRepo.ListActiveByUserID(ctx, userID)
+	subs, err := s.ListActiveUserSubscriptions(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,78 @@
+{
+  "stage": "I4 public usage private synthetic keys projection diagnosis",
+  "environment": "environment-I4-20261019T180351Z-active.json",
+  "url": "http://127.0.0.1:49441",
+  "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "key_labels_only": [
+    {
+      "http_status": 200,
+      "key_label": "AKey",
+      "projection": {
+        "billing_scope": "claude_subscription",
+        "current_concurrency": 0,
+        "claude_current_concurrency": 0,
+        "concurrency": 5,
+        "legacy_concurrency_status": "available",
+        "default_claude_subscription_concurrency": 3,
+        "effective_claude_subscription_concurrency": 3,
+        "claude_subscription_concurrency": null,
+        "quota_summary.current_term.id": 1,
+        "claude_waiting_count": 0,
+        "legacy_current_concurrency": 0,
+        "claude_concurrency_status": "available"
+      }
+    },
+    {
+      "http_status": 200,
+      "key_label": "AKey2",
+      "projection": {
+        "billing_scope": "claude_subscription",
+        "current_concurrency": 0,
+        "claude_current_concurrency": 0,
+        "concurrency": 5,
+        "legacy_concurrency_status": "available",
+        "default_claude_subscription_concurrency": 3,
+        "effective_claude_subscription_concurrency": 3,
+        "claude_subscription_concurrency": null,
+        "quota_summary.current_term.id": 1,
+        "claude_waiting_count": 0,
+        "legacy_current_concurrency": 0,
+        "claude_concurrency_status": "available"
+      }
+    },
+    {
+      "http_status": 200,
+      "key_label": "GPTKey",
+      "projection": {
+        "legacy_current_concurrency": 0,
+        "current_concurrency": 0,
+        "claude_current_concurrency": 0,
+        "legacy_concurrency_status": "available",
+        "default_claude_subscription_concurrency": 3,
+        "effective_claude_subscription_concurrency": 3,
+        "concurrency": 5,
+        "claude_waiting_count": 0,
+        "claude_subscription_concurrency": null,
+        "claude_concurrency_status": "available"
+      }
+    }
+  ],
+  "postgres_A": {
+    "user_id": 2,
+    "api_key_ids": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "claude_override": 2,
+    "legacy_concurrency": 5
+  },
+  "cache_invalidated": false,
+  "cache_changed": false,
+  "business_mutation_API_called": false,
+  "normal_auth_last_use_side_effect_possible": true,
+  "external_upstream_called": false,
+  "production_connected": false,
+  "observed_utc": "2026-10-19T23:27:57.9657160Z"
+}

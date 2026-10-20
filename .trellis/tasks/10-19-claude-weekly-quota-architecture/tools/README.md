@@ -1,6 +1,6 @@
 # 架构包核验工具
 
-工具仅生成或检查本包文档与契约，不修改业务源码，不执行 SQL，不连接生产。真实生产复核通过受控只读 SSH 单独完成，结果保存在 evidence/production-recheck.json。
+工具仅生成或检查本包文档与契约，不修改业务源码，不执行 SQL，不连接生产。真实生产复核通过受控只读 SSH 单独完成，初版和 v2 结果分别保存在 evidence/production-recheck.json、evidence/concurrency-production-recheck.json。
 
 ## 运行方式
 

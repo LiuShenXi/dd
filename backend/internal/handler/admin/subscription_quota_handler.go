@@ -19,7 +19,11 @@ type SubscriptionQuotaAdminService interface {
 	CancelTerm(context.Context, int64, int64, service.SubscriptionQuotaCancelInput, string) (*domain.SubscriptionQuotaMutationResult, error)
 }
 
-type SubscriptionQuotaHandler struct{ service SubscriptionQuotaAdminService }
+type SubscriptionQuotaHandler struct {
+	service    SubscriptionQuotaAdminService
+	requests   SubscriptionQuotaRequestQuery
+	resolution SubscriptionQuotaRequestResolver
+}
 
 func NewSubscriptionQuotaHandler(svc SubscriptionQuotaAdminService) *SubscriptionQuotaHandler {
 	return &SubscriptionQuotaHandler{service: svc}

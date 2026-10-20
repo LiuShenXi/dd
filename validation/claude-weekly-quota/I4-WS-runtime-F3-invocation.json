@@ -1,0 +1,36 @@
+{
+  "stage": "I4 standalone actual WS runtime proof invocation and provenance",
+  "result": "I4-WS-runtime-F3-proof.json",
+  "log": "I4-WS-runtime-F3-proof.log",
+  "exit_code": 0,
+  "executable": "C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/bin/go.exe",
+  "arguments": [
+    "run",
+    "../validation/claude-weekly-quota/environment-I4-ws-proof/main.go",
+    "<private dedicated synthetic fixture>",
+    "I4-WS-runtime-F3-proof.json"
+  ],
+  "working_directory": "C:\\Users\\Administrator\\.codex\\worktrees\\claude-weekly-quota\\dd\\backend",
+  "validation_driver_sha256": "949d017659efb4e9798cebb690224374c71c320837ff42173a3ebf94a3fdedc9",
+  "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "driver_source_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "source_compatibility": {
+    "compatible": true,
+    "mode": "approved_test_only_bridge",
+    "receipt": "coordinator-I4-F2-F3-test-only-bridge.json",
+    "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+    "driver_source_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+    "changed_files": [
+      "backend/internal/service/usage_cleanup_service_test.go"
+    ]
+  },
+  "source_verification": "post-execution complete source snapshot; F3 was already frozen before execution, no separate pre-execution WS snapshot claimed",
+  "environment": "environment-I4-20261019T180642Z-active.json",
+  "configuration_receipt": "environment-I4-WS-20261019T180845Z.json",
+  "started_utc": "2026-10-19T18:12:51.9473378Z",
+  "finished_utc": "2026-10-19T18:12:55.7793198Z",
+  "synthetic_only": true,
+  "external_upstream_called": false,
+  "production_connected": false
+}

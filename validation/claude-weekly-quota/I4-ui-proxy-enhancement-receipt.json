@@ -1,0 +1,49 @@
+{
+  "stage": "I4 test-only UI proxy enhancement",
+  "synthetic_only": true,
+  "proxy_url": "http://127.0.0.1:54551",
+  "target": "http://127.0.0.1:49441",
+  "runtime_receipt": "environment-I4-ui-proxy-20261019T230958Z.json",
+  "runtime_idle": true,
+  "state": {
+    "once_per_rule": true,
+    "payload_logging": false,
+    "rules": null,
+    "synthetic_only": true,
+    "target": "http://127.0.0.1:49441"
+  },
+  "business_source_modified": false,
+  "browser_controlled": false,
+  "real_model_called": false,
+  "main_fixture_modified": false,
+  "nonbusiness_smoke_log": "I4-ui-proxy-nonbusiness-smoke.jsonl",
+  "nonbusiness_smoke_top_passes": [
+    "TestIndependentResponseGates",
+    "TestDropOnlySuccessfulCommitOnceAndObserveRetry",
+    "TestBeforeUpstream409DoesNotForward"
+  ],
+  "nonbusiness_smoke_failure_count": 0,
+  "actual_business_API_smoke_called": false,
+  "first_smoke_failure_preserved": "I4-ui-proxy-nonbusiness-smoke-first.jsonl",
+  "first_failure_explanation": "Go client automatically retried replayable POST with Idempotency-Key on a reused reset connection; final smoke uses fresh connections and explicit TCP reset",
+  "control_document": "I4-ui-proxy-control.md",
+  "files": [
+    {
+      "path": "environment-I4-ui-proxy/main.go",
+      "sha256": "173c5262ae12cd8a5ce522e328e88c3a10e52249a65a0ecdf7de412a05f55839"
+    },
+    {
+      "path": "environment-I4-ui-proxy/main_test.go",
+      "sha256": "3bc80d1bb8d105480b8678453b3ef478938d54ef4597a17170f28e561aed9a7b"
+    },
+    {
+      "path": "environment-I4-start-ui-proxy.ps1",
+      "sha256": "2799c474422ffea9f8002ad8a652723cc9f3c33d35ef310405347a81779a6d04"
+    },
+    {
+      "path": "I4-ui-proxy-control.md",
+      "sha256": "e408170bc5178fbc5ea5852b09275456cedb150c71bb8c617783bb0755fceb47"
+    }
+  ],
+  "created_utc": "2026-10-19T23:10:33.8274320Z"
+}

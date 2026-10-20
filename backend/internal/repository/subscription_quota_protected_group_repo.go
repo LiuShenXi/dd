@@ -87,7 +87,15 @@ func (r *subscriptionQuotaProtectedGroupRepository) AdmitProtectedGroup(ctx cont
 			return service.ErrSubscriptionQuotaProtectedUnavailable
 		}
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO subscription_quota_protected_requests(request_id,user_id,api_key_id,group_id,subscription_type,state) VALUES($1,$2,$3,$4,$5,'admitted')`, in.RequestID, in.UserID, in.APIKeyID, in.GroupID, in.SubscriptionType); err != nil {
+	var admittedID string
+	if err := tx.QueryRowContext(ctx, `INSERT INTO subscription_quota_protected_requests(request_id,user_id,api_key_id,group_id,subscription_type,state) VALUES($1,$2,$3,$4,$5,'admitted')
+        ON CONFLICT(request_id) DO UPDATE SET request_id=EXCLUDED.request_id
+        WHERE subscription_quota_protected_requests.user_id=EXCLUDED.user_id
+          AND subscription_quota_protected_requests.api_key_id=EXCLUDED.api_key_id
+          AND subscription_quota_protected_requests.group_id=EXCLUDED.group_id
+          AND subscription_quota_protected_requests.subscription_type=EXCLUDED.subscription_type
+          AND subscription_quota_protected_requests.state='admitted'
+        RETURNING request_id`, in.RequestID, in.UserID, in.APIKeyID, in.GroupID, in.SubscriptionType).Scan(&admittedID); err != nil {
 		return err
 	}
 	return tx.Commit()

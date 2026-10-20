@@ -1,0 +1,14 @@
+{
+  "utc": "2026-10-19T17:09:57.7024816Z",
+  "archive": "production-r0-20261019T170157Z.tar.gz",
+  "bytes": 350061701,
+  "sha256": "b674eede6f68d30e432e241554dfdb817773887b114696286ffad1a6a70b6531",
+  "load_output": "Loaded image: sub2api:2.8.13-monas-bps.13",
+  "loaded_tag": "sub2api:2.8.13-monas-bps.13",
+  "loaded_image_id": "sha256:7e6d174ece5f28faf73680802bd52ff0b34a30bd59600125e9aaf53e843aa7a6",
+  "loaded_image_size": 1096112470,
+  "expected_image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+  "expected_image_present": false,
+  "accepted_as_runtime_base": false,
+  "production_connected": false
+}

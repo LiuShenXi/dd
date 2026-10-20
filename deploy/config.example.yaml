@@ -1038,6 +1038,8 @@ default:
   # Max concurrent requests per user
   # 每用户最大并发请求数
   user_concurrency: 5
+  # Independent Claude term pool; user overrides must also be positive.
+  claude_subscription_concurrency: 3
   # Initial balance for new users
   # 新用户初始余额
   user_balance: 0

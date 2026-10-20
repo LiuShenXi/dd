@@ -1,10 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import { nextTick } from 'vue'
+import { createPinia, setActivePinia } from 'pinia'
 
-import type { ApiKey } from '@/types'
+import type { ApiKey, User } from '@/types'
+import { useAuthStore } from '@/stores/auth'
+import { deferred } from '@/__tests__/subscriptionQuotaFixtures'
 import { keysAPI } from '@/api'
 import KeysView from '../KeysView.vue'
+beforeEach(() => setActivePinia(createPinia()))
 
 const {
   listKeys,
@@ -13,6 +17,7 @@ const {
   getDashboardApiKeysUsage,
   getAvailableGroups,
   getUserGroupRates,
+  getProfile,
   showError,
   showSuccess,
   copyToClipboard,
@@ -25,6 +30,7 @@ const {
   getDashboardApiKeysUsage: vi.fn(),
   getAvailableGroups: vi.fn(),
   getUserGroupRates: vi.fn(),
+  getProfile: vi.fn(),
   showError: vi.fn(),
   showSuccess: vi.fn(),
   copyToClipboard: vi.fn(),
@@ -77,6 +83,7 @@ vi.mock('@/api', () => ({
     getUserGroupRates,
   },
 }))
+vi.mock('@/api/user', () => ({ userAPI: { getProfile } }))
 
 vi.mock('@/stores/app', () => ({
   useAppStore: () => ({
@@ -279,6 +286,7 @@ describe('user KeysView column settings', () => {
     getDashboardApiKeysUsage.mockReset()
     getAvailableGroups.mockReset()
     getUserGroupRates.mockReset()
+    getProfile.mockReset()
     showError.mockReset()
     showSuccess.mockReset()
     copyToClipboard.mockReset()
@@ -299,6 +307,23 @@ describe('user KeysView column settings', () => {
     getUserGroupRates.mockResolvedValue({})
     isCurrentStep.mockReturnValue(false)
     updateKey.mockResolvedValue(createApiKey())
+  })
+
+  it('loads current two-pool statistics immediately after login and accepts later periodic auth statistics', async () => {
+    const auth = useAuthStore(), response = deferred<User>()
+    auth.user = { id: 1, concurrency: 5 } as User; auth.token = 'test-session'
+    getProfile.mockReturnValueOnce(response.promise)
+    const wrapper = await mountView()
+    expect(getProfile).toHaveBeenCalledOnce()
+    expect(wrapper.get('[data-testid="legacy-scope-stats"]').text()).toBe('concurrencyScopes.unavailable / 5')
+    const fresh = { id: 1, concurrency: 5, legacy_current_concurrency: 2, legacy_concurrency_status: 'available', default_claude_subscription_concurrency: 3, effective_claude_subscription_concurrency: 3, claude_current_concurrency: 1, claude_waiting_count: 0, claude_concurrency_status: 'available' } as User
+    response.resolve(fresh); await flushPromises()
+    expect(wrapper.get('[data-testid="legacy-scope-stats"]').text()).toBe('2 / 5')
+    expect(wrapper.get('[data-testid="claude-scope-stats"]').text()).toBe('1 / 3')
+    expect(auth.user).not.toHaveProperty('claude_current_concurrency')
+    auth.user = { ...fresh, claude_current_concurrency: 2 }; await nextTick()
+    expect(wrapper.get('[data-testid="claude-scope-stats"]').text()).toBe('2 / 3')
+    wrapper.unmount()
   })
 
   it.each([

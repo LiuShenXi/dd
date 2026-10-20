@@ -6,6 +6,7 @@
 
 | 现有表 | 增量 |
 | --- | --- |
+| users | claude_subscription_concurrency 可空正整数，独立用户并发覆盖；原 concurrency 保留 |
 | groups | subscription_quota_mode，默认 windows，term 限 anthropic subscription |
 | user_subscriptions | quota_revision，默认 0，仅开卡、续卡、取消等排期变动递增；增加身份复合唯一键供新表外键使用 |
 | subscription_plans | term_quota_usd，可空；新模式在售商品必须有正额度且时长 7 天 |

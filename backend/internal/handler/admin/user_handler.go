@@ -59,32 +59,34 @@ func NewUserHandler(
 
 // CreateUserRequest represents admin create user request
 type CreateUserRequest struct {
-	Email                string   `json:"email" binding:"required,email"`
-	Password             string   `json:"password" binding:"required,min=6"`
-	Username             string   `json:"username"`
-	Notes                string   `json:"notes"`
-	Role                 string   `json:"role" binding:"omitempty,oneof=admin user"`
-	Balance              *float64 `json:"balance"`
-	Concurrency          int      `json:"concurrency"`
-	RPMLimit             int      `json:"rpm_limit"`
-	AllowedGroups        []int64  `json:"allowed_groups"`
-	RestrictPublicGroups bool     `json:"restrict_public_groups"`
+	ClaudeSubscriptionConcurrency optionalClaudeConcurrency `json:"claude_subscription_concurrency"`
+	Email                         string                    `json:"email" binding:"required,email"`
+	Password                      string                    `json:"password" binding:"required,min=6"`
+	Username                      string                    `json:"username"`
+	Notes                         string                    `json:"notes"`
+	Role                          string                    `json:"role" binding:"omitempty,oneof=admin user"`
+	Balance                       *float64                  `json:"balance"`
+	Concurrency                   int                       `json:"concurrency"`
+	RPMLimit                      int                       `json:"rpm_limit"`
+	AllowedGroups                 []int64                   `json:"allowed_groups"`
+	RestrictPublicGroups          bool                      `json:"restrict_public_groups"`
 }
 
 // UpdateUserRequest represents admin update user request
 // 使用指针类型来区分"未提供"和"设置为0"
 type UpdateUserRequest struct {
-	Email                string   `json:"email" binding:"omitempty,email"`
-	Password             string   `json:"password" binding:"omitempty,min=6"`
-	Username             *string  `json:"username"`
-	Notes                *string  `json:"notes"`
-	Role                 string   `json:"role" binding:"omitempty,oneof=admin user"`
-	Balance              *float64 `json:"balance"`
-	Concurrency          *int     `json:"concurrency"`
-	RPMLimit             *int     `json:"rpm_limit"`
-	Status               string   `json:"status" binding:"omitempty,oneof=active disabled"`
-	AllowedGroups        *[]int64 `json:"allowed_groups"`
-	RestrictPublicGroups *bool    `json:"restrict_public_groups"`
+	ClaudeSubscriptionConcurrency optionalClaudeConcurrency `json:"claude_subscription_concurrency"`
+	Email                         string                    `json:"email" binding:"omitempty,email"`
+	Password                      string                    `json:"password" binding:"omitempty,min=6"`
+	Username                      *string                   `json:"username"`
+	Notes                         *string                   `json:"notes"`
+	Role                          string                    `json:"role" binding:"omitempty,oneof=admin user"`
+	Balance                       *float64                  `json:"balance"`
+	Concurrency                   *int                      `json:"concurrency"`
+	RPMLimit                      *int                      `json:"rpm_limit"`
+	Status                        string                    `json:"status" binding:"omitempty,oneof=active disabled"`
+	AllowedGroups                 *[]int64                  `json:"allowed_groups"`
+	RestrictPublicGroups          *bool                     `json:"restrict_public_groups"`
 	// GroupRates 用户专属分组倍率配置
 	// map[groupID]*rate，nil 表示删除该分组的专属倍率
 	GroupRates map[int64]*float64 `json:"group_rates"`
@@ -157,27 +159,17 @@ func (h *UserHandler) List(c *gin.Context) {
 		return
 	}
 
-	// Batch get current concurrency (nil map if unavailable)
-	var loadInfo map[int64]*service.UserLoadInfo
-	if len(users) > 0 && h.concurrencyService != nil {
-		usersConcurrency := make([]service.UserWithConcurrency, len(users))
-		for i := range users {
-			usersConcurrency[i] = service.UserWithConcurrency{
-				ID:             users[i].ID,
-				MaxConcurrency: users[i].Concurrency,
-			}
-		}
-		loadInfo, _ = h.concurrencyService.GetUsersLoadBatch(c.Request.Context(), usersConcurrency)
-	}
-
-	// Build response with concurrency info
+	// Reuse the bounded display projection for both response formats. The
+	// legacy wrapper keeps its zero value when Redis is unavailable; the
+	// nullable fields explicitly preserve that the reading is unknown.
+	h.concurrencyService.ProjectClaudeConcurrencyUsers(c.Request.Context(), users)
 	out := make([]UserWithConcurrency, len(users))
 	for i := range users {
 		out[i] = UserWithConcurrency{
 			AdminUser: *dto.UserFromServiceAdmin(&users[i]),
 		}
-		if info := loadInfo[users[i].ID]; info != nil {
-			out[i].CurrentConcurrency = info.CurrentConcurrency
+		if current := users[i].ClaudeConcurrencyView.LegacyCurrentConcurrency; current != nil {
+			out[i].CurrentConcurrency = *current
 		}
 	}
 
@@ -227,7 +219,7 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, dto.UserFromServiceAdmin(user))
+	response.Success(c, h.claudeUserResponse(c, user))
 }
 
 // BindAuthIdentity manually binds a canonical auth identity to a user.
@@ -286,24 +278,25 @@ func (h *UserHandler) Create(c *gin.Context) {
 	}
 
 	user, err := h.adminService.CreateUser(c.Request.Context(), &service.CreateUserInput{
-		Email:                req.Email,
-		Password:             req.Password,
-		Username:             req.Username,
-		Notes:                req.Notes,
-		Role:                 req.Role,
-		Balance:              req.Balance,
-		Concurrency:          req.Concurrency,
-		RPMLimit:             req.RPMLimit,
-		AllowedGroups:        req.AllowedGroups,
-		RestrictPublicGroups: req.RestrictPublicGroups,
-		ActorAdminID:         getAdminIDFromContext(c),
+		ClaudeSubscriptionConcurrency: req.ClaudeSubscriptionConcurrency.value,
+		Email:                         req.Email,
+		Password:                      req.Password,
+		Username:                      req.Username,
+		Notes:                         req.Notes,
+		Role:                          req.Role,
+		Balance:                       req.Balance,
+		Concurrency:                   req.Concurrency,
+		RPMLimit:                      req.RPMLimit,
+		AllowedGroups:                 req.AllowedGroups,
+		RestrictPublicGroups:          req.RestrictPublicGroups,
+		ActorAdminID:                  getAdminIDFromContext(c),
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)
 		return
 	}
 
-	response.Success(c, dto.UserFromServiceAdmin(user))
+	response.Success(c, h.claudeUserResponse(c, user))
 }
 
 // Update handles updating a user
@@ -345,26 +338,27 @@ func (h *UserHandler) Update(c *gin.Context) {
 
 	// 使用指针类型直接传递，nil 表示未提供该字段
 	user, err := h.adminService.UpdateUser(c.Request.Context(), userID, &service.UpdateUserInput{
-		Email:                req.Email,
-		Password:             req.Password,
-		Username:             req.Username,
-		Notes:                req.Notes,
-		Role:                 req.Role,
-		Balance:              req.Balance,
-		Concurrency:          req.Concurrency,
-		RPMLimit:             req.RPMLimit,
-		Status:               req.Status,
-		AllowedGroups:        req.AllowedGroups,
-		RestrictPublicGroups: req.RestrictPublicGroups,
-		GroupRates:           req.GroupRates,
-		ActorAdminID:         getAdminIDFromContext(c),
+		ClaudeSubscriptionConcurrency: req.ClaudeSubscriptionConcurrency.value,
+		Email:                         req.Email,
+		Password:                      req.Password,
+		Username:                      req.Username,
+		Notes:                         req.Notes,
+		Role:                          req.Role,
+		Balance:                       req.Balance,
+		Concurrency:                   req.Concurrency,
+		RPMLimit:                      req.RPMLimit,
+		Status:                        req.Status,
+		AllowedGroups:                 req.AllowedGroups,
+		RestrictPublicGroups:          req.RestrictPublicGroups,
+		GroupRates:                    req.GroupRates,
+		ActorAdminID:                  getAdminIDFromContext(c),
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)
 		return
 	}
 
-	response.Success(c, dto.UserFromServiceAdmin(user))
+	response.Success(c, h.claudeUserResponse(c, user))
 }
 
 // Delete handles deleting a user
@@ -416,7 +410,7 @@ func (h *UserHandler) UpdateBalance(c *gin.Context) {
 		if execErr != nil {
 			return nil, execErr
 		}
-		return dto.UserFromServiceAdmin(user), nil
+		return h.claudeUserResponse(c, user), nil
 	})
 }
 

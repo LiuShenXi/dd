@@ -1,0 +1,6 @@
+{
+  "path": ".trellis/tasks/10-19-claude-weekly-quota-architecture/task.json",
+  "before_sha256": "ff16a5d1c0edc08f33dc4c34deb016d7db6c94e7e019d2ecc4574b0ce1afa4cb",
+  "after_sha256": "a116a6058767d6fdd6738b7c5de327b850721ce1fa04e2a9e4e2d9a67acbffb8",
+  "authorized_change": "Task tracking metadata only; architecture contract text and historical package evidence preserved."
+}

@@ -1,0 +1,54 @@
+{
+  "stage": "I4 F4 environment follow-up",
+  "source_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+  "image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+  "fresh_runtime_manifest": "environment-I4-20261019T234019Z-active.json",
+  "browser_runtime_manifest": "environment-I4-20261019T180351Z-active.json",
+  "browser_url": "http://127.0.0.1:49441",
+  "fault_proxy_url": "http://127.0.0.1:54551",
+  "unit_critical_race_top_level_passes": 512,
+  "unit_critical_race_failures": 0,
+  "unit_critical_race_skips": 0,
+  "postgres_integration_race_claimed": false,
+  "fresh_public_four_key_metadata": "pass",
+  "browser_public_four_key_metadata": "pass",
+  "browser_C_before_after": "legacy5/overrideNULL/zero terms/zero operations",
+  "browser_financial_hashes_unchanged": true,
+  "browser_provider_call_count_before": 1,
+  "browser_provider_call_count_after": 1,
+  "root_CUA_acceptance": "pending root observation; not claimed by environment HTTP tests",
+  "production_connected": false,
+  "external_upstream_called": false,
+  "old_F2_F3_receipts_preserved": true,
+  "receipts": [
+    {
+      "file": "environment-I4-F4-20261019T233914Z-build-receipt.json",
+      "sha256": "d4c7f245403c511ce011e13185f707301c8868842ca4982fde8ceab60fa37cc9"
+    },
+    {
+      "file": "I4-pg-F4-20261019T234019Z-receipt.json",
+      "sha256": "72899b2855c66ee1720ccfa48391ffcf556e80c6ea20d803636dedfb59ff1b90"
+    },
+    {
+      "file": "I4-v2-MetadataAndUnsupportedRoutes-F4-20261019T234155Z-receipt.json",
+      "sha256": "0486dee7faa362c0535a982dcff8150fa9c37b19f22c3f69667f6adefe8a267c"
+    },
+    {
+      "file": "I4-unit-race-F4-20261019T234019Z-receipt.json",
+      "sha256": "606f0f5b1f7e3546ff6b45ba7d2283f01e533e1358a9932909eeb34c37564674"
+    },
+    {
+      "file": "environment-I4-browser-F4-cutover-20261019T234529Z.json",
+      "sha256": "1a800b5c0ab5e451fa8da54dea072d11d707276ae3f81b44f383ea1d8b151375"
+    },
+    {
+      "file": "I4-browser-C-F4-pre-cutover-20261019T234524Z.json",
+      "sha256": "1d2e24853237b698b573ba66ed35c0b97d30a46b164b200c078b42d36407f6c1"
+    },
+    {
+      "file": "I4-browser-C-F4-post-cutover-20261019T234545Z.json",
+      "sha256": "c0e2f6764f2c95fe5ad665e1d9bea1e0f7777332ff0ff90d55eb7f67b70e5db5"
+    }
+  ],
+  "recorded_utc": "2026-10-19T23:46:26.6067629Z"
+}

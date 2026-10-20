@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/rand/v2"
 	"net/http"
@@ -17,6 +18,67 @@ import (
 )
 
 const gatewayStreamHeartbeatBytesKey = "gateway_stream_heartbeat_bytes"
+
+func claudeTermGatewayKey(key *service.APIKey) bool {
+	return key != nil && key.Group != nil && key.Group.HasTermQuotaMode()
+}
+
+func (h *GatewayHandler) writeClaudeLeaseLoss(c *gin.Context, key *service.APIKey, streamStarted bool) bool {
+	if !claudeTermGatewayKey(key) || c == nil || c.Request == nil || !errors.Is(context.Cause(c.Request.Context()), service.ErrTermConcurrencyUnavailable) {
+		return false
+	}
+	return h.writeSubscriptionQuotaForwardError(c, service.ErrTermConcurrencyUnavailable, streamStarted)
+}
+
+func forwardCompletionRelease(release func()) func() {
+	if release == nil {
+		return func() {}
+	}
+	var once sync.Once
+	return func() { once.Do(release) }
+}
+
+func (h *GatewayHandler) acquireGatewayUserSlotWithWait(c *gin.Context, key *service.APIKey, userID int64, legacyLimit int, stream bool, started *bool) (func(), error) {
+	var finishProtection func()
+	if h.billingCacheService != nil {
+		ctx, finish, err := h.billingCacheService.BeginProtectedUserConcurrency(c.Request.Context(), key)
+		if err != nil {
+			if finish != nil {
+				finish()
+			}
+			return nil, err
+		}
+		c.Request = c.Request.WithContext(ctx)
+		finishProtection = finish
+	} else if h.cfg != nil && key != nil && key.GroupID != nil {
+		for _, id := range h.cfg.SubscriptionQuota.ProtectedGroupIDs {
+			if id == *key.GroupID {
+				return nil, service.ErrSubscriptionQuotaProtectedUnavailable
+			}
+		}
+	}
+	if h.concurrencyHelper == nil {
+		if finishProtection != nil {
+			finishProtection()
+		}
+		return nil, service.ErrTermConcurrencyUnavailable
+	}
+	release, err := h.concurrencyHelper.AcquireGatewayUserSlotWithWait(c, key, userID, legacyLimit, stream, started)
+	if err != nil {
+		if finishProtection != nil {
+			finishProtection()
+		}
+		return nil, err
+	}
+	return forwardCompletionRelease(func() {
+		if release != nil {
+			release()
+		}
+		if finishProtection != nil {
+			finishProtection()
+		}
+	}), nil
+}
 
 func recordGatewayStreamHeartbeat(c *gin.Context, written int) {
 	if c == nil || written <= 0 {
@@ -166,8 +228,72 @@ func (e *WaitQueueFullError) Error() string {
 // ConcurrencyHelper provides common concurrency slot management for gateway handlers
 type ConcurrencyHelper struct {
 	concurrencyService *service.ConcurrencyService
+	claudeConcurrency  service.ClaudeSubscriptionConcurrency
 	pingFormat         SSEPingFormat
 	pingInterval       time.Duration
+}
+
+// AcquireGatewayUserSlotWithWait derives the pool from the authenticated group,
+// never from the route, model, or a client-supplied header.
+func (h *ConcurrencyHelper) AcquireGatewayUserSlotWithWait(c *gin.Context, key *service.APIKey, userID int64, legacyLimit int, isStream bool, streamStarted *bool) (func(), error) {
+	if key == nil || key.Group == nil || !key.Group.HasTermQuotaMode() {
+		release, err := h.AcquireUserSlotWithWait(c, userID, legacyLimit, isStream, streamStarted)
+		if err != nil {
+			return nil, err
+		}
+		return wrapReleaseOnDone(c.Request.Context(), release), nil
+	}
+	if h == nil || c == nil || c.Request == nil || !key.Group.IsTermQuota() || userID <= 0 || key.UserID != userID || key.GroupID == nil || *key.GroupID != key.Group.ID {
+		return nil, service.ErrTermConcurrencyUnavailable
+	}
+	provider := h.claudeConcurrency
+	if provider == nil && h.concurrencyService != nil {
+		provider, _ = any(h.concurrencyService).(service.ClaudeSubscriptionConcurrency)
+	}
+	if provider == nil {
+		return nil, service.ErrTermConcurrencyUnavailable
+	}
+	lastPing := time.Now()
+	onWaiting := func() error {
+		if !isStream || h.pingFormat == "" || time.Since(lastPing) < h.pingInterval {
+			return nil
+		}
+		flusher, ok := c.Writer.(http.Flusher)
+		if !ok {
+			return fmt.Errorf("streaming not supported")
+		}
+		if streamStarted != nil && !*streamStarted {
+			c.Header("Content-Type", "text/event-stream")
+			c.Header("Cache-Control", "no-cache")
+			c.Header("Connection", "keep-alive")
+			c.Header("X-Accel-Buffering", "no")
+			*streamStarted = true
+		}
+		written, err := fmt.Fprint(c.Writer, string(h.pingFormat))
+		if err != nil {
+			return err
+		}
+		recordGatewayStreamHeartbeat(c, written)
+		flusher.Flush()
+		lastPing = time.Now()
+		return nil
+	}
+	lease, err := provider.AcquireClaudeSubscriptionLease(c.Request.Context(), userID, maxConcurrencyWait, onWaiting)
+	if err != nil {
+		if lease != nil {
+			lease.Release()
+		}
+		return nil, err
+	}
+	if lease == nil {
+		return nil, service.ErrTermConcurrencyUnavailable
+	}
+	c.Request = c.Request.WithContext(lease.Context())
+	// A cancelled forward still owns its active lease until the adapter returns.
+	// The provider handles cancellation/renewal; only this finalizer releases it.
+	release := h.withAPIKeySlotFromGin(c, lease.Release)
+	var once sync.Once
+	return func() { once.Do(release) }, nil
 }
 
 // NewConcurrencyHelper creates a new ConcurrencyHelper

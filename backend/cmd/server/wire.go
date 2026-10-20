@@ -131,6 +131,7 @@ func provideCleanup(
 	carpool *service.CarpoolService,
 	carpoolReset *service.CarpoolResetService,
 	subscriptionQuotaRecovery *service.SubscriptionQuotaRecoveryService,
+	concurrency *service.ConcurrencyService,
 ) func() {
 	return func() {
 		// Drain mandatory usage before budgeting shutdown of other services.
@@ -402,6 +403,12 @@ func provideCleanup(
 		}
 
 		infraSteps := []cleanupStep{
+			{"ClaudeScopedConcurrencyCache", func() error {
+				if concurrency != nil {
+					return concurrency.CloseClaudeConcurrencyCache()
+				}
+				return nil
+			}},
 			{"Redis", func() error {
 				if rdb == nil {
 					return nil

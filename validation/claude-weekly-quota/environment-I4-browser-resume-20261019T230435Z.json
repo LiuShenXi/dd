@@ -1,0 +1,38 @@
+{
+  "stage": "I4 browser fixture read-only resume audit",
+  "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "candidate_url": "http://127.0.0.1:49441",
+  "synthetic_label": "claude-weekly-quota",
+  "internal_network": true,
+  "host_published_ports": 0,
+  "claude_default_config": [
+    "DEFAULT_CLAUDE_SUBSCRIPTION_CONCURRENCY=3"
+  ],
+  "C": {
+    "id": 4,
+    "email": "i4-ui-c-732e5e8647f34c6fb3ed279966fe3b1b@example.invalid",
+    "status": "active",
+    "term_count": 0,
+    "claude_override": null,
+    "legacy_concurrency": 5,
+    "subscription_count": 0
+  },
+  "proxy_url": "http://127.0.0.1:59160",
+  "proxy_state": {
+    "held_responses": 3,
+    "holding": false,
+    "method": "GET",
+    "path": "/api/v1/admin/users/2/subscription-quota",
+    "released_responses": 3,
+    "synthetic_only": true,
+    "target": "http://127.0.0.1:49441"
+  },
+  "candidate_health": 200,
+  "proxy_health": 200,
+  "pass": true,
+  "read_only": true,
+  "main_fixture_modified": false,
+  "external_upstream_called": false,
+  "production_connected": false,
+  "observed_utc": "2026-10-19T23:04:35.2745030Z"
+}

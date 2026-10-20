@@ -16,7 +16,7 @@ func (r *subscriptionQuotaRepository) CheckBillingReadiness(ctx context.Context)
 	if r == nil || r.db == nil {
 		return fmt.Errorf("term billing database unavailable")
 	}
-	for _, name := range []string{"245_subscription_quota_structure.sql", "246_subscription_quota_usage_links.sql", "247_subscription_quota_usage_index_notx.sql", "248_subscription_quota_usage_validate.sql", "249_subscription_quota_protected_groups.sql", "250_subscription_quota_usage_cost_width.sql"} {
+	for _, name := range []string{"245_subscription_quota_structure.sql", "246_subscription_quota_usage_links.sql", "247_subscription_quota_usage_index_notx.sql", "248_subscription_quota_usage_validate.sql", "249_subscription_quota_protected_groups.sql", "250_subscription_quota_usage_cost_width.sql", "251_claude_subscription_concurrency.sql"} {
 		raw, err := migrations.FS.ReadFile(name)
 		if err != nil {
 			return err

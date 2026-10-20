@@ -84,16 +84,17 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	concurrencyCache := repository.ProvideConcurrencyCache(redisClient, configConfig)
 	schedulerCache := repository.ProvideSchedulerCache(redisClient, configConfig)
 	accountRepository := repository.NewAccountRepository(client, db, schedulerCache)
-	concurrencyService := service.ProvideConcurrencyService(concurrencyCache, accountRepository, configConfig)
+	claudeConcurrencyPolicyRepository := repository.NewClaudeConcurrencyPolicyRepository(db)
+	concurrencyService := service.ProvideConcurrencyService(concurrencyCache, accountRepository, claudeConcurrencyPolicyRepository, configConfig)
 	subscriptionQuotaEntitlementReader := service.ProvideSubscriptionQuotaEntitlementReader(subscriptionQuotaRepository)
 	apiKeyService := service.ProvideAPIKeyService(apiKeyRepository, userRepository, groupRepository, userSubscriptionRepository, userGroupRateRepository, apiKeyCache, configConfig, billingCacheService, concurrencyService, carpoolService, subscriptionQuotaEntitlementReader)
 	apiKeyAuthCacheInvalidator := service.ProvideAPIKeyAuthCacheInvalidator(apiKeyService)
 	promoService := service.NewPromoService(promoCodeRepository, userRepository, billingCacheService, client, apiKeyAuthCacheInvalidator)
-	subscriptionService := service.NewSubscriptionService(groupRepository, userSubscriptionRepository, billingCacheService, client, configConfig)
+	subscriptionService := service.ProvideSubscriptionService(groupRepository, userSubscriptionRepository, billingCacheService, client, configConfig, subscriptionQuotaService)
 	affiliateRepository := repository.NewAffiliateRepository(client, db)
 	affiliateService := service.NewAffiliateService(affiliateRepository, settingService, apiKeyAuthCacheInvalidator, billingCacheService)
 	authService := service.ProvideAuthService(client, userRepository, redeemCodeRepository, refreshTokenCache, configConfig, settingService, emailService, turnstileService, tencentCaptchaService, aliyunCaptchaService, emailQueueService, promoService, subscriptionService, affiliateService, serviceUserPlatformQuotaRepository)
-	userService := service.NewUserService(userRepository, settingRepository, apiKeyAuthCacheInvalidator, billingCache)
+	userService := service.ProvideUserService(userRepository, settingRepository, apiKeyAuthCacheInvalidator, billingCache, concurrencyService)
 	redeemCache := repository.NewRedeemCache(redisClient)
 	redeemService := service.NewRedeemService(redeemCodeRepository, userRepository, subscriptionService, redeemCache, billingCacheService, client, apiKeyAuthCacheInvalidator, affiliateService)
 	secretEncryptor, err := repository.NewAESEncryptor(configConfig)
@@ -258,7 +259,9 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	systemOperationLockService := service.ProvideSystemOperationLockService(idempotencyRepository, configConfig)
 	systemHandler := handler.ProvideSystemHandler(updateService, systemOperationLockService)
 	adminSubscriptionHandler := admin.NewSubscriptionHandler(subscriptionService)
-	adminSubscriptionQuotaHandler := handler.ProvideAdminSubscriptionQuotaHandler(subscriptionQuotaService)
+	subscriptionQuotaResolutionRepository := repository.NewSubscriptionQuotaResolutionRepository(db)
+	subscriptionQuotaResolutionService := service.ProvideSubscriptionQuotaResolutionService(subscriptionQuotaResolutionRepository, gatewayService)
+	adminSubscriptionQuotaHandler := handler.ProvideAdminSubscriptionQuotaHandler(subscriptionQuotaService, subscriptionQuotaResolutionService)
 	usageCleanupRepository := repository.NewUsageCleanupRepository(client, db)
 	usageCleanupService := service.ProvideUsageCleanupService(usageCleanupRepository, timingWheelService, dashboardAggregationService, configConfig)
 	adminUsageHandler := admin.NewUsageHandler(usageService, apiKeyService, adminService, usageCleanupService)
@@ -307,7 +310,7 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	userMessageQueueService := service.ProvideUserMessageQueueService(userMsgQueueCache, rpmCache, configConfig)
 	legacyEngine := securityaudit.NewLegacyModerationAdapter(contentModerationService)
 	coordinator := securityaudit.NewCoordinator(legacyEngine, promptService)
-	gatewayHandler := handler.ProvideGatewayHandler(gatewayService, openAIGatewayService, geminiMessagesCompatService, antigravityGatewayService, userService, concurrencyService, billingCacheService, carpoolService, usageService, apiKeyService, usageRecordWorkerPool, errorPassthroughService, contentModerationService, userMessageQueueService, configConfig, settingService, coordinator)
+	gatewayHandler := handler.ProvideGatewayHandler(gatewayService, openAIGatewayService, geminiMessagesCompatService, antigravityGatewayService, userService, concurrencyService, billingCacheService, carpoolService, subscriptionQuotaService, usageService, apiKeyService, usageRecordWorkerPool, errorPassthroughService, contentModerationService, userMessageQueueService, configConfig, settingService, coordinator)
 	openAIGatewayHandler := handler.ProvideOpenAIGatewayHandler(openAIGatewayService, pluginManager, concurrencyService, billingCacheService, apiKeyService, usageRecordWorkerPool, errorPassthroughService, contentModerationService, opsService, grokQuotaService, configConfig, coordinator)
 	handlerSettingHandler := handler.ProvideSettingHandler(settingService, buildInfo, notificationEmailService)
 	totpHandler := handler.NewTotpHandler(totpService)
@@ -369,7 +372,7 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	v := provideCleanup(client, redisClient, opsMetricsCollector, opsAggregationService, opsAlertEvaluatorService, opsCleanupService, opsScheduledReportService, opsSystemLogSink, opsService, opsIngressRejectAggregator, apiKeyService, authCacheInvalidationWorker, schedulerSnapshotService, tokenRefreshService, accountExpiryService, cnProviderBalanceCheckService, openAICodexVersionSyncService, proxyExpiryService, subscriptionExpiryService, usageCleanupService, idempotencyCleanupService, batchImageCleanupService, batchImageWorkerRuntime, pricingService, emailQueueService, billingCacheService, usageRecordWorkerPool, subscriptionService, oAuthService, openAIOAuthService, geminiOAuthService, antigravityOAuthService, grokOAuthService, openAIGatewayService, scheduledTestRunnerService, backupService, paymentOrderExpiryService, channelMonitorRunner, channelMonitorV2Aggregator, userPlatformQuotaUsageFlusher, upstreamBillingProbeService, ollamaCloudUsageService, auditLogService, openAIQuotaAutoResetService, promptService, pluginManager, carpoolService, carpoolResetService, subscriptionQuotaRecoveryService)
+	v := provideCleanup(client, redisClient, opsMetricsCollector, opsAggregationService, opsAlertEvaluatorService, opsCleanupService, opsScheduledReportService, opsSystemLogSink, opsService, opsIngressRejectAggregator, apiKeyService, authCacheInvalidationWorker, schedulerSnapshotService, tokenRefreshService, accountExpiryService, cnProviderBalanceCheckService, openAICodexVersionSyncService, proxyExpiryService, subscriptionExpiryService, usageCleanupService, idempotencyCleanupService, batchImageCleanupService, batchImageWorkerRuntime, pricingService, emailQueueService, billingCacheService, usageRecordWorkerPool, subscriptionService, oAuthService, openAIOAuthService, geminiOAuthService, antigravityOAuthService, grokOAuthService, openAIGatewayService, scheduledTestRunnerService, backupService, paymentOrderExpiryService, channelMonitorRunner, channelMonitorV2Aggregator, userPlatformQuotaUsageFlusher, upstreamBillingProbeService, ollamaCloudUsageService, auditLogService, openAIQuotaAutoResetService, promptService, pluginManager, carpoolService, carpoolResetService, subscriptionQuotaRecoveryService, concurrencyService)
 	application := &Application{
 		Server:        httpServer,
 		PromptAudit:   promptService,
@@ -456,6 +459,7 @@ func provideCleanup(
 	carpool *service.CarpoolService,
 	carpoolReset *service.CarpoolResetService,
 	subscriptionQuotaRecovery *service.SubscriptionQuotaRecoveryService,
+	concurrency *service.ConcurrencyService,
 ) func() {
 	return func() {
 
@@ -725,6 +729,12 @@ func provideCleanup(
 		}
 
 		infraSteps := []cleanupStep{
+			{"ClaudeScopedConcurrencyCache", func() error {
+				if concurrency != nil {
+					return concurrency.CloseClaudeConcurrencyCache()
+				}
+				return nil
+			}},
 			{"Redis", func() error {
 				if rdb == nil {
 					return nil

@@ -1,0 +1,25 @@
+{
+  "stage": "I4 dedicated browser C read-only financial state",
+  "label": "F4-post-cutover",
+  "environment": "environment-I4-20261019T180351Z-active.json",
+  "image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+  "facts": {
+    "terms": [],
+    "balance": "0.00000000",
+    "user_id": 4,
+    "term_hash": "d751713988987e9331980363e24189ce",
+    "parent_hash": "d751713988987e9331980363e24189ce",
+    "ledger_count": 0,
+    "operation_hash": "d751713988987e9331980363e24189ce",
+    "claude_override": null,
+    "operation_count": 0,
+    "legacy_concurrency": 5,
+    "user_financial_hash": "abc3e24ec1a304638b8cd41fa831cdbc",
+    "billing_request_count": 0
+  },
+  "read_only": true,
+  "main_fixture_modified": false,
+  "production_connected": false,
+  "raw_auth_and_payload_logged": false,
+  "observed_utc": "2026-10-19T23:45:45.5807160Z"
+}

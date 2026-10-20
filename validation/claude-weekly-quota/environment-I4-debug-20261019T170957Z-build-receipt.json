@@ -1,0 +1,60 @@
+{
+  "stage": "I4 isolated candidate",
+  "freeze": "debug",
+  "diagnostic": true,
+  "source_sha256": "8ea9b4fa81443f788e9dc289b24a542cab9c558e66f1bf6ef3a8ac5ae155aaa9",
+  "source_dirty": true,
+  "head": "9005acffad8f9b30975ea3dd27e82095eb9e5520",
+  "frontend_dist_sha256": "e1d2aa78f24d67791e9371e70a7a3c550e7e117f09c67e09e8486c08f77c4164",
+  "image_tag": "sub2api:claude-weekly-i4-candidate-8ea9b4fa8144",
+  "provider_tag": "claude-weekly-quota-provider:39e9a864afb8",
+  "provider_source_sha256": "39e9a864afb8eb871653233eb71e4ac41b341f244cba3b839234437f158ab5a2",
+  "revision": "9005acffad8f9b30975ea3dd27e82095eb9e5520-dirty-I4-debug-8ea9b4fa81443f788e9dc289b24a542cab9c558e66f1bf6ef3a8ac5ae155aaa9",
+  "linux_go": "go1.27.2 linux/amd64",
+  "cgo_enabled": 0,
+  "started_utc": "2026-10-19T17:10:01.2447930Z",
+  "operations": [
+    {
+      "name": "prepare",
+      "arguments": [
+        "exec",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+        "mkdir",
+        "-p",
+        "/output/i4-20261019t170957z",
+        "/output/tmp"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T170957Z-build-prepare.log"
+    },
+    {
+      "name": "server",
+      "arguments": [
+        "exec",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+        "env",
+        "GOMAXPROCS=2",
+        "TMPDIR=/output/tmp",
+        "GOTMPDIR=/output/tmp",
+        "CGO_ENABLED=0",
+        "go",
+        "build",
+        "-p=2",
+        "-tags=embed",
+        "-trimpath",
+        "-buildvcs=false",
+        "-ldflags=-s -w -X main.Version=2.8.13-monas-claude-weekly-I4-local -X main.Commit=9005acffad8f9b30975ea3dd27e82095eb9e5520-dirty-I4-debug-8ea9b4fa81443f788e9dc289b24a542cab9c558e66f1bf6ef3a8ac5ae155aaa9 -X main.Date=2026-10-19T17:10:01Z -X main.BuildType=release",
+        "-o",
+        "/output/i4-20261019t170957z/sub2api",
+        "./cmd/server"
+      ],
+      "exit_code": 1,
+      "log": "environment-I4-debug-20261019T170957Z-build-server.log"
+    }
+  ],
+  "production_connected": false,
+  "activation_authorized": false,
+  "status": "failed",
+  "error": "I4 Docker operation server failed; see C:\\Users\\Administrator\\.codex\\worktrees\\claude-weekly-quota\\dd\\validation\\claude-weekly-quota\\environment-I4-debug-20261019T170957Z-build-server.log",
+  "finished_utc": "2026-10-19T17:10:12.0908576Z"
+}

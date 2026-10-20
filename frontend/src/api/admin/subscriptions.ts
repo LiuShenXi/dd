@@ -4,6 +4,8 @@
  */
 
 import { apiClient } from '../client'
+import { normalizeQuotaProjection } from '@/utils/claudeQuota'
+import type { NormalizedUserSubscription } from '@/types/subscriptionQuota'
 import type {
   UserSubscription,
   SubscriptionProgress,
@@ -73,7 +75,7 @@ export async function list(
   options?: {
     signal?: AbortSignal
   }
-): Promise<PaginatedResponse<UserSubscription>> {
+): Promise<PaginatedResponse<NormalizedUserSubscription>> {
   const { data } = await apiClient.get<PaginatedResponse<UserSubscription>>(
     '/admin/subscriptions',
     {
@@ -85,7 +87,7 @@ export async function list(
       signal: options?.signal
     }
   )
-  return data
+  return { ...data, items: (data.items ?? []).map(normalizeQuotaProjection) }
 }
 
 /**
@@ -95,7 +97,7 @@ export async function list(
  */
 export async function getById(id: number): Promise<UserSubscription> {
   const { data } = await apiClient.get<UserSubscription>(`/admin/subscriptions/${id}`)
-  return data
+  return normalizeQuotaProjection(data)
 }
 
 /**

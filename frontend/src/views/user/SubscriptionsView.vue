@@ -1,6 +1,13 @@
 <template>
   <AppLayout>
     <div class="space-y-6">
+      <UserConcurrencyScopes v-if="auth.user" :source="auth.user" />
+      <p v-if="termError" role="alert" class="text-sm text-red-600">{{ t('subscriptionQuota.loadFailed') }} <button type="button" class="underline" @click="loadTerms">{{ t('subscriptionQuota.retry') }}</button></p>
+      <div v-if="termCards.length" class="grid gap-6 lg:grid-cols-2">
+        <ClaudeQuotaCard v-for="card in termCards" :key="card.groupId" :summary="card.summary" :title="card.name" @refresh="refreshTerms">
+          <ClaudeQuotaHistory :group-id="card.groupId" />
+        </ClaudeQuotaCard>
+      </div>
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center py-12">
         <div
@@ -9,7 +16,7 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="subscriptions.length === 0" class="card p-12 text-center">
+      <div v-else-if="subscriptions.length === 0 && termCards.length === 0 && !subscriptionStore.termsLoading" class="card p-12 text-center">
         <div
           class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-dark-700"
         >
@@ -26,7 +33,7 @@
       <!-- Subscriptions Grid -->
       <div v-else class="grid gap-6 lg:grid-cols-2">
         <div
-          v-for="subscription in subscriptions"
+          v-for="subscription in windowsSubscriptions"
           :key="subscription.id"
           class="overflow-hidden rounded-2xl border bg-white dark:bg-dark-800"
           :class="platformBorderClass(subscription.group?.platform || '')"
@@ -248,12 +255,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
+import { useAuthStore } from '@/stores/auth'
+import { useSubscriptionStore } from '@/stores/subscriptions'
+import { useQuotaRequestIdentity } from '@/composables/useQuotaRequestIdentity'
+import ClaudeQuotaCard from '@/components/subscription/ClaudeQuotaCard.vue'
+import ClaudeQuotaHistory from '@/components/subscription/ClaudeQuotaHistory.vue'
+import UserConcurrencyScopes from '@/components/common/UserConcurrencyScopes.vue'
 import subscriptionsAPI from '@/api/subscriptions'
 import type { UserSubscription } from '@/types'
+import type { NormalizedUserSubscription, SubscriptionQuotaSummary } from '@/types/subscriptionQuota'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { formatDateTimeToMinute } from '@/utils/format'
@@ -279,9 +293,26 @@ function platformAccentDotClass(p: string): string {
 const { t } = useI18n()
 const router = useRouter()
 const appStore = useAppStore()
+const auth = useAuthStore()
+const subscriptionStore = useSubscriptionStore()
+const identity = useQuotaRequestIdentity(() => String(auth.user?.id))
+const termError = ref(false)
 
-const subscriptions = ref<UserSubscription[]>([])
+const subscriptions = ref<NormalizedUserSubscription[]>([])
 const loading = ref(true)
+const windowsSubscriptions = computed(() => subscriptions.value.filter(subscription => subscription.quota_mode === 'windows'))
+const termCards = computed(() => {
+  const cards = new Map<number, { groupId: number; name: string; summary: SubscriptionQuotaSummary | null }>()
+  for (const sub of subscriptions.value) if (sub.quota_mode === 'term') cards.set(sub.group_id, { groupId: sub.group_id, name: sub.group?.name || t('subscriptionQuota.title'), summary: sub.quota_summary })
+  for (const summary of subscriptionStore.termSummaries) cards.set(summary.group_id, { groupId: summary.group_id, name: subscriptions.value.find(sub => sub.group_id === summary.group_id)?.group?.name || `${t('subscriptionQuota.title')} · #${summary.group_id}`, summary })
+  return [...cards.values()]
+})
+async function loadTerms() {
+  const current = identity.capture('terms'); termError.value = false
+  try { const result = await subscriptionStore.fetchTermSummaries(); if (!current() || !subscriptionStore.isCurrentTermSummaries(result)) return }
+  catch (error) { if (current() && subscriptionStore.isCurrentTermError(error)) termError.value = true }
+}
+function refreshTerms() { void loadTerms() }
 
 function subscriptionHasPeakRate(subscription: UserSubscription): boolean {
   return hasPeakRate(subscription.group)
@@ -292,14 +323,15 @@ function subscriptionPeakRateLabel(subscription: UserSubscription): string {
 }
 
 async function loadSubscriptions() {
+  const current = identity.capture('list')
   try {
     loading.value = true
-    subscriptions.value = await subscriptionsAPI.getMySubscriptions()
+    const data = await subscriptionsAPI.getMySubscriptions()
+    if (current()) subscriptions.value = data
   } catch (error) {
-    console.error('Failed to load subscriptions:', error)
-    appStore.showError(t('userSubscriptions.failedToLoad'))
+    if (current()) { console.error('Failed to load subscriptions:', error); appStore.showError(t('userSubscriptions.failedToLoad')) }
   } finally {
-    loading.value = false
+    if (current()) loading.value = false
   }
 }
 
@@ -390,5 +422,7 @@ function formatResetTime(windowStart: string | null, windowHours: number): strin
 
 onMounted(() => {
   loadSubscriptions()
+  void loadTerms()
 })
+watch(() => auth.user?.id, () => { identity.invalidate(); subscriptions.value = []; termError.value = false; void loadSubscriptions(); void loadTerms() })
 </script>

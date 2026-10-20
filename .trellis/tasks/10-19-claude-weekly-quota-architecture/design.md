@@ -28,6 +28,8 @@ flowchart TD
 
 四个分支互斥。GPT 路径不经过 Claude Repository。共享计费入口只增加一个新的受校验分支，旧分支的指纹、金额和顺序保持兼容。
 
+并发控制也按可信模式分派。Claude term 使用 claude_subscription 用户池，GPT 保留 legacy_user 原槽和队列。计费 scope 与并发 scope 都在鉴权后固定；前者区分用户/分组/卡期，后者只区分用户及权益类别，不能按卡期或 Key 扩容。详见 [并发隔离](concurrency-isolation.md)。
+
 ## 计费模式选择
 
 新增 groups.subscription_quota_mode，允许 windows 和 term，默认 windows。只有 subscription_type 等于 subscription 且 platform 等于 anthropic 的分组可以设置 term；数据库 CHECK 与服务端校验都要实现。

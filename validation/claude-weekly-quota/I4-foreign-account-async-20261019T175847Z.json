@@ -1,0 +1,26 @@
+{
+  "stage": "I4 foreign-account failure diagnosis",
+  "synthetic_only": true,
+  "production_connected": false,
+  "environment": "environment-I4-20261019T175235Z-active.json",
+  "account_id": 2,
+  "request_start_utc": "2026-10-19T17:58:47.1587834Z",
+  "observed_utc": "2026-10-19T17:58:52.2108064Z",
+  "http_status": 200,
+  "changed_fields": [
+    {
+      "field": "updated_at",
+      "before": "2026-10-20T01:53:42.080701+08:00",
+      "after": "2026-10-20T01:58:52.079882+08:00"
+    },
+    {
+      "field": "last_used_at",
+      "before": "2026-10-20T01:53:37.421771+08:00",
+      "after": "2026-10-20T01:58:47.32454+08:00"
+    }
+  ],
+  "all_other_columns_exactly_unchanged": true,
+  "private_snapshot_directory": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T175235Z",
+  "source_reference": "DeferredService flushes original GPT last-use every 10s; BatchUpdateLastUsed changes last_used_at and updated_at only",
+  "original_failure_preserved": "I4-pg-F1-20261019T175235Z-receipt.json"
+}

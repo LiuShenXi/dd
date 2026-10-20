@@ -332,3 +332,59 @@
 - 行号：285
 - 锚点：`func (r *usageCleanupRepository) DeleteUsageLogsBatch(ctx context.Context, filters service.UsageCleanupFilters, limit int) (int64, error) {`
 - Git 内容 SHA-256：`886a5a7badf4e18ffde92da922486bd053b5effce07fdb3c2da3129e1124b059`
+
+## S48 · 现有用户只有共享并发上限；新增独立 Claude 覆盖值
+
+- 路径：`backend/ent/schema/user.go`
+- 行号：55
+- 锚点：`field.Int("concurrency").`
+- Git 内容 SHA-256：`91e76482045d7b268511f8e9f6e5d6b2053ea60fcc630f19a5086b35530d66f1`
+
+## S49 · 现有 Redis 用户槽与队列按 user_id 共用；Claude 新 scope 独立
+
+- 路径：`backend/internal/repository/concurrency_cache.go`
+- 行号：30
+- 锚点：`userSlotKeyPrefix = "concurrency:user:"`
+- Git 内容 SHA-256：`18baec9e04ef85ef6875718a40eb78b35714fc2a545f07f50abdaedb6ddf94d7`
+
+## S50 · 保留 GPT 旧接口并添加显式 scope 的租约接口
+
+- 路径：`backend/internal/service/concurrency_service.go`
+- 行号：381
+- 锚点：`func (s *ConcurrencyService) AcquireUserSlot(ctx context.Context, userID int64, maxConcurrency int) (*AcquireResult, error) {`
+- Git 内容 SHA-256：`2fc0db74eb333a3a9a021778b02228efbf1b49a1a23ea0b47dadfeeed52e906b`
+
+## S51 · 用户槽、等待、Key 统计和释放统一接线
+
+- 路径：`backend/internal/handler/gateway_helper.go`
+- 行号：270
+- 锚点：`func (h *ConcurrencyHelper) AcquireUserSlotWithWait(c *gin.Context, userID int64, maxConcurrency int, isStream bool, streamStarted *bool) (func(), error) {`
+- Git 内容 SHA-256：`18ba089a95681c8ab61ebcec03acaaad8feea993db9dc3386791809b287ce5e4`
+
+## S52 · GPT HTTP 和 WS 并发原行为回归
+
+- 路径：`backend/internal/handler/openai_gateway_handler.go`
+- 行号：2073
+- 锚点：`func (h *OpenAIGatewayHandler) acquireResponsesUserSlot(`
+- Git 内容 SHA-256：`e12559cc3015e09972acdb030fa987bd58b81f3283ecfe84a6f5720dfc31dfb2`
+
+## S53 · 管理用户独立 Claude 设置和 scope 统计投影
+
+- 路径：`backend/internal/handler/admin/user_handler.go`
+- 行号：23
+- 锚点：`type UserWithConcurrency struct {`
+- Git 内容 SHA-256：`4bdcbea47922027cd4fae761175444bde4530bf4021400260807ac14c06e529a`
+
+## S54 · 现有平台并发视图属于账号聚合，不能当用户隔离
+
+- 路径：`backend/internal/service/ops_concurrency.go`
+- 行号：117
+- 锚点：`func (s *OpsService) GetConcurrencyStats(`
+- Git 内容 SHA-256：`e8a622c9ecda3e8dcf2423b481ba633e6b379fa38e79731e4f1f491d7fb73af9`
+
+## S55 · 用户管理表单增加独立 Claude 上限，保留旧字段
+
+- 路径：`frontend/src/components/admin/user/UserEditModal.vue`
+- 行号：45
+- 锚点：`<label class="input-label">{{ t('admin.users.columns.concurrency') }}</label>`
+- Git 内容 SHA-256：`05d32f5d135bb7d7920f0a199b54926a6feb222507638a61fae2d5962caa706c`

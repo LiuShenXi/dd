@@ -5,46 +5,53 @@
 
 import { apiClient } from './client'
 import type { UserSubscription, SubscriptionProgress } from '@/types'
+import type { NormalizedQuotaProjection, NormalizedUserSubscription, QuotaProjection } from '@/types/subscriptionQuota'
+import { normalizeQuotaProjection } from '@/utils/claudeQuota'
 
 /**
  * Subscription summary for user dashboard
  */
 export interface SubscriptionSummary {
   active_count: number
-  subscriptions: Array<{
+  total_used_usd: number
+  subscriptions: Array<QuotaProjection & {
     id: number
+    group_id: number
     group_name: string
     status: string
-    daily_progress: number | null
-    weekly_progress: number | null
-    monthly_progress: number | null
-    expires_at: string | null
-    days_remaining: number | null
+    daily_used_usd?: number
+    daily_limit_usd?: number
+    weekly_used_usd?: number
+    weekly_limit_usd?: number
+    monthly_used_usd?: number
+    monthly_limit_usd?: number
+    expires_at?: string | null
   }>
 }
 
 /**
  * Get list of current user's subscriptions
  */
-export async function getMySubscriptions(): Promise<UserSubscription[]> {
+export async function getMySubscriptions(): Promise<NormalizedUserSubscription[]> {
   const response = await apiClient.get<UserSubscription[]>('/subscriptions')
-  return response.data
+  return (response.data ?? []).map(normalizeQuotaProjection)
 }
 
 /**
  * Get current user's active subscriptions
  */
-export async function getActiveSubscriptions(): Promise<UserSubscription[]> {
+export async function getActiveSubscriptions(): Promise<NormalizedUserSubscription[]> {
   const response = await apiClient.get<UserSubscription[]>('/subscriptions/active')
-  return response.data
+  return (response.data ?? []).map(normalizeQuotaProjection)
 }
 
 /**
  * Get progress for all user's active subscriptions
  */
-export async function getSubscriptionsProgress(): Promise<SubscriptionProgress[]> {
-  const response = await apiClient.get<SubscriptionProgress[]>('/subscriptions/progress')
-  return response.data
+export type SubscriptionProgressInfo = { subscription: NormalizedUserSubscription; progress: SubscriptionProgress & NormalizedQuotaProjection }
+export async function getSubscriptionsProgress(): Promise<SubscriptionProgressInfo[]> {
+  const response = await apiClient.get<Array<{ subscription: UserSubscription; progress: SubscriptionProgress }>>('/subscriptions/progress')
+  return (response.data ?? []).map(item => ({ subscription: normalizeQuotaProjection(item.subscription), progress: normalizeQuotaProjection(item.progress) }))
 }
 
 /**
@@ -52,7 +59,7 @@ export async function getSubscriptionsProgress(): Promise<SubscriptionProgress[]
  */
 export async function getSubscriptionSummary(): Promise<SubscriptionSummary> {
   const response = await apiClient.get<SubscriptionSummary>('/subscriptions/summary')
-  return response.data
+  return { ...response.data, subscriptions: (response.data.subscriptions ?? []).map(normalizeQuotaProjection) }
 }
 
 /**
@@ -64,7 +71,7 @@ export async function getSubscriptionProgress(
   const response = await apiClient.get<SubscriptionProgress>(
     `/subscriptions/${subscriptionId}/progress`
   )
-  return response.data
+  return normalizeQuotaProjection(response.data)
 }
 
 export default {

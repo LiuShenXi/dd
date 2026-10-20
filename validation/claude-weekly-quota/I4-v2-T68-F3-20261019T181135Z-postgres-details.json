@@ -1,0 +1,183 @@
+{
+  "stage": "I4 final T68 independent actual PostgreSQL request-ledger-dedup-log rows",
+  "observation": "I4-v2-T68-F3-20261019T181135Z-observed.json",
+  "query": "SELECT jsonb_agg(jsonb_build_object(\n 'request_row_id',r.id,'request_id',r.request_id,'user_id',r.user_id,'group_id',r.group_id,'api_key_id',r.api_key_id,'term_id',r.term_id,'status',r.status,'actual_cost_usd',r.actual_cost_usd::text,'admitted_at',r.admitted_at,'settled_at',r.settled_at,'usage_log_recorded_at',r.usage_log_recorded_at,\n 'ledger',COALESCE((SELECT jsonb_agg(to_jsonb(l) ORDER BY l.id) FROM subscription_quota_ledger l WHERE l.request_row_id=r.id),'[]'),\n 'dedup',COALESCE((SELECT jsonb_agg(to_jsonb(d) ORDER BY d.id) FROM usage_billing_dedup d WHERE d.request_id=r.request_id AND d.api_key_id=r.api_key_id),'[]'),\n 'usage_logs',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',l.id,'request_id',l.request_id,'user_id',l.user_id,'api_key_id',l.api_key_id,'group_id',l.group_id,'account_id',l.account_id,'subscription_id',l.subscription_id,'subscription_term_id',l.subscription_term_id,'subscription_quota_request_id',l.subscription_quota_request_id,'model',l.model,'input_tokens',l.input_tokens,'output_tokens',l.output_tokens,'actual_cost',l.actual_cost::text) ORDER BY l.id) FROM usage_logs l WHERE l.subscription_quota_request_id=r.id),'[]')) ORDER BY r.id)::text\nFROM subscription_quota_requests r WHERE r.id IN (31,32);\nSELECT jsonb_agg(jsonb_build_object('term_id',id,'user_id',user_id,'quota_usd',quota_usd::text,'used_usd',used_usd::text) ORDER BY id)::text FROM subscription_quota_terms;",
+  "requests": [
+    {
+      "dedup": [
+        {
+          "id": 40,
+          "api_key_id": 1,
+          "created_at": "2026-10-20T02:28:04.249025+08:00",
+          "request_id": "subquota:2144b04c-ccb2-44e9-9efa-c5227147ea00",
+          "request_fingerprint": "b45bcebd8f8d73a9b2f9e1f8f6d5afd512d2f9ce1ccf6a7001f4ed934c6e8abc"
+        }
+      ],
+      "ledger": [
+        {
+          "id": 30,
+          "reason": null,
+          "term_id": 1,
+          "actor_id": null,
+          "event_key": "usage:31",
+          "created_at": "2026-10-20T02:28:04.255902+08:00",
+          "entry_kind": "usage_debit",
+          "delta_used_usd": 0.0006,
+          "request_row_id": 31,
+          "reverses_entry_id": null
+        }
+      ],
+      "status": "settled",
+      "term_id": 1,
+      "user_id": 2,
+      "group_id": 2,
+      "api_key_id": 1,
+      "request_id": "subquota:2144b04c-ccb2-44e9-9efa-c5227147ea00",
+      "settled_at": "2026-10-20T02:28:04.260323+08:00",
+      "usage_logs": [
+        {
+          "id": 40,
+          "model": "claude-sonnet-4-5",
+          "user_id": 2,
+          "group_id": 2,
+          "account_id": 1,
+          "api_key_id": 1,
+          "request_id": "subquota:2144b04c-ccb2-44e9-9efa-c5227147ea00",
+          "actual_cost": "0.0006000000",
+          "input_tokens": 100,
+          "output_tokens": 20,
+          "subscription_id": 2,
+          "subscription_term_id": 1,
+          "subscription_quota_request_id": 31
+        }
+      ],
+      "admitted_at": "2026-10-20T02:11:51.525754+08:00",
+      "request_row_id": 31,
+      "actual_cost_usd": "0.00060000",
+      "usage_log_recorded_at": "2026-10-20T02:28:04.285696+08:00"
+    },
+    {
+      "dedup": [
+        {
+          "id": 41,
+          "api_key_id": 2,
+          "created_at": "2026-10-20T02:28:04.253026+08:00",
+          "request_id": "subquota:a42cdf7b-799c-4b12-8cae-e0af18bbbbf8",
+          "request_fingerprint": "39610533a08f82f63ace3a88b34b72ae1604e37d7737fe4abc8e94d424724239"
+        }
+      ],
+      "ledger": [
+        {
+          "id": 31,
+          "reason": null,
+          "term_id": 1,
+          "actor_id": null,
+          "event_key": "usage:32",
+          "created_at": "2026-10-20T02:28:04.26992+08:00",
+          "entry_kind": "usage_debit",
+          "delta_used_usd": 0.0006,
+          "request_row_id": 32,
+          "reverses_entry_id": null
+        }
+      ],
+      "status": "settled",
+      "term_id": 1,
+      "user_id": 2,
+      "group_id": 2,
+      "api_key_id": 2,
+      "request_id": "subquota:a42cdf7b-799c-4b12-8cae-e0af18bbbbf8",
+      "settled_at": "2026-10-20T02:28:04.274859+08:00",
+      "usage_logs": [
+        {
+          "id": 41,
+          "model": "claude-sonnet-4-5",
+          "user_id": 2,
+          "group_id": 2,
+          "account_id": 1,
+          "api_key_id": 2,
+          "request_id": "subquota:a42cdf7b-799c-4b12-8cae-e0af18bbbbf8",
+          "actual_cost": "0.0006000000",
+          "input_tokens": 100,
+          "output_tokens": 20,
+          "subscription_id": 2,
+          "subscription_term_id": 1,
+          "subscription_quota_request_id": 32
+        }
+      ],
+      "admitted_at": "2026-10-20T02:11:51.631031+08:00",
+      "request_row_id": 32,
+      "actual_cost_usd": "0.00060000",
+      "usage_log_recorded_at": "2026-10-20T02:28:04.294125+08:00"
+    }
+  ],
+  "per_request_identity_exact_amount_and_cardinality_pass": true,
+  "additional_midrun_to_end_card_deltas": [
+    {
+      "after_used": "0.00900000",
+      "term_id": 1,
+      "delta_used": "0.00120000",
+      "before_used": "0.00780000"
+    },
+    {
+      "after_used": "0.00720000",
+      "term_id": 2,
+      "delta_used": "0.00000000",
+      "before_used": "0.00720000"
+    },
+    {
+      "after_used": "0.00000000",
+      "term_id": 3,
+      "delta_used": "0.00000000",
+      "before_used": "0.00000000"
+    },
+    {
+      "after_used": "0.00060000",
+      "term_id": 4,
+      "delta_used": "0.00000000",
+      "before_used": "0.00060000"
+    },
+    {
+      "after_used": "0.00120000",
+      "term_id": 5,
+      "delta_used": "0.00000000",
+      "before_used": "0.00120000"
+    },
+    {
+      "after_used": "0.00060000",
+      "term_id": 6,
+      "delta_used": "0.00000000",
+      "before_used": "0.00060000"
+    },
+    {
+      "after_used": "0.00000000",
+      "term_id": 7,
+      "delta_used": "0.00000000",
+      "before_used": "0.00000000"
+    },
+    {
+      "after_used": "0.00000000",
+      "term_id": 8,
+      "delta_used": "0.00000000",
+      "before_used": "0.00000000"
+    }
+  ],
+  "additional_card_delta_window": "Explicit mid-run observation to end, not invented full-period before values",
+  "full_period_foreign_wallet_assertions_from_actual_test": "B entire card; users/native/GPT/redeem/payment full-row fingerprints",
+  "candidate_image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "candidate_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "driver_source_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "source_compatibility": {
+    "compatible": true,
+    "mode": "approved_test_only_bridge",
+    "receipt": "coordinator-I4-F2-F3-test-only-bridge.json",
+    "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+    "driver_source_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+    "changed_files": [
+      "backend/internal/service/usage_cleanup_service_test.go"
+    ]
+  },
+  "synthetic_only": true,
+  "production_connected": false,
+  "read_only": true,
+  "observed_utc": "2026-10-19T18:29:22.8824295Z"
+}

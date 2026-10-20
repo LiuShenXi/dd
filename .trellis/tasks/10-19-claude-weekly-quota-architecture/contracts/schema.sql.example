@@ -3,6 +3,12 @@
 -- Split shared-table indexes and FK validation into the appropriate online phases.
 -- No statements in this file have been executed against production.
 
+ALTER TABLE users ADD COLUMN claude_subscription_concurrency INTEGER;
+ALTER TABLE users ADD CONSTRAINT users_claude_subscription_concurrency_positive
+  CHECK (claude_subscription_concurrency IS NULL OR claude_subscription_concurrency > 0);
+-- NULL uses an explicit independent Claude default, never users.concurrency.
+-- Missing/invalid effective policy fails closed for new Claude admission.
+
 ALTER TABLE groups
   ADD COLUMN subscription_quota_mode VARCHAR(16) NOT NULL DEFAULT 'windows';
 ALTER TABLE groups ADD CONSTRAINT groups_subscription_quota_mode_check CHECK (

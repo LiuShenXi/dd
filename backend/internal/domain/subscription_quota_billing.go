@@ -15,13 +15,14 @@ import (
 // FreezePricing is a pre-resolved, pure factory: no I/O or current configuration
 // reads may occur under the repository's final admission locks.
 type SubscriptionQuotaAdmissionParams struct {
-	UserID              int64
-	APIKeyID            int64
-	GroupID             int64
-	AccountID           int64
-	ExpectedAccountType string
-	RequestID           string
-	FreezePricing       func(time.Time) (json.RawMessage, error)
+	DefaultClaudeConcurrency int
+	UserID                   int64
+	APIKeyID                 int64
+	GroupID                  int64
+	AccountID                int64
+	ExpectedAccountType      string
+	RequestID                string
+	FreezePricing            func(time.Time) (json.RawMessage, error)
 }
 
 type SubscriptionQuotaBillingSnapshot struct {

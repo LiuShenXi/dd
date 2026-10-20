@@ -41,3 +41,11 @@
 ## 工程交付结论
 
 架构可进入 I0 和 I1 实施。Sol 应以重新核验后的生产提交建立独立工作区，逐阶段给出可审查改动与真实测试结果。本包没有给线上用户分配额度，也没有部署或执行任何结构迁移。
+
+## v2 并发隔离复核 · 2026 年 10 月 20 日
+
+发现 v1 只隔离账务，仍调用共享用户并发槽。匹配生产提交的源码确认 users.concurrency、concurrency:user: 与 concurrency:wait: 都没有区分 Claude/GPT；按平台显示的账号聚合和 Key 使用追踪也不提供所需的用户隔离。
+
+v2 新增 concurrency-isolation.md、R19、AC08、ADR11 和 T63 至 T74。Claude term 改为用户级独立上限、active lease 与 waiting ticket；GPT 保留原字段、键和 WS 规则。多 Key、多分组和换卡不能扩大用户 Claude 池，流式续租、取消释放、Redis 故障、限额缓存与新旧池排空属于同一必做范围。
+
+新增 S48 至 S55 源码接点及 concurrency-production-recheck.json。生产镜像、revision 和运行程序摘要与初版一致；源码锚点目标为 55 项，需求 19 项、业务验收 74 项。以重新生成的 validation-receipt.json 为静态校验结论，不能将新增验收用例当作已通过的业务测试。

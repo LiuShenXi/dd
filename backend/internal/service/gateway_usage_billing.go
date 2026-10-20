@@ -580,6 +580,12 @@ func detachStreamUpstreamContext(ctx context.Context, stream bool) (context.Cont
 	if ctx == nil {
 		return context.Background(), func() {}
 	}
+	// Claude term forwarding belongs to its renewable user lease. Client or
+	// lease cancellation must reach the real sender; completed billing facts use
+	// their separate detachedBillingContext below the forwarding lifecycle.
+	if _, term := SubscriptionQuotaForwardStateFromContext(ctx); term {
+		return ctx, func() {}
+	}
 	if !stream {
 		return ctx, func() {}
 	}

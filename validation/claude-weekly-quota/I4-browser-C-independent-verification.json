@@ -1,0 +1,28 @@
+{
+  "stage": "I4 C environment independent SQL/proxy verification",
+  "pass": true,
+  "checks": {
+    "C_final_SQL": true,
+    "renew_original201": true,
+    "renew_replay200": true,
+    "renew_same_body_sha256": true,
+    "renew_same_idempotency_sha256": true,
+    "renew_hash_matches_durable_operation": true,
+    "conflict_zero_upstream": true,
+    "conflict_terms_hash_unchanged": true,
+    "conflict_operations_hash_unchanged": true,
+    "conflict_parent_hash_unchanged": true,
+    "conflict_user_financial_hash_unchanged": true,
+    "conflict_count_stays_2": true
+  },
+  "SQL_receipt": "I4-browser-C-final-observed-20261020T000024Z.json",
+  "proxy_receipt": "I4-browser-C-proxy-independent-observed-20261020T000020Z.json",
+  "before409": "I4-browser-C-before409-F4-20261019T235929Z.json",
+  "after409": "I4-browser-C-after409-F4-20261020T000000Z.json",
+  "open_original_transport_drop": true,
+  "open_replay_DOM_owned_by_root": true,
+  "renew_error_was_proxy_HTTP503_not_transport_drop": true,
+  "read_only": true,
+  "raw_auth_payload_idempotency_key_logged": false,
+  "observed_utc": "2026-10-20T00:01:01.5814574Z"
+}

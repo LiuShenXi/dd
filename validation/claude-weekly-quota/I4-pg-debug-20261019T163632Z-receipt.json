@@ -1,0 +1,16 @@
+{
+  "stage": "I4 debug first deployment",
+  "exit_code": 1,
+  "acceptance": false,
+  "diagnostic": true,
+  "server_container_healthy": true,
+  "host_TCP_unreachable": true,
+  "configured_url": "http://127.0.0.1:56699",
+  "actual_published_ports": [],
+  "log": "I4-pg-debug-20261019T163632Z.jsonl",
+  "failure": "original run failed; loopback internal-network port publication unavailable; inspect separate SQL fixture failure",
+  "receipt_script_error": "empty pass array Test projection fixed separately",
+  "synthetic_only": true,
+  "production_connected": false,
+  "upstream_called": false
+}

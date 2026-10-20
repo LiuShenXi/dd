@@ -39,25 +39,26 @@ var gatewayCompatibilityMetricsLogCounter atomic.Uint64
 
 // GatewayHandler handles API gateway requests
 type GatewayHandler struct {
-	gatewayService            *service.GatewayService
-	openAIGatewayService      *service.OpenAIGatewayService
-	geminiCompatService       *service.GeminiMessagesCompatService
-	antigravityGatewayService *service.AntigravityGatewayService
-	userService               *service.UserService
-	billingCacheService       *service.BillingCacheService
-	carpoolService            *service.CarpoolService
-	usageService              *service.UsageService
-	apiKeyService             *service.APIKeyService
-	usageRecordWorkerPool     *service.UsageRecordWorkerPool
-	errorPassthroughService   *service.ErrorPassthroughService
-	contentModerationService  *service.ContentModerationService
-	securityAuditCoordinator  *securityaudit.Coordinator
-	concurrencyHelper         *ConcurrencyHelper
-	userMsgQueueHelper        *UserMsgQueueHelper
-	maxAccountSwitches        int
-	maxAccountSwitchesGemini  int
-	cfg                       *config.Config
-	settingService            *service.SettingService
+	subscriptionQuotaSummaryReader service.SubscriptionQuotaSummaryReader
+	gatewayService                 *service.GatewayService
+	openAIGatewayService           *service.OpenAIGatewayService
+	geminiCompatService            *service.GeminiMessagesCompatService
+	antigravityGatewayService      *service.AntigravityGatewayService
+	userService                    *service.UserService
+	billingCacheService            *service.BillingCacheService
+	carpoolService                 *service.CarpoolService
+	usageService                   *service.UsageService
+	apiKeyService                  *service.APIKeyService
+	usageRecordWorkerPool          *service.UsageRecordWorkerPool
+	errorPassthroughService        *service.ErrorPassthroughService
+	contentModerationService       *service.ContentModerationService
+	securityAuditCoordinator       *securityaudit.Coordinator
+	concurrencyHelper              *ConcurrencyHelper
+	userMsgQueueHelper             *UserMsgQueueHelper
+	maxAccountSwitches             int
+	maxAccountSwitchesGemini       int
+	cfg                            *config.Config
+	settingService                 *service.SettingService
 }
 
 // NewGatewayHandler creates a new GatewayHandler
@@ -241,20 +242,22 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 	subscription, _ := middleware2.GetSubscriptionFromContext(c)
 
 	// 1. 首先获取用户并发槽位
-	userReleaseFunc, err := h.concurrencyHelper.AcquireUserSlotWithWait(c, subject.UserID, subject.Concurrency, reqStream, &streamStarted)
+	userReleaseFunc, err := h.acquireGatewayUserSlotWithWait(c, apiKey, subject.UserID, subject.Concurrency, reqStream, &streamStarted)
 	if err != nil {
 		reqLog.Warn("gateway.user_slot_acquire_failed", zap.Error(err))
 		h.handleConcurrencyError(c, err, "user", streamStarted)
 		return
 	}
-	// 在请求结束或 Context 取消时确保释放槽位，避免客户端断开造成泄漏
-	userReleaseFunc = wrapReleaseOnDone(c.Request.Context(), userReleaseFunc)
+	// Claude releases after the actual local forward ends; legacy keeps its wrapper.
 	if userReleaseFunc != nil {
 		defer userReleaseFunc()
 	}
 
 	// 2. 【新增】Wait后二次检查余额/订阅
 	if err := h.billingCacheService.CheckBillingEligibility(c.Request.Context(), apiKey.User, apiKey, apiKey.Group, subscription, service.QuotaPlatform(c.Request.Context(), apiKey)); err != nil {
+		if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+			return
+		}
 		reqLog.Info("gateway.billing_eligibility_check_failed", zap.Error(err))
 		status, code, message, retryAfter := billingErrorDetails(err)
 		if retryAfter > 0 {
@@ -357,7 +360,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 					c.Request = c.Request.WithContext(ctx)
 					continue
 				case FailoverCanceled:
-					failoverClientGone(c)
+					if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+						failoverClientGone(c)
+					}
 					return
 				default: // FailoverExhausted
 					if fs.LastFailoverErr != nil {
@@ -439,6 +444,10 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				// Slot acquired: no longer waiting in queue.
 				releaseWait()
 			}
+			if claudeTermGatewayKey(apiKey) {
+				accountReleaseFunc = forwardCompletionRelease(accountReleaseFunc)
+				defer accountReleaseFunc()
+			}
 			// 终检与准入后绑定使用选号结果携带的门（见 responses 同名注释）。
 			admissionCtx := service.ContextWithSelectionProfitGate(c.Request.Context(), selection)
 			latest, vetoed, reason := h.gatewayService.GatewayProfitControlVetoLatest(admissionCtx, account)
@@ -465,7 +474,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				}
 			}
 			// 账号槽位/等待计数需要在超时或断开时安全回收
-			accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+			if !claudeTermGatewayKey(apiKey) {
+				accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+			}
 
 			// 转发请求 - 根据账号平台分流
 			var result *service.ForwardResult
@@ -532,7 +543,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 						h.handleFailoverExhausted(c, fs.LastFailoverErr, service.PlatformGemini, streamStarted)
 						return
 					case FailoverCanceled:
-						failoverClientGone(c)
+						if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+							failoverClientGone(c)
+						}
 						return
 					}
 				}
@@ -673,6 +686,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 		retryWithFallback := false
 
 		for {
+			if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+				return
+			}
 			attemptParsedReq, err := parsedReq.CloneForBody(body)
 			if err != nil {
 				h.errorResponse(c, http.StatusBadRequest, "invalid_request_error", "Failed to parse request body")
@@ -688,6 +704,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			)
 			selection, err := h.gatewayService.SelectAccountWithLoadAwareness(c.Request.Context(), currentAPIKey.GroupID, sessionKey, reqModel, fs.FailedAccountIDs, parsedReq.MetadataUserID, subject.UserID)
 			if err != nil {
+				if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+					return
+				}
 				if len(fs.FailedAccountIDs) == 0 {
 					cls := classifyNoAccountErrorFromGin(c, h.gatewayService, currentAPIKey, reqModel, reqModel, platform)
 					if !cls.ModelNotFound {
@@ -715,7 +734,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 					c.Request = c.Request.WithContext(ctx)
 					continue
 				case FailoverCanceled:
-					failoverClientGone(c)
+					if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+						failoverClientGone(c)
+					}
 					return
 				default: // FailoverExhausted
 					if fs.LastFailoverErr != nil {
@@ -807,6 +828,10 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				// Slot acquired: no longer waiting in queue.
 				releaseWait()
 			}
+			if claudeTermGatewayKey(apiKey) {
+				accountReleaseFunc = forwardCompletionRelease(accountReleaseFunc)
+				defer accountReleaseFunc()
+			}
 			// 终检与准入后绑定使用选号结果携带的门（见 responses 同名注释）。
 			admissionCtx := service.ContextWithSelectionProfitGate(c.Request.Context(), selection)
 			latest, vetoed, reason := h.gatewayService.GatewayProfitControlVetoLatest(admissionCtx, account)
@@ -838,7 +863,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				}
 			}
 			// 账号槽位/等待计数需要在超时或断开时安全回收
-			accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+			if !claudeTermGatewayKey(apiKey) {
+				accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+			}
 
 			// ===== 用户消息串行队列 START =====
 			var queueRelease func()
@@ -887,7 +914,12 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			}
 
 			// 用 wrapReleaseOnDone 确保 context 取消时自动释放（仅 serialize 模式有 queueRelease）
-			queueRelease = wrapReleaseOnDone(c.Request.Context(), queueRelease)
+			if claudeTermGatewayKey(apiKey) {
+				queueRelease = forwardCompletionRelease(queueRelease)
+				defer queueRelease()
+			} else {
+				queueRelease = wrapReleaseOnDone(c.Request.Context(), queueRelease)
+			}
 			// 注入回调到 ParsedRequest：使用外层 wrapper 以便提前清理 AfterFunc
 			attemptParsedReq.OnUpstreamAccepted = queueRelease
 			// ===== 用户消息串行队列 END =====
@@ -1025,6 +1057,12 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 
 			if err != nil {
 				// Beta policy block: return 400 immediately, no failover
+				if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+					if result != nil {
+						submitForwardUsage(result)
+					}
+					return
+				}
 				if termState != nil && h.writeSubscriptionQuotaForwardError(c, err, streamStarted) {
 					if result != nil {
 						submitForwardUsage(result)
@@ -1115,7 +1153,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 						h.handleFailoverExhausted(c, fs.LastFailoverErr, account.Platform, streamStarted)
 						return
 					case FailoverCanceled:
-						failoverClientGone(c)
+						if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+							failoverClientGone(c)
+						}
 						return
 					}
 				}
@@ -1637,6 +1677,10 @@ func (h *GatewayHandler) Usage(c *gin.Context) {
 
 	// 判断模式: key 有总额度或速率限制 → quota_limited，否则 → unrestricted
 	isQuotaLimited := apiKey.Quota > 0 || apiKey.HasRateLimits()
+	if apiKey.Group != nil && apiKey.Group.HasTermQuotaMode() {
+		h.usageSubscriptionQuota(c, ctx, apiKey, subject.UserID, usageData, dailyUsage, modelStats)
+		return
+	}
 
 	if isQuotaLimited {
 		h.usageQuotaLimited(c, ctx, apiKey, usageData, dailyUsage, modelStats)
@@ -1715,6 +1759,12 @@ func (h *GatewayHandler) buildAPIKeyDailyUsage(c *gin.Context, userID, apiKeyID 
 
 // usageQuotaLimited 处理 quota_limited 模式的响应
 func (h *GatewayHandler) usageQuotaLimited(c *gin.Context, ctx context.Context, apiKey *service.APIKey, usageData gin.H, dailyUsage any, modelStats any) {
+	resp := h.buildKeyLimitedUsage(ctx, apiKey, usageData, dailyUsage, modelStats)
+	h.addUserConcurrencyUsage(ctx, resp, apiKey)
+	c.JSON(http.StatusOK, resp)
+}
+
+func (h *GatewayHandler) buildKeyLimitedUsage(ctx context.Context, apiKey *service.APIKey, usageData gin.H, dailyUsage any, modelStats any) gin.H {
 	resp := gin.H{
 		"mode":    "quota_limited",
 		"isValid": apiKey.Status == service.StatusAPIKeyActive || apiKey.Status == service.StatusAPIKeyQuotaExhausted || apiKey.Status == service.StatusAPIKeyExpired,
@@ -1803,7 +1853,7 @@ func (h *GatewayHandler) usageQuotaLimited(c *gin.Context, ctx context.Context, 
 		resp["model_stats"] = modelStats
 	}
 
-	c.JSON(http.StatusOK, resp)
+	return resp
 }
 
 // usageUnrestricted 处理 unrestricted 模式的响应（向后兼容）
@@ -1847,6 +1897,7 @@ func (h *GatewayHandler) usageUnrestricted(c *gin.Context, ctx context.Context, 
 		if modelStats != nil {
 			resp["model_stats"] = modelStats
 		}
+		h.addUserConcurrencyUsage(ctx, resp, apiKey)
 		c.JSON(http.StatusOK, resp)
 		return
 	}
@@ -1875,6 +1926,7 @@ func (h *GatewayHandler) usageUnrestricted(c *gin.Context, ctx context.Context, 
 	if modelStats != nil {
 		resp["model_stats"] = modelStats
 	}
+	h.addUserConcurrencyUsage(ctx, resp, apiKey)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -1924,6 +1976,7 @@ func (h *GatewayHandler) usageCarpool(c *gin.Context, ctx context.Context, apiKe
 	if modelStats != nil {
 		resp["model_stats"] = modelStats
 	}
+	h.addUserConcurrencyUsage(ctx, resp, apiKey)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -1978,6 +2031,12 @@ func (h *GatewayHandler) calculateSubscriptionRemaining(group *service.Group, su
 
 // handleConcurrencyError handles concurrency-related acquire errors.
 func (h *GatewayHandler) handleConcurrencyError(c *gin.Context, err error, slotType string, streamStarted bool) {
+	if key, ok := middleware2.GetAPIKeyFromContext(c); ok && h.writeClaudeLeaseLoss(c, key, streamStarted) {
+		return
+	}
+	if h.writeSubscriptionQuotaForwardError(c, err, streamStarted) {
+		return
+	}
 	status, errType, code, message := concurrencyErrorResponse(err, slotType)
 	h.handleStreamingAwareErrorWithCode(c, status, errType, code, message, streamStarted)
 }

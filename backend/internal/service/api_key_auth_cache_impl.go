@@ -14,7 +14,7 @@ import (
 	"github.com/dgraph-io/ristretto"
 )
 
-const apiKeyAuthSnapshotVersion = 26 // v26: explicit subscription quota mode; reject every older snapshot
+const apiKeyAuthSnapshotVersion = 28 // v28: reload v27 snapshots built without the native user concurrency projection
 
 type apiKeyAuthCacheConfig struct {
 	l1Size        int
@@ -218,6 +218,11 @@ func (s *APIKeyService) getAuthCacheEntry(ctx context.Context, cacheKey string) 
 	if err != nil {
 		return nil, false
 	}
+	// Do not promote incomplete old snapshots into asynchronous L1 admission
+	// while their authoritative replacement is being loaded.
+	if entry != nil && !entry.NotFound && (entry.Snapshot == nil || entry.Snapshot.Version != apiKeyAuthSnapshotVersion) {
+		return nil, false
+	}
 	s.setAuthCacheL1(cacheKey, entry)
 	return entry, true
 }
@@ -351,21 +356,22 @@ func (s *APIKeyService) snapshotFromAPIKey(ctx context.Context, apiKey *APIKey) 
 		RateLimit1d: apiKey.RateLimit1d,
 		RateLimit7d: apiKey.RateLimit7d,
 		User: APIKeyAuthUserSnapshot{
-			ID:                         apiKey.User.ID,
-			Status:                     apiKey.User.Status,
-			Role:                       apiKey.User.Role,
-			Balance:                    apiKey.User.Balance,
-			Concurrency:                apiKey.User.Concurrency,
-			AllowedGroups:              apiKey.User.AllowedGroups,
-			Email:                      apiKey.User.Email,
-			Username:                   apiKey.User.Username,
-			BalanceNotifyEnabled:       apiKey.User.BalanceNotifyEnabled,
-			RestrictPublicGroups:       apiKey.User.RestrictPublicGroups,
-			BalanceNotifyThresholdType: apiKey.User.BalanceNotifyThresholdType,
-			BalanceNotifyThreshold:     apiKey.User.BalanceNotifyThreshold,
-			BalanceNotifyExtraEmails:   apiKey.User.BalanceNotifyExtraEmails,
-			TotalRecharged:             apiKey.User.TotalRecharged,
-			RPMLimit:                   apiKey.User.RPMLimit,
+			ID:                            apiKey.User.ID,
+			Status:                        apiKey.User.Status,
+			Role:                          apiKey.User.Role,
+			Balance:                       apiKey.User.Balance,
+			Concurrency:                   apiKey.User.Concurrency,
+			ClaudeSubscriptionConcurrency: cloneConcurrencyOverride(apiKey.User.ClaudeSubscriptionConcurrency),
+			AllowedGroups:                 apiKey.User.AllowedGroups,
+			Email:                         apiKey.User.Email,
+			Username:                      apiKey.User.Username,
+			BalanceNotifyEnabled:          apiKey.User.BalanceNotifyEnabled,
+			RestrictPublicGroups:          apiKey.User.RestrictPublicGroups,
+			BalanceNotifyThresholdType:    apiKey.User.BalanceNotifyThresholdType,
+			BalanceNotifyThreshold:        apiKey.User.BalanceNotifyThreshold,
+			BalanceNotifyExtraEmails:      apiKey.User.BalanceNotifyExtraEmails,
+			TotalRecharged:                apiKey.User.TotalRecharged,
+			RPMLimit:                      apiKey.User.RPMLimit,
 		},
 	}
 
@@ -461,22 +467,23 @@ func (s *APIKeyService) snapshotToAPIKey(key string, snapshot *APIKeyAuthSnapsho
 		RateLimit1d: snapshot.RateLimit1d,
 		RateLimit7d: snapshot.RateLimit7d,
 		User: &User{
-			ID:                         snapshot.User.ID,
-			Status:                     snapshot.User.Status,
-			Role:                       snapshot.User.Role,
-			Balance:                    snapshot.User.Balance,
-			Concurrency:                snapshot.User.Concurrency,
-			AllowedGroups:              snapshot.User.AllowedGroups,
-			Email:                      snapshot.User.Email,
-			Username:                   snapshot.User.Username,
-			BalanceNotifyEnabled:       snapshot.User.BalanceNotifyEnabled,
-			RestrictPublicGroups:       snapshot.User.RestrictPublicGroups,
-			BalanceNotifyThresholdType: snapshot.User.BalanceNotifyThresholdType,
-			BalanceNotifyThreshold:     snapshot.User.BalanceNotifyThreshold,
-			BalanceNotifyExtraEmails:   snapshot.User.BalanceNotifyExtraEmails,
-			TotalRecharged:             snapshot.User.TotalRecharged,
-			RPMLimit:                   snapshot.User.RPMLimit,
-			UserGroupRPMOverride:       snapshot.User.UserGroupRPMOverride,
+			ID:                            snapshot.User.ID,
+			Status:                        snapshot.User.Status,
+			Role:                          snapshot.User.Role,
+			Balance:                       snapshot.User.Balance,
+			Concurrency:                   snapshot.User.Concurrency,
+			ClaudeSubscriptionConcurrency: cloneConcurrencyOverride(snapshot.User.ClaudeSubscriptionConcurrency),
+			AllowedGroups:                 snapshot.User.AllowedGroups,
+			Email:                         snapshot.User.Email,
+			Username:                      snapshot.User.Username,
+			BalanceNotifyEnabled:          snapshot.User.BalanceNotifyEnabled,
+			RestrictPublicGroups:          snapshot.User.RestrictPublicGroups,
+			BalanceNotifyThresholdType:    snapshot.User.BalanceNotifyThresholdType,
+			BalanceNotifyThreshold:        snapshot.User.BalanceNotifyThreshold,
+			BalanceNotifyExtraEmails:      snapshot.User.BalanceNotifyExtraEmails,
+			TotalRecharged:                snapshot.User.TotalRecharged,
+			RPMLimit:                      snapshot.User.RPMLimit,
+			UserGroupRPMOverride:          snapshot.User.UserGroupRPMOverride,
 		},
 	}
 	if snapshot.Group != nil {

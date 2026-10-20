@@ -4,6 +4,7 @@
 {"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/billing-protocol.md","reason":"Lock order, immutable admission, settlement and recovery"}
 {"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/api-contracts.md","reason":"API and legacy entry guards"}
 {"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/integration-contracts.md","reason":"Payment transaction, pricing snapshot, maintenance and cleanup compatibility"}
+{"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/concurrency-isolation.md","reason":"Required v2 independent Claude user concurrency pool, queue and limits"}
 {"file":".trellis/tasks/10-19-claude-weekly-quota-architecture/implement.md","reason":"I0 through I6 implementation sequence"}
 {"file":".trellis/spec/backend/carpool-contracts.md","reason":"Preserve current carpool business contracts"}
 {"file":".trellis/spec/frontend/carpool-state-contracts.md","reason":"UI identity and state consistency"}

@@ -19,6 +19,8 @@
 
 取消功能的更新和流水不可变触发器必须经真实 PostgreSQL 验证；单看 SQL 文本不算执行通过。
 
+v2 同时增加 users.claude_subscription_concurrency，保留原用户 concurrency；上线前配置明确的独立 Claude 默认上限。Claude 新 Redis scope 不搬迁或清空 GPT 键。目标 Claude 组的旧池活跃请求必须排空后才切新池，所有实例和回退镜像都须具备新 scope 识别或拒绝能力，详见 concurrency-isolation.md。
+
 ## 版本能力矩阵
 
 | 版本 | 识别 term | 双 Key 共存 | term 生成 | 恢复 |

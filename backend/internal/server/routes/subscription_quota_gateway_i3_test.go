@@ -101,7 +101,7 @@ func TestSubscriptionQuotaI3ActualRouterAliasesAndUnsupported(t *testing.T) {
 			require.NotContains(t, response.Body.String(), "INSUFFICIENT_BALANCE")
 		})
 	}
-	for _, route := range []struct{ method, path string }{{"POST", "/v1/responses/compact"}, {"POST", "/responses/compact"}, {"POST", "/backend-api/codex/responses/compact"}, {"POST", "/v1/responses/input_tokens"}, {"GET", "/v1/responses"}, {"GET", "/responses"}, {"GET", "/backend-api/codex/responses"}, {"POST", "/v1/images/generations"}, {"POST", "/v1/embeddings"}, {"POST", "/v1/web_search"}, {"POST", "/antigravity/v1/messages"}, {"POST", "/v1beta/models/claude:generateContent"}, {"GET", "/v1/usage"}} {
+	for _, route := range []struct{ method, path string }{{"POST", "/v1/responses/compact"}, {"POST", "/responses/compact"}, {"POST", "/backend-api/codex/responses/compact"}, {"POST", "/v1/responses/input_tokens"}, {"GET", "/v1/responses"}, {"GET", "/responses"}, {"GET", "/backend-api/codex/responses"}, {"POST", "/v1/images/generations"}, {"POST", "/v1/embeddings"}, {"POST", "/v1/web_search"}, {"POST", "/antigravity/v1/messages"}, {"POST", "/v1beta/models/claude:generateContent"}} {
 		t.Run(route.method+route.path, func(t *testing.T) {
 			request := httptest.NewRequest(route.method, route.path, strings.NewReader(`{"model":"claude-sonnet-4"}`))
 			request.Header.Set("x-api-key", "synthetic-term-key")

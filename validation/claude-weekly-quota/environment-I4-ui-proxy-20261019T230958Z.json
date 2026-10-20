@@ -1,0 +1,18 @@
+{
+  "synthetic_only": true,
+  "url": "http://127.0.0.1:54551",
+  "target": "http://127.0.0.1:49441",
+  "pid": 17240,
+  "in_job": false,
+  "loopback_only": true,
+  "binary": "C:\\ProgramData\\CodexTaskRuntime\\claude-weekly-quota\\I4-ui-proxy-b6c967f096ad4f06ad8a337eedbe1440\\i4-ui-proxy.exe",
+  "binary_sha256": "214e68f731aeb7f91b3bd3bd49c2890664ff1eb3433b8738e2851799030a2933",
+  "source_sha256": "173c5262ae12cd8a5ce522e328e88c3a10e52249a65a0ecdf7de412a05f55839",
+  "environment": "environment-I4-20261019T180351Z-active.json",
+  "control_path": "/__cwq/control",
+  "payload_logging": false,
+  "credentials_copied": false,
+  "health_status": 200,
+  "purpose": "Independent exact-path gates, validated after-success TCP reset, before-upstream409; browser checks still required",
+  "created_utc": "2026-10-19T23:09:58.9672872Z"
+}

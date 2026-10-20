@@ -171,6 +171,33 @@ func (_u *UserUpdate) AddConcurrency(v int) *UserUpdate {
 	return _u
 }
 
+// SetClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field.
+func (_u *UserUpdate) SetClaudeSubscriptionConcurrency(v int) *UserUpdate {
+	_u.mutation.ResetClaudeSubscriptionConcurrency()
+	_u.mutation.SetClaudeSubscriptionConcurrency(v)
+	return _u
+}
+
+// SetNillableClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableClaudeSubscriptionConcurrency(v *int) *UserUpdate {
+	if v != nil {
+		_u.SetClaudeSubscriptionConcurrency(*v)
+	}
+	return _u
+}
+
+// AddClaudeSubscriptionConcurrency adds value to the "claude_subscription_concurrency" field.
+func (_u *UserUpdate) AddClaudeSubscriptionConcurrency(v int) *UserUpdate {
+	_u.mutation.AddClaudeSubscriptionConcurrency(v)
+	return _u
+}
+
+// ClearClaudeSubscriptionConcurrency clears the value of the "claude_subscription_concurrency" field.
+func (_u *UserUpdate) ClearClaudeSubscriptionConcurrency() *UserUpdate {
+	_u.mutation.ClearClaudeSubscriptionConcurrency()
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *UserUpdate) SetStatus(v string) *UserUpdate {
 	_u.mutation.SetStatus(v)
@@ -978,6 +1005,11 @@ func (_u *UserUpdate) check() error {
 			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.ClaudeSubscriptionConcurrency(); ok {
+		if err := user.ClaudeSubscriptionConcurrencyValidator(v); err != nil {
+			return &ValidationError{Name: "claude_subscription_concurrency", err: fmt.Errorf(`ent: validator failed for field "User.claude_subscription_concurrency": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Status(); ok {
 		if err := user.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "User.status": %w`, err)}
@@ -1043,6 +1075,15 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.AddedConcurrency(); ok {
 		_spec.AddField(user.FieldConcurrency, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.ClaudeSubscriptionConcurrency(); ok {
+		_spec.SetField(user.FieldClaudeSubscriptionConcurrency, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedClaudeSubscriptionConcurrency(); ok {
+		_spec.AddField(user.FieldClaudeSubscriptionConcurrency, field.TypeInt, value)
+	}
+	if _u.mutation.ClaudeSubscriptionConcurrencyCleared() {
+		_spec.ClearField(user.FieldClaudeSubscriptionConcurrency, field.TypeInt)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(user.FieldStatus, field.TypeString, value)
@@ -1861,6 +1902,33 @@ func (_u *UserUpdateOne) SetNillableConcurrency(v *int) *UserUpdateOne {
 // AddConcurrency adds value to the "concurrency" field.
 func (_u *UserUpdateOne) AddConcurrency(v int) *UserUpdateOne {
 	_u.mutation.AddConcurrency(v)
+	return _u
+}
+
+// SetClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field.
+func (_u *UserUpdateOne) SetClaudeSubscriptionConcurrency(v int) *UserUpdateOne {
+	_u.mutation.ResetClaudeSubscriptionConcurrency()
+	_u.mutation.SetClaudeSubscriptionConcurrency(v)
+	return _u
+}
+
+// SetNillableClaudeSubscriptionConcurrency sets the "claude_subscription_concurrency" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableClaudeSubscriptionConcurrency(v *int) *UserUpdateOne {
+	if v != nil {
+		_u.SetClaudeSubscriptionConcurrency(*v)
+	}
+	return _u
+}
+
+// AddClaudeSubscriptionConcurrency adds value to the "claude_subscription_concurrency" field.
+func (_u *UserUpdateOne) AddClaudeSubscriptionConcurrency(v int) *UserUpdateOne {
+	_u.mutation.AddClaudeSubscriptionConcurrency(v)
+	return _u
+}
+
+// ClearClaudeSubscriptionConcurrency clears the value of the "claude_subscription_concurrency" field.
+func (_u *UserUpdateOne) ClearClaudeSubscriptionConcurrency() *UserUpdateOne {
+	_u.mutation.ClearClaudeSubscriptionConcurrency()
 	return _u
 }
 
@@ -2684,6 +2752,11 @@ func (_u *UserUpdateOne) check() error {
 			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.ClaudeSubscriptionConcurrency(); ok {
+		if err := user.ClaudeSubscriptionConcurrencyValidator(v); err != nil {
+			return &ValidationError{Name: "claude_subscription_concurrency", err: fmt.Errorf(`ent: validator failed for field "User.claude_subscription_concurrency": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Status(); ok {
 		if err := user.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "User.status": %w`, err)}
@@ -2766,6 +2839,15 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if value, ok := _u.mutation.AddedConcurrency(); ok {
 		_spec.AddField(user.FieldConcurrency, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.ClaudeSubscriptionConcurrency(); ok {
+		_spec.SetField(user.FieldClaudeSubscriptionConcurrency, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedClaudeSubscriptionConcurrency(); ok {
+		_spec.AddField(user.FieldClaudeSubscriptionConcurrency, field.TypeInt, value)
+	}
+	if _u.mutation.ClaudeSubscriptionConcurrencyCleared() {
+		_spec.ClearField(user.FieldClaudeSubscriptionConcurrency, field.TypeInt)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(user.FieldStatus, field.TypeString, value)

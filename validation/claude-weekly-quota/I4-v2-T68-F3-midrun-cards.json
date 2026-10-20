@@ -1,0 +1,61 @@
+{
+  "stage": "I4 T68 in-progress read-only card values",
+  "timing": "mid-run observation, not an invented pre-run baseline",
+  "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "image_source": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "main_term": 1,
+  "next_term": 3,
+  "secondary_group_term": 4,
+  "B_term": 2,
+  "terms": [
+    {
+      "term_id": 1,
+      "user_id": 2,
+      "used_usd": "0.00780000",
+      "quota_usd": "100.00000000"
+    },
+    {
+      "term_id": 2,
+      "user_id": 3,
+      "used_usd": "0.00720000",
+      "quota_usd": "300.00000000"
+    },
+    {
+      "term_id": 3,
+      "user_id": 2,
+      "used_usd": "0.00000000",
+      "quota_usd": "100.00000000"
+    },
+    {
+      "term_id": 4,
+      "user_id": 2,
+      "used_usd": "0.00060000",
+      "quota_usd": "70.00000000"
+    },
+    {
+      "term_id": 5,
+      "user_id": 4,
+      "used_usd": "0.00120000",
+      "quota_usd": "13.00000000"
+    },
+    {
+      "term_id": 6,
+      "user_id": 4,
+      "used_usd": "0.00060000",
+      "quota_usd": "17.00000000"
+    },
+    {
+      "term_id": 7,
+      "user_id": 5,
+      "used_usd": "0.00000000",
+      "quota_usd": "13.00000000"
+    },
+    {
+      "term_id": 8,
+      "user_id": 5,
+      "used_usd": "0.00000000",
+      "quota_usd": "17.00000000"
+    }
+  ],
+  "observed_utc": "2026-10-19T18:19:30.3751339Z"
+}

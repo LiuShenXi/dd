@@ -1,0 +1,122 @@
+{
+  "stage": "I4 environment owner final evidence index",
+  "driver_source_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "source_bridge": "coordinator-I4-F2-F3-test-only-bridge.json",
+  "environment_owned_gates_complete": true,
+  "overall_I4_UI_acceptance_claimed": false,
+  "real_browser_UI_executed": false,
+  "I5_I6_executed": false,
+  "production_connected": false,
+  "external_upstream_called": false,
+  "resources_retained": true,
+  "files": [
+    {
+      "bytes": 9235,
+      "file": "environment-I4-F2-20261019T175928Z-build-receipt.json",
+      "sha256": "c2fe05ef7c8ed76c7d81bf1188370e3a24892170f475e18292a71e09e46d03ba"
+    },
+    {
+      "bytes": 1491,
+      "file": "coordinator-I4-F2-F3-test-only-bridge.json",
+      "sha256": "be2e8ccccae58f79be24678bbe463b1d03814145dc294edec371cfb515410c98"
+    },
+    {
+      "bytes": 1683,
+      "file": "I4-pg-F2-20261019T180032Z-receipt.json",
+      "sha256": "03e1e3ccb816d5b92c06dd157f36485be2e94281c3874a7a7581b0f8d9c0af6c"
+    },
+    {
+      "bytes": 2690,
+      "file": "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+      "sha256": "f303e887ee5d66458c7593e838e2a402838b52aade6755331b853f649a6b27ce"
+    },
+    {
+      "bytes": 1265,
+      "file": "I4-v2-PrepareSecondInstance-F2-20261019T180308Z-receipt.json",
+      "sha256": "7a5748ee055f38dca82f64deb4b9d1b21d9da348f44888cbc7f7ae8c5f88ca81"
+    },
+    {
+      "bytes": 1280,
+      "file": "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+      "sha256": "b163fe9e0efa62fa396241a7dfcbc13627992a622ea178e67ad4c0022010d6a2"
+    },
+    {
+      "bytes": 1284,
+      "file": "I4-v2-MetadataAndUnsupportedRoutes-F2-20261019T180755Z-receipt.json",
+      "sha256": "cb68d11b1eb7a8f5451e3ca6e4c6caae536b857741585e8c3c30174091a1cdbc"
+    },
+    {
+      "bytes": 1268,
+      "file": "I4-v2-CrossCardLeaseBoundary-F2-20261019T180722Z-receipt.json",
+      "sha256": "a693b10b314592e947a8b523e39b2121be020be8b4bdcfd7428d897936133449"
+    },
+    {
+      "bytes": 1295,
+      "file": "I4-v2-RedisFaultCancelsActualUpstream-F2-20261019T180809Z-receipt.json",
+      "sha256": "2f31a41f1fd976956d0281e39714874c5be2a51d84c6a08eb6a4525807c4211f"
+    },
+    {
+      "bytes": 1188,
+      "file": "I4-v2-RedisFault-observed-20261019T180956Z.json",
+      "sha256": "83192ed5cc48aed29ed679f4d9e7f520fe0dd7100efc569a86c5d83d384acf14"
+    },
+    {
+      "bytes": 61399,
+      "file": "I4-unit-race-F3-20261019T181120Z-receipt.json",
+      "sha256": "965c7faae5dd6db49b1aee46c01b152a3c213fb187985eed8d469e211c76afdb"
+    },
+    {
+      "bytes": 1502,
+      "file": "I4-WS-runtime-F3-proof.json",
+      "sha256": "976da43efeee0e658f2a502d4158965fe5c55291bb775b71c0ce727a7d35c714"
+    },
+    {
+      "bytes": 1901,
+      "file": "I4-WS-runtime-F3-invocation.json",
+      "sha256": "821d7eeb1bae87ffa3085e1c7095fee99437ece567e25e169111f721aab7cbfd"
+    },
+    {
+      "bytes": 1387,
+      "file": "I4-WS-runtime-F3-postgres-observed.json",
+      "sha256": "69fd729bae317879c3a409f0799eba5145d27043a7d1a1b3f3b5e30421e2266f"
+    },
+    {
+      "bytes": 2584,
+      "file": "I4-v2-T68-F3-20261019T181135Z-receipt.json",
+      "sha256": "fb76b15f3939048636ab73e9ebed041f030b52a4e2b94e6af46eecd88ad2bc80"
+    },
+    {
+      "bytes": 13995,
+      "file": "I4-v2-T68-F3-20261019T181135Z-observed.json",
+      "sha256": "95e301ee6677735089e28d5b29676b65a573ce28f77e5348d1e098f75b0c05c2"
+    },
+    {
+      "bytes": 7397,
+      "file": "I4-v2-T68-F3-20261019T181135Z-postgres-details.json",
+      "sha256": "ccf45695c2c14d079d4275bdc7f090f6aadfb5ae8eacec020f25a4369da86054"
+    },
+    {
+      "bytes": 4400,
+      "file": "environment-I4-final-resource-index.json",
+      "sha256": "21e590ba71e15765df5ff3c7d64efc0431ed2bf0d0c4e0c5ac876fe42fc8bc7c"
+    },
+    {
+      "bytes": 4567,
+      "file": "environment-I4-final-network-audit.json",
+      "sha256": "88e7e6b653f20c939b0d5062360c96c98e946d7c92f45f474dc6539c7196793a"
+    },
+    {
+      "bytes": 2579,
+      "file": "I4-failure-correction-index.json",
+      "sha256": "ad2643b10bbe70700b3d76fb133a96bdc509ae8530237e400e23586aedd0b8ca"
+    },
+    {
+      "bytes": 7475,
+      "file": "I4-runtime-F2-F3-readme.md",
+      "sha256": "70c0b5eb70c43132e09fc58ec29451c308cd4d67e6a9b396c1f76d6318f56126"
+    }
+  ],
+  "created_utc": "2026-10-19T18:29:59.7183294Z"
+}

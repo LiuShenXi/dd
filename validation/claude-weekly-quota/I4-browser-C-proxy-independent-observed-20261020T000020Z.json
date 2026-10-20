@@ -1,0 +1,107 @@
+{
+  "observed_utc": "2026-10-20T00:00:24.6431557Z",
+  "target": "http://127.0.0.1:49441",
+  "rules": [
+    {
+      "rule_id": "cua_C_open_drop_1792454127525",
+      "path": "/api/v1/admin/users/4/subscription-quota/terms",
+      "method": "POST",
+      "phase": "after_backend_response",
+      "effect": "drop",
+      "consumed": true,
+      "in_flight": false,
+      "upstream_round_trips": 1,
+      "held": false,
+      "released": false,
+      "delivered": 0,
+      "dropped": 1,
+      "rejected_before_upstream": 0,
+      "valid_successful_term_response": true,
+      "observations": [
+        {
+          "body_sha256": "dcc29cec475a7b361b6c4c652b1fb837b4843d99db56652a01599ab070c4d285",
+          "idempotency_key_sha256": "661cd7330bb375a2be8dc473cd02f87b4f88d238b2aaaafb19be517560450890",
+          "upstream_status": 201,
+          "term_id": 5,
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "rule_id": "cua_C_renew_commit503_1792454344743",
+      "path": "/api/v1/admin/users/4/subscription-quota/terms",
+      "method": "POST",
+      "phase": "after_backend_response",
+      "effect": "hold",
+      "consumed": true,
+      "in_flight": false,
+      "upstream_round_trips": 1,
+      "held": false,
+      "released": true,
+      "delivered": 1,
+      "dropped": 0,
+      "rejected_before_upstream": 0,
+      "valid_successful_term_response": true,
+      "observations": [
+        {
+          "body_sha256": "701f36dcd40803d273783114a070a7887701ad6bac065491e088f0a93fb5020b",
+          "idempotency_key_sha256": "099e269944ac7c5e0541995bcd4e55428377f8161355606d9f1cf9f0bfe2d015",
+          "upstream_status": 201,
+          "term_id": 6,
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "rule_id": "cua_C_renew_manual_retry_1792454363874",
+      "path": "/api/v1/admin/users/4/subscription-quota/terms",
+      "method": "POST",
+      "phase": "after_backend_response",
+      "effect": "hold",
+      "consumed": true,
+      "in_flight": false,
+      "upstream_round_trips": 1,
+      "held": false,
+      "released": true,
+      "delivered": 1,
+      "dropped": 0,
+      "rejected_before_upstream": 0,
+      "valid_successful_term_response": true,
+      "observations": [
+        {
+          "body_sha256": "701f36dcd40803d273783114a070a7887701ad6bac065491e088f0a93fb5020b",
+          "idempotency_key_sha256": "099e269944ac7c5e0541995bcd4e55428377f8161355606d9f1cf9f0bfe2d015",
+          "upstream_status": 200,
+          "term_id": 6,
+          "replayed": true
+        }
+      ]
+    },
+    {
+      "rule_id": "cua_C_before_upstream409_1792454391409",
+      "path": "/api/v1/admin/users/4/subscription-quota/terms",
+      "method": "POST",
+      "phase": "before_upstream",
+      "effect": "reject",
+      "consumed": true,
+      "in_flight": false,
+      "upstream_round_trips": 0,
+      "held": false,
+      "released": false,
+      "delivered": 0,
+      "dropped": 0,
+      "rejected_before_upstream": 1,
+      "valid_successful_term_response": false,
+      "observations": [
+        {
+          "body_sha256": "a0ec7dfdc6d15899346b5cf66c37397f4fbc4c1b8c3a95fe137a4ae9768f9731",
+          "idempotency_key_sha256": "22696373cccc570b15ef48b1094c0d07d9cac7460a6593a098a5f3284ca50def",
+          "upstream_status": null,
+          "term_id": null,
+          "replayed": null
+        }
+      ]
+    }
+  ],
+  "raw_auth_or_payload_logged": false
+}

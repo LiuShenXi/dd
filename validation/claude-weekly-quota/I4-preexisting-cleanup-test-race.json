@@ -1,0 +1,10 @@
+{
+  "file": "backend/internal/service/usage_cleanup_service_test.go",
+  "production_baseline_commit": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
+  "production_baseline_blob": "17f21bef36957d7a9ebf89c9e4042cb60e6cbf08",
+  "head_blob": "17f21bef36957d7a9ebf89c9e4042cb60e6cbf08",
+  "working_blob": "17f21bef36957d7a9ebf89c9e4042cb60e6cbf08",
+  "identical_to_production_baseline": true,
+  "last_file_commit": "611fd884bd0a356ef8c0f97b2511ff4ca58951cd",
+  "diagnosis": "Preexisting test stub recomputeCalls has unsynchronized async write and Eventually reads; F2 race must be preserved, not filtered."
+}

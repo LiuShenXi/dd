@@ -1,0 +1,27 @@
+{
+  "freeze": "I4-F1",
+  "created_utc": "2026-10-19T17:50:54.0296240Z",
+  "source_sha256": "c4e6989e1dfa306bd0088f0dae0f2cea10eefd688c47c004b7c2c8b289672be8",
+  "frontend_dist_sha256": "f028ff844c2b1321e6f3f30cec8bbe02ed6191832196f765d9d7887876d1a776",
+  "frontend_build_receipt": "I4-ui-20261019T174120Z-receipt.json",
+  "embed_source": "frontend/vite.config.ts outDir points directly to backend/internal/web/dist; index.html build timestamp 2026-10-19T17:45:26.958313Z; no deferred copy",
+  "compile_log": "I4-environment-owner-compile-final.log",
+  "compile_exit": 0,
+  "source_files_frozen": [
+    "backend/internal/repository/subscription_quota_concurrency_v2_integration_test.go",
+    "backend/internal/repository/subscription_quota_http_i4_integration_test.go",
+    "backend/internal/repository/subscription_quota_http_v2_i4_integration_test.go",
+    "backend/internal/repository/subscription_quota_http_metadata_i4_integration_test.go",
+    "backend/internal/repository/subscription_quota_http_boundary_i4_integration_test.go"
+  ],
+  "synthetic_provider_source_sha256": "067695fb9d71892c3a5b1a8bbe3e3b629c0e42eca543a8fdd3fc5750ec1ec4ba",
+  "actual_pre_freeze_passes": "Prior 11 Redis/PG policy tests, 24 HTTP wallet cases, and old-image16m12s long stream are diagnostic evidence only",
+  "new_runtime_scenarios_not_yet_executed": [
+    "full20+20queue two-instance pools",
+    "same-user secondary Claude group",
+    "new expiry helper/cross-card leases",
+    "new-client actual Redis pause fault",
+    "auth/me latest projection/unsupported matrix"
+  ],
+  "accepted": false
+}

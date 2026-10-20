@@ -60,6 +60,14 @@ ANCHORS = [
     ("S45", "backend/internal/service/subscription_maintenance_queue.go", r"^func ", "原生窗口维护队列的模式保护"),
     ("S46", "backend/internal/repository/user_subscription_repo.go", r"^func .*BatchUpdateExpiredStatus", "父订阅批量状态更新不能主导 term 权益"),
     ("S47", "backend/internal/repository/usage_cleanup_repo.go", r"^func .*DeleteUsageLogsBatch", "统计补写需尊重已完成的日志清理"),
+    ("S48", "backend/ent/schema/user.go", r'field.Int\("concurrency"\)', "现有用户只有共享并发上限；新增独立 Claude 覆盖值"),
+    ("S49", "backend/internal/repository/concurrency_cache.go", r"userSlotKeyPrefix =", "现有 Redis 用户槽与队列按 user_id 共用；Claude 新 scope 独立"),
+    ("S50", "backend/internal/service/concurrency_service.go", r"^func .* AcquireUserSlot\(", "保留 GPT 旧接口并添加显式 scope 的租约接口"),
+    ("S51", "backend/internal/handler/gateway_helper.go", r"^func .* AcquireUserSlotWithWait\(", "用户槽、等待、Key 统计和释放统一接线"),
+    ("S52", "backend/internal/handler/openai_gateway_handler.go", r"^func .* acquireResponsesUserSlot\(", "GPT HTTP 和 WS 并发原行为回归"),
+    ("S53", "backend/internal/handler/admin/user_handler.go", r"^type UserWithConcurrency", "管理用户独立 Claude 设置和 scope 统计投影"),
+    ("S54", "backend/internal/service/ops_concurrency.go", r"^func .* GetConcurrencyStats\(", "现有平台并发视图属于账号聚合，不能当用户隔离"),
+    ("S55", "frontend/src/components/admin/user/UserEditModal.vue", r"concurrency", "用户管理表单增加独立 Claude 上限，保留旧字段"),
 ]
 
 def digest(data):
