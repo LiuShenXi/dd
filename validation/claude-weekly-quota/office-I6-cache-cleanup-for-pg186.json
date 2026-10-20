@@ -1,0 +1,213 @@
+{
+  "utc": "2026-10-20T02:39:40.966652+00:00",
+  "no_compile_running": true,
+  "no_user_source_or_logs_removed": true,
+  "removed": [
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/66/6695964664f9f81be744f1af63e97392a1502e0e50d872060ec5bb4238ade51e-d",
+      "bytes": 27941712,
+      "sha256": "6695964664f9f81be744f1af63e97392a1502e0e50d872060ec5bb4238ade51e",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/68/68059ef3f4b6166f739253b9a6b50588464ec82888d8f03d7a94bcdc1b7f5c14-d",
+      "bytes": 27941712,
+      "sha256": "68059ef3f4b6166f739253b9a6b50588464ec82888d8f03d7a94bcdc1b7f5c14",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/03/032e13406e538fdcc88403ba9eb8f35a18378e8ea67a0eaf8572e44519439763-d",
+      "bytes": 17995588,
+      "sha256": "032e13406e538fdcc88403ba9eb8f35a18378e8ea67a0eaf8572e44519439763",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/02/02232ef604329b8d9642809abd623952c22b64fdaa854320726d04ae6f49267c-d",
+      "bytes": 17995822,
+      "sha256": "02232ef604329b8d9642809abd623952c22b64fdaa854320726d04ae6f49267c",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/b5/b578ede22a54127bfc8f5c6f6db4086156f24186a042b9bc0b18723a55652971-d",
+      "bytes": 10106718,
+      "sha256": "b578ede22a54127bfc8f5c6f6db4086156f24186a042b9bc0b18723a55652971",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/b5/b5530c416afb180c7b7c1017aebe3922026c462003fdb7ae02961ceabc1cab13-d",
+      "bytes": 88670886,
+      "sha256": "b5530c416afb180c7b7c1017aebe3922026c462003fdb7ae02961ceabc1cab13",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ad/ad89abd129b3c9f27247ac6cba1011f66792b680a09994fca7882ebd61af231d-d",
+      "bytes": 32863108,
+      "sha256": "ad89abd129b3c9f27247ac6cba1011f66792b680a09994fca7882ebd61af231d",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/b4/b49fd780c32a97fdc991c7e392a59a900654bb4d60624f06f62b85d8ad1b1f1b-d",
+      "bytes": 32859362,
+      "sha256": "b49fd780c32a97fdc991c7e392a59a900654bb4d60624f06f62b85d8ad1b1f1b",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/d8/d808744d9e1a8a553509bb71520fc8e9072717f765f68495fc963f2ff5d297f3-d",
+      "bytes": 45579344,
+      "sha256": "d808744d9e1a8a553509bb71520fc8e9072717f765f68495fc963f2ff5d297f3",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/cf/cf75f0259e776d0c13b263fd1290818b8c00e863741b3b2ffe1e33a22d76a420-d",
+      "bytes": 20879190,
+      "sha256": "cf75f0259e776d0c13b263fd1290818b8c00e863741b3b2ffe1e33a22d76a420",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/e4/e40f4c2043ee6e400be7a469e5d99e39c40b8b963629a0587cf7690cf6269a6b-d",
+      "bytes": 16882794,
+      "sha256": "e40f4c2043ee6e400be7a469e5d99e39c40b8b963629a0587cf7690cf6269a6b",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/c1/c1100bf7b05192c2b834cdf08f8a1664a748fb2b70eacbcefe3029d0ee026c5b-d",
+      "bytes": 231049004,
+      "sha256": "c1100bf7b05192c2b834cdf08f8a1664a748fb2b70eacbcefe3029d0ee026c5b",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/29/29fc929163f78db30e569a4f10c55e638a5c294ce15a148ab4d7427a33e0ed3c-d",
+      "bytes": 14835244,
+      "sha256": "29fc929163f78db30e569a4f10c55e638a5c294ce15a148ab4d7427a33e0ed3c",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/29/29424e8ef86498805d1d2eade78a6b887c4ef4228668d3835f50eb40365e12dc-d",
+      "bytes": 10106718,
+      "sha256": "29424e8ef86498805d1d2eade78a6b887c4ef4228668d3835f50eb40365e12dc",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/73/73d8ee15176b5ebb1212abd3d1d58fbaa148a067d0723bd0bea8757035e9eb62-d",
+      "bytes": 88679834,
+      "sha256": "73d8ee15176b5ebb1212abd3d1d58fbaa148a067d0723bd0bea8757035e9eb62",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/17/175e1e1945b774302909e808582ed999ce8743f081142211f4487cbbf80d877b-d",
+      "bytes": 193784256,
+      "sha256": "175e1e1945b774302909e808582ed999ce8743f081142211f4487cbbf80d877b",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/72/724a43097bf371c294134f4b6e8034249184021740964303689470925ebcbddc-d",
+      "bytes": 76592984,
+      "sha256": "724a43097bf371c294134f4b6e8034249184021740964303689470925ebcbddc",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/9f/9f04d0ca65033570560b0f94da77c1d4abac5c374751e2bc3dc5a732c1c011a4-d",
+      "bytes": 17995588,
+      "sha256": "9f04d0ca65033570560b0f94da77c1d4abac5c374751e2bc3dc5a732c1c011a4",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/9f/9fdfcf8177ff89e6b9379a61393c593b2bda65c588e6247268e96f1e9661c2ac-d",
+      "bytes": 20879188,
+      "sha256": "9fdfcf8177ff89e6b9379a61393c593b2bda65c588e6247268e96f1e9661c2ac",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/5d/5de78fa14769b9aeaf30c880eff83bfacbc40f73a34f4d5e67bc0967395352f6-d",
+      "bytes": 20879388,
+      "sha256": "5de78fa14769b9aeaf30c880eff83bfacbc40f73a34f4d5e67bc0967395352f6",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/52/52d5d1a530e346820a8418d51e36c4c15d63b206fb8ba44b8d14ac743ab398cf-d",
+      "bytes": 253103072,
+      "sha256": "52d5d1a530e346820a8418d51e36c4c15d63b206fb8ba44b8d14ac743ab398cf",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/0f/0fa6be45003ba9ff706796060602bd311d53eb280b940ed00ae1ccfe2c19fdaa-d",
+      "bytes": 14835244,
+      "sha256": "0fa6be45003ba9ff706796060602bd311d53eb280b940ed00ae1ccfe2c19fdaa",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/90/907c1fcc2f25659a54f68d27a373dcf6a91605edf7368f7435b326696dc0a26d-d",
+      "bytes": 88679794,
+      "sha256": "907c1fcc2f25659a54f68d27a373dcf6a91605edf7368f7435b326696dc0a26d",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/d4/d4e968f5eecc4fe5390ba4cfa3fd909ed6678d39cd6dc7ece8b2c91a64d55b08-d",
+      "bytes": 93317828,
+      "sha256": "d4e968f5eecc4fe5390ba4cfa3fd909ed6678d39cd6dc7ece8b2c91a64d55b08",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/a0/a06579c401883505800c15bcc74a3bc88f50f6055eb308fb822bc4092ebafa2c-d",
+      "bytes": 16882794,
+      "sha256": "a06579c401883505800c15bcc74a3bc88f50f6055eb308fb822bc4092ebafa2c",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/b0/b06e21c38c1fd1eaa621bdf234450e10a487af001f031d7c7580b924ffc5eed9-d",
+      "bytes": 10106718,
+      "sha256": "b06e21c38c1fd1eaa621bdf234450e10a487af001f031d7c7580b924ffc5eed9",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ef/ef7b725e34ef8b943fd450af903fd4c3bf4bbd3f4e35736a84e08336b6d35731-d",
+      "bytes": 45580394,
+      "sha256": "ef7b725e34ef8b943fd450af903fd4c3bf4bbd3f4e35736a84e08336b6d35731",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/40/40b4af55ed3de296ddb6302f243f268426feabc4be40cf55c69a573d8d28cf80-d",
+      "bytes": 32863110,
+      "sha256": "40b4af55ed3de296ddb6302f243f268426feabc4be40cf55c69a573d8d28cf80",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/2e/2e3851a0c00b92b5be9da8346767b0304f3e9e94f0086c3a9177bbac83021735-d",
+      "bytes": 93310298,
+      "sha256": "2e3851a0c00b92b5be9da8346767b0304f3e9e94f0086c3a9177bbac83021735",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/2e/2e5a8cf37f9f01cfacff63edb5fc22c07347409501cb29f8dc68c33bef1ceb19-d",
+      "bytes": 16882796,
+      "sha256": "2e5a8cf37f9f01cfacff63edb5fc22c07347409501cb29f8dc68c33bef1ceb19",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/7f/7fa2adc8ac56a289a7ab378ec314658671a0b41ca5f8dd093e5c4eb46a28b2a5-d",
+      "bytes": 76588464,
+      "sha256": "7fa2adc8ac56a289a7ab378ec314658671a0b41ca5f8dd093e5c4eb46a28b2a5",
+      "classification": "Go rebuildable cache containing this task module/source; written during this session"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-promotion-final.test",
+      "bytes": 101196818,
+      "sha256": "3570a0be972bf709822d766e5124120bbd7444a09d5b3e258121309d61969e9b",
+      "classification": "Completed superseded private native driver; logs/receipts/source retained"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-promotion-final2.test",
+      "bytes": 101196850,
+      "sha256": "59febca0f6e21a8d1115c1580d6cd103ea77e46736f8356d2b2ec5803341fdbe",
+      "classification": "Completed superseded private native driver; logs/receipts/source retained"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-rollback-final.test",
+      "bytes": 145130290,
+      "sha256": "f73265ba2226adc1a0b41894513477b041528fe3423eac76d02ea77d24799abd",
+      "classification": "Completed superseded private native driver; logs/receipts/source retained"
+    }
+  ],
+  "bytes_reclaimed": 2104192910,
+  "retained_final_driver": "repository-promotion-final3.test"
+}

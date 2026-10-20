@@ -1,0 +1,28 @@
+{
+  "checked_utc": "2026-10-20T02:57:33.213862+00:00",
+  "scope": "Rebuildable Go package archive cache compiled during this task window, including shared dependency archives; not exclusive-project marker cleanup",
+  "cache_root": "/Users/shenxi/Library/Caches/go-build",
+  "rule": {
+    "mtime_on_or_after_utc": "2026-10-20T00:00:00Z",
+    "archive_magic": "!<arch>",
+    "go_object_header_any": [
+      "go object linux amd64 go1.27.0",
+      "go object darwin arm64 go1.27.0"
+    ],
+    "largest_first": true,
+    "maximum_remove_bytes": 1610612736,
+    "target_free_bytes": 5583457484
+  },
+  "no_go_compile_or_link_running": true,
+  "removed_file_count": 1935,
+  "total_removed_bytes": 1555188284,
+  "free_bytes_before": 3586035712,
+  "free_bytes_after": 5147336704,
+  "private_per_file_manifest": "/Users/shenxi/.codex/private/claude-weekly-quota/office/F4-compiled-dependency-archive-cleanup-files.json",
+  "private_per_file_manifest_sha256": "079e4b85ce00a48009ed67dead3ecc580cd562749b12db66d4797b122baabf58",
+  "native_driver_preserved_sha256": "c228980169044eff0a381975577a2e717bd541cf197fb1baa84241e6cf3b8969",
+  "module_source_modified": false,
+  "toolchain_installation_modified": false,
+  "nonmatching_cache_modified": false,
+  "other_application_cache_modified": false
+}

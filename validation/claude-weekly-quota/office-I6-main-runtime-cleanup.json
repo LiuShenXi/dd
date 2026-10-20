@@ -1,0 +1,50 @@
+{
+  "utc": "2026-10-20T02:42:51.571600+00:00",
+  "reason": "All main F1 runtime gates completed; preserve browser data services for final UI verification",
+  "removed": [
+    {
+      "container": "318bae27e44e318dc9932f1c4a3c489a0089dd0d2efa62ba2e4db472569847a1",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/318bae27e44e-final-container.log",
+      "log_sha256": "f5b1aefcde2fb20012763fc7cf9a036b81364741a1bbb390dd1cd3b3e9a3bea1"
+    },
+    {
+      "container": "7edfd1a28a9dff133095974a4c6dea71e91f443d4ec5fcb319135c3624dbd8db",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/7edfd1a28a9d-final-container.log",
+      "log_sha256": "585299c4a15cd908178fcce7a3a92c5fac3deb043a376297178101e40be9ba9c"
+    },
+    {
+      "container": "a418332c50c745f38a2e1cffdbe357d927fd47a6bc8540d9e2d19cbfc81340a4",
+      "image_id": "sha256:2d20848a025bd39adeb1f732ba3b2216dc2f7502ffd9a7d61091008c3b718826",
+      "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/a418332c50c7-final-container.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "container": "ad78d9100ca62310a376b80d50b5c7a50991fc160377152ef2123c51b9cd06d2",
+      "image_id": "sha256:0514fa59e3d84e2f3be66731c5401fc2a85b8ea71b49c0116c850f6a558076f4",
+      "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/ad78d9100ca6-final-container.log",
+      "log_sha256": "f9d968d7a8439f427f20d405d66ea06b9164d38ef19437d4a0b459cc5194e983"
+    },
+    {
+      "container": "5e9adb4d3a1f384218877ff00993189db4575b43e08540e25ed3ac2aea7d8454",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/5e9adb4d3a1f-final-container.log",
+      "log_sha256": "ea0f2f949fa61280437fb953696c55c815cf5d1d6977bfea407424df2a593d22"
+    },
+    {
+      "container": "ae7b23c0a64ac9356c20bb93259947e70f83364dbbf5a82b5d13c8b166da4a0c",
+      "image_id": "sha256:3e18edda6b675cb73d108c92acf139dfe1f6e45b92e5abc8aef1594d2eec39f3",
+      "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/ae7b23c0a64a-final-container.log",
+      "log_sha256": "2396202436fc5a3f8f29a55399514544aef3d24a95355e35baa29fbcfb47ff1c"
+    }
+  ],
+  "preserved": [
+    "cf17387e9dcc91c6f3756252f1d25347cd256adcae777ac1d7cf8f374d310132",
+    "2e2be5b60e25c500e7130b5bf562a2badd0c8f98ecb10052dd83b309d4d06100",
+    "59feda2069b97b6add15b22daebfffdace6946fff2f8851ffe06f6d0c64fed4f",
+    "1500d3a6823049f8d86587fc6a288a90932116bad8cfabca503660b05eb3ffa7",
+    "cwq-i4-b03b632e59fd48e2-pgdata",
+    "cwq-env-i6-office-20261020"
+  ]
+}

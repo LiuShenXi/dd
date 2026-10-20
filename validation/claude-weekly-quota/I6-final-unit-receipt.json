@@ -1,0 +1,74 @@
+{
+  "command": "CI=true GOMAXPROCS=3 go test -json -p=1 -tags=unit ./internal/domain ./internal/config ./internal/service ./internal/handler/... ./internal/server/... ./internal/repository ./cmd/server -run Test.*(SubscriptionQuota|TermConcurrency|Claude|Carpool|UsageBilling|Payment|Subscription|OpenAIWS|Concurrency|APIKeyAuthSnapshot|BillingSource) -count=1",
+  "top_level": {
+    "pass": 895
+  },
+  "all_including_subtests": {
+    "pass": 1891
+  },
+  "packages": [
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/domain",
+      "status": "pass",
+      "elapsed": 1.045
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/config",
+      "status": "pass",
+      "elapsed": 0.365
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/service",
+      "status": "pass",
+      "elapsed": 35.022
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/handler",
+      "status": "pass",
+      "elapsed": 1.611
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/handler/admin",
+      "status": "pass",
+      "elapsed": 0.638
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/handler/dto",
+      "status": "pass",
+      "elapsed": 0.499
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/handler/quotaview",
+      "status": "pass",
+      "elapsed": 0.461
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/server",
+      "status": "pass",
+      "elapsed": 0.909
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/server/middleware",
+      "status": "pass",
+      "elapsed": 0.556
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/server/routes",
+      "status": "pass",
+      "elapsed": 2.752
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/internal/repository",
+      "status": "pass",
+      "elapsed": 2.842
+    },
+    {
+      "package": "github.com/Wei-Shaw/sub2api/cmd/server",
+      "status": "pass",
+      "elapsed": 0.491
+    }
+  ],
+  "raw_log_sha256": "59735f9cbb88e9923171d98d52678310aeef4094f53d62833775948d17be1315",
+  "raw_log": "/tmp/claude-i6-final-unit.jsonl",
+  "production_modified": false
+}

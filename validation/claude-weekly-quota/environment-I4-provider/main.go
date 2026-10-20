@@ -3,10 +3,15 @@
 package main
 
 import (
+	"crypto/md5"
+	"crypto/subtle"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -25,10 +30,21 @@ var mu sync.Mutex
 var calls []*audit
 var hold chan struct{}
 var individualReleases = map[int]chan struct{}{}
+var paymentCreates int
 
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) { _, _ = io.WriteString(w, "synthetic-ready") })
+	// Enabled only by a test-specific key supplied to the isolated container.
+	// This endpoint verifies a synthetic EasyPay request but never initiates a
+	// payment, callback, refund or any network request of its own.
+	mux.HandleFunc("/mapi.php", syntheticPayment)
+	mux.HandleFunc("/__payment_state", func(w http.ResponseWriter, _ *http.Request) {
+		mu.Lock()
+		defer mu.Unlock()
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]int{"verified_creates": paymentCreates})
+	})
 	mux.HandleFunc("/__audit", func(w http.ResponseWriter, _ *http.Request) {
 		mu.Lock()
 		defer mu.Unlock()
@@ -86,6 +102,40 @@ func main() {
 	if err := server.ListenAndServe(); err != nil {
 		panic(err)
 	}
+}
+
+func syntheticPayment(w http.ResponseWriter, r *http.Request) {
+	key := os.Getenv("CWQ_SYNTHETIC_PAYMENT_KEY")
+	if key == "" || r.Method != http.MethodPost {
+		http.Error(w, "synthetic payments unavailable", http.StatusNotFound)
+		return
+	}
+	r.Body = http.MaxBytesReader(w, r.Body, 16384)
+	if r.ParseForm() != nil || r.Form.Get("out_trade_no") == "" || r.Form.Get("money") == "" {
+		http.Error(w, "invalid synthetic payment", http.StatusBadRequest)
+		return
+	}
+	keys := make([]string, 0, len(r.Form))
+	for name := range r.Form {
+		if name != "sign" && name != "sign_type" && r.Form.Get(name) != "" {
+			keys = append(keys, name)
+		}
+	}
+	sort.Strings(keys)
+	parts := make([]string, 0, len(keys))
+	for _, name := range keys {
+		parts = append(parts, name+"="+r.Form.Get(name))
+	}
+	digest := md5.Sum([]byte(strings.Join(parts, "&") + key))
+	if subtle.ConstantTimeCompare([]byte(r.Form.Get("sign")), []byte(hex.EncodeToString(digest[:]))) != 1 {
+		http.Error(w, "invalid synthetic signature", http.StatusForbidden)
+		return
+	}
+	mu.Lock()
+	paymentCreates++
+	mu.Unlock()
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(map[string]any{"code": 1, "trade_no": "fake-" + r.Form.Get("out_trade_no"), "qrcode": "/synthetic-checkout"})
 }
 
 func generate(w http.ResponseWriter, r *http.Request) {

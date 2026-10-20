@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"runtime"
 	"strconv"
 )
 
@@ -48,7 +49,13 @@ func main() {
 			go func() {
 				defer func() { <-slots }()
 				defer func() { _ = connection.Close() }()
-				command := exec.Command(`C:\Program Files\Docker\Docker\resources\bin\docker.exe`, "--host", "npipe:////./pipe/docker_engine", "exec", "--interactive", *container, "nc", "-w", "60", "127.0.0.1", "8080")
+				args := []string{"exec", "--interactive", *container, "nc", "-w", "60", "127.0.0.1", "8080"}
+				binary := "docker"
+				if runtime.GOOS == "windows" {
+					binary = `C:\Program Files\Docker\Docker\resources\bin\docker.exe`
+					args = append([]string{"--host", "npipe:////./pipe/docker_engine"}, args...)
+				}
+				command := exec.Command(binary, args...)
 				in, err := command.StdinPipe()
 				if err != nil {
 					return

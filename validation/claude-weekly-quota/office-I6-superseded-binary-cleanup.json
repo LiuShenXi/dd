@@ -1,0 +1,42 @@
+{
+  "utc": "2026-10-20T02:32:28.722541+00:00",
+  "reason": "Rebuildable copies already contained in immutable Docker images; conversion proof complete. Source, private logs, receipts, active native drivers and images retained.",
+  "removed": [
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-conversion-final.test",
+      "bytes": 145130338,
+      "sha256": "c4d79f3b55521a19b4d35ab7172c7321e780ae737bebe506bca447822c91dabb"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final3/candidate/sub2api",
+      "bytes": 132477088,
+      "sha256": "3a50a18197b6cc538e5e1c27f56e8660cb4869e9de66c6ff585aec141177ae09"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final3/candidate/carpool-release",
+      "bytes": 43012211,
+      "sha256": "2c77c6a56c9c0896ca059cb35ee438075ec41258cfc6bae8d5260510301a3533"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final3/provider/provider",
+      "bytes": 9766245,
+      "sha256": "67c83c7e8b1e36d7604ccc83f4d634095ca260067dbcfa6cb21efad0df90a6bc"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final4/candidate/sub2api",
+      "bytes": 132477088,
+      "sha256": "a14db1a7c202e14c7260d72f64ac1f06114643e413f8897a68f9f3375815fc21"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final4/candidate/carpool-release",
+      "bytes": 43012211,
+      "sha256": "43a405724da970b99a961742d5f99fa3d8c990099ca78e780562d243840290cd"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final4/provider/provider",
+      "bytes": 9766245,
+      "sha256": "67c83c7e8b1e36d7604ccc83f4d634095ca260067dbcfa6cb21efad0df90a6bc"
+    }
+  ],
+  "bytes_reclaimed": 515641426
+}

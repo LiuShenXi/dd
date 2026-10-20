@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +19,7 @@ import (
 )
 
 type fixture struct {
+	Stage                                                           string
 	URL, URL2, Postgres, Database, Redis, Provider, ImageID, Source string
 	AKey, AKey2, GPTKey                                             string
 	A, ATerm, Account, GPTAccount, GPTCycle                         int64
@@ -32,7 +34,12 @@ func check(ok bool, reason string) {
 	}
 }
 func docker(input string, args ...string) string {
-	c := exec.CommandContext(ctx, "C:/Program Files/Docker/Docker/resources/bin/docker.exe", append([]string{"--host", "npipe:////./pipe/docker_engine"}, args...)...)
+	binary := "docker"
+	if runtime.GOOS == "windows" {
+		binary = "C:/Program Files/Docker/Docker/resources/bin/docker.exe"
+		args = append([]string{"--host", "npipe:////./pipe/docker_engine"}, args...)
+	}
+	c := exec.CommandContext(ctx, binary, args...)
 	if input != "" {
 		c.Stdin = strings.NewReader(input)
 	}
@@ -90,12 +97,17 @@ func main() {
 	raw, err := os.ReadFile(os.Args[1])
 	check(err == nil, "read private fixture")
 	check(json.Unmarshal(raw, &f) == nil, "fixture JSON")
-	check(strings.HasPrefix(f.URL2, "http://127.0.0.1:") && strings.HasPrefix(f.Provider, ""), "dedicated loopback target required")
+	check(strings.HasPrefix(f.URL, "http://127.0.0.1:") && strings.HasPrefix(f.URL2, "http://127.0.0.1:"), "isolated loopback targets required")
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithTimeout(context.Background(), 3*time.Minute)
 	defer cancel()
 	started := time.Now().UTC()
-	check(sql(`SELECT count(*) FROM carpool_billing_requests;`) == "0", "dedicated WS fixture must have no prior billing requests")
+	for _, container := range []string{f.Provider, f.Postgres, f.Redis} {
+		check(len(container) == 64, "exact task container ID required")
+		check(docker("", "inspect", "--format", `{{index .Config.Labels "com.codex.local-task"}}`, container) == "claude-weekly-quota", "task-owned container required")
+	}
+	beforeGPT := sql(`SELECT COALESCE(max(id),0) FROM carpool_billing_requests;`)
+	beforeClaude := sql(`SELECT COALESCE(max(id),0) FROM subscription_quota_requests;`)
 	money := moneyFingerprint()
 	beforeUsed := sql(fmt.Sprintf(`SELECT used_usd::text FROM subscription_quota_terms WHERE id=%d`, f.ATerm))
 	control(`{"hold":true}`)
@@ -160,7 +172,7 @@ func main() {
 			}
 		}
 		eventually(12*time.Second, func() bool {
-			return sql(`SELECT count(*) FROM carpool_billing_requests WHERE status='settled';`) == strconv.Itoa(turn)
+			return sql(fmt.Sprintf(`SELECT count(*) FROM carpool_billing_requests WHERE id>%s AND status='settled';`, beforeGPT)) == strconv.Itoa(turn)
 		}, "original GPT WS settlement")
 		eventually(5*time.Second, func() bool { return docker("", "exec", f.Redis, "redis-cli", "ZCARD", legacy) == "0" }, "original GPT turn release")
 		check(clauseFingerprint() == claude, "GPT WS turn changed a Claude fact or wallet")
@@ -189,12 +201,15 @@ func main() {
 		}
 	}
 	eventually(15*time.Second, func() bool {
-		return sql(`SELECT count(*) FROM subscription_quota_requests WHERE status='settled' AND usage_log_recorded_at IS NOT NULL;`) == "2"
+		return sql(fmt.Sprintf(`SELECT count(*) FROM subscription_quota_requests WHERE id>%s AND status='settled' AND usage_log_recorded_at IS NOT NULL;`, beforeClaude)) == "2"
 	}, "Claude original-card settlement")
 	check(sql(fmt.Sprintf(`SELECT (used_usd-%s::numeric)::numeric(20,8)::text FROM subscription_quota_terms WHERE id=%d`, beforeUsed, f.ATerm)) == "0.00120000", "only original Claude card charged twice")
 	check(money == moneyFingerprint(), "users/native balance or redeem changed")
 	check(docker("", "exec", f.Redis, "redis-cli", "ZCARD", active) == "0", "Claude leases released")
 	result := map[string]any{"stage": "I4 actual GPT WS HTTP-bridge two turns with Claude concurrent", "pass": true, "synthetic_only": true, "external_upstream_called": false, "image_id": f.ImageID, "image_source_sha256": f.Source, "started_utc": started.Format(time.RFC3339Nano), "finished_utc": time.Now().UTC().Format(time.RFC3339Nano), "configuration_differences": []string{"dedicated mode_router_v2_enabled=true", "synthetic OpenAI apikey account http_bridge"}, "turns": observed, "actual_Live_route_status": liveResp.StatusCode, "Live_success_claimed": false, "Live_provider_calls": 0, "Claude_debit": "0.00120000", "users_native_balance_unchanged": true, "driver_file": "environment-I4-ws-proof/main.go"}
+	if f.Stage == "I6" {
+		result["stage"] = "I6 actual GPT WS HTTP-bridge two turns with Claude concurrent"
+	}
 	b, _ := json.MarshalIndent(result, "", "  ")
 	check(os.WriteFile(os.Args[2], b, 0600) == nil, "write public proof")
 	fmt.Printf("actual WS proof pass image=%s receipt=%s\n", f.ImageID, filepath.Base(os.Args[2]))

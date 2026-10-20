@@ -1,0 +1,57 @@
+{
+  "checked_utc": "2026-10-20T02:42:44.876455+00:00",
+  "read_only": true,
+  "cleanup_performed": false,
+  "proof_build_ref": "txek0doqeoyb6a0itco7p3ad2",
+  "proof_build_context": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final2/candidate",
+  "unshared_reclaimable_copy_records": [
+    {
+      "ID": "mmefuq98x3g6suoymzslttv6s",
+      "Parent": "0slsqigd6f5kl6typht1n2zs4",
+      "Created at": "2026-10-20 01:59:20.86995309 +0000 UTC",
+      "Mutable": "false",
+      "Reclaimable": "true",
+      "Shared": "false",
+      "Size": "174.3MB",
+      "Description": "[2/4] COPY --chown=1000:1000 --chmod=0755 sub2api /app/sub2api",
+      "Usage count": "1",
+      "Last used": "42 minutes ago",
+      "Type": "regular"
+    },
+    {
+      "ID": "jjltr9wnhjm8pgi3ipz8nlpml",
+      "Parent": "mmefuq98x3g6suoymzslttv6s",
+      "Created at": "2026-10-20 01:59:20.993315466 +0000 UTC",
+      "Mutable": "false",
+      "Reclaimable": "true",
+      "Shared": "false",
+      "Size": "65.07MB",
+      "Description": "[3/4] COPY --chown=1000:1000 --chmod=0755 carpool-release /app/carpool-release",
+      "Usage count": "1",
+      "Last used": "42 minutes ago",
+      "Type": "regular"
+    },
+    {
+      "ID": "p0s5kz498n2g9qt5ljds4q412",
+      "Parent": "jjltr9wnhjm8pgi3ipz8nlpml",
+      "Created at": "2026-10-20 01:59:21.003875424 +0000 UTC",
+      "Mutable": "false",
+      "Reclaimable": "true",
+      "Shared": "false",
+      "Size": "242.1kB",
+      "Description": "[4/4] COPY --chown=1000:1000 resources /app/resources",
+      "Usage count": "2",
+      "Last used": "42 minutes ago",
+      "Type": "regular"
+    }
+  ],
+  "approx_unshared_copy_bytes": 239612100,
+  "shared_records_require_image_ownership_and_reference_review": true,
+  "source_context_cache_id": "w9gz931dxoeu0jlc2gsz5ioya",
+  "source_context_cache_approx_bytes": 175700000,
+  "source_context_note": "Mutable context is reused by ongoing F4 build; defer removal until all builds complete. Exact ID has been observed but du alone does not display its filesystem path.",
+  "raw_du_private_path": "/Users/shenxi/.codex/private/claude-weekly-quota/office/buildx-du-before-pg186-retry.txt",
+  "raw_du_sha256": "17fa40f7079fb2e63616de15802a363f8f29737df7d39ef103b4a498da3d06fc",
+  "history_private_path": "/Users/shenxi/.codex/private/claude-weekly-quota/office/buildx-history-final2-pg186-cleanup-proof.txt",
+  "history_sha256": "b385536b3e7c48a53383ae1188cece26d055dbb6f1c8c0c7b8da2df32ca0ce6e"
+}

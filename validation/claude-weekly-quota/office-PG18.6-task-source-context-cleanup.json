@@ -1,0 +1,27 @@
+{
+  "checked_utc": "2026-10-20T02:58:07.331089+00:00",
+  "exact_cache_ids": [
+    "w9gz931dxoeu0jlc2gsz5ioya",
+    "f37wuo8ijhe4w0y3nzchlnboi"
+  ],
+  "filter": "id=^(w9gz931dxoeu0jlc2gsz5ioya|f37wuo8ijhe4w0y3nzchlnboi)$",
+  "before_count": 2,
+  "after_count": 0,
+  "latest_context_history": [
+    {
+      "ref": "pgpaor50k8zjylv1vm4ryneew",
+      "context": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final6/candidate"
+    },
+    {
+      "ref": "t94w86olapg3mww1iq9cnuh2k",
+      "context": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final6/provider"
+    }
+  ],
+  "history_completed_before_cleanup": true,
+  "free_bytes_before": 5137301504,
+  "free_bytes_after": 5137285120,
+  "F4_images_preserved": true,
+  "global_prune": false,
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office/pg186-task-source-context-cleanup.log",
+  "private_log_sha256": "948ad24e3228397ad7a6d5d797a06ef3a52ef62e74f3d532f12c1279ce13a8b4"
+}

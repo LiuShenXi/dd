@@ -1,0 +1,514 @@
+[
+  {
+    "target_bulk_history_rows": 0,
+    "actual_request_rows": 1,
+    "actual_ledger_rows": 1,
+    "database_bytes": 19535551,
+    "claude_admission": {
+      "samples": 96,
+      "p50_ms": 2.646,
+      "p95_ms": 3.037542,
+      "p99_ms": 3.198083,
+      "max_ms": 3.198083
+    },
+    "backlog": {
+      "samples": 20,
+      "p50_ms": 0.209042,
+      "p95_ms": 0.227708,
+      "p99_ms": 0.228791,
+      "max_ms": 0.228791
+    },
+    "gpt_only_control": {
+      "elapsed_ms": 206.678292,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 4.019875,
+        "p95_ms": 5.678792,
+        "p99_ms": 14.260208,
+        "max_ms": 14.260208
+      },
+      "claude_apply": {
+        "samples": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0
+      },
+      "same_scope_wait": {
+        "samples": 78,
+        "p50_ms": 0.296708,
+        "p95_ms": 0.491541,
+        "p99_ms": 0.808083,
+        "max_ms": 0.808083
+      },
+      "independent_scope_wait": {
+        "samples": 77,
+        "p50_ms": 0.294875,
+        "p95_ms": 0.573541,
+        "p99_ms": 0.609459,
+        "max_ms": 0.609459
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-gpt": 16
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "gpt": 464.4928099948324
+      },
+      "lane_elapsed_ms": {
+        "gpt": 206.677042
+      }
+    },
+    "gpt_and_claude": {
+      "elapsed_ms": 685.120167,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 4.447875,
+        "p95_ms": 5.315583,
+        "p99_ms": 6.683,
+        "max_ms": 6.683
+      },
+      "claude_apply": {
+        "samples": 96,
+        "p50_ms": 13.014417,
+        "p95_ms": 18.085584,
+        "p99_ms": 30.97025,
+        "max_ms": 30.97025
+      },
+      "same_scope_wait": {
+        "samples": 49,
+        "p50_ms": 10.601167,
+        "p95_ms": 15.0895,
+        "p99_ms": 27.614875,
+        "max_ms": 27.614875
+      },
+      "independent_scope_wait": {
+        "samples": 264,
+        "p50_ms": 0.2515,
+        "p95_ms": 0.411625,
+        "p99_ms": 0.718375,
+        "max_ms": 3.240875
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-claude": 116,
+        "cwq-i6-gpt": 17,
+        "cwq-i6-observer": 101
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "claude": 140.12173677237888,
+        "gpt": 439.526730436196
+      },
+      "lane_elapsed_ms": {
+        "claude": 685.118542,
+        "gpt": 218.41675
+      }
+    },
+    "plan_summary": {
+      "backlog": {
+        "execution_ms": 0.018,
+        "root_node": "Aggregate",
+        "shared_hit_blocks": 1,
+        "shared_read_blocks": 0
+      },
+      "ledger_sum_in_apply": {
+        "execution_ms": 0.026,
+        "root_node": "Index Scan",
+        "shared_hit_blocks": 4,
+        "shared_read_blocks": 0
+      },
+      "reconciliation_in_admission": {
+        "execution_ms": 0.01,
+        "root_node": "Aggregate",
+        "shared_hit_blocks": 2,
+        "shared_read_blocks": 0
+      }
+    }
+  },
+  {
+    "target_bulk_history_rows": 10000,
+    "actual_request_rows": 10097,
+    "actual_ledger_rows": 10097,
+    "database_bytes": 50951871,
+    "claude_admission": {
+      "samples": 96,
+      "p50_ms": 2.933708,
+      "p95_ms": 3.962625,
+      "p99_ms": 4.866292,
+      "max_ms": 4.866292
+    },
+    "backlog": {
+      "samples": 20,
+      "p50_ms": 0.261,
+      "p95_ms": 0.346792,
+      "p99_ms": 0.4505,
+      "max_ms": 0.4505
+    },
+    "gpt_only_control": {
+      "elapsed_ms": 221.728666,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 4.276542,
+        "p95_ms": 7.259291,
+        "p99_ms": 9.961042,
+        "max_ms": 9.961042
+      },
+      "claude_apply": {
+        "samples": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0
+      },
+      "same_scope_wait": {
+        "samples": 81,
+        "p50_ms": 0.313583,
+        "p95_ms": 0.550666,
+        "p99_ms": 1.0915,
+        "max_ms": 1.0915
+      },
+      "independent_scope_wait": {
+        "samples": 81,
+        "p50_ms": 0.303875,
+        "p95_ms": 0.531375,
+        "p99_ms": 1.191458,
+        "max_ms": 1.191458
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-gpt": 22
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "gpt": 432.96470012190616
+      },
+      "lane_elapsed_ms": {
+        "gpt": 221.727083
+      }
+    },
+    "gpt_and_claude": {
+      "elapsed_ms": 702.590833,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 4.472084,
+        "p95_ms": 4.83275,
+        "p99_ms": 6.054209,
+        "max_ms": 6.054209
+      },
+      "claude_apply": {
+        "samples": 96,
+        "p50_ms": 13.630083,
+        "p95_ms": 17.352292,
+        "p99_ms": 19.551208,
+        "max_ms": 19.551208
+      },
+      "same_scope_wait": {
+        "samples": 49,
+        "p50_ms": 11.395958,
+        "p95_ms": 14.753417,
+        "p99_ms": 16.552416,
+        "max_ms": 16.552416
+      },
+      "independent_scope_wait": {
+        "samples": 275,
+        "p50_ms": 0.252375,
+        "p95_ms": 0.401,
+        "p99_ms": 0.447792,
+        "max_ms": 0.570333
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-claude": 121,
+        "cwq-i6-gpt": 21,
+        "cwq-i6-observer": 98
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "claude": 136.63744499364316,
+        "gpt": 443.29618418956454
+      },
+      "lane_elapsed_ms": {
+        "claude": 702.58925,
+        "gpt": 216.5595
+      }
+    },
+    "plan_summary": {
+      "backlog": {
+        "execution_ms": 0.056,
+        "root_node": "Aggregate",
+        "shared_hit_blocks": 103,
+        "shared_read_blocks": 0
+      },
+      "ledger_sum_in_apply": {
+        "execution_ms": 0.89,
+        "root_node": "Seq Scan",
+        "shared_hit_blocks": 138,
+        "shared_read_blocks": 0
+      },
+      "reconciliation_in_admission": {
+        "execution_ms": 0.01,
+        "root_node": "Aggregate",
+        "shared_hit_blocks": 2,
+        "shared_read_blocks": 0
+      }
+    }
+  },
+  {
+    "target_bulk_history_rows": 100000,
+    "actual_request_rows": 100193,
+    "actual_ledger_rows": 100193,
+    "database_bytes": 318428863,
+    "claude_admission": {
+      "samples": 96,
+      "p50_ms": 2.900042,
+      "p95_ms": 5.986542,
+      "p99_ms": 14.992875,
+      "max_ms": 14.992875
+    },
+    "backlog": {
+      "samples": 20,
+      "p50_ms": 0.259791,
+      "p95_ms": 0.35875,
+      "p99_ms": 0.377167,
+      "max_ms": 0.377167
+    },
+    "gpt_only_control": {
+      "elapsed_ms": 211.989125,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 4.057917,
+        "p95_ms": 5.516708,
+        "p99_ms": 12.428709,
+        "max_ms": 12.428709
+      },
+      "claude_apply": {
+        "samples": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0
+      },
+      "same_scope_wait": {
+        "samples": 79,
+        "p50_ms": 0.289958,
+        "p95_ms": 0.5675,
+        "p99_ms": 2.574,
+        "max_ms": 2.574
+      },
+      "independent_scope_wait": {
+        "samples": 78,
+        "p50_ms": 0.324791,
+        "p95_ms": 0.578667,
+        "p99_ms": 1.595459,
+        "max_ms": 1.595459
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-gpt": 16
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "gpt": 452.85706745509333
+      },
+      "lane_elapsed_ms": {
+        "gpt": 211.987417
+      }
+    },
+    "gpt_and_claude": {
+      "elapsed_ms": 1659.781958,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 5.766084,
+        "p95_ms": 8.854875,
+        "p99_ms": 11.34575,
+        "max_ms": 11.34575
+      },
+      "claude_apply": {
+        "samples": 96,
+        "p50_ms": 29.637458,
+        "p95_ms": 69.253625,
+        "p99_ms": 98.767208,
+        "max_ms": 98.767208
+      },
+      "same_scope_wait": {
+        "samples": 49,
+        "p50_ms": 26.268375,
+        "p95_ms": 66.635125,
+        "p99_ms": 92.5035,
+        "max_ms": 92.5035
+      },
+      "independent_scope_wait": {
+        "samples": 545,
+        "p50_ms": 0.342541,
+        "p95_ms": 1.051291,
+        "p99_ms": 2.159,
+        "max_ms": 3.493459
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-claude": 274,
+        "cwq-i6-gpt": 30,
+        "cwq-i6-observer": 253
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "claude": 57.838970393594494,
+        "gpt": 320.31604516456235
+      },
+      "lane_elapsed_ms": {
+        "claude": 1659.780583,
+        "gpt": 299.704
+      }
+    },
+    "plan_summary": {
+      "backlog": {
+        "execution_ms": 0.244,
+        "root_node": "Aggregate",
+        "shared_hit_blocks": 93,
+        "shared_read_blocks": 48
+      },
+      "ledger_sum_in_apply": {
+        "execution_ms": 9.587,
+        "root_node": "Seq Scan",
+        "shared_hit_blocks": 1340,
+        "shared_read_blocks": 0
+      },
+      "reconciliation_in_admission": {
+        "execution_ms": 0.016,
+        "root_node": "Aggregate",
+        "shared_hit_blocks": 2,
+        "shared_read_blocks": 0
+      }
+    }
+  },
+  {
+    "target_bulk_history_rows": 300000,
+    "actual_request_rows": 300289,
+    "actual_ledger_rows": 300289,
+    "database_bytes": 910816959,
+    "claude_admission": {
+      "samples": 96,
+      "p50_ms": 2.525458,
+      "p95_ms": 4.227875,
+      "p99_ms": 8.887542,
+      "max_ms": 8.887542
+    },
+    "backlog": {
+      "samples": 20,
+      "p50_ms": 0.278625,
+      "p95_ms": 0.635833,
+      "p99_ms": 0.726375,
+      "max_ms": 0.726375
+    },
+    "gpt_only_control": {
+      "elapsed_ms": 210.383875,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 4.279792,
+        "p95_ms": 5.905459,
+        "p99_ms": 7.838042,
+        "max_ms": 7.838042
+      },
+      "claude_apply": {
+        "samples": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0
+      },
+      "same_scope_wait": {
+        "samples": 76,
+        "p50_ms": 0.361458,
+        "p95_ms": 0.606875,
+        "p99_ms": 0.753458,
+        "max_ms": 0.753458
+      },
+      "independent_scope_wait": {
+        "samples": 76,
+        "p50_ms": 0.336125,
+        "p95_ms": 0.686208,
+        "p99_ms": 0.891084,
+        "max_ms": 0.891084
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-gpt": 19
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "gpt": 456.31108460619726
+      },
+      "lane_elapsed_ms": {
+        "gpt": 210.382792
+      }
+    },
+    "gpt_and_claude": {
+      "elapsed_ms": 1628.971,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 6.016125,
+        "p95_ms": 9.663042,
+        "p99_ms": 11.935875,
+        "max_ms": 11.935875
+      },
+      "claude_apply": {
+        "samples": 96,
+        "p50_ms": 30.84525,
+        "p95_ms": 50.454042,
+        "p99_ms": 71.336542,
+        "max_ms": 71.336542
+      },
+      "same_scope_wait": {
+        "samples": 49,
+        "p50_ms": 28.536667,
+        "p95_ms": 47.15425,
+        "p99_ms": 68.605917,
+        "max_ms": 68.605917
+      },
+      "independent_scope_wait": {
+        "samples": 562,
+        "p50_ms": 0.332333,
+        "p95_ms": 0.7505,
+        "p99_ms": 1.167208,
+        "max_ms": 2.571666
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-claude": 273,
+        "cwq-i6-gpt": 29,
+        "cwq-i6-observer": 258
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "claude": 58.93296192765769,
+        "gpt": 319.4529804295883
+      },
+      "lane_elapsed_ms": {
+        "claude": 1628.969542,
+        "gpt": 300.513709
+      }
+    },
+    "plan_summary": {
+      "backlog": {
+        "execution_ms": 0.482,
+        "root_node": "Aggregate",
+        "shared_hit_blocks": 126,
+        "shared_read_blocks": 74
+      },
+      "ledger_sum_in_apply": {
+        "execution_ms": 16.421,
+        "root_node": "Seq Scan",
+        "shared_hit_blocks": 4008,
+        "shared_read_blocks": 0
+      },
+      "reconciliation_in_admission": {
+        "execution_ms": 0.016,
+        "root_node": "Aggregate",
+        "shared_hit_blocks": 2,
+        "shared_read_blocks": 0
+      }
+    }
+  }
+]

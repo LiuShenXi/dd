@@ -1,0 +1,484 @@
+{
+  "status": "passed_scoped_browser_acceptance_F1_through_F4",
+  "synthetic_only": true,
+  "production_modified": false,
+  "browser_operator": "coordinator",
+  "evidence_recorder": "i5_frontend",
+  "url": "http://127.0.0.1:59645",
+  "current_image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122",
+  "current_source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+  "application": "6ce4020b2d3cbbee755573fbb70da770da31225966791f7b44a2d3dd0c1f4ad4",
+  "bridge_pid": 10704,
+  "build_receipt": "validation/claude-weekly-quota/office-I6-build-F4.json",
+  "environment_manifest": "validation/claude-weekly-quota/office-I6-browser-environment.json",
+  "checks": {
+    "isolated_F2_upgrade": {
+      "status": "passed",
+      "database_redis_provider_credentials_preserved": true,
+      "no_upgrade_SQL": true,
+      "old_browser_replica_naturally_expired": true,
+      "completed_sample_snapshot_unchanged": true
+    },
+    "F2_actual_API_duration_unit": {
+      "status": "passed",
+      "plans": [
+        1,
+        2
+      ],
+      "request": {
+        "validity_unit": "days"
+      },
+      "other_plan_fields_preserved": true,
+      "sample_order_id": 2,
+      "completed_snapshot_unchanged": true,
+      "note": "Completed immediately before coordinator reserved sale-plan mutation for CUA; no subsequent plan API mutations by recorder."
+    },
+    "manual_default_override_CUA": {
+      "status": "passed_coordinator_report",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "user_id": 8,
+      "group_id": 7,
+      "default_quota_usd": "300.00000000",
+      "renewal_override_usd": "75.12345678",
+      "keyboard_submit": "Return",
+      "original_card_unchanged": true,
+      "consecutive_exact_seven_day_terms": true,
+      "screenshot": {
+        "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-manual-default-override.png",
+        "sha256": "c5c25423ac8ae669591fdcca63e54c73bcf547db2533574815d0bc06691ee16a"
+      }
+    },
+    "F2_plan_edit_and_frozen_purchase_CUA": {
+      "status": "passed_to_pending_QR_coordinator_report",
+      "plan_id": 1,
+      "buyer_id": 7,
+      "actual_admin_edit_save_days": true,
+      "order_id": 3,
+      "checkout_sale_amount": "86.38",
+      "currency": "CNY",
+      "displayed_quota_usd": "125.12345678",
+      "displayed_duration_hours": 168,
+      "viewport_width": 390,
+      "document_width": 390,
+      "screenshot": {
+        "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-frozen-pending-390.png",
+        "sha256": "e30f4825117311723bf6339106e8dbe1538b657f7f3dc81900f78947807533f5"
+      },
+      "result_page_after_completion": "F2 failed signed-resume snapshot rendering; fixed and actually accepted on F3 (see F3_changed_UI_retest).",
+      "image_id": "sha256:3e18edda6b675cb73d108c92acf139dfe1f6e45b92e5abc8aef1594d2eec39f3",
+      "source_sha256": "56f189a7e2c4c32a96ea439d15687e809f9839670f63181e5312851642b757a4"
+    },
+    "I6_conversion_CUA": {
+      "status": "passed_coordinator_report",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "group_id": 8,
+      "initial": {
+        "maintenance": true,
+        "revision": 1,
+        "protected_pending": 0,
+        "pending_orders": 0,
+        "legacy_terminal_orders": 1,
+        "historical_manual_review_warning_visible": true,
+        "replica_id": "browser-1",
+        "replica_versions": [
+          1,
+          1,
+          1
+        ],
+        "default_claude_concurrency": 3,
+        "issue_admission_recovery_enabled": true
+      },
+      "explicit_allocations": {
+        "empty_preview_zero_cards_and_168_hours": true,
+        "unconfirmed_conversion_disabled": true,
+        "key_owner_addition_copies_only_user_id": true,
+        "blank_quota_prevents_preview": true,
+        "user_id": 7,
+        "quota_usd": "42.87654321"
+      },
+      "stale_preview": {
+        "cause": "new group8 key12 for user8 after preview",
+        "actual_response": 409,
+        "inputs_preserved": true,
+        "old_preview_cleared": true,
+        "viewport_width": 390,
+        "document_width": 390,
+        "screenshot": {
+          "path": "validation/claude-weekly-quota/office-browser-screenshots/i6-stale-preview-390.png",
+          "sha256": "ede4ab651d4d1d14cb48cbfd0ae145424187873a69a92234cf93ebb2929f5ed2"
+        }
+      },
+      "inflight_conversion": {
+        "synthetic_user_row_lock_seconds": 18,
+        "close_reopen": true,
+        "one_conversion": true,
+        "mode": "term",
+        "revision": 2,
+        "maintenance_after_conversion": true
+      },
+      "inflight_release": {
+        "synthetic_group_row_lock_seconds": 25,
+        "close_reopen": true,
+        "reopened_only_disabled_refresh": true,
+        "second_operation_not_available": true,
+        "final_revision": 3,
+        "maintenance": false,
+        "card_quota_usd": "42.87654321",
+        "viewport_width": 390,
+        "document_width": 390,
+        "screenshot": {
+          "path": "validation/claude-weekly-quota/office-browser-screenshots/i6-converted-released-390.png",
+          "sha256": "76cc0a102350f0cd7235f88483e2110fea1e60bb2fae1a2177f026c72689dd58"
+        }
+      },
+      "GPT_rows_have_no_conversion_action": true,
+      "limits": "Empty allocations were previewed in browser; actual zero-card conversion is covered separately by PostgreSQL integration evidence. These are F1 observations, not a claim of F3 repetition."
+    },
+    "F2_frozen_purchase_plan_change_callback": {
+      "status": "passed_real_API_and_local_signed_callback",
+      "order_id": 3,
+      "user_id": 7,
+      "plan_id": 1,
+      "image_id": "sha256:3e18edda6b675cb73d108c92acf139dfe1f6e45b92e5abc8aef1594d2eec39f3",
+      "source_sha256": "56f189a7e2c4c32a96ea439d15687e809f9839670f63181e5312851642b757a4",
+      "frozen_quota_usd": "125.12345678",
+      "duration_seconds": 604800,
+      "snapshot_sha256": "c347489e1d041657f5647dc307b1921a2def72769e5b452f3c71dd42c6bd6f0e",
+      "current_plan_default_quota_usd": "999.00000000",
+      "current_plan_for_sale": false,
+      "unrequested_plan_fields_unchanged": true,
+      "pay_amount": 86.38,
+      "currency": "CNY",
+      "completed_status": "COMPLETED",
+      "snapshot_preserved_through_completion": true,
+      "real_money_or_external_payment": false
+    },
+    "F3_changed_UI_retest": {
+      "status": "passed_coordinator_report",
+      "image_id": "sha256:3c491e7a7033a72206fa30cf8d4895a7678908a6781912a66e16cedcbbe435bf",
+      "source_sha256": "d6ac92adeb97249c1a792e2586c358f63da20790283c5481fee6baafa8cae1b8",
+      "signed_resume_result": {
+        "order_id": 3,
+        "languages": [
+          "en",
+          "zh"
+        ],
+        "viewport_width": 390,
+        "document_width": 390,
+        "frozen_quota_usd": "125.12345678",
+        "duration_hours": 168,
+        "current_plan_quota_usd": "999.00000000",
+        "current_plan_for_sale": false,
+        "sale_price_label": true,
+        "balance_credit_absent": true,
+        "back_to_plans_keyboard_Return": true,
+        "unlisted_plan_absent_after_return": true,
+        "screenshots": [
+          {
+            "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F3-paid-frozen-en-390.png",
+            "sha256": "b76abe77584edf58313423d71cd8ce3af84513471196b12670049b0304f72e92"
+          },
+          {
+            "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F3-paid-frozen-zh-390.png",
+            "sha256": "da964301edfd9cf76155dc8023cf1bf647440e5d316c76bc9834d3521a8f1e0c"
+          }
+        ]
+      },
+      "prior_observations_reused_for_unchanged_UI": [
+        "rollout modal",
+        "manual issuance modal"
+      ],
+      "note": "Coordinator operated CUA. F3 duration and signed-resume result fixes passed. Actual admin orders actions/detail omission was found separately and requires F4; no claim that rollout/manual gates were rerun on F3.",
+      "admin_plan_duration": {
+        "view": "/admin/orders/plans",
+        "layout": "desktop",
+        "rows": 2,
+        "fixed_duration_hours": 168,
+        "quotas_usd": [
+          "999.00000000",
+          "300.00000000"
+        ],
+        "both_for_sale": false,
+        "screenshot": {
+          "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F3-admin-plans.png",
+          "sha256": "6c643ea1d882df3fbd3ccc1c60808ae5c2ed908afc60167f43078ad92edecc42"
+        }
+      }
+    },
+    "F2_orders_CUA": {
+      "status": "passed_coordinator_report",
+      "image_id": "sha256:3e18edda6b675cb73d108c92acf139dfe1f6e45b92e5abc8aef1594d2eec39f3",
+      "languages": [
+        "zh",
+        "en"
+      ],
+      "displayed_quota_usd": "125.12345678",
+      "displayed_duration_hours": 168,
+      "automatic_refund_action_absent": true,
+      "viewport_width": 390,
+      "document_width": 390,
+      "screenshot": {
+        "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-orders-en-390.png",
+        "sha256": "ac62b2cd89e39f5765582f46ac1c88617fa790d7c0e06a4aa63c51ee92f93c6d"
+      }
+    },
+    "F3_application_upgrade_preservation": {
+      "status": "passed",
+      "image_id": "sha256:3c491e7a7033a72206fa30cf8d4895a7678908a6781912a66e16cedcbbe435bf",
+      "source_sha256": "d6ac92adeb97249c1a792e2586c358f63da20790283c5481fee6baafa8cae1b8",
+      "order_id": 3,
+      "completed_snapshot_unchanged": true,
+      "snapshot_quota_usd": "125.12345678",
+      "sale_plan_id": 1,
+      "sale_plan_default_quota_usd": "999.00000000",
+      "sale_plan_for_sale": false,
+      "manual_user_id": 8,
+      "manual_group_id": 7,
+      "manual_quotas_usd": [
+        "300.00000000",
+        "75.12345678"
+      ],
+      "manual_terms_intervals_and_revisions_unchanged": true,
+      "bridge_exec_session": 13569
+    },
+    "F4_actual_admin_orders_route": {
+      "status": "passed_coordinator_CUA_and_targeted_frontend_gates",
+      "trigger": "F3 actual /admin/orders mounted AdminOrdersView plus shared OrderTable, bypassing previously edited unused AdminOrderTable/AdminOrderDetail.",
+      "product_scope": [
+        "frontend/src/views/admin/orders/AdminOrdersView.vue"
+      ],
+      "expected": [
+        "Hide legacy refund/approve/retry-refund/query actions for snapshot cards with manual refund guidance",
+        "Render original immutable quota snapshot and sale price in actual detail dialog",
+        "Guard stale refund open/submit/query and keep refund target separate from detail response"
+      ],
+      "focused_tests": {
+        "suites": 2,
+        "tests": 22,
+        "status": "passed"
+      },
+      "targeted_eslint": "passed",
+      "typecheck": "passed",
+      "production_build": "passed (check:i18n, vue-tsc -b, Vite 18.48s)",
+      "CUA": {
+        "operator": "coordinator",
+        "actual_route": "/admin/orders",
+        "tested_statuses": [
+          "COMPLETED"
+        ],
+        "completed_rows": 2,
+        "actions": [
+          "view",
+          "manual_refund_guidance"
+        ],
+        "automatic_refund_action_absent": true,
+        "detail_order_id": 3,
+        "detail_quota_usd": "125.12345678",
+        "detail_duration_hours": 168,
+        "sale_price_usd": "12.34",
+        "paid_amount_cny": "86.38",
+        "current_plan_quota_usd": "999.00000000",
+        "current_plan_for_sale": false,
+        "layouts": [
+          "zh desktop",
+          "zh 390px",
+          "en 390px"
+        ],
+        "viewport_width": 390,
+        "document_scroll_width": 390,
+        "horizontal_overflow": false,
+        "keyboard": {
+          "Escape": "closes detail",
+          "Return": "opens View",
+          "initial_dialog_focus": "Close"
+        },
+        "screenshots": [
+          {
+            "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-orders-zh.png",
+            "sha256": "ab8e1507ab55ba5bcc29e2b0befc4c6ff1fd8cc01bd562f6cae38e022fb673ff"
+          },
+          {
+            "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-detail-zh.png",
+            "sha256": "72d78e475ee1c1688cb770e843171f1cbf0bcd9435176664aa57e1628b79a02c"
+          },
+          {
+            "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-detail-zh-390.png",
+            "sha256": "1bd38f98242b50230f43eecb3ee109532c296d3674915158f1c5a641f7be2f0a"
+          },
+          {
+            "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-detail-zh-viewport.png",
+            "sha256": "2a59010168eab7335cd007e356aacc9b920afa1dbb78f4be7e7723b4aa1e46e4"
+          },
+          {
+            "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-detail-en-390.png",
+            "sha256": "08d1e5c60c36633c11fb572176a9d5ad43c3d8c2f07a51f01a4bb124cbe5b3c4"
+          }
+        ],
+        "recommended_screenshot": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-detail-zh-viewport.png"
+      },
+      "unchanged_evidence_scope": [
+        "F1 rollout/manual UI",
+        "F2 order creation, edited/unlisted plan and signed callback",
+        "F2 user orders UI",
+        "F3 signed resume result UI",
+        "Backend runtime/rollback gates remain separately identified"
+      ],
+      "build_log": "/tmp/dd-f4-frontend-build.log",
+      "image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122",
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "frontend_dist_sha256": "27e20aee4b1a066adfc079d51df9654ca105f5a2e4ac386d14b612107624d5f6",
+      "test_only_coverage": "Other refund statuses, stale-action/submit and detail-response races, windows refund compatibility, and preserved FAILED fulfillment retry/PENDING cancel are covered by the 18 actual-view + 4 dialog tests; they were not claimed exercised in F4 CUA."
+    },
+    "F3_admin_route_failure_retained": {
+      "status": "observed_failure_superseded_by_F4",
+      "image_id": "sha256:3c491e7a7033a72206fa30cf8d4895a7678908a6781912a66e16cedcbbe435bf",
+      "source_sha256": "d6ac92adeb97249c1a792e2586c358f63da20790283c5481fee6baafa8cae1b8",
+      "failure": "Actual admin order detail lacked frozen snapshot and table retained legacy refund action.",
+      "screenshot": {
+        "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F3-admin-detail-missing-summary.png",
+        "sha256": "63b88908851dcb18a75a2f2b18fc0517606d5be4482f4b5d5186cd3b0d04b852"
+      }
+    }
+  },
+  "acceptance_scope": "Coordinator CUA passed each changed interface on its named candidate; F4 repeats actual admin completed-order list/detail only. Runtime, rollback and promotion evidence are separate receipts.",
+  "fixture_lifecycle": "CUA finished; coordinator owns diagnostic preservation and synthetic cleanup. URL/container identity describes acceptance time, not a promise of a live fixture.",
+  "screenshot_index": [
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F2-result-missing-snapshot.png",
+      "sha256": "bbeb308ff1826cd5e9052e7c4e47ba12f6f7b6083c4e00bbbb756c8066af31e3",
+      "candidate": "F2",
+      "image_id": "sha256:3e18edda6b675cb73d108c92acf139dfe1f6e45b92e5abc8aef1594d2eec39f3",
+      "source_sha256": "56f189a7e2c4c32a96ea439d15687e809f9839670f63181e5312851642b757a4",
+      "observed_by": "coordinator CUA",
+      "result": "historical_failure_superseded"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F3-admin-detail-missing-summary.png",
+      "sha256": "63b88908851dcb18a75a2f2b18fc0517606d5be4482f4b5d5186cd3b0d04b852",
+      "candidate": "F3",
+      "image_id": "sha256:3c491e7a7033a72206fa30cf8d4895a7678908a6781912a66e16cedcbbe435bf",
+      "source_sha256": "d6ac92adeb97249c1a792e2586c358f63da20790283c5481fee6baafa8cae1b8",
+      "observed_by": "coordinator CUA",
+      "result": "historical_failure_superseded"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F3-admin-plans.png",
+      "sha256": "6c643ea1d882df3fbd3ccc1c60808ae5c2ed908afc60167f43078ad92edecc42",
+      "candidate": "F3",
+      "image_id": "sha256:3c491e7a7033a72206fa30cf8d4895a7678908a6781912a66e16cedcbbe435bf",
+      "source_sha256": "d6ac92adeb97249c1a792e2586c358f63da20790283c5481fee6baafa8cae1b8",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F3-paid-frozen-en-390.png",
+      "sha256": "b76abe77584edf58313423d71cd8ce3af84513471196b12670049b0304f72e92",
+      "candidate": "F3",
+      "image_id": "sha256:3c491e7a7033a72206fa30cf8d4895a7678908a6781912a66e16cedcbbe435bf",
+      "source_sha256": "d6ac92adeb97249c1a792e2586c358f63da20790283c5481fee6baafa8cae1b8",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F3-paid-frozen-zh-390.png",
+      "sha256": "da964301edfd9cf76155dc8023cf1bf647440e5d316c76bc9834d3521a8f1e0c",
+      "candidate": "F3",
+      "image_id": "sha256:3c491e7a7033a72206fa30cf8d4895a7678908a6781912a66e16cedcbbe435bf",
+      "source_sha256": "d6ac92adeb97249c1a792e2586c358f63da20790283c5481fee6baafa8cae1b8",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-detail-en-390.png",
+      "sha256": "08d1e5c60c36633c11fb572176a9d5ad43c3d8c2f07a51f01a4bb124cbe5b3c4",
+      "candidate": "F4",
+      "image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122",
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-detail-zh-390.png",
+      "sha256": "1bd38f98242b50230f43eecb3ee109532c296d3674915158f1c5a641f7be2f0a",
+      "candidate": "F4",
+      "image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122",
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation",
+      "capture_note": "Full-page capture includes background behind the modal."
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-detail-zh-viewport.png",
+      "sha256": "2a59010168eab7335cd007e356aacc9b920afa1dbb78f4be7e7723b4aa1e46e4",
+      "candidate": "F4",
+      "image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122",
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation",
+      "recommended_final_admin_detail": true
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-detail-zh.png",
+      "sha256": "72d78e475ee1c1688cb770e843171f1cbf0bcd9435176664aa57e1628b79a02c",
+      "candidate": "F4",
+      "image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122",
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-F4-admin-orders-zh.png",
+      "sha256": "ab8e1507ab55ba5bcc29e2b0befc4c6ff1fd8cc01bd562f6cae38e022fb673ff",
+      "candidate": "F4",
+      "image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122",
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-frozen-pending-390.png",
+      "sha256": "e30f4825117311723bf6339106e8dbe1538b657f7f3dc81900f78947807533f5",
+      "candidate": "F2",
+      "image_id": "sha256:3e18edda6b675cb73d108c92acf139dfe1f6e45b92e5abc8aef1594d2eec39f3",
+      "source_sha256": "56f189a7e2c4c32a96ea439d15687e809f9839670f63181e5312851642b757a4",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-manual-default-override.png",
+      "sha256": "c5c25423ac8ae669591fdcca63e54c73bcf547db2533574815d0bc06691ee16a",
+      "candidate": "F1",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i5-orders-en-390.png",
+      "sha256": "ac62b2cd89e39f5765582f46ac1c88617fa790d7c0e06a4aa63c51ee92f93c6d",
+      "candidate": "F2",
+      "image_id": "sha256:3e18edda6b675cb73d108c92acf139dfe1f6e45b92e5abc8aef1594d2eec39f3",
+      "source_sha256": "56f189a7e2c4c32a96ea439d15687e809f9839670f63181e5312851642b757a4",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i6-converted-released-390.png",
+      "sha256": "76cc0a102350f0cd7235f88483e2110fea1e60bb2fae1a2177f026c72689dd58",
+      "candidate": "F1",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    },
+    {
+      "path": "validation/claude-weekly-quota/office-browser-screenshots/i6-stale-preview-390.png",
+      "sha256": "ede4ab651d4d1d14cb48cbfd0ae145424187873a69a92234cf93ebb2929f5ed2",
+      "candidate": "F1",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+      "observed_by": "coordinator CUA",
+      "result": "passed_observation"
+    }
+  ]
+}

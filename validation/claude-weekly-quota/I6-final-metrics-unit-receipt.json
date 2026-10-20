@@ -1,0 +1,9 @@
+{
+  "command": "CI=true GOMAXPROCS=3 go test -json -p=1 -tags=unit ./internal/service -run TestClaude(SubscriptionConcurrency|ConcurrencyMetrics) -count=1",
+  "exit_code": 0,
+  "all_tests": {
+    "pass": 20
+  },
+  "log_sha256": "cd678a6589d6d6887918d8923d01ab8519b5ced936ab8d5f7568092977a793b9",
+  "notes": "Includes blocked log sink regression and actual keeper heartbeat/deadline; final code removes critical-path synchronous logging."
+}

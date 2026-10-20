@@ -1,0 +1,30 @@
+{
+  "terms": [
+    {
+      "user_id": 3,
+      "used_usd": "0.00060000",
+      "quota_usd": "75.12345678"
+    }
+  ],
+  "group_mode": "term",
+  "gpt_settled": 2,
+  "gpt_cost_sum": "0.00003500",
+  "group_status": "active",
+  "term_usage_logs": 1,
+  "ordinary_balance": "77.12700000",
+  "legacy_usage_logs": 5,
+  "protected_pending": 0,
+  "gpt_base_remaining": "549.99996500",
+  "protected_completed": 5,
+  "protected_no_charge": 1,
+  "checked_utc": "2026-10-20T02:18:50.809233+00:00",
+  "run_id": "cwq-i4-4ccc74df858445fa",
+  "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+  "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "conversion_receipt": "office-I6-conversion-v4-conversion-20261020T021721Z.json",
+  "provider_total_calls": 8,
+  "provider_active": 0,
+  "provider_cancelled": 0,
+  "synthetic_only": true,
+  "production_modified": false
+}

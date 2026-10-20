@@ -1,7 +1,7 @@
 {
   "production_enabled": false,
   "baseline_revision": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
-  "scope": "Latest user direction: finish current I4, commit and push feature branch, then hand off for continued work at office. I5/I6 and production deployment are deferred this round.",
+  "scope": "Continue dedicated Claude carpool branch at office; finish I5 paid immutable entitlements and I6 controlled conversion/runtime/browser verification. Local implementation only; current batch uncommitted and production unchanged.",
   "tests": [
     {
       "id": "T01",
@@ -797,55 +797,90 @@
       "id": "T50",
       "scenario": "下单后修改、下架或删除套餐",
       "required_assertions": "按订单原额度履约",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "I5-integration-receipt.md",
+        "I6-plan-duration-and-promotion-receipt.md",
+        "office-I6-browser-receipt.json"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Actual checkout commits snapshot before fake provider creation; later plan edit/unlist/delete cannot change exact125.12345678 and604800s. Browser bought order3 before plan999/unlist and paid original frozen rights. F2 payment logic; F3 paid-result and F4 actual admin presentation.",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T51",
       "scenario": "支付回调并发、重试、租约交接",
       "required_assertions": "一个订单只创建一张卡",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "I5-integration-receipt.md",
+        "I6-plan-duration-and-promotion-receipt.md"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Real signed callback16-way race, durable lease takeover and stale completion/failure fences yield one card/operation/assignment audit. Real PG16top/32total final I5 selection.",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T52",
       "scenario": "开卡事务失败后回调重试",
       "required_assertions": "不重复扣款或重复开卡，状态可恢复",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "I5-integration-receipt.md",
+        "office-F3-rollback-20261020T023709Z.json"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Actual PG faults before rights commit roll back all writes; postcommit completion fault preserves one entitlement; retry recovers without provider recreation. F3 actual image transition and compatible-R1 payment recovery passed.",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T53",
       "scenario": "无快照旧订单遇新模式分组",
       "required_assertions": "显式失败待处理，不猜额度",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "I5-integration-receipt.md",
+        "I6-plan-duration-and-promotion-receipt.md",
+        "I6-controlled-rollout-receipt.md"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Missing/malformed/future/mismatched frozen rights fail closed for manual review. CANCELLED late callback can recover PAID but cannot infer rights; EXPIRED only existing5min grace, otherwise PAYMENT_AFTER_EXPIRY with no automatic issuance.",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T54",
       "scenario": "reset、extend、restore、bulk、兑换及旧维护 worker",
       "required_assertions": "未适配动作拒绝，旧维护排除 term，已用及卡期不变",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "I5-integration-receipt.md",
+        "I6-final-pg-receipt.json"
       ],
-      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+      "acceptance_note": "Actual issued paid-card legacy service/repository sinks reject reset/extend/revoke/restore/activation/bulk/redemption; timer scheduling itself not asserted. Whole financial fingerprints, cards and time intervals preserved.",
+      "prior_status": "partial",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T55",
       "scenario": "旧式自动全额/部分退款及取消",
       "required_assertions": "term 旧退款路径拒绝，不减父记录天数冒充撤销额度，不充值普通余额",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "I5-integration-receipt.md",
+        "office-I6-browser-receipt.json",
+        "I6-frontend-receipt.md"
       ],
-      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+      "acceptance_note": "Actual PG full/partial/forced refund and reconciliation reject before provider access; no wallet credit or parent-day mutation. F4 actual routed AdminOrdersView browser completed-order actions/detail verified; five refund-state branches and late-response guards covered by actual-view tests. Card cancellation and cash refund remain separate manual procedures.",
+      "prior_status": "partial",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T56",
@@ -877,20 +912,24 @@
       "id": "T58",
       "scenario": "旧 auth cache 命中、新模式切换",
       "required_assertions": "旧版本失效，陈旧允许不越过最终 DB 检查",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "I6-conversion-runtime-receipt.md",
+        "office-I6-conversion-v4-conversion-20261020T021721Z.json"
       ],
-      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+      "acceptance_note": "Actual F1 conversion waits complete old request accounting plus real delayed cache invalidation. Injected stale windows cache receives authoritative503 before legacyRedis/provider work; refreshed same Key spends exact new card.",
+      "prior_status": "partial",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T59",
       "scenario": "活跃 GPT 事务同时 Claude 开卡或结算",
       "required_assertions": "无锁环，无全局重置锁竞争",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
@@ -900,36 +939,59 @@
         "I2-domain-F2-final-receipt.json",
         "I2-domain-F2-20261019T140738Z-receipt.json",
         "I2-domain-race-F2-20261019T140748Z-receipt.json",
-        "I2-final-windows-unit-F2.jsonl"
+        "I2-final-windows-unit-F2.jsonl",
+        "I6-controlled-rollout-receipt.md",
+        "I6-conversion-runtime-receipt.md",
+        "I6-performance-receipt.md"
       ],
-      "acceptance_note": "Actual GPT prepare succeeds while Claude parent is locked and renew/cancel wait; legacy group deletion rejects before parent access. Settlement concurrency remains I3."
+      "acceptance_note": "GPT group accounting proceeds while GPT group row locked; real Claude conversion preserves in-flight GPT HTTP/WS slots and exact original settlement. Local concurrent Apply/GPT sweeps have no lock cycle/deadlock. Shared DB resource cost still measured:18.1 300k mixed-burst GPT throughput30% lower; not a zero-impact or production SLO claim.",
+      "prior_status": "partial",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T60",
       "scenario": "R2 关闭新准入回到 R1",
       "required_assertions": "Claude 明确拒绝，已知账务可完成，GPT 正常",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "I6-F3-image-proof-receipt.md",
+        "office-F3-rollback-20261020T023709Z.json",
+        "office-I6-final-source-audit.json"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Actual R0 startup to compatibleR1 additive migration, R2 issuance then R1 flags-off/recovery-on and restart. New Claude refused, known Claude/GPT and paid frozen rights recover exactly; F4 backend identical to F3.",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T61",
       "scenario": "未升级副本仍服务时请求启用",
       "required_assertions": "启用门禁拒绝，不运行混合语义",
-      "status": "not_run",
-      "evidence": []
+      "status": "passed",
+      "evidence": [
+        "I6-controlled-rollout-receipt.md",
+        "office-I6-mixed-receipt.json"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Actual mismatched extra runtime/default4 advertisement blocks conversion/release. Correct runtime inventory converges after actual stopped process unregisters; fresh/missing/stale/duplicate capability policies separately PG tested. Never infer absence of unlisted old processes from self-registration alone.",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T62",
       "scenario": "分组切换前旧余额请求仍在途",
       "required_assertions": "必须排空，切换前后每个请求来源明确",
-      "status": "partial",
+      "status": "passed",
       "evidence": [
         "coordinator-I1-review.md",
         "I1/gpt-and-quota-unit.jsonl",
         "environment-I1-F3-20261019T133930Z-pg-receipt.json",
-        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "I6-controlled-rollout-receipt.md",
+        "I6-conversion-runtime-receipt.md",
+        "office-I6-conversion-v4-conversion-20261020T021721Z.json"
       ],
-      "acceptance_note": "I1 compatibility evidence only. Full issued-card, accounting, endpoint or activation scenario remains in later iterations; see coordinator-I1-review.md."
+      "acceptance_note": "Actual five old window streams plus queued pre-slot marker block conversion. Maintenance stops new admissions; queue canceled before provider; five completions settle exact original ordinary0.003 before explicit allocation conversion. Unknown receipts never age into zero blockers.",
+      "prior_status": "partial",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T63",
@@ -944,7 +1006,10 @@
         "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
         "I4-readonly-evidence-gap-review.md"
       ],
-      "acceptance_note": "Two real application instances and Redis prove same-user GPT5 plus Claude2 concurrently without a shared user cap; these are synthetic test policy values."
+      "acceptance_note": "Two real application instances and Redis prove same-user GPT5 plus Claude2 concurrently without a shared user cap; these are synthetic test policy values.",
+      "office_additional_evidence": [
+        "office-I6-pools-receipt.json"
+      ]
     },
     {
       "id": "T64",
@@ -956,7 +1021,10 @@
         "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
         "I4-readonly-evidence-gap-review.md"
       ],
-      "acceptance_note": "Actual GPT active5/waiting20 full while Claude admits independently; overflow and ownership checked."
+      "acceptance_note": "Actual GPT active5/waiting20 full while Claude admits independently; overflow and ownership checked.",
+      "office_additional_evidence": [
+        "office-I6-pools-receipt.json"
+      ]
     },
     {
       "id": "T65",
@@ -968,7 +1036,10 @@
         "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
         "I4-readonly-evidence-gap-review.md"
       ],
-      "acceptance_note": "Actual Claude active2/waiting20 full while a freed GPT slot admits its replacement; counts remain separate."
+      "acceptance_note": "Actual Claude active2/waiting20 full while a freed GPT slot admits its replacement; counts remain separate.",
+      "office_additional_evidence": [
+        "office-I6-pools-receipt.json"
+      ]
     },
     {
       "id": "T66",
@@ -984,7 +1055,11 @@
         "I4-v2-CrossCardLeaseBoundary-F2-20261019T180722Z-receipt.json",
         "I4-readonly-evidence-gap-review.md"
       ],
-      "acceptance_note": "Two Keys and two Claude term groups share one user pool. Actual leases survive card expiry; late cost stays on original card and next card remains untouched until a new admission."
+      "acceptance_note": "Two Keys and two Claude term groups share one user pool. Actual leases survive card expiry; late cost stays on original card and next card remains untouched until a new admission.",
+      "office_additional_evidence": [
+        "office-I6-boundary-receipt.json",
+        "office-I6-pools-receipt.json"
+      ]
     },
     {
       "id": "T67",
@@ -999,7 +1074,11 @@
         "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
         "I4-readonly-evidence-gap-review.md"
       ],
-      "acceptance_note": "Real Redis promotion, cancellation, timeout, repeated/late cleanup and actual full queues preserve ticket ownership and avoid resurrection."
+      "acceptance_note": "Real Redis promotion, cancellation, timeout, repeated/late cleanup and actual full queues preserve ticket ownership and avoid resurrection.",
+      "office_additional_evidence": [
+        "office-I6-promotion-receipt.json",
+        "office-I6-metrics-receipt.json"
+      ]
     },
     {
       "id": "T68",
@@ -1016,7 +1095,11 @@
         "coordinator-I4-T68-review.json",
         "coordinator-I4-F2-F3-test-only-bridge.json"
       ],
-      "acceptance_note": "Final F2 application with approved F3 test-only bridge: actual SSE973.0817914s, 62 original-UUID renewals, no third upstream/admission after15min; two original-term settlements each0.00060000 with one ledger/dedup and log acknowledgment, independently re-read by coordinator. Full other-wallet guards passed. Historical older-image T68 evidence remains diagnostic."
+      "acceptance_note": "Final F2 application with approved F3 test-only bridge: actual SSE973.0817914s, 62 original-UUID renewals, no third upstream/admission after15min; two original-term settlements each0.00060000 with one ledger/dedup and log acknowledgment, independently re-read by coordinator. Full other-wallet guards passed. Historical older-image T68 evidence remains diagnostic.",
+      "office_additional_evidence": [
+        "office-I6-long-sse-receipt.json",
+        "office-I6-lost-lease-receipt.json"
+      ]
     },
     {
       "id": "T69",
@@ -1050,7 +1133,10 @@
         "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
         "I4-readonly-evidence-gap-review.md"
       ],
-      "acceptance_note": "Two real application instances plus independent Redis clients enforce shared active/waiting capacities."
+      "acceptance_note": "Two real application instances plus independent Redis clients enforce shared active/waiting capacities.",
+      "office_additional_evidence": [
+        "office-I6-pools-receipt.json"
+      ]
     },
     {
       "id": "T71",
@@ -1069,15 +1155,26 @@
         "coordinator-I4-F2-F3-test-only-bridge.json",
         "I4-readonly-evidence-gap-review.md"
       ],
-      "acceptance_note": "Actual Redis failure cancels provider before lease expiry; independently observed cancelled=true, SQL NULL actual cost, reconciliation state, zero debit/dedup/used and unchanged legacy keys."
+      "acceptance_note": "Actual Redis failure cancels provider before lease expiry; independently observed cancelled=true, SQL NULL actual cost, reconciliation state, zero debit/dedup/used and unchanged legacy keys.",
+      "office_additional_evidence": [
+        "office-I6-redis-fault-receipt.json",
+        "office-I6-lost-lease-receipt.json"
+      ]
     },
     {
       "id": "T72",
       "scenario": "带旧池在途请求启用或回退",
       "required_assertions": "先排空；混合版本不启用；GPT 槽与 WS ingress 不清空",
-      "status": "not_run",
-      "evidence": [],
-      "acceptance_note": "Added by user-authorized v2 concurrency scope; architecture validation is not execution evidence."
+      "status": "passed",
+      "evidence": [
+        "office-I6-mixed-receipt.json",
+        "I6-conversion-runtime-receipt.md",
+        "office-I6-conversion-v4-conversion-20261020T021721Z.json",
+        "I6-F3-image-proof-receipt.md"
+      ],
+      "acceptance_note": "Actual controlled conversion drains old-pool queued/inflight/async requests and refuses mixed runtime capabilities. GPT user2/WSingress1 owners remain intact across group conversion with exact accounting. Actual image replacement and known-receipt recovery are proved separately; the image driver forcibly stops its disposable containers and does not prove production full-process release/drain. Production replacement still requires the documented full release drain before restart; no global GPT slot reset is invented.",
+      "prior_status": "not_run",
+      "accepted_iteration": "I5/I6 office local synthetic"
     },
     {
       "id": "T73",
@@ -1119,7 +1216,11 @@
         "I4-WS-runtime-F3-invocation.json",
         "I4-WS-runtime-F3-postgres-observed.json"
       ],
-      "acceptance_note": "Current image aliases and interleaved GPT HTTP/WS HTTP-bridge passed; legacy WS/live lease and Kiro normalization regressions passed. Actual Linux live route refuses with zero provider calls; no external live-provider success is claimed."
+      "acceptance_note": "Current image aliases and interleaved GPT HTTP/WS HTTP-bridge passed; legacy WS/live lease and Kiro normalization regressions passed. Actual Linux live route refuses with zero provider calls; no external live-provider success is claimed.",
+      "office_additional_evidence": [
+        "office-I6-ws-receipt.json",
+        "office-I6-metadata-receipt.json"
+      ]
     }
   ],
   "iterations": [
@@ -1152,27 +1253,58 @@
       "receipt": "coordinator-I4-review.md",
       "source_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
       "candidate_image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9"
+    },
+    {
+      "id": "I5",
+      "status": "local_functional_acceptance_complete",
+      "receipt": "coordinator-I5-I6-review.md",
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "candidate_image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122"
+    },
+    {
+      "id": "I6",
+      "status": "local_functional_acceptance_complete",
+      "receipt": "coordinator-I5-I6-review.md",
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "candidate_image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122"
     }
   ],
   "architecture_version": "v2",
-  "concurrency_v2_status": "I4 default3/per-user override and independent pools accepted with actual browser and isolated tests. I6 activation/rollback/operational metrics remain pending.",
+  "concurrency_v2_status": "Default3, per-user Claude override, independent pools and actual renewal/promotion/fault/conversion/compatible rollback accepted at recorded image scopes; production activation not performed.",
   "production_deployment_authorized": true,
   "remote_push_authorized": true,
   "production_card_issuance_authorized": false,
   "production_model_consumption_authorized": false,
   "production_claude_default_concurrency": 3,
   "production_concurrency_policy": "User explicitly selected Claude default 3 with positive per-user overrides; GPT settings unchanged",
-  "current_iteration": "I4 accepted for commit/push. I5 and I6 remain pending; product is not production-ready.",
-  "historical_acceptance_scope": "Each pass retains its actual iteration, source, image and test layer. F2/F3 complex runtime evidence is explicitly reused only for unchanged F4 paths; no claim of 74 final-release passes.",
+  "current_iteration": "I5/I6 local implementation,74-case functional evidence consolidation,exact PG18.6 migration/scaling and final browser acceptance complete; current batch awaits one-shot commit-plan confirmation, production prerequisites separate.",
+  "historical_acceptance_scope": "74 functional case entries passed across I1-I6 with original image/source/layer identities retained. This is not74 executions on F4 or a production/performance release gate. F4 reuses only proven unchanged backend paths from F3/F2/F1 under final source audit.",
   "diagnostic_progress_updated_utc": "2026-10-19T17:47:47.919276+00:00",
   "production_deployed": false,
   "remote_branch_pushed": false,
   "status_counts": {
-    "passed": 62,
-    "not_run": 7,
-    "partial": 5
+    "passed": 74,
+    "partial": 0,
+    "not_run": 0
   },
   "I4_gate_accepted": true,
-  "frozen_evidence_updated_utc": "2026-10-20T00:09:53.446636+00:00",
-  "current_round_production_deployment_deferred": true
+  "frozen_evidence_updated_utc": "2026-10-20T03:00:03.922495+00:00",
+  "current_round_production_deployment_deferred": true,
+  "historical_authorization_scope": "production_deployment_authorized and remote_push_authorized retain prior-round history, not authority to apply unspecified current allocations or automatically push this unreviewed I5/I6 batch.",
+  "current_round_remote_push_authorized": false,
+  "production_version_rehearsal": "PASS exact production PG18.6 image/binary/version180006. Full retry12top/0fail/0skip,0/10k/100k/300k,300289 actual request+ledger rows. Original disk interruption retained. Synthetic amd64-on-arm64 capacity results do not establish representative production timing/SLO.",
+  "current_batch_commit_status": "pending_one_shot_review",
+  "production_version_rehearsal_evidence": [
+    "office-PG18.6-runtime-provenance.json",
+    "office-PG18.6-rehearsal-20261020T025846Z.json",
+    "office-PG18.6-performance-20261020T025846Z.json",
+    "I6-PG18.6-rehearsal-receipt.md"
+  ],
+  "performance_limits": {
+    "postgres18_6_300k_gpt_throughput_decline_percent": 19.29,
+    "postgres18_6_300k_claude_apply_p95_ms": 116.195375,
+    "postgres18_1_prior_300k_gpt_throughput_decline_percent": 30.0,
+    "production_slo_provided": false,
+    "cross_version_improvement_claim": false
+  }
 }

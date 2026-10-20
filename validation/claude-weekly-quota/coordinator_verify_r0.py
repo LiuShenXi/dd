@@ -3,6 +3,7 @@
 Only selected non-secret image metadata is persisted. The local container runs
 sha256sum with networking disabled; it never starts the application.
 """
+import argparse
 import hashlib
 import json
 import subprocess
@@ -11,10 +12,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--export', type=Path, default=ROOT / 'coordinator-r0-export-20261019T170157Z.json')
+parser.add_argument('--output', type=Path, default=ROOT / 'coordinator-r0-provenance.json')
+args = parser.parse_args()
 EXPECTED = 'sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677'
 TAG = 'sub2api:2.8.13-monas-bps.13'
-export = json.loads((ROOT / 'coordinator-r0-export-20261019T170157Z.json').read_text())
-archive = Path(export['private_archive'])
+export = json.loads(args.export.read_text())
+archive = Path(export.get('private_archive') or export['archive_path'])
 with archive.open('rb') as f:
     assert hashlib.file_digest(f, 'sha256').hexdigest() == export['archive_sha256']
 
@@ -41,7 +46,7 @@ def output(args):
     return subprocess.check_output(args, text=True, encoding='utf-8', timeout=90).strip()
 
 local = json.loads(output(['docker', 'image', 'inspect', TAG]))[0]
-assert local['Id'] == config_digest
+assert local['Id'] in (config_digest, EXPECTED)
 assert local['RootFS']['Layers'] == config['rootfs']['diff_ids']
 remote_script = '''import json,subprocess
 def run(a): return subprocess.check_output(a,text=True).strip()
@@ -54,7 +59,7 @@ remote = json.loads(proc.stdout)
 assert remote['image_id'] == remote['container_image_id'] == EXPECTED
 assert remote['descriptor']['digest'] == EXPECTED
 assert remote['rootfs']['Layers'] == local['RootFS']['Layers']
-binary = output(['docker', 'run', '--rm', '--network', 'none', '--entrypoint', 'sha256sum', config_digest, '/app/sub2api']).split()[0]
+binary = output(['docker', 'run', '--rm', '--platform', 'linux/amd64', '--network', 'none', '--entrypoint', 'sha256sum', local['Id'], '/app/sub2api']).split()[0]
 assert binary == remote['binary_sha256'] == '85d991720e15993813fdfdddc408852fefe90c54314e760d68765cf5ba0767cd'
 revision = (local['Config'].get('Labels') or {}).get('org.opencontainers.image.revision')
 assert revision == remote['revision'] == '8d869d41f40d6eedbe2ee05aaf8973145cccbe4d'
@@ -64,7 +69,8 @@ receipt = {
     'production_oci_index_digest': EXPECTED,
     'platform': platforms[0]['platform'],
     'platform_manifest_digest': platforms[0]['digest'],
-    'config_digest_and_classic_import_id': config_digest,
+    'config_digest': config_digest,
+    'local_image_id': local['Id'],
     'production_engine': remote['engine_version'],
     'local_engine': output(['docker', 'version', '--format', '{{.Server.Version}}']),
     'rootfs_diff_ids_identical': True,
@@ -75,8 +81,9 @@ receipt = {
     'local_probe_network': 'none',
     'production_modified': False,
     'provenance_verified': True,
-    'id_difference_explanation': 'The production containerd store reports the OCI index digest; the classic Docker image store reports its linux/amd64 image configuration digest. The exported OCI graph, local RootFS, labels and executable match production.',
+    'id_representation': 'OCI index' if local['Id'] == EXPECTED else 'classic image configuration',
+    'id_difference_explanation': 'Containerd image stores report the OCI index digest; classic Docker image stores report its linux/amd64 image configuration digest. The exported OCI graph, local RootFS, labels and executable match production.',
 }
-path = ROOT / 'coordinator-r0-provenance.json'
+path = args.output
 path.write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
 print(json.dumps(receipt, indent=2))

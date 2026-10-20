@@ -1,0 +1,34 @@
+{
+  "step": "second",
+  "started_utc": "2026-10-20T02:12:38.811589+00:00",
+  "tests": [
+    "TestSubscriptionQuotaI4V2PrepareSecondInstance"
+  ],
+  "command": [
+    "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-conversion-final.test",
+    "-test.v",
+    "-test.parallel=1",
+    "-test.timeout=10m",
+    "-test.run=^TestSubscriptionQuotaI4V2PrepareSecondInstance$"
+  ],
+  "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+  "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "driver_sha256": "2edc77929fad8a39f28350ebc906e31b2771958f006b9de046835aa06665e793",
+  "test_source_sha256": "9f075f559e941f8f4087b09013f719de16ca002671be15bd3c5a697e452e3415",
+  "runner_sha256": "c1e97d9cb10c035a49bc0fcd712154d31e0e4a2130f5b82049f3d061545f2e3f",
+  "network": "cwq-env-i6-conversion-v3-20261020",
+  "network_subnet": "10.247.195.0/28",
+  "private_fixture": "/Users/shenxi/.codex/private/claude-weekly-quota/office-conversion-v3/synthetic-fixture.json",
+  "synthetic_only": true,
+  "production_modified": false,
+  "exit_code": 0,
+  "finished_utc": "2026-10-20T02:12:43.548086+00:00",
+  "top_level_pass": 1,
+  "fail": 0,
+  "skip": 0,
+  "driver_stable": true,
+  "test_source_stable": true,
+  "raw_log_sha256": "f570e7b2d41aba5ee153c8b129a22651e57348891b3a7719d558402922413312",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-conversion-v3/second-20261020T021238Z.log",
+  "pass": true
+}

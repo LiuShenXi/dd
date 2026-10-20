@@ -1,0 +1,91 @@
+{
+  "captured_utc": "2026-10-20T03:06:39.180083+00:00",
+  "status": "local_implementation_validation_complete_pending_commit_confirmation",
+  "source_matches_final_F4": true,
+  "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+  "final_r2_image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122",
+  "final_r1_image_id": "sha256:c8083c2153e7d43598fd36b5c50f54667de05e34d62e72f609ae4110e05f9cee",
+  "build_receipt_status_note": "Build receipt is immutable build-time evidence. Its pending-runtime wording is superseded for local acceptance by the scoped gates here; unchanged backend paths retain their actual F1/F2/F3 executions.",
+  "checked_changed_paths": 244,
+  "parsed_changed_json_files": 90,
+  "commit_plan_covers_every_dirty_path_once": true,
+  "staged_files": 0,
+  "unrecognized_files": [],
+  "secret_patterns": [
+    "private_key",
+    "long_sk_token",
+    "jwt_literal",
+    "credential_json_literal"
+  ],
+  "potential_secret_findings": [],
+  "scan_limits": "Pattern scan plus source review, not proof against arbitrary unknown secrets. Synthetic credentials,raw provider responses,dumps remain outside Git.",
+  "git_diff_check_pass": true,
+  "browser_receipt": "office-I6-browser-receipt.json",
+  "final_pg_receipt": "office-PG18.6-rehearsal-20261020T025846Z.json",
+  "actual_runtime_gates": {
+    "wallets": {
+      "receipt": "office-I6-wallets-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    },
+    "metadata": {
+      "receipt": "office-I6-metadata-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    },
+    "mixed": {
+      "receipt": "office-I6-mixed-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    },
+    "pools": {
+      "receipt": "office-I6-pools-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    },
+    "boundary": {
+      "receipt": "office-I6-boundary-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    },
+    "redis-fault": {
+      "receipt": "office-I6-redis-fault-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    },
+    "lost-lease": {
+      "receipt": "office-I6-lost-lease-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    },
+    "long-sse": {
+      "receipt": "office-I6-long-sse-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    },
+    "promotion": {
+      "receipt": "office-I6-promotion-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    },
+    "metrics": {
+      "receipt": "office-I6-metrics-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    },
+    "ws": {
+      "receipt": "office-I6-ws-receipt.json",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "pass": true
+    }
+  },
+  "compatible_rollback_receipt": "office-F3-rollback-20261020T023709Z.json",
+  "source_reuse_audit": "office-I6-final-source-audit.json",
+  "functional_matrix": "coordinator-acceptance.json",
+  "functional_case_count": 74,
+  "unique_test_count_claimed": false,
+  "production_modified": false,
+  "new_commit_created": false,
+  "pushed": false,
+  "production_capacity_certified": false
+}

@@ -1,0 +1,7 @@
+{
+  "long_sse_runner_loaded_sha256": "071c0127a417fe3d8460ea1539c8301336bddf2e8d7a7ad6a82a0845d03526ce",
+  "runner_sha256_sampled_at_completion": "58a64096e616852da571aef80eb70366dbab25ef57510ae1e638ea94690fce2b",
+  "explanation": "During long SSE, the orchestration file gained only the promotion step and its separate test-driver selection. Python had already loaded the old module and launched the unchanged immutable long-SSE native driver. The existing receipt hashes runner bytes at completion, not at load; this audit records that distinction. Product image and test binary were unchanged. Subsequent metrics/promotion loads the new module.",
+  "changes": "Add STEPS promotion and select repository-promotion-final.test only for that new step.",
+  "long_sse_command_and_driver_unchanged": true
+}

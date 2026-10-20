@@ -1,0 +1,23 @@
+{
+  "step": "metrics",
+  "started_utc": "2026-10-20T02:29:28.953273+00:00",
+  "finished_utc": "2026-10-20T02:29:42.333830+00:00",
+  "exit_code": 1,
+  "tests": [
+    "TestSubscriptionQuotaI6RuntimeScopeMetricEvidence"
+  ],
+  "top_level_pass": 0,
+  "all_pass": 0,
+  "fail": 1,
+  "skip": 0,
+  "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+  "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "driver_sha256": "d5c5c1757fe08a7d65d7f837ace6c6f4576b8e0fdded3985ef838f5ad02640b5",
+  "driver_stable": true,
+  "runner_sha256": "58a64096e616852da571aef80eb70366dbab25ef57510ae1e638ea94690fce2b",
+  "raw_log_sha256": "d5f99fc6be3216d9d25a1e946646e0870edea4aeae01722781cf299e9df87a83",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/metrics.log",
+  "synthetic_only": true,
+  "production_modified": false,
+  "pass": false
+}

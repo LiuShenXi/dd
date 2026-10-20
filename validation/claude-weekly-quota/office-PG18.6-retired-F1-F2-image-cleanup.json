@@ -1,0 +1,45 @@
+{
+  "checked_utc": "2026-10-20T02:44:04.496361+00:00",
+  "removed_images": [
+    {
+      "release": "F1",
+      "role": "r1",
+      "tag": "sub2api:claude-weekly-i6-r1-2ceb119eb44d",
+      "image_id": "sha256:7d78d912b323875ca61a4c9c716b0018716f361a7146a1443bd94c6882b3523a",
+      "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+      "container_reference_count": 0
+    },
+    {
+      "release": "F1",
+      "role": "r2",
+      "tag": "sub2api:claude-weekly-i6-r2-2ceb119eb44d",
+      "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+      "container_reference_count": 0
+    },
+    {
+      "release": "F2",
+      "role": "r1",
+      "tag": "sub2api:claude-weekly-i6-r1-56f189a7e2c4",
+      "image_id": "sha256:9940143ccd871a797893e37b685d211996ce4b75e930747f84d7a099be9e6dc8",
+      "source_sha256": "56f189a7e2c4c32a96ea439d15687e809f9839670f63181e5312851642b757a4",
+      "container_reference_count": 0
+    },
+    {
+      "release": "F2",
+      "role": "r2",
+      "tag": "sub2api:claude-weekly-i6-r2-56f189a7e2c4",
+      "image_id": "sha256:3e18edda6b675cb73d108c92acf139dfe1f6e45b92e5abc8aef1594d2eec39f3",
+      "source_sha256": "56f189a7e2c4c32a96ea439d15687e809f9839670f63181e5312851642b757a4",
+      "container_reference_count": 0
+    }
+  ],
+  "force": false,
+  "global_prune": false,
+  "R0_F3_preserved": true,
+  "shared_postgres_preserved": true,
+  "free_bytes_before": 3034361856,
+  "free_bytes_after": 3034300416,
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office/pg186-retired-F1-F2-image-cleanup.log",
+  "private_log_sha256": "ab45a65bd55b01497b12df343e367e1e9932f33caa26adce7e090c39a8b997c0"
+}

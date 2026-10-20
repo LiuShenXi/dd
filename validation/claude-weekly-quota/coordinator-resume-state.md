@@ -1,49 +1,53 @@
-# Resume checkpoint — accepted I4, office continuation
+# Resume checkpoint — I5/I6 office implementation
 
-Latest user direction: finish current I4, commit/push remote, then stop for
-continuation at the office. Do not start I5/I6 or deploy as part of this round.
-The final delivery response identifies the actual remote HEAD.
+Current checkout: `/Users/shenxi/Desktop/WORK-SPACE/dd`.
+Branch: `codex/claude-weekly-quota`, baseline HEAD/origin
+`203047edaf09f17fc9e73bf4a3541b5fc190b282`.
+Latest user scope: pull latest dedicated Claude carpool branch and finish the
+remaining work. Earlier I4 stop/commit/push notes are historical, archived as
+`office-previous-I4-coordinator-resume-state.md` and must not override this request.
 
-Repository: https://github.com/LiuShenXi/dd.git, branch codex/claude-weekly-quota.
-Local isolated worktree: C:/Users/Administrator/.codex/worktrees/claude-weekly-quota/dd.
-Production baseline: 8d869d41f40d6eedbe2ee05aaf8973145cccbe4d.
-Accepted I3 commit: 9005acffad8f9b30975ea3dd27e82095eb9e5520.
-Never use the old dirty C:/WORK-SPACE/dd as the baseline or overwrite reference worktrees.
+Read coordinator-current-status.md, coordinator-I5-I6-review.md,
+coordinator-acceptance.json, office-I6-final-source-audit.json,
+office-I6-browser-receipt.json, I6-PG18.6-rehearsal-receipt.md,
+I6-production-handoff.md and I6-pending-obligations.md.
 
-Read architecture README.md and sol-handoff.md, coordinator-current-status.md,
-coordinator-I4-review.md, coordinator-acceptance.json, I4-next-machine-handoff.md,
-then implement.md I5/I6, test-plan.md and traceability.md. The v2 concurrency
-supplement remains mandatory: Claude default3, independent per-user override/pool,
-GPT settings unchanged. Use gpt-6.1-sol xhigh development workers as requested;
-coordinator handles scheduling/acceptance. Backend, frontend/review and isolated
-environment were separate worker responsibilities; main developer owns commits.
+Implementation and actual browser verification complete on F4:
+source `8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af`;
+R2 `sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122`;
+R1 `sha256:c8083c2153e7d43598fd36b5c50f54667de05e34d62e72f609ae4110e05f9cee`.
+Backend identical to F3; F4 fixes actual AdminOrdersView route, guards legacy
+refund actions and displays frozen rights/sale price. Final native test driver
+for PG is private `office/repository-promotion-final3.test`, SHA
+`c228980169044eff0a381975577a2e717bd541cf197fb1baa84241e6cf3b8969`.
+F1 16m SSE/promotion/metrics completed; do not restart or relabel those runs.
+F2/F3 actual rollback and F3/F4 CUA are complete with per-image evidence.
 
-F4 source9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c;
-image4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9.
-Two auth-projection business files changed after F2/F3 runtime tests: native auth
-select includes the Claude override; old snapshots are invalidated usingv28.
-F4 regression/race/native PG/Redis/HTTP/browser gates passed. Source manifests,
-failed runs and diagnostic receipts remain recoverable via the evidence archive
-index. Never relabel older complex runtime tests as F4 executions.
+Final PG18.6 retry passed12top/0fail/0skip, all0/10k/100k/300k scales and
+300289 actual rows, on the exact verified production-version image. Receipt:
+office-PG18.6-rehearsal-20261020T025846Z.json; raw first failure is preserved.
+No WAL or scale workaround was used. The final18.6 mixed-burst GPT throughput
+fell19.3%; the older18.1 run's30% is separate, not a before/after improvement
+claim. Representative production data/hardware/window and operational budget
+remain deployment inputs.
 
-Browser used user Chrome/CUA. Standalone script was never executed. Synthetic C
-retains current100/queued75,2terms/2operations,Claude4/GPT5 and zero consumption.
-Real response drop caused automatic transport replay; separate commit+proxy503
-enabled manual same-intent retry. Synthetic409 was before upstream. D retains
-historical13 then17, both168h: held refresh/timeout preserved old amounts and a
-fresh actual Retry selected17. No fixture finances were reset to fabricate passes.
-Credentials are outside git in LocalAppData/Codex/PrivateTests. Do not publish or
-migrate them; rebuild fresh isolated fixtures at the office.
+Outstanding local step: reviewed batched commit confirmation. See
+`office-I5-I6-commit-plan.md` for every path and two proposed messages;
+`office-I5-I6-final-verification.json` records final source/diff/secret checks.
 
-Next implementation: I5 paid plans/order immutable snapshots, frozen604800s and
-exact8 quota, fulfillment/replay/refund/lease-version safeguards and recovery.
-I6 remains controlled conversion, observability, pool activation/rollback,
-PG18.6 production-scale migration rehearsal, performance and final latest-DB
-R0→R1→R2→R1 rehearsal. Preparation files are not completion evidence.
+Synthetic runtime/browser fixtures were saved privately and removed after
+acceptance. Inspect their cleanup receipts rather than assuming URLs, containers
+or old F1/F2/F3 images still exist. Secrets, synthetic DB dumps and raw logs are
+under `/Users/shenxi/.codex/private/claude-weekly-quota/` and must never be added
+to Git. Build/source hashes and failure attempts remain public evidence.
 
-Production is unchanged. Before any later release recheck main-server image,
-revision/program digest/migrations. Last verified deployment is single Compose
-/opt/sub2api2/docker-compose.migrated.yml with Nginx to29080; do not blindly use
-historical blue-green commands. Read coordinator-release-preparation.md and retain
-latest DB on rollback. No production card recipients, conversion quota list or
-paid probe identity were supplied; do not invent them.
+Do not stage/commit/push before the workflow's one-shot reviewed commit plan.
+No journal developer exists and Trellis CLI/scripts are absent; do not write
+under another person's identity. Preserve all real user/production data.
+
+Recorded production is main-server single Compose projectsub2api2/service
+sub2api/container sub2api2, config/opt/sub2api2/docker-compose.migrated.yml,
+Nginx→127.0.0.1:29080. R0 `.13` provenance is verified. No production changes
+were made. Release needs explicit business allocations, maintenance budget,
+current inventory/backup and authorized probe identity; historical BWH blue/green
+commands and old authorization do not fill missing decisions.

@@ -1,0 +1,20 @@
+{
+  "checked_utc": "2026-10-20T02:43:47.533414+00:00",
+  "exact_cache_ids": [
+    "mmefuq98x3g6suoymzslttv6s",
+    "jjltr9wnhjm8pgi3ipz8nlpml",
+    "p0s5kz498n2g9qt5ljds4q412"
+  ],
+  "filter": "id=^(mmefuq98x3g6suoymzslttv6s|jjltr9wnhjm8pgi3ipz8nlpml|p0s5kz498n2g9qt5ljds4q412)$",
+  "before_match_count": 3,
+  "all_before_unshared_immutable_reclaimable": true,
+  "after_match_count": 0,
+  "free_bytes_before": 2791583744,
+  "free_bytes_after": 2791567360,
+  "global_prune": false,
+  "source_context_removed": false,
+  "images_removed": false,
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office/pg186-exact-build-cache-cleanup.log",
+  "private_log_sha256": "7fc8870185372718f359a21010a5448a3da86fe03fe394b490f898d2b089a5d1",
+  "command_exit_code": 0
+}

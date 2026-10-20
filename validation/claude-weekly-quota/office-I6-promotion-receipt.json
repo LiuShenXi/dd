@@ -1,0 +1,23 @@
+{
+  "step": "promotion",
+  "started_utc": "2026-10-20T02:39:04.572926+00:00",
+  "finished_utc": "2026-10-20T02:39:11.067510+00:00",
+  "exit_code": 0,
+  "tests": [
+    "TestSubscriptionQuotaI6RuntimeClaudeQueuePromotion"
+  ],
+  "top_level_pass": 1,
+  "all_pass": 1,
+  "fail": 0,
+  "skip": 0,
+  "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+  "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "driver_sha256": "c228980169044eff0a381975577a2e717bd541cf197fb1baa84241e6cf3b8969",
+  "driver_stable": true,
+  "runner_sha256": "f95b266db92c30ed8922bbb6f4f68ce36d60f7588c82e496428d70b0231b2b1e",
+  "raw_log_sha256": "b8d08574af9b8530ac02083d84b1f660f65c662fc204486b0beff231099a9e47",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/promotion.log",
+  "synthetic_only": true,
+  "production_modified": false,
+  "pass": true
+}

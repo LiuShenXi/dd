@@ -1,0 +1,24 @@
+{
+  "cleaned_utc": "2026-10-20T02:19:26.841810+00:00",
+  "run_id": "cwq-i4-4ccc74df858445fa",
+  "containers_removed": {
+    "Application": "309dbe192e3715fe940f9f9aa388faa80848242c254bf2e831a0185e39e05485",
+    "Application2": "9a7bafcc6504ad09c175b856e3cd312938c043e15c1d7861af13a01373035aec",
+    "Provider": "80c5b4dca7b39f877a99be8ad72d0eb38955831bfbfaea7c78c031527cde9bca",
+    "Redis": "3e538b0163062b5e2931414f473e25161b3727c99efe22f248c0553792545377",
+    "Postgres": "aef8909e37109573f150033adf9d310f05274bd6a244c09149eeeaa052dfa111"
+  },
+  "network_removed": "cwq-env-i6-conversion-v4-20261020",
+  "subnet": "10.247.196.0/28",
+  "volume_removed": "cwq-i4-4ccc74df858445fa-pgdata",
+  "foreground_bridges_stopped": [
+    98141,
+    98412
+  ],
+  "private_records_retained": "/Users/shenxi/.codex/private/claude-weekly-quota/office-conversion-v4",
+  "application_logs_sha256": {
+    "Application": "4f98b5ebd90df401e01a6aa753dedc1f78f4168e26569478ba730c138c642a33",
+    "Application2": "df36e2d474135b50659bb81f552c8e4f4503fdecfb38456a4249d453aff08d24"
+  },
+  "main_fixture_modified": false
+}
