@@ -413,6 +413,44 @@ class HostReleaseTests(unittest.TestCase):
         self.assertTrue(self.sys.info['blue']['State']['Running'])
         self.assertEqual(self.controller.state['retirements']['blue']['phase'], 'restart_disable_requested')
 
+    def replace_retired_blue(self):
+        self.c['slots']['blue']['preserve_mode_required'] = True
+        self.sys.info['blue'] = copy.deepcopy(self.sys.info['green'])
+        self.sys.info['blue'].update(Id='replacement-blue', Image=self.c['slots']['blue']['image_id'])
+        self.sys.info['blue']['State']['StartedAt'] = '2026-10-20T01:00:00Z'
+        self.sys.statuses['blue'] = copy.deepcopy(self.sys.statuses['green'])
+        self.sys.statuses['blue']['background_jobs'].update(state='held', instance_id='replacement-blue')
+
+    def test_second_release_reuses_slot_without_inheriting_predecessor_drain(self):
+        self.installed()
+        self.controller.release('green', 3)
+        predecessor = copy.deepcopy(self.controller.state['retirements']['blue']['identity'])
+        self.replace_retired_blue()
+        self.controller.release('blue', 3)
+        self.assertEqual(self.controller.state['active_slot'], 'blue')
+        self.assertNotIn('blue', self.controller.state['retirements'])
+        self.assertIn(predecessor, self.controller.state['stopped_processes'])
+        self.assertFalse(self.sys.info['green']['State']['Running'])
+        self.assertEqual(self.sys.statuses['blue']['background_jobs']['state'], 'active')
+        self.assertFalse(any('replacement-blue' in event[1] for event in self.stops()))
+
+    def test_slot_replacement_rejects_unresolved_or_unknown_predecessor(self):
+        self.installed()
+        self.controller.release('green', 3)
+        self.replace_retired_blue()
+        record = self.controller.state['retirements']['blue']
+        original = copy.deepcopy(record)
+        for change in [dict(phase='stop_requested'), dict(identity={'container_id': 'unknown'}),
+                       dict(identity={**original['identity'], 'container_id': 'replacement-blue'})]:
+            with self.subTest(change=change):
+                record.clear()
+                record.update({**original, **change})
+                before = Path(self.c['upstream_file']).read_bytes()
+                with self.assertRaises(host.ReleaseError):
+                    self.controller.switch('blue')
+                self.assertEqual(Path(self.c['upstream_file']).read_bytes(), before)
+                self.assertTrue(self.sys.info['green']['State']['Running'])
+
     def test_stop_response_crash_resumes_by_inspection_without_second_stop(self):
         self.installed()
         self.sys.crash_stop_response = True

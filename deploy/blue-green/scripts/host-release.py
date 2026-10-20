@@ -419,7 +419,16 @@ class Controller:
             old = self.state['active_slot']
             old_identity, _ = self.ready(old)
             require(read_file(self.c['upstream_file']) == self.upstream(old), 'Upstream drift before cutover')
-            require(not self.state['retirements'].get(target, {}).get('operation_id'), 'Target has a drain operation; use rollback')
+            previous = self.state['retirements'].get(target)
+            if previous and not (rollback and previous.get('phase') == 'cancelled'
+                                 and previous.get('operation_id') is None
+                                 and previous.get('identity') == identity):
+                predecessor = previous.get('identity', {})
+                require(previous.get('phase') == 'stopped'
+                        and predecessor in self.state['stopped_processes']
+                        and predecessor.get('container_id') != identity['container_id']
+                        and self.slot(target).get('preserve_mode_required', True),
+                        'Target has an unresolved retirement; use rollback or reconcile the exact process')
             observation = self.sys.observe(self.c)
             tx = {'kind': 'switch', 'from': old, 'to': target, 'old_identity': old_identity, 'target_identity': identity, 'workers': observation['workers'], 'master': observation['master']}
             self.state['transition'] = tx
