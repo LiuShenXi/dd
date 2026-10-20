@@ -1,0 +1,18 @@
+{
+  "utc": "2026-10-20T04:38:55.880778+00:00",
+  "http_status": 200,
+  "model": "claude-haiku-4-5-20251001",
+  "stop_reason": "end_turn",
+  "content": [
+    {
+      "text": "OK.",
+      "type": "text"
+    }
+  ],
+  "usage": {
+    "input_tokens": 4105,
+    "output_tokens": 1
+  },
+  "request_id": "2d9ac538-6284-4f36-8621-be154feb75bc",
+  "message_id": "msg_1d326946674845558bd6b7384a7f2d65"
+}

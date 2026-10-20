@@ -1,3 +1,19 @@
+# 最新：2026-10-20 UI 精简已发布（覆盖下方历史状态）
+
+用户明确取消并发整条和卡内请求用量表，已删除并复用现有使用记录。当前 green / sub2api2-green / 29081，.2 / bbb4903c4 / cb20cb0f9c56，蓝槽已自然排空停止。Group7 仍启用，管理员真实开卡、调用与结算已验证，临时 Key 已停用。生产界面、250次健康采样及受影响测试通过。最终回执：`ui-activation-20261020/cleanup-release.md`，教程：`docs/CLAUDE_WEEKLY_CARD_GUIDE.md`。不恢复已取消的界面，不启动子代理，不 push/main merge。
+
+---
+
+# Current state: production UI flow verified 2026-10-20
+
+User explicitly accepts existing UI and requested actual UI opening on the administrator account. No further subagents (user instruction). Actual production browser created group7, entered maintenance, previewed an explicit empty conversion, confirmed, released maintenance, then opened a 1 USD card for user1. Browser created key101; live Haiku call returned200/end_turn and settled0.000822 against term1, remaining0.999178. Browser showed the actual usage row. Temporary key disabled; card retained. Do not issue other customer quotas without their amounts.
+
+Active newblue sub2api2:29080/container778ebf12a698; same app image1ef6ac26/cace0104c. Green stopped/restart=no; R0 archived under sub2api2-r0-retired-20261020 and never restart. Only group7 enabled/protected; issue/admission/recovery true. New group uses the existing20-model whitelist, withoutFable. PG/Redis untouched. Reconciletimer active/already_active. Both future slot configurations retain group7 flags. Controller replacement-slot fix9118cb379 deployed;34controller/24reconciletests passed. Actual second release and544 two-domain health samples all200. Commit docs/evidence includes guide at docs/CLAUDE_WEEKLY_CARD_GUIDE.md and validation/claude-weekly-quota/ui-activation-20261020/.
+
+No frontend/backend application changes this correction, no image rebuild, no push/main merge. Task metadata manually completed; Trellis scripts/developer identity absent. Prior compatible-mode/no-card records below are historical and superseded.
+
+## Historical prior checkpoint
+
 # Resume checkpoint — production released
 
 Current request is complete: commits and main-server deployment authorized by

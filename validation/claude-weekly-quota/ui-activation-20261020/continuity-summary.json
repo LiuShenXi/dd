@@ -1,0 +1,17 @@
+{
+  "utc": "2026-10-20T04:42:30.079151+00:00",
+  "start": "2026-10-20T04:33:21.086980+00:00",
+  "end": "2026-10-20T04:42:28.084693+00:00",
+  "samples": 544,
+  "all_200": true,
+  "domains": {
+    "sub2api.monasapi.com": {
+      "samples": 272,
+      "failures": 0
+    },
+    "teamsub2.monasapi.com": {
+      "samples": 272,
+      "failures": 0
+    }
+  }
+}

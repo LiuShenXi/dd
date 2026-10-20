@@ -1,0 +1,112 @@
+{
+  "utc": "2026-10-20T04:39:30.392615+00:00",
+  "summary": {
+    "group_id": 7,
+    "quota_mode": "term",
+    "revision": 1,
+    "server_time": "2026-10-20T04:39:30.399032Z",
+    "current_term": {
+      "id": 1,
+      "group_id": 7,
+      "subscription_id": 1,
+      "term_no": 1,
+      "quota_usd": "1.00000000",
+      "used_usd": "0.00082200",
+      "pending_usd": "0.00000000",
+      "remaining_usd": "0.99917800",
+      "status": "active",
+      "lifecycle_state": "active",
+      "starts_at": "2026-10-20T12:37:02.847251+08:00",
+      "expires_at": "2026-10-27T12:37:02.847251+08:00",
+      "cancelled_at": null,
+      "revision": 1,
+      "unsettled_request_count": 0
+    },
+    "last_term": null,
+    "next_terms": []
+  },
+  "requests": {
+    "items": [
+      {
+        "id": 1,
+        "request_id": "subquota:6c6c4f54-9dcb-419b-a2af-6b02c930984c",
+        "user_id": 1,
+        "group_id": 7,
+        "term_id": 1,
+        "api_key_id": 101,
+        "status": "settled",
+        "revision": 2,
+        "actual_cost_usd": "0.00082200",
+        "admitted_at": "2026-10-20T12:38:54.437389+08:00",
+        "updated_at": "2026-10-20T12:38:55.677167+08:00",
+        "settled_at": "2026-10-20T12:38:55.677167+08:00",
+        "last_error_category": null
+      }
+    ],
+    "next_cursor": null,
+    "has_more": false
+  },
+  "group": {
+    "id": 7,
+    "name": "Claude 周卡 · 独立额度",
+    "platform": "anthropic",
+    "status": "active",
+    "subscription_type": "subscription",
+    "subscription_quota_mode": "term",
+    "rate_multiplier": 0.2,
+    "account_count": 1
+  },
+  "containers": [
+    {
+      "name": "sub2api2",
+      "id": "778ebf12a69854d7afd4e25e58f49b036f7683c88738f36a40f6550bfe296147",
+      "image": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+      "running": true,
+      "started_at": "2026-10-20T04:32:59.671724642Z",
+      "restarts": 0,
+      "restart_policy": "unless-stopped",
+      "health": "healthy"
+    },
+    {
+      "name": "sub2api2-green",
+      "id": "7002abf765e4d0808ad786a33a1ef0c31ae3fd1db89d12ce9e5301d7bcb14a55",
+      "image": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+      "running": false,
+      "started_at": "2026-10-20T03:56:02.662056444Z",
+      "restarts": 0,
+      "restart_policy": "no",
+      "health": "unhealthy"
+    },
+    {
+      "name": "sub2api2-r0-retired-20261020",
+      "id": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+      "image": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+      "running": false,
+      "started_at": "2026-10-18T15:19:07.917058186Z",
+      "restarts": 5,
+      "restart_policy": "no",
+      "health": "unhealthy"
+    },
+    {
+      "name": "sub2api2-postgres",
+      "id": "2a990fc99fa309e46fe120f794a4a8160fb71551097fdd1df536396a0f3b7ac8",
+      "image": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd",
+      "running": true,
+      "started_at": "2026-10-03T14:22:37.541743239Z",
+      "restarts": 0,
+      "restart_policy": "unless-stopped",
+      "health": "healthy"
+    },
+    {
+      "name": "sub2api2-redis",
+      "id": "80dafa8563483d27dfcaeddfa4aadbd2d2360fae6bbe75d7bac23858efaa7e4f",
+      "image": "sha256:bd999b5cfee25fb24b8320a31fddbd69f462df44c8138c66e369582937beebc0",
+      "running": true,
+      "started_at": "2026-10-03T14:22:37.350942259Z",
+      "restarts": 0,
+      "restart_policy": "unless-stopped",
+      "health": "healthy"
+    }
+  ],
+  "reconcile_timer": "active"
+}

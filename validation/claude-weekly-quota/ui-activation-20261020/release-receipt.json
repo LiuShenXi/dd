@@ -1,0 +1,120 @@
+{
+  "utc": "2026-10-20T04:34:08.831232+00:00",
+  "routes": [
+    {
+      "base": "http://127.0.0.1:29080",
+      "state": "open",
+      "background_jobs": {
+        "mode": "coordinated",
+        "state": "active",
+        "active_tasks": 0,
+        "instance_id": "7077937f64ae77967ecc9c9c918e04e4",
+        "leader": true
+      }
+    },
+    {
+      "base": "https://sub2api.monasapi.com",
+      "state": "open",
+      "background_jobs": {
+        "mode": "coordinated",
+        "state": "active",
+        "active_tasks": 0,
+        "instance_id": "7077937f64ae77967ecc9c9c918e04e4",
+        "leader": true
+      }
+    },
+    {
+      "base": "https://teamsub2.monasapi.com",
+      "state": "open",
+      "background_jobs": {
+        "mode": "coordinated",
+        "state": "active",
+        "active_tasks": 0,
+        "instance_id": "7077937f64ae77967ecc9c9c918e04e4",
+        "leader": true
+      }
+    }
+  ],
+  "state": {
+    "active_slot": "blue",
+    "background_activation": {
+      "confirmed": true,
+      "identity": {
+        "container_id": "778ebf12a69854d7afd4e25e58f49b036f7683c88738f36a40f6550bfe296147",
+        "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+        "started_at": "2026-10-20T04:32:59.671724642Z"
+      },
+      "instance_id": "7077937f64ae77967ecc9c9c918e04e4"
+    },
+    "cutover": {
+      "from": "green",
+      "kind": "switch",
+      "master": {
+        "pid": 3188,
+        "start_time": "149313"
+      },
+      "old_identity": {
+        "container_id": "7002abf765e4d0808ad786a33a1ef0c31ae3fd1db89d12ce9e5301d7bcb14a55",
+        "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+        "started_at": "2026-10-20T03:56:02.662056444Z"
+      },
+      "target_identity": {
+        "container_id": "778ebf12a69854d7afd4e25e58f49b036f7683c88738f36a40f6550bfe296147",
+        "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+        "started_at": "2026-10-20T04:32:59.671724642Z"
+      },
+      "to": "blue",
+      "workers": [
+        {
+          "pid": 345658,
+          "start_time": "293500345"
+        },
+        {
+          "pid": 345659,
+          "start_time": "293500345"
+        },
+        {
+          "pid": 345660,
+          "start_time": "293500345"
+        },
+        {
+          "pid": 345661,
+          "start_time": "293500345"
+        }
+      ]
+    },
+    "initial_identity": {
+      "container_id": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+      "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+      "started_at": "2026-10-18T15:19:07.917058186Z"
+    },
+    "installed": true,
+    "phase": "active",
+    "retirements": {
+      "green": {
+        "identity": {
+          "container_id": "7002abf765e4d0808ad786a33a1ef0c31ae3fd1db89d12ce9e5301d7bcb14a55",
+          "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+          "started_at": "2026-10-20T03:56:02.662056444Z"
+        },
+        "operation_id": "0c2a0c50b82378faecb372dd9e48ada6",
+        "phase": "stopped"
+      }
+    },
+    "stopped_processes": [
+      {
+        "container_id": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+        "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+        "started_at": "2026-10-18T15:19:07.917058186Z"
+      },
+      {
+        "container_id": "7002abf765e4d0808ad786a33a1ef0c31ae3fd1db89d12ce9e5301d7bcb14a55",
+        "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+        "started_at": "2026-10-20T03:56:02.662056444Z"
+      }
+    ],
+    "topology": "3ca2608e9b033b9a3c420acd8ec18ca6f6ddf7d58d7c118ebd37c48281ec5f4e",
+    "transition": null,
+    "version": 1
+  }
+}
