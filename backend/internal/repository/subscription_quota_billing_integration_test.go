@@ -313,24 +313,45 @@ func TestSubscriptionQuotaBilling_ServerIdentitiesAndSharedCardScope(t *testing.
 	unchanged()
 }
 
-func TestSubscriptionQuotaBilling_UnknownUsagePausesCurrentCardWithoutZeroCharge(t *testing.T) {
-	f := newSubscriptionQuotaBillingFixture(t)
-	f.rights.open(t, f.rights.userA, f.rights.input("open", "100", 0))
-	snapshot := f.admit(t, f.rights.userA, f.keyA)
-	unchanged := subscriptionQuotaBillingMoneyGuard(t, f.db)
-	require.NoError(t, f.port.MarkReconcileRequired(context.Background(), snapshot, "synthetic_usage_missing_after_client_disconnect"))
-	amounts := f.amounts(t, snapshot)
-	require.Equal(t, "reconcile_required", amounts.Status)
-	require.Equal(t, "NULL", amounts.RequestCost)
-	require.Equal(t, "0.00000000", amounts.Used)
-	require.Zero(t, amounts.LedgerRows)
-	require.Zero(t, amounts.LogRows)
-	_, err := f.port.AdmitRequest(context.Background(), f.admission(f.rights.userA, f.keyA2))
-	require.Error(t, err, "an unresolved current-card request must pause new admission for both Keys")
-	var requests int
-	require.NoError(t, f.db.QueryRow(`SELECT count(*) FROM subscription_quota_requests WHERE user_id=$1 AND group_id=$2`, f.rights.userA, f.rights.group).Scan(&requests))
-	require.Equal(t, 1, requests, "denial must not append a billable request")
-	unchanged()
+func TestSubscriptionQuotaBilling_UnknownUsageAllowsCurrentCardWithoutZeroCharge(t *testing.T) {
+	for _, reason := range []string{"usage_incomplete", "admission_stale", "pricing_failed"} {
+		t.Run(reason, func(t *testing.T) {
+			f := newSubscriptionQuotaBillingFixture(t)
+			f.rights.open(t, f.rights.userA, f.rights.input("open", "100", 0))
+			snapshot := f.admit(t, f.rights.userA, f.keyA)
+			unchanged := subscriptionQuotaBillingMoneyGuard(t, f.db)
+			require.NoError(t, f.port.MarkReconcileRequired(context.Background(), snapshot, reason))
+			amounts := f.amounts(t, snapshot)
+			require.Equal(t, "reconcile_required", amounts.Status)
+			require.Equal(t, "NULL", amounts.RequestCost)
+			require.Equal(t, "0.00000000", amounts.Used)
+			require.Zero(t, amounts.LedgerRows)
+			require.Zero(t, amounts.LogRows)
+			summary, err := f.rights.api.GetSummary(context.Background(), f.rights.userA, f.rights.group)
+			require.NoError(t, err)
+			require.Equal(t, "active", summary.CurrentTerm.Status)
+			require.EqualValues(t, 1, summary.CurrentTerm.UnsettledRequestCount)
+			require.Zero(t, summary.CurrentTerm.BlockingReconciliationCount)
+			continued := f.admit(t, f.rights.userA, f.keyA2)
+			require.Equal(t, snapshot.TermID, continued.TermID, "unknown usage must not hold the current card or another Key")
+			unchanged()
+			// Known pending costs still exhaust the card even with an unknown
+			// request, and a late trusted receipt still settles exactly once.
+			f.persist(t, continued, "100.00000000", "10.00000000")
+			_, err = f.port.AdmitRequest(context.Background(), f.admission(f.rights.userA, f.keyA))
+			require.ErrorIs(t, err, service.ErrSubscriptionQuotaExhausted)
+			_, command := f.persist(t, snapshot, "0.50000000", "0.05000000")
+			_, err = f.applier().Apply(context.Background(), command)
+			require.NoError(t, err)
+			replay, err := f.applier().Apply(context.Background(), command)
+			require.NoError(t, err)
+			require.False(t, replay.Applied)
+			amounts = f.amounts(t, snapshot)
+			require.Equal(t, "settled", amounts.Status)
+			require.Equal(t, "0.50000000", amounts.Used)
+			require.Equal(t, 1, amounts.LedgerRows)
+		})
+	}
 }
 
 // Insert synthetic immutable cards around a real database-clock boundary. Never
@@ -371,8 +392,8 @@ func TestSubscriptionQuotaBilling_OldUnknownDoesNotPauseNextCard(t *testing.T) {
 	old := f.admit(t, f.rights.userA, f.keyA)
 	require.Equal(t, oldTerm, old.TermID)
 	require.NoError(t, f.port.MarkReconcileRequired(context.Background(), old, "synthetic_old_card_missing_usage"))
-	_, err := f.port.AdmitRequest(context.Background(), f.admission(f.rights.userA, f.keyA2))
-	require.Error(t, err)
+	continued := f.admit(t, f.rights.userA, f.keyA2)
+	require.Equal(t, oldTerm, continued.TermID, "unknown usage must not hold the card before its boundary either")
 	subscriptionQuotaBillingWaitForClock(t, f.db, boundary)
 	next := f.admit(t, f.rights.userA, f.keyA2)
 	require.Equal(t, nextTerm, next.TermID)

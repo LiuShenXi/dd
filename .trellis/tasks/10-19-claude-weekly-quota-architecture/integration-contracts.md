@@ -42,7 +42,7 @@ GetAvailableGroups 和 Key 创建/换组的权限需支持有效 term 订阅；�
 
 后扣费仍允许已准入请求造成超额。为避免结算故障扩大已知欠记金额，准入使用：effective_used = term.used_usd + 同卡 usage_known 的 actual_cost_usd 合计。该合计在同 scope 锁下读取；settled 已在 used 中，不重复计算。
 
-effective_used 达到额度时拒绝新请求，已知未结算费用不另造 debit。未完成的 admitted 尚无金额，不猜费用。超过“该入口最大请求处理时间 + 可配置宽限”的 admitted 转为 reconcile_required；当前卡存在未解决核查请求时返回 TERM_RECONCILIATION_PENDING，暂停该卡新准入。旧卡的核查不阻止时间上已生效的新卡，更不影响 GPT。
+effective_used 达到额度时拒绝新请求，已知未结算费用不另造 debit。未完成的 admitted 尚无金额，不猜费用。超过“该入口最大请求处理时间 + 可配置宽限”的 admitted 转为 reconcile_required。2026-10-22 用户明确调整可用性策略：没有已知费用的待核查请求保留 NULL 金额及审计，但不暂停当前卡，也不将卡显示为 reconciling；迟到的可信用量仍可按正常幂等流程补结算。仅已有已知费用的核查冲突或 ledger_mismatch 返回 TERM_RECONCILIATION_PENDING。旧卡的核查不阻止时间上已生效的新卡，更不影响 GPT。
 
 迟到的可信 usage 可以把尚未存在已知凭据、也未被人工终结的 reconcile_required 收敛为 usage_known；已经有首份可信凭据、no_charge 或 settled 却收到矛盾事实只能告警和核查，不能覆盖原结果。自动恢复与人工 resolve 都须锁同 request，并校验 revision。
 

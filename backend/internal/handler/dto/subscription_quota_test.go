@@ -9,7 +9,7 @@ import (
 )
 
 func TestSubscriptionQuotaDTOPrivacyAndRequiredFields(t *testing.T) {
-	term := domain.SubscriptionQuotaTerm{ID: 1, UserID: 99, RawOverageUSD: "200.00000000", ReconcileRequiredCount: 4, QuotaUSD: "1.00000000", RemainingUSD: "0.00000000"}
+	term := domain.SubscriptionQuotaTerm{ID: 1, UserID: 99, RawOverageUSD: "200.00000000", BlockingReconciliationCount: 4, QuotaUSD: "1.00000000", RemainingUSD: "0.00000000"}
 	summary := SubscriptionQuotaSummaryFromDomain(&domain.SubscriptionQuotaSummary{CurrentTerm: &term, LastTerm: &term})
 	encoded, err := json.Marshal(summary)
 	require.NoError(t, err)

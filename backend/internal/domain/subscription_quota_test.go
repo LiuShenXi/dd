@@ -35,7 +35,7 @@ func TestSubscriptionQuotaProjectionBoundaries(t *testing.T) {
 	require.Equal(t, "exhausted", got.Status)
 	require.Equal(t, "110.00000000", got.UsedUSD)
 	require.Equal(t, "10.00000000", got.RawOverageUSD)
-	term.ReconcileRequiredCount = 1
+	term.BlockingReconciliationCount = 1
 	require.Equal(t, "reconciling", ProjectSubscriptionQuotaTerm(term, start).Status)
 	term.CancelledAt = &start
 	got = ProjectSubscriptionQuotaTerm(term, start)

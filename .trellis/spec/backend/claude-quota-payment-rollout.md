@@ -31,6 +31,18 @@ includes the entitlement, price or plan/user identifiers.
 
 ## 3. Contracts
 
+Unknown-use reconciliation does not hold a Claude card (user policy change,
+2026-10-22). Keep unknown requests as `reconcile_required` with NULL cost and
+their original audit evidence; exclude them from `BlockingReconciliationCount`
+for both admission and card projection. A request cancellation, incomplete
+stream or stale admission must not cause an indefinite card outage. Known
+consumption conflicts (`actual_cost_usd IS NOT NULL`) and `ledger_mismatch`
+still hold the original current card. Known pending costs, exhaustion, expiry,
+concurrency and independent GPT rights retain their existing checks. Late
+trusted usage follows the normal idempotent settlement path. An administrator
+may explicitly waive an individual unknown request through audited `no_charge`
+resolution; never silently infer a zero fee from missing usage.
+
 Sale price and quota are different values. A saleable term plan requires a
 strict positive default quota string with at most eight fractional digits
 (canonical storage has eight) and seven days. The UI unit is `days`; existing

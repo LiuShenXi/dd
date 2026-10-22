@@ -128,7 +128,7 @@ current_term 可以为 null，last_term 提供最近结束卡的状态；历史�
 | 409 | LEGACY_SUBSCRIPTION_OPERATION_UNSUPPORTED | 旧接口不能处理新模式 |
 | 429 | TERM_QUOTA_EXHAUSTED | 本卡额度耗尽 |
 | 503 | TERM_BILLING_UNAVAILABLE / TERM_ADMISSION_RETRY | 依赖失效或边界竞争，未发上游 |
-| 503 | TERM_RECONCILIATION_PENDING | 当前卡有待核查消费，暂不接受新请求 |
+| 503 | TERM_RECONCILIATION_PENDING | 当前卡有已知消费冲突或账本不一致，暂不接受新请求；未知用量待核查不触发拦截（2026-10-22） |
 | 503 | TERM_CONCURRENCY_NOT_CONFIGURED / TERM_CONCURRENCY_UNAVAILABLE | Claude 独立并发配置或 Redis 依赖不可用，不降级 GPT 池 |
 | 429 | TERM_CONCURRENCY_QUEUE_FULL / TERM_CONCURRENCY_WAIT_TIMEOUT | Claude 并发等待满或超时，不影响 GPT 队列 |
 

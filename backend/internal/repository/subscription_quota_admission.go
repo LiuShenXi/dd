@@ -135,7 +135,7 @@ func (r *subscriptionQuotaRepository) admitRequestOnce(ctx context.Context, p do
 	if platform != service.PlatformAnthropic || accountStatus != service.StatusActive || !schedulable || !member || accountType != p.ExpectedAccountType {
 		return nil, service.ErrSubscriptionQuotaBillingUnavailable
 	}
-	if selected.ReconcileRequiredCount > 0 {
+	if selected.BlockingReconciliationCount > 0 {
 		return nil, service.ErrSubscriptionQuotaReconciliation
 	}
 	allowed, _ := decimal.NewFromString(selected.QuotaUSD)

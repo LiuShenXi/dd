@@ -51,24 +51,26 @@ func DecodeSubscriptionQuotaCursor(cursor string) (int64, error) {
 }
 
 type SubscriptionQuotaTerm struct {
-	ID                     int64      `json:"id"`
-	GroupID                int64      `json:"group_id"`
-	SubscriptionID         int64      `json:"subscription_id"`
-	TermNo                 int64      `json:"term_no"`
-	QuotaUSD               string     `json:"quota_usd"`
-	UsedUSD                string     `json:"used_usd"`
-	PendingUSD             string     `json:"pending_usd"`
-	RemainingUSD           string     `json:"remaining_usd"`
-	Status                 string     `json:"status"`
-	LifecycleState         string     `json:"lifecycle_state"`
-	StartsAt               time.Time  `json:"starts_at"`
-	ExpiresAt              time.Time  `json:"expires_at"`
-	CancelledAt            *time.Time `json:"cancelled_at"`
-	Revision               int64      `json:"revision"`
-	UnsettledRequestCount  int64      `json:"unsettled_request_count"`
-	UserID                 int64      `json:"-"`
-	ReconcileRequiredCount int64      `json:"-"`
-	RawOverageUSD          string     `json:"-"`
+	ID                    int64      `json:"id"`
+	GroupID               int64      `json:"group_id"`
+	SubscriptionID        int64      `json:"subscription_id"`
+	TermNo                int64      `json:"term_no"`
+	QuotaUSD              string     `json:"quota_usd"`
+	UsedUSD               string     `json:"used_usd"`
+	PendingUSD            string     `json:"pending_usd"`
+	RemainingUSD          string     `json:"remaining_usd"`
+	Status                string     `json:"status"`
+	LifecycleState        string     `json:"lifecycle_state"`
+	StartsAt              time.Time  `json:"starts_at"`
+	ExpiresAt             time.Time  `json:"expires_at"`
+	CancelledAt           *time.Time `json:"cancelled_at"`
+	Revision              int64      `json:"revision"`
+	UnsettledRequestCount int64      `json:"unsettled_request_count"`
+	UserID                int64      `json:"-"`
+	// Unknown usage remains reviewable without holding the card. Only known
+	// consumption conflicts or a ledger mismatch contribute to this count.
+	BlockingReconciliationCount int64  `json:"-"`
+	RawOverageUSD               string `json:"-"`
 }
 
 // ProjectSubscriptionQuotaTerm is shared by all reads and exact-boundary tests.
@@ -88,7 +90,7 @@ func ProjectSubscriptionQuotaTerm(term SubscriptionQuotaTerm, now time.Time) Sub
 		term.Status = "scheduled"
 	case !now.Before(term.ExpiresAt):
 		term.Status = "expired"
-	case term.ReconcileRequiredCount > 0:
+	case term.BlockingReconciliationCount > 0:
 		term.Status = "reconciling"
 	case !remaining.IsPositive():
 		term.Status = "exhausted"

@@ -192,12 +192,15 @@ func TestSubscriptionQuotaI4V2RedisFaultCancelsActualUpstream(t *testing.T) {
 	require.Equal(t, legacyHeld, e.redisStrings(t, "ZRANGE", legacyKey, "0", "-1", "WITHSCORES"))
 	e.providerGate(t, false)
 	status, _, _ := e.post(t, "/v1/messages", e.BoundaryKey, false, false)
-	require.Equal(t, http.StatusServiceUnavailable, status, "unknown original request pauses its current card")
+	require.Equal(t, http.StatusOK, status, "unknown original usage must not pause the current card")
 	calls, _ := e.providerState(t)
-	require.Equal(t, beforeCalls, calls)
+	require.Equal(t, beforeCalls+1, calls, "a subsequent request must reach the upstream")
+	require.Eventually(t, func() bool {
+		return e.sql(t, `SELECT count(*) FILTER(WHERE status='reconcile_required' AND actual_cost_usd IS NULL)||'|'||count(*) FILTER(WHERE status='settled')||'|'||count(*) FILTER(WHERE status='no_charge') FROM subscription_quota_requests WHERE id>`+beforeRequest) == "1|1|0"
+	}, 12*time.Second, 100*time.Millisecond, "the interrupted request remains unknown while the next request settles normally")
 	require.Equal(t, foreign, e.sql(t, fmt.Sprintf(`SELECT md5(jsonb_agg(to_jsonb(t) ORDER BY id)::text) FROM subscription_quota_terms t WHERE id NOT IN (%d,%d)`, e.BoundaryTerm, e.BoundaryNext)))
 	require.Equal(t, money, e.fingerprint(t, "ordinary_and_GPT"))
 	e.docker(t, nil, "exec", e.Redis, "redis-cli", "ZREM", legacyKey, legacyMember)
 	require.Equal(t, legacyBefore, e.redisStrings(t, "ZRANGE", legacyKey, "0", "-1", "WITHSCORES"))
-	t.Logf("actual Redis pause/runtime cancellation elapsed=%s provider_cancelled=true partial_usage_reconcile_preserved=true zero_debit_dedup=true no_GPT_fallback_or_slot_clear=true; fixture unknown is retained, not SQL-cleared", elapsed)
+	t.Logf("actual Redis pause/runtime cancellation elapsed=%s provider_cancelled=true partial_usage_reconcile_preserved=true zero_debit_dedup_for_cancelled_request=true no_GPT_fallback_or_slot_clear=true next_request_settled=true; fixture unknown is retained, not SQL-cleared", elapsed)
 }
