@@ -1,0 +1,41 @@
+{
+  "head": "8982c3f6132603d2a424e25a74a95c200b297f1a",
+  "source_sha256": "286abea6f7ec378bd50fd131cc6507ae518ab73b67bc5ffb2ea09150ac8bd4e1",
+  "frontend_dist_sha256": "d29c9e1229f3073de78934d125419a643fc892c8ce6a226150bde2312d200fa3",
+  "version": "2.8.13-monas-claude-weekly.3",
+  "target": "linux/amd64",
+  "base_image_id": "sha256:3691b498ce6a5ac1979dec0266d014fad9acfa387078a32188c5b59e93ddaac1",
+  "operations": [
+    {
+      "name": "server",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "release-cli",
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "image",
+      "exit_code": 0,
+      "log_sha256": "9f57597fa1266050e952ac5ffea23cc25c00a484e82bd941668199326fa3a510"
+    },
+    {
+      "name": "version",
+      "exit_code": 0,
+      "log_sha256": "96a623d85e962fc719d5a75e4a3a3b527e5b29c9f1384b5ea001b9a1a92717d1"
+    }
+  ],
+  "image": "sub2api:2.8.13-monas-claude-weekly.3-8982c3f61326",
+  "test_image": "sub2api:claude-weekly-i6-r2-286abea6f7ec",
+  "image_id": "sha256:5fa04a58c0caabcedbc4c9ff153d1d7f7fe37f00039a2ce7e44061696643cf10",
+  "binaries": {
+    "sub2api": "4ea1a801697d87192290ff4984d6c643a688546c42046671aad056480711ac71",
+    "carpool-release": "a99722215818aecccae8b6f07ec9079a999eee69e4c5e0b6ea29bc17edef0145"
+  },
+  "image_file": "/Users/shenxi/.codex/private/claude-weekly-quota/reconciliation-build-20261022/image.tar.gz",
+  "image_file_sha256": "5da15c92443005449e98afa3f6e5aa6925a207bde18230221bffb127588e3b95",
+  "image_file_bytes": 469012855,
+  "status": "built_pending_runtime_acceptance"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "claude-reconciliation-availability",
+  "title": "Claude unknown-usage reviews preserve card availability",
+  "status": "completed",
+  "createdAt": "2026-10-22",
+  "completedAt": "2026-10-22",
+  "sourceCommit": "8982c3f6132603d2a424e25a74a95c200b297f1a",
+  "productionImageId": "sha256:5fa04a58c0caabcedbc4c9ff153d1d7f7fe37f00039a2ce7e44061696643cf10",
+  "productionActiveSlot": "blue",
+  "receipt": "validation/claude-weekly-quota/reconciliation-20261022/release.md",
+  "checks": "unit, vet, full billing integration, exact-image HTTP and cancellation, production user real call passed",
+  "trellisScriptsAvailable": false
+}

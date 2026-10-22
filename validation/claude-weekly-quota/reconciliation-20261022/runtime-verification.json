@@ -1,0 +1,24 @@
+{
+  "completed_utc": "2026-10-22T02:02:51.684444+00:00",
+  "image_id": "sha256:5fa04a58c0caabcedbc4c9ff153d1d7f7fe37f00039a2ce7e44061696643cf10",
+  "source_sha256": "286abea6f7ec378bd50fd131cc6507ae518ab73b67bc5ffb2ea09150ac8bd4e1",
+  "results": [
+    {
+      "test": "TestSubscriptionQuotaI4PrepareEnvironment",
+      "exit_code": 0,
+      "log_sha256": "1d2064fe10544716c8ada8c50f8775170236a388c87a9206130675a69f3ac898"
+    },
+    {
+      "test": "TestSubscriptionQuotaI4HTTPWalletMatrix",
+      "exit_code": 0,
+      "log_sha256": "b3f135e1af96db547f5da994aab0f0235f927ec98dc00a61b576aeb65ed24e24"
+    },
+    {
+      "test": "TestSubscriptionQuotaI4V2RedisFaultCancelsActualUpstream",
+      "exit_code": 0,
+      "log_sha256": "56bbcc8c2ac6e08d32445da1e8c1e3339e9a9a606c0a24b9f4f73a7246a891fc"
+    }
+  ],
+  "synthetic_only": true,
+  "status": "passed"
+}

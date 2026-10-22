@@ -1,0 +1,17 @@
+{
+  "completed_utc": "2026-10-22T02:04:22.393518+00:00",
+  "run_id": "cwq-i4-5d172c9f51bb47fc",
+  "cancelled_request_status": "reconcile_required",
+  "cancelled_request_cost": null,
+  "subsequent_request_status": "settled",
+  "subsequent_request_cost": "0.00060000",
+  "retained_unknown_requests": 1,
+  "synthetic_resources_removed": [
+    "a66630926912a1d67d9befa5995ebd986d85980ef2aee67b057e6cfa58f756cb",
+    "5af84146f71c66c3d828869231da4c0704048a26f6f72ea5e95d8950705c5649",
+    "31ef9c3517925868e1bbb426d4d5cf0794d499a14e7e1161b85d88236f3e6835",
+    "9f8005b9dc2c349e84f6fd3b9871ee315888d797b9a45b8e1671973a005382cd"
+  ],
+  "volume_removed": "cwq-i4-5d172c9f51bb47fc-pgdata",
+  "network_removed": "cwq-env-reconciliation-20261022-v2"
+}

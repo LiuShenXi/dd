@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-10-22T01:57:20.512372+00:00",
+  "unit": "passed: go test -tags=unit ./internal/domain ./internal/handler/dto ./internal/repository ./internal/service -run SubscriptionQuota -count=1",
+  "vet": "passed: go vet -tags=unit ./internal/domain ./internal/handler/dto ./internal/repository ./internal/service",
+  "integration": "passed: CI=true go test -tags=integration ./internal/repository -run ^TestSubscriptionQuotaBilling_ -count=1 -timeout=15m",
+  "integration_log_sha256": "b0e397d30212542e95e55b010bc0b8468216e7de4b7617021ea84306c9136bbd",
+  "runtime": "passed: exact-image HTTP wallet matrix and actual Redis-fault cancellation followed by successful same-card settlement",
+  "production": "passed: both domains same blue instance, old green retired restart=no, background active, user16/key98 Opus5.5 HTTP200/message_stop/settled",
+  "production_completed_utc": "2026-10-22T02:09:07.725612+00:00",
+  "status": "complete"
+}

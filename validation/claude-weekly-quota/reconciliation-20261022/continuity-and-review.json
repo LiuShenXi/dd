@@ -1,0 +1,16 @@
+{
+  "current_user_unknown_reviews": [],
+  "health_monitor": {
+    "started_utc": "2026-10-22T02:05:50.004793+00:00",
+    "completed_utc": "2026-10-22T02:07:46.689172+00:00",
+    "cycles": 368,
+    "health_samples": {
+      "sub2api.monasapi.com": {
+        "200": 368
+      },
+      "teamsub2.monasapi.com": {
+        "200": 368
+      }
+    }
+  }
+}

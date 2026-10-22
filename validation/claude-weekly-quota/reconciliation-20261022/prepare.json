@@ -1,0 +1,49 @@
+{
+  "prepared_utc": "2026-10-22T02:06:20.585197+00:00",
+  "candidate": {
+    "id": "9d41c4992890d1b11070f739d84838bf1b0bccb556fefe4a078eae4fa0853009",
+    "image": "sha256:5fa04a58c0caabcedbc4c9ff153d1d7f7fe37f00039a2ce7e44061696643cf10",
+    "started_at": "2026-10-22T02:06:19.159632169Z",
+    "running": true,
+    "restart_count": 0
+  },
+  "prior_active": {
+    "id": "cb20cb0f9c564fc18f94f3c1c1d24e0321d6dc9625bc09331bbe0d11be845d67",
+    "image": "sha256:3691b498ce6a5ac1979dec0266d014fad9acfa387078a32188c5b59e93ddaac1",
+    "started_at": "2026-10-20T04:55:42.102741949Z",
+    "running": true,
+    "restart_count": 0
+  },
+  "shared": {
+    "sub2api2-postgres": {
+      "id": "2a990fc99fa309e46fe120f794a4a8160fb71551097fdd1df536396a0f3b7ac8",
+      "image": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd",
+      "started_at": "2026-10-03T14:22:37.541743239Z",
+      "running": true,
+      "restart_count": 0
+    },
+    "sub2api2-redis": {
+      "id": "80dafa8563483d27dfcaeddfa4aadbd2d2360fae6bbe75d7bac23858efaa7e4f",
+      "image": "sha256:bd999b5cfee25fb24b8320a31fddbd69f462df44c8138c66e369582937beebc0",
+      "started_at": "2026-10-03T14:22:37.350942259Z",
+      "running": true,
+      "restart_count": 0
+    }
+  },
+  "candidate_release": {
+    "operation_id": "",
+    "state": "open",
+    "active_http": 0,
+    "pending_usage": 0,
+    "queued_http": 0,
+    "background_jobs": {
+      "mode": "coordinated",
+      "state": "held",
+      "active_tasks": 0,
+      "instance_id": "8f2119a9f0c4ec144da9681e8eb8b625",
+      "leader": false
+    }
+  },
+  "image_id": "sha256:5fa04a58c0caabcedbc4c9ff153d1d7f7fe37f00039a2ce7e44061696643cf10",
+  "timer_paused": true
+}
