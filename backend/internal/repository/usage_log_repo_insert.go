@@ -157,6 +157,9 @@ func (r *usageLogRepository) Create(ctx context.Context, log *service.UsageLog) 
 	if log == nil {
 		return false, nil
 	}
+	if log.SubscriptionTermID != nil || log.SubscriptionQuotaRequestID != nil {
+		return r.createSubscriptionQuotaUsageLog(ctx, log)
+	}
 
 	if tx := dbent.TxFromContext(ctx); tx != nil {
 		return r.createSingle(ctx, tx.Client(), log)

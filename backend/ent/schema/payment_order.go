@@ -75,6 +75,9 @@ func (PaymentOrder) Fields() []ent.Field {
 			SchemaType(map[string]string{dialect.Postgres: "text"}),
 
 		// 订单类型 & 订阅关联
+		field.JSON("subscription_quota_snapshot", map[string]any{}).
+			Optional().
+			SchemaType(map[string]string{dialect.Postgres: "jsonb"}),
 		field.String("order_type").
 			MaxLen(20).
 			Default("balance"),

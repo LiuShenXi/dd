@@ -290,22 +290,26 @@ func (r *usageCleanupRepository) DeleteUsageLogsBatch(ctx context.Context, filte
 	if whereClause == "" {
 		return 0, fmt.Errorf("cleanup filters missing time range")
 	}
+	// An unacknowledged term log is still part of a recoverable publication
+	// attempt. Once acknowledged, ordinary retention may remove it permanently.
+	whereClause += ` AND (subscription_quota_request_id IS NULL OR EXISTS(SELECT 1 FROM subscription_quota_requests qr WHERE qr.id=usage_logs.subscription_quota_request_id AND qr.usage_log_recorded_at IS NOT NULL))`
 	args = append(args, limit)
 	if db, ok := r.sql.(*sql.DB); ok {
 		return r.deleteUsageLogsBatchWithRollupInvalidation(ctx, db, whereClause, args)
 	}
 	query := fmt.Sprintf(`
 		WITH target AS (
-			SELECT id
+			SELECT tableoid, ctid
 			FROM usage_logs
 			WHERE %s
 			ORDER BY created_at ASC, id ASC
 			LIMIT $%d
 		)
 		DELETE FROM usage_logs
-		WHERE id IN (SELECT id FROM target)
+		WHERE (tableoid,ctid) IN (SELECT tableoid,ctid FROM target)
+		AND %s
 		RETURNING created_at
-	`, whereClause, len(args))
+	`, whereClause, len(args), whereClause)
 
 	rows, err := r.sql.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -338,16 +342,17 @@ func (r *usageCleanupRepository) deleteUsageLogsBatchWithRollupInvalidation(ctx 
 	}
 	query := fmt.Sprintf(`
 		WITH target AS (
-			SELECT id
+			SELECT tableoid, ctid
 			FROM usage_logs
 			WHERE %s
 			ORDER BY created_at ASC, id ASC
 			LIMIT $%d
 		)
 		DELETE FROM usage_logs
-		WHERE id IN (SELECT id FROM target)
+		WHERE (tableoid,ctid) IN (SELECT tableoid,ctid FROM target)
+		AND %s
 		RETURNING created_at
-	`, whereClause, len(args))
+	`, whereClause, len(args), whereClause)
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return rollback(err)

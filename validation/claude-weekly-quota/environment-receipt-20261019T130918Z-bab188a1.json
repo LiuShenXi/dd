@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task": "claude-weekly-quota",
+  "run_id": "20261019T130918Z-bab188a1",
+  "created_utc": "2026-10-19T13:09:18.1339026Z",
+  "endpoint": "npipe:////./pipe/docker_engine",
+  "repository": "C:\\Users\\Administrator\\.codex\\worktrees\\claude-weekly-quota\\dd",
+  "synthetic_only": true,
+  "credential_policy": "PostgreSQL trust authentication is confined to this new internal network; no real credentials or copied data are used.",
+  "existing_resources_policy": "Docker Desktop startup automatically started existing containers according to their restart policies. No existing container was explicitly started, stopped, updated, or used by this task.",
+  "containers": [],
+  "volumes": [],
+  "network": null,
+  "checks": {
+    "engine": {
+      "version": "25.0.3",
+      "name": "docker-desktop",
+      "os": "linux",
+      "architecture": "x86_64",
+      "cpus": 20,
+      "memory_bytes": 33569480704
+    }
+  },
+  "status": "failed",
+  "error": "Docker network failed (1): Error response from daemon: could not find an available, non-overlapping IPv4 address pool among the defaults to assign to the network"
+}

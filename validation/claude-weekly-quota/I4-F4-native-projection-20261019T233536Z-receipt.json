@@ -1,0 +1,30 @@
+{
+  "stage": "F4 native auth user projection and real Redis cold/L1/L2/v27 invalidation",
+  "arguments": [
+    "test",
+    "-tags=integration",
+    "-count=1",
+    "-timeout=2m",
+    "-json",
+    "-run",
+    "^TestClaudeSubscriptionConcurrencyNativeAuthColdL1L2AndV27Reload$",
+    "./internal/repository"
+  ],
+  "exit_code": 0,
+  "source_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+  "source_after_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+  "source_stable": true,
+  "top_passes": 1,
+  "including_subtest_passes": 5,
+  "failure_count": 0,
+  "individual_skip_count": 0,
+  "log": "I4-F4-native-projection-20261019T233536Z.jsonl",
+  "source_before_manifest": "I4-F4-native-projection-20261019T233536Z-source-before.json",
+  "source_after_manifest": "I4-F4-native-projection-20261019T233536Z-source-after.json",
+  "original_TestMain": true,
+  "CI": true,
+  "postgres_image": "postgres:18.1-alpine3.23",
+  "real_postgresql": true,
+  "real_redis": true,
+  "production_connected": false
+}

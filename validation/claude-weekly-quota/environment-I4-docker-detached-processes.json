@@ -1,0 +1,78 @@
+{
+  "utc": "2026-10-19T17:00:37.9199570Z",
+  "processes": [
+    {
+      "name": "com.docker.backend",
+      "pid": 18764,
+      "parent_pid": 30404,
+      "probe_succeeded": true,
+      "in_Windows_job": false,
+      "start_time": "2026-10-20T01:00:23.7357356+08:00"
+    },
+    {
+      "name": "com.docker.build",
+      "pid": 36076,
+      "parent_pid": 18764,
+      "probe_succeeded": true,
+      "in_Windows_job": false,
+      "start_time": "2026-10-20T01:00:24.3606827+08:00"
+    },
+    {
+      "name": "com.docker.dev-envs",
+      "pid": 5968,
+      "parent_pid": 18764,
+      "probe_succeeded": true,
+      "in_Windows_job": false,
+      "start_time": "2026-10-20T01:00:24.3432491+08:00"
+    },
+    {
+      "name": "com.docker.extensions",
+      "pid": 8936,
+      "parent_pid": 18764,
+      "probe_succeeded": true,
+      "in_Windows_job": false,
+      "start_time": "2026-10-20T01:00:24.3524561+08:00"
+    },
+    {
+      "name": "docker",
+      "pid": 41320,
+      "parent_pid": 18764,
+      "probe_succeeded": true,
+      "in_Windows_job": false,
+      "start_time": "2026-10-20T01:00:24.3326066+08:00"
+    },
+    {
+      "name": "Docker Desktop",
+      "pid": 2728,
+      "parent_pid": 39828,
+      "probe_succeeded": true,
+      "in_Windows_job": true,
+      "start_time": "2026-10-20T01:00:26.0002801+08:00"
+    },
+    {
+      "name": "Docker Desktop",
+      "pid": 39828,
+      "parent_pid": 18764,
+      "probe_succeeded": true,
+      "in_Windows_job": false,
+      "start_time": "2026-10-20T01:00:24.9483115+08:00"
+    },
+    {
+      "name": "Docker Desktop",
+      "pid": 40992,
+      "parent_pid": 39828,
+      "probe_succeeded": true,
+      "in_Windows_job": true,
+      "start_time": "2026-10-20T01:00:25.9767227+08:00"
+    },
+    {
+      "name": "Docker Desktop",
+      "pid": 42584,
+      "parent_pid": 39828,
+      "probe_succeeded": true,
+      "in_Windows_job": true,
+      "start_time": "2026-10-20T01:00:26.0376485+08:00"
+    }
+  ],
+  "pipe_exists": true
+}

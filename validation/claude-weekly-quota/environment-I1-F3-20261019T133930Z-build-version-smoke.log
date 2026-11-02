@@ -1,0 +1,1 @@
+2026-10-19T13:44:16.961Z	INFO	stdlog	Sub2API 2.8.13-monas-claude-weekly-i1-r1-local (commit: 311d11718aae939eccdd794d85044c99e8e92b26-dirty-frozen-I1-e2d31f2525ccf72a74eb03c308611785246ce45d0e75198ef4d06fd6d7651693, built: 2026-10-19T13:42:43Z)	{"service": "sub2api", "env": "bootstrap", "legacy_stdlog": true}

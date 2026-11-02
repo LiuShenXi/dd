@@ -1,0 +1,116 @@
+[
+    {
+        "Id": "sha256:459dd4757b05983d0fcf79cec26d91fcca45edacb640f32056623f9b242d36ae",
+        "RepoTags": [
+            "sub2api:claude-weekly-i1-r1-e2d31f2525cc"
+        ],
+        "RepoDigests": [],
+        "Parent": "",
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-10-19T13:44:16.046419917Z",
+        "Container": "",
+        "ContainerConfig": {
+            "Hostname": "",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": null,
+            "Cmd": null,
+            "Image": "",
+            "Volumes": null,
+            "WorkingDir": "",
+            "Entrypoint": null,
+            "OnBuild": null,
+            "Labels": null
+        },
+        "DockerVersion": "",
+        "Author": "",
+        "Config": {
+            "Hostname": "",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "8080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "SUBSCRIPTION_QUOTA_ISSUE_ENABLED=false",
+                "SUBSCRIPTION_QUOTA_ADMISSION_ENABLED=false",
+                "SUBSCRIPTION_QUOTA_RECOVERY_ENABLED=true"
+            ],
+            "Cmd": [
+                "/app/sub2api"
+            ],
+            "Healthcheck": {
+                "Test": [
+                    "CMD-SHELL",
+                    "wget -q -T 5 -O /dev/null http://localhost:${SERVER_PORT:-8080}/health || exit 1"
+                ],
+                "Interval": 30000000000,
+                "Timeout": 10000000000,
+                "StartPeriod": 10000000000,
+                "Retries": 3
+            },
+            "ArgsEscaped": true,
+            "Image": "",
+            "Volumes": null,
+            "WorkingDir": "/app",
+            "Entrypoint": [
+                "/app/docker-entrypoint.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "com.codex.local-task": "claude-weekly-quota",
+                "com.monas.claude-quota-activation": "unsupported",
+                "com.monas.claude-quota-recovery": "requires-I3-refreeze",
+                "com.monas.claude-quota-stage": "I1-preliminary-R1",
+                "com.monas.source-sha256": "e2d31f2525ccf72a74eb03c308611785246ce45d0e75198ef4d06fd6d7651693",
+                "org.opencontainers.image.created": "2026-10-19T13:42:43Z",
+                "org.opencontainers.image.revision": "311d11718aae939eccdd794d85044c99e8e92b26-dirty-frozen-I1-e2d31f2525ccf72a74eb03c308611785246ce45d0e75198ef4d06fd6d7651693",
+                "org.opencontainers.image.title": "Monas Claude weekly quota I1 preliminary R1"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 339881387,
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/k3gxofhkmcdci11vkx4pfbc46/diff:/var/lib/docker/overlay2/vm4lplhqquyrgkqs6xgpack7y/diff:/var/lib/docker/overlay2/3ip2belgkmotwudlsdvaa7xxe/diff:/var/lib/docker/overlay2/qrpjo2x2e2uykzyq0lpvsswbp/diff:/var/lib/docker/overlay2/ju2l3kztzmveogfc6rwhddnsd/diff:/var/lib/docker/overlay2/ufyy8zdg4zntzx1k3nlxfomfy/diff:/var/lib/docker/overlay2/zgth10zibzaszt0noyr0uwfyh/diff:/var/lib/docker/overlay2/eh3ycjkm4dhkunyde8lov6fbd/diff:/var/lib/docker/overlay2/xixht24e3h1djo31qvxhcle6g/diff:/var/lib/docker/overlay2/e431b5c576586cce761fe7386099e6618a5594ba62d0ef43519b66e6e62dc4fd/diff",
+                "MergedDir": "/var/lib/docker/overlay2/893vyy3nscal6i8sslh9r73t4/merged",
+                "UpperDir": "/var/lib/docker/overlay2/893vyy3nscal6i8sslh9r73t4/diff",
+                "WorkDir": "/var/lib/docker/overlay2/893vyy3nscal6i8sslh9r73t4/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:989e799e634906e94dc9a5ee2ee26fc92ad260522990f26e707861a5f52bf64e",
+                "sha256:202c6c6890bd16857e4dbefd898720593db3f52865b9692a71eb2907f2f4b614",
+                "sha256:9434e92dd58361679d16754abafdd31976e87df772c0c39ab0536940a1064c6c",
+                "sha256:5f5eff60be6f94fcd380a2f0e32dab7eae979f7fea20ba7950b5924c150e2d91",
+                "sha256:dae488f0a3178573219fae1a2c5db04a56594c5dee59fca60cd896109fe1b102",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:1a11c58cdddd0e4647d63a86826dfe6f754e4cfaefe7b0bdef1aa130fb05bfa2",
+                "sha256:48c3f19364e304f9411a05a0f8c96bf0e482f1ed9cdaa5e8a4cf4f170b0c80a4",
+                "sha256:fdbbf2839c8062ef3151527fa20542cf0024b766cd832138523edba1367c9b3f",
+                "sha256:d7998a5e103ddee8159a83c4cfed21acf0a3dd2a83d07969dbe6bd3c56e05619",
+                "sha256:37e933abb14e23163a42db05ee8b213b75943e0d2c8508c9183411e5407328d1"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-19T13:44:16.3503101Z"
+        }
+    }
+]

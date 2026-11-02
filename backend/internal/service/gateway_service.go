@@ -613,7 +613,12 @@ type ForwardResult struct {
 	// UpstreamHeaders 是直接上游的响应头，用于按账户配置解析上游请求标识。
 	UpstreamHeaders http.Header
 	Usage           ClaudeUsage
-	Model           string
+	// UsageObserved distinguishes an explicit provider zero from missing usage.
+	UsageObserved bool
+	// UsageFinal requires complete final provider metering, including output.
+	UsageFinal          bool
+	UsageEvidenceSource string
+	Model               string
 	// UpstreamModel is the actual upstream model after mapping.
 	// Prefer empty when it is identical to Model; persistence normalizes equal values away as no-op mappings.
 	UpstreamModel string

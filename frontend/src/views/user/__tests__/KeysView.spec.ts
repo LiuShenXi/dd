@@ -1,10 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import { nextTick } from 'vue'
+import { createPinia, setActivePinia } from 'pinia'
 
-import type { ApiKey } from '@/types'
+import type { ApiKey, User } from '@/types'
+import { useAuthStore } from '@/stores/auth'
 import { keysAPI } from '@/api'
 import KeysView from '../KeysView.vue'
+beforeEach(() => setActivePinia(createPinia()))
 
 const {
   listKeys,
@@ -13,6 +16,7 @@ const {
   getDashboardApiKeysUsage,
   getAvailableGroups,
   getUserGroupRates,
+  getProfile,
   showError,
   showSuccess,
   copyToClipboard,
@@ -25,6 +29,7 @@ const {
   getDashboardApiKeysUsage: vi.fn(),
   getAvailableGroups: vi.fn(),
   getUserGroupRates: vi.fn(),
+  getProfile: vi.fn(),
   showError: vi.fn(),
   showSuccess: vi.fn(),
   copyToClipboard: vi.fn(),
@@ -77,6 +82,7 @@ vi.mock('@/api', () => ({
     getUserGroupRates,
   },
 }))
+vi.mock('@/api/user', () => ({ userAPI: { getProfile } }))
 
 vi.mock('@/stores/app', () => ({
   useAppStore: () => ({
@@ -279,6 +285,7 @@ describe('user KeysView column settings', () => {
     getDashboardApiKeysUsage.mockReset()
     getAvailableGroups.mockReset()
     getUserGroupRates.mockReset()
+    getProfile.mockReset()
     showError.mockReset()
     showSuccess.mockReset()
     copyToClipboard.mockReset()
@@ -299,6 +306,16 @@ describe('user KeysView column settings', () => {
     getUserGroupRates.mockResolvedValue({})
     isCurrentStep.mockReturnValue(false)
     updateKey.mockResolvedValue(createApiKey())
+  })
+
+  it('does not fetch or render the removed page-wide concurrency banner', async () => {
+    const auth = useAuthStore()
+    auth.user = { id: 1, concurrency: 5 } as User; auth.token = 'test-session'
+    const wrapper = await mountView()
+    expect(getProfile).not.toHaveBeenCalled()
+    expect(wrapper.find('[data-testid="legacy-scope-stats"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="claude-scope-stats"]').exists()).toBe(false)
+    wrapper.unmount()
   })
 
   it.each([

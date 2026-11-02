@@ -1,0 +1,23 @@
+{
+  "step": "ws",
+  "started_utc": "2026-10-20T02:09:31.461170+00:00",
+  "finished_utc": "2026-10-20T02:09:34.406386+00:00",
+  "exit_code": 0,
+  "tests": [
+    "standalone actual WS/Live route proof"
+  ],
+  "top_level_pass": 0,
+  "all_pass": 0,
+  "fail": 0,
+  "skip": 0,
+  "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+  "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "driver_sha256": "4a3ade23fa4c05ad7394440b3a9b4a20f393d9a6d4fc5b11c9dd8f58684b88a9",
+  "driver_stable": true,
+  "runner_sha256": "071c0127a417fe3d8460ea1539c8301336bddf2e8d7a7ad6a82a0845d03526ce",
+  "raw_log_sha256": "e51d8c4dae2a7c9553f105ee5226c95de30bba274b53e5b4f93f8d652dc51f2e",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/ws.log",
+  "synthetic_only": true,
+  "production_modified": false,
+  "pass": true
+}

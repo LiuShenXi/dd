@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 )
 
 // cnQuotaProber 抽象额度探测（*CNProviderQuotaService 实现，测试可替换）。
@@ -28,6 +29,7 @@ const cnQuotaProbeConcurrency = 4
 // 余额探测仅覆盖有公开余额端点的 kimi / deepseek；智谱无余额端点，仅靠响应式 429/402。
 // 额度探测覆盖 kimi / zhipu 的 coding plan 账号（deepseek 无 coding 套餐）。
 type CNProviderBalanceCheckService struct {
+	backgroundJobs *backgroundjobs.Gate
 	accountRepo    AccountRepository
 	balanceService *CNProviderBalanceService
 	quotaService   cnQuotaProber
@@ -97,6 +99,14 @@ func (s *CNProviderBalanceCheckService) Stop() {
 }
 
 func (s *CNProviderBalanceCheckService) runOnce() {
+	jobCtx, done, ok := s.backgroundJobs.Enter(context.Background())
+	if !ok {
+		return
+	}
+	defer done()
+	// Include collection in the same bounded, cancellable leader-owned task.
+	jobCtx, jobCancel := context.WithTimeout(jobCtx, 5*time.Minute)
+	defer jobCancel()
 	// 收集 coding 探测目标（kimi/deepseek + 智谱）与 payg 检查队列。
 	// coding 探测统一在收集完成后按 4 并发执行：单账号探测 15-20s，串行 ×
 	// 多账号会耗尽整体预算（120s 上限），排在后面的账号快照会饥饿，
@@ -134,7 +144,7 @@ func (s *CNProviderBalanceCheckService) runOnce() {
 		}
 	}
 	for _, platform := range s.platforms() {
-		accounts, err := s.accountRepo.ListByPlatform(context.Background(), platform)
+		accounts, err := s.accountRepo.ListByPlatform(jobCtx, platform)
 		if err != nil {
 			log.Printf("[CNBalance] list %s accounts failed: %v", platform, err)
 			continue
@@ -144,7 +154,7 @@ func (s *CNProviderBalanceCheckService) runOnce() {
 	// 智谱 / MiniMax 无余额端点，仅进额度探测。
 	if s.quotaService != nil {
 		for _, platform := range []string{PlatformZhipu, PlatformMiniMax} {
-			accounts, err := s.accountRepo.ListByPlatform(context.Background(), platform)
+			accounts, err := s.accountRepo.ListByPlatform(jobCtx, platform)
 			if err != nil {
 				log.Printf("[CNBalance] list %s accounts failed: %v", platform, err)
 				continue
@@ -159,7 +169,7 @@ func (s *CNProviderBalanceCheckService) runOnce() {
 	if timeout > 300*time.Second {
 		timeout = 300 * time.Second
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(jobCtx, timeout)
 	defer cancel()
 
 	threshold := s.cfg.Gateway.CNProviders.BalanceThreshold

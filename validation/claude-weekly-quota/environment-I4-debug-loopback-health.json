@@ -1,0 +1,8 @@
+{
+  "url": "http://127.0.0.1:56699",
+  "status": 200,
+  "body": "{\"status\":\"ok\"}",
+  "bridge": "127.0.0.1 -> exact Docker exec nc -> internal candidate 8080",
+  "external_egress": false,
+  "checked_utc": "2026-10-19T16:47:09.7152363Z"
+}

@@ -1,0 +1,89 @@
+{
+  "original_receipt": "I4-v2-T68-debug-20261019T172448Z-receipt.json",
+  "raw_log": "I4-v2-T68-debug-20261019T172448Z.jsonl",
+  "planned_duration_minutes": 16,
+  "actual_test_started_utc": "2026-10-19T17:25:24.6048470+00:00",
+  "actual_test_finished_utc": "2026-10-19T17:41:38.8063061+00:00",
+  "actual_test_elapsed_seconds": 974.2,
+  "actual_stream_elapsed_seconds": 972.5537202,
+  "actual_sampling_checks": 62,
+  "renewal_sample_count": 62,
+  "minimum_recorded_expiry_extension_ms": 15002.0,
+  "maximum_recorded_expiry_extension_ms": 959999.0,
+  "original_two_lease_UUIDs_preserved": true,
+  "over_capacity_requests_did_not_forward": true,
+  "actual_redis_renewal_observed": true,
+  "actual_postgresql_settlement_observed": true,
+  "actual_client_both_complete_message_stop_received": true,
+  "intermediate_client_byte_metrics_recorded": false,
+  "actual_exact_total_debit_usd": "0.00120000",
+  "two_original_term_requests_settled_and_log_acknowledged": true,
+  "other_wallet_fingerprints_unchanged": true,
+  "candidate_image_id": "sha256:64e6e22539f0c8cb1dea7c026c876f8acd607ca47e7f831b9751695b9f978bb3",
+  "image_build_source_sha256": "d85b57f469ab0bc11c3b0c7cb02706442706eea5b4bbdd4d835b0d1d6bed763f",
+  "image_build_source_stable": false,
+  "critical_files": [
+    {
+      "path": "backend/internal/handler/subscription_quota_gateway.go",
+      "image_build_before_sha256": "0dd6cb198f3d0f4069b20275cae1e79f0d5f0c2eacde3385fd1c217de70ee1cb",
+      "image_build_after_sha256": "0dd6cb198f3d0f4069b20275cae1e79f0d5f0c2eacde3385fd1c217de70ee1cb",
+      "unchanged_during_build": true,
+      "current_sha256": "0dd6cb198f3d0f4069b20275cae1e79f0d5f0c2eacde3385fd1c217de70ee1cb",
+      "current_same_as_image_build": true
+    },
+    {
+      "path": "backend/internal/repository/user_concurrency_policy.go",
+      "image_build_before_sha256": "a676663fa5148f7441af0d00610a11adf35cc9c3a553ac55bcae5c611afd1945",
+      "image_build_after_sha256": "a676663fa5148f7441af0d00610a11adf35cc9c3a553ac55bcae5c611afd1945",
+      "unchanged_during_build": true,
+      "current_sha256": "b26f956afbed7bf0930185d74043fb0036de6cf65717acf238ff0dd31fb91d20",
+      "current_same_as_image_build": false
+    },
+    {
+      "path": "backend/internal/repository/user_concurrency_scope_cache.go",
+      "image_build_before_sha256": "3fce5ee93e01292dcac03dfd6fc30f5be36e69db062c6cdc2257a5cdf1f5bf1b",
+      "image_build_after_sha256": "3fce5ee93e01292dcac03dfd6fc30f5be36e69db062c6cdc2257a5cdf1f5bf1b",
+      "unchanged_during_build": true,
+      "current_sha256": "fca4adefafb3eab494b2949234da998ca09c03e7886487905159d970d6085bf4",
+      "current_same_as_image_build": false
+    },
+    {
+      "path": "backend/internal/service/subscription_quota_gateway_forward.go",
+      "image_build_before_sha256": "7e7f3912a6b6bade8d1ba83e9e51315cf2867b5a3125e46eb40e4e6ecb83ee04",
+      "image_build_after_sha256": "7e7f3912a6b6bade8d1ba83e9e51315cf2867b5a3125e46eb40e4e6ecb83ee04",
+      "unchanged_during_build": true,
+      "current_sha256": "7e7f3912a6b6bade8d1ba83e9e51315cf2867b5a3125e46eb40e4e6ecb83ee04",
+      "current_same_as_image_build": true
+    },
+    {
+      "path": "backend/internal/service/subscription_quota_protected_concurrency.go",
+      "image_build_before_sha256": "7c1e2fa9b1d1cd12c6b8570ee61856fcff3eb42155615c158c6138e58618ce2e",
+      "image_build_after_sha256": "7c1e2fa9b1d1cd12c6b8570ee61856fcff3eb42155615c158c6138e58618ce2e",
+      "unchanged_during_build": true,
+      "current_sha256": "afb2aaa5302c916fab75e0dd9be1bb0c4052903e41e041d127468c6d92c27ba7",
+      "current_same_as_image_build": false
+    },
+    {
+      "path": "backend/internal/service/user_concurrency_projection.go",
+      "image_build_before_sha256": "241e0c577ce1d8b7778f89e699cd2f7e7bfaf47d058483469b898e0a164845c4",
+      "image_build_after_sha256": "241e0c577ce1d8b7778f89e699cd2f7e7bfaf47d058483469b898e0a164845c4",
+      "unchanged_during_build": true,
+      "current_sha256": "04f151fc075267bc3a1c9d8b575cfc511f11a31ef2afacca559b73a523712c2c",
+      "current_same_as_image_build": false
+    },
+    {
+      "path": "backend/internal/service/user_concurrency_scope.go",
+      "image_build_before_sha256": "2b90364a0d2b5d02754a069bf35d60bebe7d982fc43f463c27fb11e69c580dfa",
+      "image_build_after_sha256": "2b90364a0d2b5d02754a069bf35d60bebe7d982fc43f463c27fb11e69c580dfa",
+      "unchanged_during_build": true,
+      "current_sha256": "034bb461bf99cb26a476a996b913f16e6cd000813210dd51492a499a268f4a42",
+      "current_same_as_image_build": false
+    }
+  ],
+  "scope_client_subsequently_fixed": "Independent go-redis push/maintenance state, TLS clone and a bounded default dialer; this run does not validate that later client fix",
+  "coverage": "Actual runtime long-stream lease protocol and exact post-stream accounting; final candidate and fault/metadata tests remain separate",
+  "acceptance": false,
+  "synthetic_provider_called": true,
+  "external_upstream_called": false,
+  "production_connected": false
+}

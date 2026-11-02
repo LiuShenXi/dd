@@ -1,0 +1,95 @@
+{
+  "checked_utc": "2026-10-20T02:49:30.796970+00:00",
+  "read_only": true,
+  "containers_deleted": false,
+  "volumes_deleted": false,
+  "stopped_testcontainers_pending_attribution": [
+    {
+      "id": "7004482390cfe9ffc9e5ce7e0adf9ee8cbab4eb984f52a0507de5c9427a537c4",
+      "name": "/quirky_visvesvaraya",
+      "created": "2026-10-20T01:39:16.299417136Z",
+      "status": "exited",
+      "image": "redis:8.4-alpine",
+      "labels": {
+        "org.testcontainers": "true",
+        "org.testcontainers.lang": "go",
+        "org.testcontainers.reap": "true",
+        "org.testcontainers.sessionId": "06231d07ef26d7b7a4e9e2c8accf9cb3775275415b35f6b004ea738ea36c08fb",
+        "org.testcontainers.version": "0.40.0"
+      },
+      "volumes": [
+        "c74673ea8e6ace6123f737c29a8cfa68b9f9ae15a86c749ee11a4e632823ff5f"
+      ],
+      "attribution": "unverified: no original ID/session reference found in task-private/public receipts or retained rollout/final-PG/performance logs; excluded from deletion"
+    },
+    {
+      "id": "9d784787a844e3e703ca15eefc1f22a973966d0e5b42cf765a0dec933564af61",
+      "name": "/cool_pasteur",
+      "created": "2026-10-20T01:39:14.488371385Z",
+      "status": "exited",
+      "image": "postgres:18.1-alpine3.23",
+      "labels": {
+        "org.testcontainers": "true",
+        "org.testcontainers.lang": "go",
+        "org.testcontainers.reap": "true",
+        "org.testcontainers.sessionId": "06231d07ef26d7b7a4e9e2c8accf9cb3775275415b35f6b004ea738ea36c08fb",
+        "org.testcontainers.version": "0.40.0"
+      },
+      "volumes": [
+        "9ed70ae47af2ce25c8ee21c14bd3ea4eb299c9a782d307997dc581e616957bd9"
+      ],
+      "attribution": "unverified: no original ID/session reference found in task-private/public receipts or retained rollout/final-PG/performance logs; excluded from deletion"
+    },
+    {
+      "id": "8c473919c6891a8ce17a6d5269f8473e7846d57a506e30ab7db143f8c26210ca",
+      "name": "/focused_bhabha",
+      "created": "2026-10-20T01:37:30.76628017Z",
+      "status": "created",
+      "image": "postgres:18.1-alpine3.23",
+      "labels": {
+        "org.testcontainers": "true",
+        "org.testcontainers.lang": "go",
+        "org.testcontainers.reap": "true",
+        "org.testcontainers.sessionId": "26dfd7a9e74c98e3ea0edbce0d5279391740cbf7b120ffc1fcce252833983fda",
+        "org.testcontainers.version": "0.40.0"
+      },
+      "volumes": [
+        "ba1df92d6decff87e8ccbe29475303b2e95059b45e85d97cec0fb4828f8e3593"
+      ],
+      "attribution": "unverified: no original ID/session reference found in task-private/public receipts or retained rollout/final-PG/performance logs; excluded from deletion"
+    }
+  ],
+  "today_unused_anonymous_volumes": [
+    {
+      "name": "85c523b35b50e35cf62cc8edb4b0bc8c07ac8ddc4a960bd33c4a30a1ad9e6bbd",
+      "created": "2026-10-20T01:59:57Z",
+      "labels": {
+        "com.docker.volume.anonymous": ""
+      },
+      "references": []
+    },
+    {
+      "name": "85dd753e35bdc38f205b7b0ae81a7d40742a0e6e62519ba88f8ac9dbb508d94d",
+      "created": "2026-10-20T02:16:23Z",
+      "labels": {
+        "com.docker.volume.anonymous": ""
+      },
+      "references": []
+    },
+    {
+      "name": "3574622421e0c5393b00d81b33c8e6ad39eb1bdd9540d9e28c6b126cf73123e9",
+      "created": "2026-10-20T02:12:06Z",
+      "labels": {
+        "com.docker.volume.anonymous": ""
+      },
+      "references": []
+    }
+  ],
+  "today_unused_anonymous_volume_note": "All three show 0B in docker system df -v. Date and anonymous label alone do not establish ownership.",
+  "july_2026_unused_volume_count": 13,
+  "july_2026_unused_volume_note": "These account for approximately628MB; excluded because they predate this I5/I6 task.",
+  "private_inventory": "/Users/shenxi/.codex/private/claude-weekly-quota/office/pg186-container-volume-inventory.json",
+  "private_inventory_sha256": "49b3d60f0117055d8dede20028ae925345c0c83505be9873c7d02f8903c286e6",
+  "current_running_containers_excluded": true,
+  "attribution_review": "Integration and backend agents independently checked existing task evidence; generic testcontainers labels and creation time are insufficient. No stopped-container or volume cleanup is authorized by this inventory."
+}

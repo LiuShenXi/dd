@@ -54,6 +54,8 @@ func (User) Fields() []ent.Field {
 			Default(0),
 		field.Int("concurrency").
 			Default(5),
+		field.Int("claude_subscription_concurrency").
+			Positive().Optional().Nillable(),
 		field.String("status").
 			MaxLen(20).
 			Default(domain.StatusActive),

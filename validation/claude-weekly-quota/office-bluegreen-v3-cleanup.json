@@ -1,0 +1,57 @@
+{
+  "pass": true,
+  "time": "2026-10-20T03:54:11.603505+00:00",
+  "scope": "Only failed v3 synthetic fixture after all provider calls completed; failures retained; v4 and all images/native retained",
+  "containers": {
+    "blue": "6cba7a7eb542ed3d71fd8ea216b750a852e91b8b65a3dce260a6ebb03c7ba44b",
+    "green": "09dbc257684a10f725c9b90ff4e7fd6c582f4b74192f10a009bfb7eb76a9ca2e",
+    "nginx": "372b5c49b689d40424eec41f0b09a33f03c8404742b267e1f7413aa0962c4ef2",
+    "provider": "eafcd4634c176c2d52150ca778c4974c641c5d288d7f8df496a0542d65df7eca",
+    "redis": "79d5cc9e4aae9b4d949d195abc8687720f390e7ee5e0b65ccca361964900006b",
+    "postgres": "23ba4505a20ec3e1116757f0e7092264c92e6a3f67542e5b9db4e33686dbf196"
+  },
+  "volumes": [
+    "af7f896a8fdd221c309798033267734e2843e750314c7f228cd79c4dc57c22ea",
+    "cwq-i4-2331fce2f16f4f90-pgdata"
+  ],
+  "network": "cwq-env-bluegreen-20261020034057",
+  "free_before_bytes": 2395471872,
+  "free_after_bytes": 3341717504,
+  "private_backups": [
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v3-20261020/final-blue.log",
+      "bytes": 129959,
+      "sha256": "833fc14acad2d38afd317f43ee234f398d85cb953522c8dbde0c4f544d04af52"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v3-20261020/final-green.log",
+      "bytes": 138851,
+      "sha256": "c45da41e9abeee1a641a54d9416a7c4a149e7a41d951bd99d519042d0b48ef56"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v3-20261020/final-nginx.log",
+      "bytes": 15083,
+      "sha256": "7ec2478aa3be3fd3d3f46c2dc6ef1b2ae1b899875aa5e4ba0570f90ab54f41e4"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v3-20261020/final-provider.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v3-20261020/final-redis.log",
+      "bytes": 5717,
+      "sha256": "62334fe4138d1b10e0e5e84ab6cd1c56afa03911337cd0940dd654844c495829"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v3-20261020/final-postgres.log",
+      "bytes": 1431,
+      "sha256": "f9cdf6716a4f89d453f98106e56ccf86fd77a86819ae7c3223a20ccee7e2038b"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v3-20261020/final-synthetic.sql.gz",
+      "bytes": 86974,
+      "sha256": "8d661b219ae35fe5b4a87093ffbcc3cbcafcbf56c36598c00b25468054e900ee"
+    }
+  ]
+}

@@ -1,0 +1,320 @@
+{
+  "read_only": true,
+  "application_replicas": [
+    {
+      "name": "sub2api2",
+      "image": "sub2api:2.8.13-monas-bps.13",
+      "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+      "status": "running",
+      "started_at": "2026-10-18T15:19:07.917058186Z",
+      "compose_project": "sub2api2",
+      "compose_service": "sub2api",
+      "release_start_held": "false",
+      "carpool_background_enabled": "true",
+      "subscription_quota_environment_names": []
+    }
+  ],
+  "edge_services": {
+    "nginx": "active",
+    "caddy": "inactive",
+    "haproxy": "inactive",
+    "apache2": "inactive"
+  },
+  "nginx_inventory_available": true,
+  "selected_nginx_directives": [
+    {
+      "file": "/etc/nginx/conf.d/chongqing-job-monitor.conf",
+      "directive": "listen 80;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/chongqing-job-monitor.conf",
+      "directive": "server_name jobs.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/chongqing-job-monitor.conf",
+      "directive": "listen 443 ssl;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/chongqing-job-monitor.conf",
+      "directive": "server_name jobs.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/chongqing-job-monitor.conf",
+      "directive": "proxy_pass http://127.0.0.1:18788;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/cloud-browser-test.conf",
+      "directive": "listen 80;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/cloud-browser-test.conf",
+      "directive": "server_name browser.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/cloud-browser-test.conf",
+      "directive": "listen 443 ssl;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/cloud-browser-test.conf",
+      "directive": "server_name browser.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/cloud-browser-test.conf",
+      "directive": "proxy_pass http://172.30.80.3:5005;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/grok-monasapi.conf",
+      "directive": "listen 80;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/grok-monasapi.conf",
+      "directive": "server_name grok.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/grok-monasapi.conf",
+      "directive": "listen 443 ssl;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/grok-monasapi.conf",
+      "directive": "server_name grok.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/grok-monasapi.conf",
+      "directive": "proxy_pass http://127.0.0.1:18000;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/grok2api.conf",
+      "directive": "listen 80;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/grok2api.conf",
+      "directive": "server_name grok.137.220.56.176.sslip.io;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/grok2api.conf",
+      "directive": "listen 443 ssl;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/grok2api.conf",
+      "directive": "server_name grok.137.220.56.176.sslip.io;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/grok2api.conf",
+      "directive": "proxy_pass http://127.0.0.1:18000;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/kiro-vip-ip-admin.conf",
+      "directive": "listen 80;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/kiro-vip-ip-admin.conf",
+      "directive": "server_name 23.19.230.146;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/kiro-vip-ip-admin.conf",
+      "directive": "proxy_pass http://127.0.0.1:8991/admin;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/kiro-vip-ip-admin.conf",
+      "directive": "proxy_pass http://127.0.0.1:8991/admin/assets/;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/kiro-vip-ip-admin.conf",
+      "directive": "proxy_pass http://127.0.0.1:8991/admin/vite.svg;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/kiro-vip-ip-admin.conf",
+      "directive": "proxy_pass http://127.0.0.1:8991/api/admin/;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/kiro-vip-ip-admin.conf",
+      "directive": "proxy_pass http://127.0.0.1:8991/api/admin;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/new-api-active-upstream.conf",
+      "directive": "upstream new_api_active {"
+    },
+    {
+      "file": "/etc/nginx/conf.d/sub2api-migrated.conf",
+      "directive": "listen 80;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/sub2api-migrated.conf",
+      "directive": "server_name sub2api.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/sub2api-migrated.conf",
+      "directive": "listen 443 ssl http2;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/sub2api-migrated.conf",
+      "directive": "server_name sub2api.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/sub2api-migrated.conf",
+      "directive": "proxy_pass http://127.0.0.1:29080;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/teamsub2.conf",
+      "directive": "listen 80;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/teamsub2.conf",
+      "directive": "server_name teamsub2.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/teamsub2.conf",
+      "directive": "listen 443 ssl http2;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/teamsub2.conf",
+      "directive": "server_name teamsub2.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/conf.d/teamsub2.conf",
+      "directive": "proxy_pass http://127.0.0.1:29080;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/00-reject-unmatched",
+      "directive": "listen 443 ssl default_server;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/00-reject-unmatched",
+      "directive": "server_name _;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "listen 80 default_server;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "server_name _;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "server_name api.monasapi.cn api.monasapi.com origin-api.monasapi.com monasapi.com www.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://192.243.117.32;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:3000;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:3000;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:3000;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8081/monas_logo.png;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8990/admin;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8990/admin/assets/;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8990/admin/vite.svg;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8990/api/admin/;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8990/api/admin;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8990/;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8991/admin;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8991/admin/assets/;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8991/admin/vite.svg;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8991/api/admin/;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8991/api/admin;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://127.0.0.1:8991/;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "proxy_pass http://new_api_active;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "listen 443 ssl;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "listen 80;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/api.monasapi.cn",
+      "directive": "server_name api.monasapi.cn api.monasapi.com origin-api.monasapi.com monasapi.com www.monasapi.com;"
+    },
+    {
+      "file": "/etc/nginx/snippets/tangbao-relay-location.conf",
+      "directive": "proxy_pass http://127.0.0.1:38180/;"
+    },
+    {
+      "file": "/etc/nginx/snippets/codex-account4-location.conf",
+      "directive": "proxy_pass http://127.0.0.1:8882/;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/newmeapp.cn",
+      "directive": "listen 80;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/newmeapp.cn",
+      "directive": "server_name newmeapp.cn www.newmeapp.cn;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/newmeapp.cn",
+      "directive": "listen 443 ssl;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/newmeapp.cn",
+      "directive": "server_name newmeapp.cn;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/newmeapp.cn",
+      "directive": "listen 443 ssl;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/newmeapp.cn",
+      "directive": "server_name www.newmeapp.cn;"
+    },
+    {
+      "file": "/etc/nginx/sites-enabled/newmeapp.cn",
+      "directive": "proxy_pass http://127.0.0.1:37200;"
+    }
+  ],
+  "production_mutation_performed": false,
+  "checked_at_utc": "2026-10-19T17:33:43.261459+00:00"
+}

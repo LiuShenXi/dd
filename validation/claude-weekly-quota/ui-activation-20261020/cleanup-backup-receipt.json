@@ -1,0 +1,30 @@
+{
+  "finished_utc": "2026-10-20T04:51:10.665967+00:00",
+  "backup_verified": true,
+  "database_toc_entries": 1501,
+  "legacy_background": {
+    "scheduled_enabled": 0,
+    "channel_enabled": 0,
+    "batch_jobs": 0,
+    "cn_active": 0
+  },
+  "production_application_changed": false,
+  "files": {
+    "configuration-and-data.tar.gz": {
+      "bytes": 195021193,
+      "sha256": "90cfa7d685583d23b6f3d3fbca1a0c5598e30806bb3afc40840bcd9d032f3833"
+    },
+    "database.dump": {
+      "bytes": 174131143,
+      "sha256": "d94674bbb65486386007fbc4e9093cb1461e871f7df585a4cb5334944eee0360"
+    },
+    "containers.private.json": {
+      "bytes": 42867,
+      "sha256": "9e7ba36218a8f7c32e56534fee6fb82cf0c77b0fdbde3415d0a929da1bc82947"
+    },
+    "database.toc.private": {
+      "bytes": 112443,
+      "sha256": "c219d7bdb6ce31c7c0cc23f84ac6cf62d058cf54ecbdcacabe487eb029298dd1"
+    }
+  }
+}

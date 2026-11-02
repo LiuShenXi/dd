@@ -1,0 +1,32 @@
+{
+  "stage": "I4 task-only delay proxy functional smoke",
+  "synthetic_only": true,
+  "environment": "environment-I4-20261019T180351Z-active.json",
+  "proxy": "environment-I4-delay-proxy-20261019T180538Z.json",
+  "outcomes": [
+    {
+      "A_held_until_release": true,
+      "B_passed_with_actual_identity": true,
+      "synthetic_error": false,
+      "released_A_status": 200
+    },
+    {
+      "A_held_until_release": true,
+      "B_passed_with_actual_identity": true,
+      "synthetic_error": true,
+      "released_A_status": 503
+    }
+  ],
+  "state": {
+    "held_responses": 3,
+    "holding": false,
+    "method": "GET",
+    "path": "/api/v1/admin/users/2/subscription-quota",
+    "released_responses": 3,
+    "synthetic_only": true,
+    "target": "http://127.0.0.1:49441"
+  },
+  "browser_UI_assertions_executed": false,
+  "business_server_modified": false,
+  "observed_utc": "2026-10-19T18:17:16.7934029Z"
+}

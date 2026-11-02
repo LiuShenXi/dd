@@ -1,0 +1,270 @@
+{
+  "stage": "I4 isolated candidate",
+  "freeze": "debug",
+  "diagnostic": true,
+  "source_sha256": "d85b57f469ab0bc11c3b0c7cb02706442706eea5b4bbdd4d835b0d1d6bed763f",
+  "source_dirty": true,
+  "head": "9005acffad8f9b30975ea3dd27e82095eb9e5520",
+  "frontend_dist_sha256": "e1d2aa78f24d67791e9371e70a7a3c550e7e117f09c67e09e8486c08f77c4164",
+  "image_tag": "sub2api:claude-weekly-i4-candidate-d85b57f469ab",
+  "provider_tag": "claude-weekly-quota-provider:39e9a864afb8",
+  "provider_source_sha256": "39e9a864afb8eb871653233eb71e4ac41b341f244cba3b839234437f158ab5a2",
+  "revision": "9005acffad8f9b30975ea3dd27e82095eb9e5520-dirty-I4-debug-d85b57f469ab0bc11c3b0c7cb02706442706eea5b4bbdd4d835b0d1d6bed763f",
+  "linux_go": "go1.27.2 linux/amd64",
+  "cgo_enabled": 0,
+  "started_utc": "2026-10-19T17:18:00.8083585Z",
+  "operations": [
+    {
+      "name": "r0-before-id",
+      "arguments": [
+        "image",
+        "inspect",
+        "--format",
+        "{{.Id}}",
+        "sub2api:2.8.13-monas-bps.13"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-r0-before-id.log"
+    },
+    {
+      "name": "r0-before-layers",
+      "arguments": [
+        "image",
+        "inspect",
+        "--format",
+        "{{json .RootFS.Layers}}",
+        "sub2api:2.8.13-monas-bps.13"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-r0-before-layers.log"
+    },
+    {
+      "name": "prepare",
+      "arguments": [
+        "exec",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+        "mkdir",
+        "-p",
+        "/output/i4-20261019t171758z",
+        "/output/tmp"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-prepare.log"
+    },
+    {
+      "name": "server",
+      "arguments": [
+        "exec",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+        "env",
+        "GOMAXPROCS=2",
+        "TMPDIR=/output/tmp",
+        "GOTMPDIR=/output/tmp",
+        "CGO_ENABLED=0",
+        "go",
+        "build",
+        "-p=2",
+        "-tags=embed",
+        "-trimpath",
+        "-buildvcs=false",
+        "-ldflags=-s -w -X main.Version=2.8.13-monas-claude-weekly-I4-local -X main.Commit=9005acffad8f9b30975ea3dd27e82095eb9e5520-dirty-I4-debug-d85b57f469ab0bc11c3b0c7cb02706442706eea5b4bbdd4d835b0d1d6bed763f -X main.Date=2026-10-19T17:18:01Z -X main.BuildType=release",
+        "-o",
+        "/output/i4-20261019t171758z/sub2api",
+        "./cmd/server"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-server.log"
+    },
+    {
+      "name": "carpool-release",
+      "arguments": [
+        "exec",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+        "env",
+        "GOMAXPROCS=2",
+        "TMPDIR=/output/tmp",
+        "GOTMPDIR=/output/tmp",
+        "CGO_ENABLED=0",
+        "go",
+        "build",
+        "-p=2",
+        "-trimpath",
+        "-buildvcs=false",
+        "-o",
+        "/output/i4-20261019t171758z/carpool-release",
+        "./cmd/carpool-release"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-carpool-release.log"
+    },
+    {
+      "name": "provider-compile",
+      "arguments": [
+        "exec",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+        "env",
+        "GOMAXPROCS=2",
+        "TMPDIR=/output/tmp",
+        "GOTMPDIR=/output/tmp",
+        "CGO_ENABLED=0",
+        "GO111MODULE=off",
+        "go",
+        "build",
+        "-p=2",
+        "-trimpath",
+        "-o",
+        "/output/i4-20261019t171758z/provider",
+        "/workspace/validation/claude-weekly-quota/environment-I4-provider/main.go"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-provider-compile.log"
+    },
+    {
+      "name": "copy-sub2api",
+      "arguments": [
+        "cp",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea:/output/i4-20261019t171758z/sub2api",
+        "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T171758Z\\candidate\\sub2api"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-copy-sub2api.log"
+    },
+    {
+      "name": "copy-carpool-release",
+      "arguments": [
+        "cp",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea:/output/i4-20261019t171758z/carpool-release",
+        "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T171758Z\\candidate\\carpool-release"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-copy-carpool-release.log"
+    },
+    {
+      "name": "copy-provider",
+      "arguments": [
+        "cp",
+        "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea:/output/i4-20261019t171758z/provider",
+        "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T171758Z\\provider\\provider"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-copy-provider.log"
+    },
+    {
+      "name": "provider-build",
+      "arguments": [
+        "build",
+        "--pull=false",
+        "--network=none",
+        "--tag",
+        "claude-weekly-quota-provider:39e9a864afb8",
+        "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T171758Z\\provider"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-provider-build.log"
+    },
+    {
+      "name": "candidate-build",
+      "arguments": [
+        "build",
+        "--pull=false",
+        "--tag",
+        "sub2api:claude-weekly-i4-candidate-d85b57f469ab",
+        "--build-arg",
+        "SOURCE_SHA256=d85b57f469ab0bc11c3b0c7cb02706442706eea5b4bbdd4d835b0d1d6bed763f",
+        "--build-arg",
+        "REVISION=9005acffad8f9b30975ea3dd27e82095eb9e5520-dirty-I4-debug-d85b57f469ab0bc11c3b0c7cb02706442706eea5b4bbdd4d835b0d1d6bed763f",
+        "--build-arg",
+        "BUILD_DATE=2026-10-19T17:19:10Z",
+        "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-build-20261019T171758Z\\candidate"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-candidate-build.log"
+    },
+    {
+      "name": "candidate-id",
+      "arguments": [
+        "image",
+        "inspect",
+        "--format",
+        "{{.Id}}",
+        "sub2api:claude-weekly-i4-candidate-d85b57f469ab"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-candidate-id.log"
+    },
+    {
+      "name": "candidate-layers",
+      "arguments": [
+        "image",
+        "inspect",
+        "--format",
+        "{{json .RootFS.Layers}}",
+        "sub2api:claude-weekly-i4-candidate-d85b57f469ab"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-candidate-layers.log"
+    },
+    {
+      "name": "r0-after",
+      "arguments": [
+        "image",
+        "inspect",
+        "--format",
+        "{{.Id}}",
+        "sub2api:2.8.13-monas-bps.13"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-r0-after.log"
+    },
+    {
+      "name": "provider-id",
+      "arguments": [
+        "image",
+        "inspect",
+        "--format",
+        "{{.Id}}",
+        "claude-weekly-quota-provider:39e9a864afb8"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-provider-id.log"
+    },
+    {
+      "name": "version",
+      "arguments": [
+        "run",
+        "--rm",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--user",
+        "1000:1000",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "sub2api:claude-weekly-i4-candidate-d85b57f469ab",
+        "--version"
+      ],
+      "exit_code": 0,
+      "log": "environment-I4-debug-20261019T171758Z-build-version.log"
+    }
+  ],
+  "production_connected": false,
+  "activation_authorized": false,
+  "status": "diagnostic_built",
+  "runtime_base_config_id": "sha256:7e6d174ece5f28faf73680802bd52ff0b34a30bd59600125e9aaf53e843aa7a6",
+  "runtime_base_oci_index": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+  "runtime_base_provenance": "coordinator-r0-provenance.json",
+  "runtime_base_layers": 20,
+  "image_id": "sha256:64e6e22539f0c8cb1dea7c026c876f8acd607ca47e7f831b9751695b9f978bb3",
+  "runtime_base_layers_retained": true,
+  "new_layer_count": 3,
+  "provider_id": "sha256:b72ea2e1a17aa027e08d55ae83455272673b689bfc4d5f7205c001d3113469f0",
+  "runtime_recipe_sha256": "bd33105b381ded70e070f95dfcbb5e765886d011c0e8ae9769d804a4d0a48867",
+  "source_after_sha256": "cd276cc102f957f120d22d7f1ad62625c1bc4c8cca1f79ab603e9fd8001318c0",
+  "source_stable": false,
+  "acceptance": false,
+  "finished_utc": "2026-10-19T17:19:18.6543570Z"
+}

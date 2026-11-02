@@ -1,0 +1,11 @@
+{
+  "checked_utc": "2026-10-20T02:24:35.521890+00:00",
+  "execution_receipt": "office-F2-rollback-20261020T022359Z.json",
+  "proof_containers_remaining": 0,
+  "proof_subnet_remaining": false,
+  "all_preexisting_networks_present": true,
+  "canonical_F1_receipt_unchanged": true,
+  "main_fixture_modified": false,
+  "private_records_retained": "/Users/shenxi/.codex/private/claude-weekly-quota/office-f2-rollback-20261020T022359Z",
+  "raw_log_sha256": "47682cee7fdbd5fe8f674610f3d8279cbfae71b10150044044fa2fb1e8ff7906"
+}

@@ -676,7 +676,7 @@ func (u *ClaudeUsage) hasObservedTokens() bool {
 // 不变式：UpstreamFailoverError 必须保持 result=nil——failover 重试成功后按成功请求
 // 计费，若同时返回部分 usage 会造成双重计费，此处显式拦截兜底。
 func partialStreamUsageResult(c *gin.Context, resp *http.Response, streamResult *streamingResult, model, upstreamModel string, startTime time.Time, err error) *ForwardResult {
-	if streamResult == nil || !streamResult.usage.hasObservedTokens() {
+	if streamResult == nil || (!streamResult.usage.hasObservedTokens() && !completeSubscriptionQuotaMetering(c)) {
 		return nil
 	}
 	var failoverErr *UpstreamFailoverError
@@ -900,6 +900,7 @@ func (s *GatewayService) handleStreamingResponse(ctx context.Context, resp *http
 
 		eventType, _ := event["type"].(string)
 		observer.ObserveAnthropic([]byte(dataLine))
+		observeSubscriptionQuotaMetering(c, []byte(dataLine), "anthropic_sse")
 		if eventName == "" {
 			eventName = eventType
 		}
@@ -1400,6 +1401,7 @@ func (s *GatewayService) handleNonStreamingResponse(ctx context.Context, resp *h
 		observer = beginUpstreamResponseModelObservation(c)
 	}
 	observer.ObserveAnthropic(body)
+	observeSubscriptionQuotaMetering(c, body, "anthropic_json")
 
 	// 解析usage
 	var response struct {

@@ -40,6 +40,15 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/plans/:productId',
+    name: 'PlanRules',
+    component: () => import('@/views/PlanRulesView.vue'),
+    meta: {
+      requiresAuth: false,
+      title: 'Plan Rules'
+    }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/auth/LoginView.vue'),
@@ -535,6 +544,18 @@ const routes: RouteRecordRaw[] = [
       title: 'Carpool Management',
       titleKey: 'admin.carpool.title',
       descriptionKey: 'admin.carpool.description'
+    }
+  },
+  {
+    path: '/admin/product-config',
+    name: 'AdminProductConfig',
+    component: () => import('@/views/admin/ProductConfigView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Product Config',
+      titleKey: 'admin.productConfig.title',
+      descriptionKey: 'admin.productConfig.description'
     }
   },
   {

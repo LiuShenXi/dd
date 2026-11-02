@@ -1,0 +1,23 @@
+{
+  "started_utc": "2026-10-20T01:53:15.002022+00:00",
+  "source_sha256": "786111d85ea6341e88a20ea32d2aaaa88cd5543151168b9b621114d6efa9586b",
+  "head": "203047edaf09f17fc9e73bf4a3541b5fc190b282",
+  "frontend_dist_sha256": "b68bc9aeb8d0f96fa4363381b19673a20a406fa76aadb5e5f42f916fc4c76d12",
+  "revision": "203047edaf09f17fc9e73bf4a3541b5fc190b282-I6-786111d85ea6341e88a20ea32d2aaaa88cd5543151168b9b621114d6efa9586b",
+  "target": "linux/amd64",
+  "cgo_enabled": false,
+  "production_modified": false,
+  "private_build_directory": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final",
+  "status": "failed",
+  "operations": [
+    {
+      "name": "server",
+      "exit_code": 1,
+      "log_sha256": "06292d2a8816cacf26eaf56f2f855dbbe89dd0c115065aa53b306440ecf26dec"
+    }
+  ],
+  "runtime_base_image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+  "go_version": "go version go1.27.0 darwin/arm64",
+  "error": "Command '['go', 'build', '-p=2', '-tags=embed', '-trimpath', '-buildvcs=false', '-ldflags=-s -w -X main.Version=2.8.13-monas-claude-weekly-I6-local -X main.Commit=203047edaf09f17fc9e73bf4a3541b5fc190b282-I6-786111d85ea6341e88a20ea32d2aaaa88cd5543151168b9b621114d6efa9586b -X main.Date=2026-10-20T01:53:15.002022+00:00 -X main.BuildType=release', '-o', '/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final/candidate/sub2api', './cmd/server']' returned non-zero exit status 1.",
+  "finished_utc": "2026-10-20T01:53:16.787722+00:00"
+}

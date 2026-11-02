@@ -44,7 +44,8 @@
             :key="subscription.id"
             class="border-b border-gray-50 p-3 last:border-b-0 dark:border-dark-700/50"
           >
-            <div class="mb-2 flex items-center justify-between">
+            <ClaudeQuotaCard v-if="subscription.quota_mode === 'term'" :summary="subscription.quota_summary ?? null" :title="subscription.group?.name" compact @refresh="refresh" />
+            <div v-else class="mb-2 flex items-center justify-between">
               <span class="text-sm font-medium text-gray-900 dark:text-white">
                 {{ subscription.group?.name || `Group #${subscription.group_id}` }}
               </span>
@@ -58,7 +59,7 @@
             </div>
 
             <!-- Progress bars or Unlimited badge -->
-            <div class="space-y-1.5">
+            <div v-if="subscription.quota_mode !== 'term'" class="space-y-1.5">
               <!-- Unlimited subscription badge -->
               <div
                 v-if="isUnlimited(subscription)"
@@ -184,6 +185,8 @@ import Icon from '@/components/icons/Icon.vue'
 import { useSubscriptionStore } from '@/stores'
 import { FeatureFlags, isFeatureFlagEnabled } from '@/utils/featureFlags'
 import type { UserSubscription } from '@/types'
+import ClaudeQuotaCard from '@/components/subscription/ClaudeQuotaCard.vue'
+import { quotaProgress } from '@/utils/claudeQuota'
 
 const { t } = useI18n()
 
@@ -208,6 +211,7 @@ const displaySubscriptions = computed(() => {
 })
 
 function getMaxUsagePercentage(sub: UserSubscription): number {
+  if (sub.quota_mode === 'term') { const term = sub.quota_summary?.current_term; return term ? quotaProgress(term.quota_usd, term.used_usd, term.pending_usd) ?? 0 : 0 }
   const percentages: number[] = []
   if (sub.group?.daily_limit_usd) {
     percentages.push(((sub.daily_usage_usd || 0) / sub.group.daily_limit_usd) * 100)
@@ -222,6 +226,7 @@ function getMaxUsagePercentage(sub: UserSubscription): number {
 }
 
 function isUnlimited(sub: UserSubscription): boolean {
+  if (sub.quota_mode === 'term') return false
   return (
     !sub.group?.daily_limit_usd &&
     !sub.group?.weekly_limit_usd &&
@@ -288,6 +293,7 @@ function toggleTooltip() {
 function closeTooltip() {
   tooltipOpen.value = false
 }
+function refresh() { void subscriptionStore.fetchActiveSubscriptions(true).catch(error => { if (subscriptionStore.isCurrentActiveError(error)) console.error('Failed to refresh subscription:', error) }) }
 
 function handleClickOutside(event: MouseEvent) {
   if (containerRef.value && !containerRef.value.contains(event.target as Node)) {

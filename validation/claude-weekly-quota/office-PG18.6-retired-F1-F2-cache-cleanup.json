@@ -1,0 +1,33 @@
+{
+  "checked_utc": "2026-10-20T02:44:17.739337+00:00",
+  "exact_cache_ids": [
+    "8k5dnlq4ugr7g4152kpcu13no",
+    "sjdw9lbn69vp1gwse490knz2p",
+    "v1btdyieruljj58vkksajqaas",
+    "t2qnvkiqha8sk95qp514555fd",
+    "o3v9nri8y07ujbatth8vnll9b",
+    "8n4c0vvis9905gl7bvyy8hsqp"
+  ],
+  "filter": "id=^(8k5dnlq4ugr7g4152kpcu13no|sjdw9lbn69vp1gwse490knz2p|v1btdyieruljj58vkksajqaas|t2qnvkiqha8sk95qp514555fd|o3v9nri8y07ujbatth8vnll9b|8n4c0vvis9905gl7bvyy8hsqp)$",
+  "before_match_count": 6,
+  "all_before_unshared_immutable_reclaimable": true,
+  "after_match_count": 0,
+  "free_bytes_before": 3383570432,
+  "free_bytes_after": 3383218176,
+  "global_prune": false,
+  "source_context_removed": false,
+  "images_removed": false,
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office/pg186-retired-F1-F2-cache-cleanup.log",
+  "private_log_sha256": "da8f52d348a9ed49c7aa4fb523d367cbde33e312dc1635a849c73491e8612249",
+  "command_exit_code": 0,
+  "context_proof": [
+    {
+      "ref": "609wa9wjhexvw6uasewa1x2zn",
+      "context": "office-build-20261020-final3/candidate"
+    },
+    {
+      "ref": "ddw5ouuieixbfq6cfot0prl71",
+      "context": "office-build-20261020-final4/candidate"
+    }
+  ]
+}

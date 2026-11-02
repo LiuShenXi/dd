@@ -1,0 +1,1310 @@
+{
+  "production_enabled": false,
+  "baseline_revision": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
+  "scope": "Continue dedicated Claude carpool branch at office; finish I5 paid immutable entitlements and I6 controlled conversion/runtime/browser verification. Local implementation only; current batch uncommitted and production unchanged.",
+  "tests": [
+    {
+      "id": "T01",
+      "scenario": "A 100、B 300",
+      "required_assertions": "两张卡归属、额度独立",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T02",
+      "scenario": "多 Key 同用户同组",
+      "required_assertions": "共用一张卡，不能每 Key 重发额度",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T03",
+      "scenario": "空、零、负、NaN、Infinity、科学计数",
+      "required_assertions": "拒绝且不写父记录、卡或操作",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T04",
+      "scenario": "省略额度选有效套餐",
+      "required_assertions": "精确复制默认值，改套餐不改旧卡",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T05",
+      "scenario": "省略额度且无默认",
+      "required_assertions": "QUOTA_REQUIRED，无不限额路径",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T06",
+      "scenario": "同幂等键重复开卡",
+      "required_assertions": "一张卡，原响应和原时间不变",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T07",
+      "scenario": "同目标同幂等键更改金额或套餐",
+      "required_assertions": "409，不追加；不同身份 scope 不返回他人结果",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T08",
+      "scenario": "同用户同时两次续卡",
+      "required_assertions": "串行排期不重叠，term_no 唯一",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T09",
+      "scenario": "stale expected_revision",
+      "required_assertions": "409，保留输入但不写入",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T10",
+      "scenario": "到期前、到期瞬间、到期后",
+      "required_assertions": "左闭右开；精确 168 小时",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T11",
+      "scenario": "取消未来中间卡",
+      "required_assertions": "后续卡不自动前移，无结转",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T12",
+      "scenario": "耗尽后提前续卡",
+      "required_assertions": "新卡按队尾生效，不能提前消费",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl"
+      ],
+      "acceptance_note": "Accepted I2 card-operation and read scope; downstream consumption remains I3/I4. T24 also relies on I1 real PostgreSQL composite-FK checks."
+    },
+    {
+      "id": "T13",
+      "scenario": "同用户 GPT 与 Claude 交错请求",
+      "required_assertions": "两账本各自变化，另一侧精确零变更",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T14",
+      "scenario": "GPT 额度零、Claude 有额",
+      "required_assertions": "Claude 可调用，GPT 原错误",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T15",
+      "scenario": "Claude 耗尽、GPT 有额",
+      "required_assertions": "GPT 可调用，Claude 429",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T16",
+      "scenario": "任一订阅过期或取消",
+      "required_assertions": "另一订阅仍正常，无余额回退",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T17",
+      "scenario": "已绑定 GPT 使用普通其他组",
+      "required_assertions": "原拒绝仍在，不能借本修复绕过",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T18",
+      "scenario": "GPT 开通前已有合法 Claude Key",
+      "required_assertions": "开通成功，Claude Key 和权益不被覆盖",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T19",
+      "scenario": "GPT 续费时有 Claude Key",
+      "required_assertions": "续费成功，不删除 Key 或取消卡",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T20",
+      "scenario": "GPT 首次开通普通余额非零",
+      "required_assertions": "原前置检查仍生效",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T21",
+      "scenario": "GPT 加量、四周期、自动重置",
+      "required_assertions": "原卡期、次数、额度、流水语义保持",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T22",
+      "scenario": "GPT HTTP、SSE、WS 跨周期",
+      "required_assertions": "原 durable receipt 和恢复行为不变",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T23",
+      "scenario": "新模块关闭、仓库未注入",
+      "required_assertions": "Claude term 拒绝，GPT 不调用新领域 Repo",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T24",
+      "scenario": "入参伪造其他 user/group/term",
+      "required_assertions": "DTO 和复合 FK 拒绝跨归属写入",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T25",
+      "scenario": "同凭据并发 Apply",
+      "required_assertions": "一条 debit、一次用量和一次 Key/账号计数",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T26",
+      "scenario": "已归档 dedup 重放",
+      "required_assertions": "不第二次扣费，校验原 fingerprint",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T27",
+      "scenario": "零费用",
+      "required_assertions": "有明确来源和 settled 事实，不写普通余额",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T28",
+      "scenario": "同一请求不同费用",
+      "required_assertions": "冲突并告警，原事实不覆盖",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T29",
+      "scenario": "客户端重复 Request-ID 两次真实调用",
+      "required_assertions": "两个服务器消费身份，正常分别计费",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T30",
+      "scenario": "部分来源字段恶意混填",
+      "required_assertions": "四种来源互斥，零费用不能绕过",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T31",
+      "scenario": "等锁跨到期或下一期起点",
+      "required_assertions": "回滚重选，不拿旧卡加新时间",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T32",
+      "scenario": "请求结束时旧卡已过期",
+      "required_assertions": "仍记旧卡，新卡用量零变化",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T33",
+      "scenario": "请求结束前当前卡被取消",
+      "required_assertions": "已准入费用仍记原卡",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T34",
+      "scenario": "上游后、known receipt 前崩溃",
+      "required_assertions": "admitted 转待核查，不猜零、不补扣 GPT",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T35",
+      "scenario": "known receipt 后、Apply 前崩溃",
+      "required_assertions": "恢复后精确结算一次",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T36",
+      "scenario": "Apply 提交后进程崩溃",
+      "required_assertions": "重放不再扣；日志可补写",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T37",
+      "scenario": "流断连且 usage 已知",
+      "required_assertions": "正常结算，断连不是退款",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T38",
+      "scenario": "usage 缺失、迟到与人工核查竞争",
+      "required_assertions": "NULL 与 reconcile_required；当前卡暂停新请求，旧卡不阻塞新卡；不产生假零账单",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T39",
+      "scenario": "恢复首笔超时",
+      "required_assertions": "后续条目用独立 context 继续",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T40",
+      "scenario": "两恢复 worker 与租约到期",
+      "required_assertions": "最多一次业务效果，未持 request 锁等待 scope",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T41",
+      "scenario": "0.000078125 等舍入边界",
+      "required_assertions": "八位金额逐表精确一致",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T42",
+      "scenario": "套餐或倍率在请求中途变化",
+      "required_assertions": "使用冻结定价；恢复不按现价重算",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T43",
+      "scenario": "账本提交、usage_log 写失败及日志清理",
+      "required_assertions": "未写成功可补；已确认后清理不补回；不重新计费",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T44",
+      "scenario": "多个在途请求超过额度、known 尚未 Apply",
+      "required_assertions": "已知待结算计入准入判断；原卡真实已用可超额，不抹账或转下一期",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I3-review.md",
+        "I3-windows-F3-20261019T160855Z-receipt.json",
+        "I3-pg-F3-20261019T160927Z-receipt.json",
+        "I3-pg-race-F3-20261019T160927Z-receipt.json",
+        "I3-pg-F3-20261019T161410Z-receipt.json",
+        "I3-test-trace-map.md",
+        "I3-pg-traceability.md"
+      ],
+      "acceptance_note": "Accepted on I3 frozen F3 using real PostgreSQL and separately documented HTTP/router/unit layers; see per-test trace map. No production or live-provider validation is claimed. I4 UI and I5/I6 release obligations remain."
+    },
+    {
+      "id": "T45",
+      "scenario": "Messages、Chat、Responses 及全部别名",
+      "required_assertions": "流式和非流式均有准入快照和结算",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-pg-debug-20261019T172029Z-receipt.json",
+        "I4-pg-F2-20261019T180032Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Current F2 image: six aliases x JSON/SSE x two users, two A Keys and interleaved synthetic GPT; exact once-only request/ledger/dedup/log and opposite-wallet assertions."
+    },
+    {
+      "id": "T46",
+      "scenario": "跨组 fallback、强制平台、未支持收费入口",
+      "required_assertions": "明确拒绝，GPT 原能力仍正常",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "I4-windows-F2-20261019T175936Z-receipt.json",
+        "I4-v2-MetadataAndUnsupportedRoutes-F2-20261019T180755Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Registered route negatives and current-image metadata/unsupported-entry tests passed. Normal auth last-use metadata is not a charge; the original full-row failure and explicit warmup diagnosis remain recorded."
+    },
+    {
+      "id": "T47",
+      "scenario": "慢预览、关闭 A 打开 B、A 的 finally 迟到",
+      "required_assertions": "B 不被旧结果覆盖",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-ui-20261019T174120Z-receipt.json",
+        "I4-cua-browser-20261019T2303Z/receipt.json",
+        "I4-browser-independent-evidence-review.md"
+      ],
+      "acceptance_note": "Actual user Chrome/CUA and two independent real-backend preview gates: late A success and late A error cannot replace B draft, preview or pending state. F2 image used unchanged final F4 frontend assets. Earlier 30-second timeout diagnostics retained; do not use mismatched screenshot names as final-state proof."
+    },
+    {
+      "id": "T48",
+      "scenario": "页面倒计时到零且网络未返回",
+      "required_assertions": "不自行发额度、清零或假装已重置",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-ui-20261019T174120Z-receipt.json",
+        "I4-cua-browser-20261019T2303Z/receipt.json",
+        "I4-browser-independent-evidence-review.md"
+      ],
+      "acceptance_note": "Actual F4 Chrome at the real database time boundary: while server refresh was held and subsequently timed out, original 13/0/0/13 and queued17 stayed visible. Only a fresh server response after explicit Retry selected17/0/0/17. Both synthetic historical fixture terms are complete168h; no existing card window was shortened or reset."
+    },
+    {
+      "id": "T49",
+      "scenario": "中英文、窄屏、键盘、多个 Key",
+      "required_assertions": "所有页面同一额度来源，Key 限额另标",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-ui-20261019T174120Z-receipt.json",
+        "I4-pg-debug-20261019T172029Z-receipt.json",
+        "I4-cua-browser-20261019T2303Z/receipt.json",
+        "I4-browser-independent-evidence-review.md"
+      ],
+      "acceptance_note": "Actual Chrome A/B profiles, A two Claude Keys and GPT Key, CN/EN390px settled layout and modal keyboard focus/Escape checked. Public Key field omission was found, fixed via native selected field plus auth snapshotv28, and rerun on F4; A/A2/GPT-ownerA now override2, B default3. GPT stays5. Earlier projection failure and transition screenshot retained."
+    },
+    {
+      "id": "T50",
+      "scenario": "下单后修改、下架或删除套餐",
+      "required_assertions": "按订单原额度履约",
+      "status": "passed",
+      "evidence": [
+        "I5-integration-receipt.md",
+        "I6-plan-duration-and-promotion-receipt.md",
+        "office-I6-browser-receipt.json"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Actual checkout commits snapshot before fake provider creation; later plan edit/unlist/delete cannot change exact125.12345678 and604800s. Browser bought order3 before plan999/unlist and paid original frozen rights. F2 payment logic; F3 paid-result and F4 actual admin presentation.",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T51",
+      "scenario": "支付回调并发、重试、租约交接",
+      "required_assertions": "一个订单只创建一张卡",
+      "status": "passed",
+      "evidence": [
+        "I5-integration-receipt.md",
+        "I6-plan-duration-and-promotion-receipt.md"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Real signed callback16-way race, durable lease takeover and stale completion/failure fences yield one card/operation/assignment audit. Real PG16top/32total final I5 selection.",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T52",
+      "scenario": "开卡事务失败后回调重试",
+      "required_assertions": "不重复扣款或重复开卡，状态可恢复",
+      "status": "passed",
+      "evidence": [
+        "I5-integration-receipt.md",
+        "office-F3-rollback-20261020T023709Z.json"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Actual PG faults before rights commit roll back all writes; postcommit completion fault preserves one entitlement; retry recovers without provider recreation. F3 actual image transition and compatible-R1 payment recovery passed.",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T53",
+      "scenario": "无快照旧订单遇新模式分组",
+      "required_assertions": "显式失败待处理，不猜额度",
+      "status": "passed",
+      "evidence": [
+        "I5-integration-receipt.md",
+        "I6-plan-duration-and-promotion-receipt.md",
+        "I6-controlled-rollout-receipt.md"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Missing/malformed/future/mismatched frozen rights fail closed for manual review. CANCELLED late callback can recover PAID but cannot infer rights; EXPIRED only existing5min grace, otherwise PAYMENT_AFTER_EXPIRY with no automatic issuance.",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T54",
+      "scenario": "reset、extend、restore、bulk、兑换及旧维护 worker",
+      "required_assertions": "未适配动作拒绝，旧维护排除 term，已用及卡期不变",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "I5-integration-receipt.md",
+        "I6-final-pg-receipt.json"
+      ],
+      "acceptance_note": "Actual issued paid-card legacy service/repository sinks reject reset/extend/revoke/restore/activation/bulk/redemption; timer scheduling itself not asserted. Whole financial fingerprints, cards and time intervals preserved.",
+      "prior_status": "partial",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T55",
+      "scenario": "旧式自动全额/部分退款及取消",
+      "required_assertions": "term 旧退款路径拒绝，不减父记录天数冒充撤销额度，不充值普通余额",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "I5-integration-receipt.md",
+        "office-I6-browser-receipt.json",
+        "I6-frontend-receipt.md"
+      ],
+      "acceptance_note": "Actual PG full/partial/forced refund and reconciliation reject before provider access; no wallet credit or parent-day mutation. F4 actual routed AdminOrdersView browser completed-order actions/detail verified; five refund-state branches and late-response guards covered by actual-view tests. Card cancellation and cash refund remain separate manual procedures.",
+      "prior_status": "partial",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T56",
+      "scenario": "空库和旧二开库迁移、重复执行",
+      "required_assertions": "约束正确，既有迁移校验和不变",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "Accepted at I1 on frozen F3; later billing and release iterations require regression."
+    },
+    {
+      "id": "T57",
+      "scenario": "新字段默认值及旧数据查询",
+      "required_assertions": "全部旧组 windows，GPT 行为不改变",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json"
+      ],
+      "acceptance_note": "Accepted at I1 on frozen F3; later billing and release iterations require regression."
+    },
+    {
+      "id": "T58",
+      "scenario": "旧 auth cache 命中、新模式切换",
+      "required_assertions": "旧版本失效，陈旧允许不越过最终 DB 检查",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "I6-conversion-runtime-receipt.md",
+        "office-I6-conversion-v4-conversion-20261020T021721Z.json"
+      ],
+      "acceptance_note": "Actual F1 conversion waits complete old request accounting plus real delayed cache invalidation. Injected stale windows cache receives authoritative503 before legacyRedis/provider work; refreshed same Key spends exact new card.",
+      "prior_status": "partial",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T59",
+      "scenario": "活跃 GPT 事务同时 Claude 开卡或结算",
+      "required_assertions": "无锁环，无全局重置锁竞争",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "coordinator-I2-review.md",
+        "I2-domain-F2-final-receipt.json",
+        "I2-domain-F2-20261019T140738Z-receipt.json",
+        "I2-domain-race-F2-20261019T140748Z-receipt.json",
+        "I2-final-windows-unit-F2.jsonl",
+        "I6-controlled-rollout-receipt.md",
+        "I6-conversion-runtime-receipt.md",
+        "I6-performance-receipt.md"
+      ],
+      "acceptance_note": "GPT group accounting proceeds while GPT group row locked; real Claude conversion preserves in-flight GPT HTTP/WS slots and exact original settlement. Local concurrent Apply/GPT sweeps have no lock cycle/deadlock. Shared DB resource cost still measured:18.1 300k mixed-burst GPT throughput30% lower; not a zero-impact or production SLO claim.",
+      "prior_status": "partial",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T60",
+      "scenario": "R2 关闭新准入回到 R1",
+      "required_assertions": "Claude 明确拒绝，已知账务可完成，GPT 正常",
+      "status": "passed",
+      "evidence": [
+        "I6-F3-image-proof-receipt.md",
+        "office-F3-rollback-20261020T023709Z.json",
+        "office-I6-final-source-audit.json"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Actual R0 startup to compatibleR1 additive migration, R2 issuance then R1 flags-off/recovery-on and restart. New Claude refused, known Claude/GPT and paid frozen rights recover exactly; F4 backend identical to F3.",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T61",
+      "scenario": "未升级副本仍服务时请求启用",
+      "required_assertions": "启用门禁拒绝，不运行混合语义",
+      "status": "passed",
+      "evidence": [
+        "I6-controlled-rollout-receipt.md",
+        "office-I6-mixed-receipt.json"
+      ],
+      "prior_status": "not_run",
+      "acceptance_note": "Actual mismatched extra runtime/default4 advertisement blocks conversion/release. Correct runtime inventory converges after actual stopped process unregisters; fresh/missing/stale/duplicate capability policies separately PG tested. Never infer absence of unlisted old processes from self-registration alone.",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T62",
+      "scenario": "分组切换前旧余额请求仍在途",
+      "required_assertions": "必须排空，切换前后每个请求来源明确",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I1-review.md",
+        "I1/gpt-and-quota-unit.jsonl",
+        "environment-I1-F3-20261019T133930Z-pg-receipt.json",
+        "environment-I1-F3-20261019T133930Z-race-receipt.json",
+        "I6-controlled-rollout-receipt.md",
+        "I6-conversion-runtime-receipt.md",
+        "office-I6-conversion-v4-conversion-20261020T021721Z.json"
+      ],
+      "acceptance_note": "Actual five old window streams plus queued pre-slot marker block conversion. Maintenance stops new admissions; queue canceled before provider; five completions settle exact original ordinary0.003 before explicit allocation conversion. Unknown receipts never age into zero blockers.",
+      "prior_status": "partial",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T63",
+      "scenario": "同用户 GPT 上限 5、Claude 上限 2",
+      "required_assertions": "可同时执行 5 加 2；不另套共享总上限",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-redis-policy-debug-20261019T173048Z-receipt.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Two real application instances and Redis prove same-user GPT5 plus Claude2 concurrently without a shared user cap; these are synthetic test policy values.",
+      "office_additional_evidence": [
+        "office-I6-pools-receipt.json"
+      ]
+    },
+    {
+      "id": "T64",
+      "scenario": "GPT 活跃与等待均满",
+      "required_assertions": "Claude 仍可获取其空闲槽和等待位置",
+      "status": "passed",
+      "evidence": [
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Actual GPT active5/waiting20 full while Claude admits independently; overflow and ownership checked.",
+      "office_additional_evidence": [
+        "office-I6-pools-receipt.json"
+      ]
+    },
+    {
+      "id": "T65",
+      "scenario": "Claude 活跃与等待均满",
+      "required_assertions": "GPT 原请求仍可获取空闲槽；两池数量不互减",
+      "status": "passed",
+      "evidence": [
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Actual Claude active2/waiting20 full while a freed GPT slot admits its replacement; counts remain separate.",
+      "office_additional_evidence": [
+        "office-I6-pools-receipt.json"
+      ]
+    },
+    {
+      "id": "T66",
+      "scenario": "多 Claude Key、多个 term 组、续卡边界",
+      "required_assertions": "同用户 Claude 总上限不乘 Key/组/卡数；旧在途槽仍计入",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-T68-debug-20261019T172448Z-observed.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-v2-CrossCardLeaseBoundary-F2-20261019T180722Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Two Keys and two Claude term groups share one user pool. Actual leases survive card expiry; late cost stays on original card and next card remains untouched until a new admission.",
+      "office_additional_evidence": [
+        "office-I6-boundary-receipt.json",
+        "office-I6-pools-receipt.json"
+      ]
+    },
+    {
+      "id": "T67",
+      "scenario": "等待成功、取消、超时、重复清理",
+      "required_assertions": "仅清理原 scope ticket，不泄漏、不负数、不清别人等待",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-redis-policy-debug-20261019T173048Z-receipt.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Real Redis promotion, cancellation, timeout, repeated/late cleanup and actual full queues preserve ticket ownership and avoid resurrection.",
+      "office_additional_evidence": [
+        "office-I6-promotion-receipt.json",
+        "office-I6-metrics-receipt.json"
+      ]
+    },
+    {
+      "id": "T68",
+      "scenario": "长 SSE 超过原 15 分钟 TTL",
+      "required_assertions": "新 lease 持续续租，不提前放行超额；丢租不偷偷重建",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-T68-debug-20261019T172448Z-observed.json",
+        "I4-v2-T68-F3-20261019T181135Z-receipt.json",
+        "I4-v2-T68-F3-20261019T181135Z-observed.json",
+        "coordinator-I4-T68-postgres-observed.json",
+        "coordinator-I4-T68-review.json",
+        "coordinator-I4-F2-F3-test-only-bridge.json"
+      ],
+      "acceptance_note": "Final F2 application with approved F3 test-only bridge: actual SSE973.0817914s, 62 original-UUID renewals, no third upstream/admission after15min; two original-term settlements each0.00060000 with one ledger/dedup and log acknowledgment, independently re-read by coordinator. Full other-wallet guards passed. Historical older-image T68 evidence remains diagnostic.",
+      "office_additional_evidence": [
+        "office-I6-long-sse-receipt.json",
+        "office-I6-lost-lease-receipt.json"
+      ]
+    },
+    {
+      "id": "T69",
+      "scenario": "转发失败、panic、客户端取消、同组账号切换",
+      "required_assertions": "用户 lease 不重复申请或提前释放，账号槽正确交接，最终只释放一次",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-gateway-T69-final-receipt.json",
+        "I4-windows-F2-20261019T175936Z-receipt.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-RedisFaultCancelsActualUpstream-F2-20261019T180809Z-receipt.json",
+        "I4-unit-race-F3-20261019T181120Z-receipt.json",
+        "coordinator-I4-F2-F3-test-only-bridge.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Combined explicit layers: actual local Router panic/cancel/pre-send account handoff with synthetic ports, real Redis cleanup/renewal, and actual-image upstream cancellation. This is not a claim of one real-PG handler-panic test."
+    },
+    {
+      "id": "T70",
+      "scenario": "两实例同时申请并发与等待容量",
+      "required_assertions": "Redis 原子上限有效，多副本不各放一份",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-redis-policy-debug-20261019T173048Z-receipt.json",
+        "I4-v2-PrepareSecondInstance-debug-20261019T172849Z-receipt.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Two real application instances plus independent Redis clients enforce shared active/waiting capacities.",
+      "office_additional_evidence": [
+        "office-I6-pools-receipt.json"
+      ]
+    },
+    {
+      "id": "T71",
+      "scenario": "Claude Redis 申请或续租故障",
+      "required_assertions": "明确失败或取消转发并处理用量，不降级 GPT 槽，不改 GPT 故障路径",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-v2-redis-policy-debug-20261019T173048Z-receipt.json",
+        "I4-v2-tcp-blackhole-fixed.log",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-RedisFaultCancelsActualUpstream-F2-20261019T180809Z-receipt.json",
+        "I4-v2-RedisFault-observed-20261019T180956Z.json",
+        "I4-unit-race-F3-20261019T181120Z-receipt.json",
+        "coordinator-I4-F2-F3-test-only-bridge.json",
+        "I4-readonly-evidence-gap-review.md"
+      ],
+      "acceptance_note": "Actual Redis failure cancels provider before lease expiry; independently observed cancelled=true, SQL NULL actual cost, reconciliation state, zero debit/dedup/used and unchanged legacy keys.",
+      "office_additional_evidence": [
+        "office-I6-redis-fault-receipt.json",
+        "office-I6-lost-lease-receipt.json"
+      ]
+    },
+    {
+      "id": "T72",
+      "scenario": "带旧池在途请求启用或回退",
+      "required_assertions": "先排空；混合版本不启用；GPT 槽与 WS ingress 不清空",
+      "status": "passed",
+      "evidence": [
+        "office-I6-mixed-receipt.json",
+        "I6-conversion-runtime-receipt.md",
+        "office-I6-conversion-v4-conversion-20261020T021721Z.json",
+        "I6-F3-image-proof-receipt.md"
+      ],
+      "acceptance_note": "Actual controlled conversion drains old-pool queued/inflight/async requests and refuses mixed runtime capabilities. GPT user2/WSingress1 owners remain intact across group conversion with exact accounting. Actual image replacement and known-receipt recovery are proved separately; the image driver forcibly stops its disposable containers and does not prove production full-process release/drain. Production replacement still requires the documented full release drain before restart; no global GPT slot reset is invented.",
+      "prior_status": "not_run",
+      "accepted_iteration": "I5/I6 office local synthetic"
+    },
+    {
+      "id": "T73",
+      "scenario": "独立上限修改、旧缓存、批量改原 concurrency",
+      "required_assertions": "Claude 上限按自己的规则更新；原批量操作不改 Claude；UI 未知不显示假零",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-ui-20261019T174120Z-receipt.json",
+        "I4-v2-legacy-bulk-pg-debug-receipt.json",
+        "I4-windows-F2-20261019T175936Z-receipt.json",
+        "I4-v2-redis-policy-F2-20261019T180011Z-receipt.json",
+        "I4-v2-MetadataAndUnsupportedRoutes-F2-20261019T180755Z-receipt.json",
+        "I4-unit-race-F3-20261019T181120Z-receipt.json",
+        "coordinator-I4-F2-F3-test-only-bridge.json",
+        "I4-readonly-evidence-gap-review.md",
+        "I4-cua-browser-20261019T2303Z/receipt.json",
+        "I4-browser-independent-evidence-review.md"
+      ],
+      "acceptance_note": "Actual F4 admin C changed independent Claude default3 to override4 while GPT remained5. Actual A/B and public Key projections plus native PG/Redis cold/L1/L2/v27-to-v28 tests passed. Existing omitted-input/no-change, invalid overrides, original bulk concurrency and policy tests retained. This does not accept I6 pool activation/rollback."
+    },
+    {
+      "id": "T74",
+      "scenario": "GPT HTTP/WS/live 与 Claude 全部别名交错",
+      "required_assertions": "GPT 原槽及重取规则不变；Claude HTTP 走新 scope；未支持 Claude WS 仍拒绝",
+      "status": "passed",
+      "evidence": [
+        "coordinator-I4-review.md",
+        "coordinator-v2-concurrency-review.md",
+        "I4-pg-debug-20261019T172029Z-receipt.json",
+        "I4-windows-F2-20261019T175936Z-receipt.json",
+        "I4-pg-F2-20261019T180032Z-receipt.json",
+        "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z-receipt.json",
+        "I4-WS-runtime-F3-proof.json",
+        "I4-unit-race-F3-20261019T181120Z-receipt.json",
+        "coordinator-I4-F2-F3-test-only-bridge.json",
+        "I4-readonly-evidence-gap-review.md",
+        "I4-WS-runtime-F3-invocation.json",
+        "I4-WS-runtime-F3-postgres-observed.json"
+      ],
+      "acceptance_note": "Current image aliases and interleaved GPT HTTP/WS HTTP-bridge passed; legacy WS/live lease and Kiro normalization regressions passed. Actual Linux live route refuses with zero provider calls; no external live-provider success is claimed.",
+      "office_additional_evidence": [
+        "office-I6-ws-receipt.json",
+        "office-I6-metadata-receipt.json"
+      ]
+    }
+  ],
+  "iterations": [
+    {
+      "id": "I0",
+      "status": "accepted",
+      "receipt": "coordinator-I0-review.md"
+    },
+    {
+      "id": "I1",
+      "status": "accepted_preliminary_R1",
+      "receipt": "coordinator-I1-review.md",
+      "source_sha256": "e2d31f2525ccf72a74eb03c308611785246ce45d0e75198ef4d06fd6d7651693"
+    },
+    {
+      "id": "I2",
+      "status": "accepted",
+      "receipt": "coordinator-I2-review.md",
+      "source_sha256": "4dd98708a8cab51b34a46f00fec7263a969025b60aa3ac7198a0256c49aeaa97"
+    },
+    {
+      "id": "I3",
+      "status": "accepted",
+      "receipt": "coordinator-I3-review.md",
+      "source_sha256": "c9d25ce07053fba7642a8eb4473288b88877d4bec62472df8cf2180ef4b7eebe"
+    },
+    {
+      "id": "I4",
+      "status": "accepted",
+      "receipt": "coordinator-I4-review.md",
+      "source_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+      "candidate_image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9"
+    },
+    {
+      "id": "I5",
+      "status": "local_functional_acceptance_complete",
+      "receipt": "coordinator-I5-I6-review.md",
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "candidate_image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122"
+    },
+    {
+      "id": "I6",
+      "status": "local_functional_acceptance_complete",
+      "receipt": "coordinator-I5-I6-review.md",
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "candidate_image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122"
+    }
+  ],
+  "architecture_version": "v2",
+  "concurrency_v2_status": "Default3, per-user Claude override, independent pools and actual renewal/promotion/fault/conversion/compatible rollback accepted at recorded image scopes; production activation not performed.",
+  "production_deployment_authorized": true,
+  "remote_push_authorized": true,
+  "production_card_issuance_authorized": false,
+  "production_model_consumption_authorized": false,
+  "production_claude_default_concurrency": 3,
+  "production_concurrency_policy": "User explicitly selected Claude default 3 with positive per-user overrides; GPT settings unchanged",
+  "current_iteration": "I5/I6 local implementation,74-case functional evidence consolidation,exact PG18.6 migration/scaling and final browser acceptance complete; current batch awaits one-shot commit-plan confirmation, production prerequisites separate.",
+  "historical_acceptance_scope": "74 functional case entries passed across I1-I6 with original image/source/layer identities retained. This is not74 executions on F4 or a production/performance release gate. F4 reuses only proven unchanged backend paths from F3/F2/F1 under final source audit.",
+  "diagnostic_progress_updated_utc": "2026-10-19T17:47:47.919276+00:00",
+  "production_deployed": false,
+  "remote_branch_pushed": false,
+  "status_counts": {
+    "passed": 74,
+    "partial": 0,
+    "not_run": 0
+  },
+  "I4_gate_accepted": true,
+  "frozen_evidence_updated_utc": "2026-10-20T03:00:03.922495+00:00",
+  "current_round_production_deployment_deferred": true,
+  "historical_authorization_scope": "production_deployment_authorized and remote_push_authorized retain prior-round history, not authority to apply unspecified current allocations or automatically push this unreviewed I5/I6 batch.",
+  "current_round_remote_push_authorized": false,
+  "production_version_rehearsal": "PASS exact production PG18.6 image/binary/version180006. Full retry12top/0fail/0skip,0/10k/100k/300k,300289 actual request+ledger rows. Original disk interruption retained. Synthetic amd64-on-arm64 capacity results do not establish representative production timing/SLO.",
+  "current_batch_commit_status": "pending_one_shot_review",
+  "production_version_rehearsal_evidence": [
+    "office-PG18.6-runtime-provenance.json",
+    "office-PG18.6-rehearsal-20261020T025846Z.json",
+    "office-PG18.6-performance-20261020T025846Z.json",
+    "I6-PG18.6-rehearsal-receipt.md"
+  ],
+  "performance_limits": {
+    "postgres18_6_300k_gpt_throughput_decline_percent": 19.29,
+    "postgres18_6_300k_claude_apply_p95_ms": 116.195375,
+    "postgres18_1_prior_300k_gpt_throughput_decline_percent": 30.0,
+    "production_slo_provided": false,
+    "cross_version_improvement_claim": false
+  }
+}

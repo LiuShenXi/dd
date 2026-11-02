@@ -1,0 +1,13 @@
+{
+  "source_matches_built_application": true,
+  "frontend_matches_build": true,
+  "runtime_binary_matches_build": true,
+  "host_controller_hashes_match_repository": true,
+  "postgres_redis_identity_start_restart_unchanged": true,
+  "all_migration_checksums_match": true,
+  "public_ready_auth_background_pass": true,
+  "provided_password_and_credential_pattern_scan_pass": true,
+  "scanned_paths": 47,
+  "actual_browser_admin_version": "2.8.13-monas-claude-weekly.1",
+  "password_reset": false
+}

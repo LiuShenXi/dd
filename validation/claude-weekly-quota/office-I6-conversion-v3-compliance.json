@@ -1,0 +1,15 @@
+{
+  "checked_utc": "2026-10-20T02:13:09.722743+00:00",
+  "run_id": "cwq-i4-c3d4e0eb67944566",
+  "network": "cwq-env-i6-conversion-v3-20261020",
+  "both_health": 200,
+  "actual_admin_login": 200,
+  "compliance_get": 200,
+  "compliance_accept": 200,
+  "required_before": true,
+  "required_after": false,
+  "version": "v2026.06.10",
+  "synthetic_only": true,
+  "production_modified": false,
+  "credential_values_logged": false
+}

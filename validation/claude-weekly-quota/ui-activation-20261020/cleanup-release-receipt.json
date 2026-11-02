@@ -1,0 +1,199 @@
+{
+  "utc": "2026-10-20T04:56:17.411237+00:00",
+  "version": "2.8.13-monas-claude-weekly.2",
+  "image_id": "sha256:3691b498ce6a5ac1979dec0266d014fad9acfa387078a32188c5b59e93ddaac1",
+  "head": "bbb4903c488e56736bd2cbee08498af6ac41b5ab",
+  "routes": [
+    {
+      "base": "http://127.0.0.1:29081",
+      "state": "open",
+      "background_jobs": {
+        "mode": "coordinated",
+        "state": "active",
+        "active_tasks": 0,
+        "instance_id": "9a50ad8c06eba197b030d27b7073ca2e",
+        "leader": true
+      }
+    },
+    {
+      "base": "https://sub2api.monasapi.com",
+      "state": "open",
+      "background_jobs": {
+        "mode": "coordinated",
+        "state": "active",
+        "active_tasks": 0,
+        "instance_id": "9a50ad8c06eba197b030d27b7073ca2e",
+        "leader": true
+      }
+    },
+    {
+      "base": "https://teamsub2.monasapi.com",
+      "state": "open",
+      "background_jobs": {
+        "mode": "coordinated",
+        "state": "active",
+        "active_tasks": 0,
+        "instance_id": "9a50ad8c06eba197b030d27b7073ca2e",
+        "leader": true
+      }
+    }
+  ],
+  "containers": [
+    {
+      "name": "sub2api2-green",
+      "id": "cb20cb0f9c564fc18f94f3c1c1d24e0321d6dc9625bc09331bbe0d11be845d67",
+      "image": "sha256:3691b498ce6a5ac1979dec0266d014fad9acfa387078a32188c5b59e93ddaac1",
+      "running": true,
+      "started_at": "2026-10-20T04:55:42.102741949Z",
+      "restarts": 0,
+      "restart_policy": "unless-stopped",
+      "health": "healthy"
+    },
+    {
+      "name": "sub2api2",
+      "id": "778ebf12a69854d7afd4e25e58f49b036f7683c88738f36a40f6550bfe296147",
+      "image": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+      "running": false,
+      "started_at": "2026-10-20T04:32:59.671724642Z",
+      "restarts": 0,
+      "restart_policy": "no",
+      "health": "unhealthy"
+    },
+    {
+      "name": "sub2api2-postgres",
+      "id": "2a990fc99fa309e46fe120f794a4a8160fb71551097fdd1df536396a0f3b7ac8",
+      "image": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd",
+      "running": true,
+      "started_at": "2026-10-03T14:22:37.541743239Z",
+      "restarts": 0,
+      "restart_policy": "unless-stopped",
+      "health": "healthy"
+    },
+    {
+      "name": "sub2api2-redis",
+      "id": "80dafa8563483d27dfcaeddfa4aadbd2d2360fae6bbe75d7bac23858efaa7e4f",
+      "image": "sha256:bd999b5cfee25fb24b8320a31fddbd69f462df44c8138c66e369582937beebc0",
+      "running": true,
+      "started_at": "2026-10-03T14:22:37.350942259Z",
+      "restarts": 0,
+      "restart_policy": "unless-stopped",
+      "health": "healthy"
+    }
+  ],
+  "state": {
+    "active_slot": "green",
+    "background_activation": {
+      "confirmed": true,
+      "identity": {
+        "container_id": "cb20cb0f9c564fc18f94f3c1c1d24e0321d6dc9625bc09331bbe0d11be845d67",
+        "image_id": "sha256:3691b498ce6a5ac1979dec0266d014fad9acfa387078a32188c5b59e93ddaac1",
+        "started_at": "2026-10-20T04:55:42.102741949Z"
+      },
+      "instance_id": "9a50ad8c06eba197b030d27b7073ca2e"
+    },
+    "cutover": {
+      "from": "blue",
+      "kind": "switch",
+      "master": {
+        "pid": 3188,
+        "start_time": "149313"
+      },
+      "old_identity": {
+        "container_id": "778ebf12a69854d7afd4e25e58f49b036f7683c88738f36a40f6550bfe296147",
+        "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+        "started_at": "2026-10-20T04:32:59.671724642Z"
+      },
+      "target_identity": {
+        "container_id": "cb20cb0f9c564fc18f94f3c1c1d24e0321d6dc9625bc09331bbe0d11be845d67",
+        "image_id": "sha256:3691b498ce6a5ac1979dec0266d014fad9acfa387078a32188c5b59e93ddaac1",
+        "started_at": "2026-10-20T04:55:42.102741949Z"
+      },
+      "to": "green",
+      "workers": [
+        {
+          "pid": 392913,
+          "start_time": "293673076"
+        },
+        {
+          "pid": 392914,
+          "start_time": "293673076"
+        },
+        {
+          "pid": 392915,
+          "start_time": "293673076"
+        },
+        {
+          "pid": 392916,
+          "start_time": "293673076"
+        }
+      ]
+    },
+    "initial_identity": {
+      "container_id": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+      "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+      "started_at": "2026-10-18T15:19:07.917058186Z"
+    },
+    "installed": true,
+    "phase": "active",
+    "retirements": {
+      "blue": {
+        "identity": {
+          "container_id": "778ebf12a69854d7afd4e25e58f49b036f7683c88738f36a40f6550bfe296147",
+          "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+          "started_at": "2026-10-20T04:32:59.671724642Z"
+        },
+        "operation_id": "154b343fbc152645ef970dfd5ec0f93d",
+        "phase": "stopped"
+      }
+    },
+    "stopped_processes": [
+      {
+        "container_id": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+        "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+        "started_at": "2026-10-18T15:19:07.917058186Z"
+      },
+      {
+        "container_id": "7002abf765e4d0808ad786a33a1ef0c31ae3fd1db89d12ce9e5301d7bcb14a55",
+        "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+        "started_at": "2026-10-20T03:56:02.662056444Z"
+      },
+      {
+        "container_id": "778ebf12a69854d7afd4e25e58f49b036f7683c88738f36a40f6550bfe296147",
+        "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+        "started_at": "2026-10-20T04:32:59.671724642Z"
+      }
+    ],
+    "topology": "3ca2608e9b033b9a3c420acd8ec18ca6f6ddf7d58d7c118ebd37c48281ec5f4e",
+    "transition": null,
+    "version": 1
+  },
+  "data_services_unchanged": true,
+  "enabled_group_ids": [
+    7
+  ],
+  "summary": {
+    "group_id": 7,
+    "quota_mode": "term",
+    "revision": 1,
+    "server_time": "2026-10-20T04:56:17.408799Z",
+    "current_term": {
+      "id": 1,
+      "group_id": 7,
+      "subscription_id": 1,
+      "term_no": 1,
+      "quota_usd": "1.00000000",
+      "used_usd": "0.00082200",
+      "pending_usd": "0.00000000",
+      "remaining_usd": "0.99917800",
+      "status": "active",
+      "lifecycle_state": "active",
+      "starts_at": "2026-10-20T12:37:02.847251+08:00",
+      "expires_at": "2026-10-27T12:37:02.847251+08:00",
+      "cancelled_at": null,
+      "revision": 1,
+      "unsettled_request_count": 0
+    },
+    "last_term": null,
+    "next_terms": []
+  }
+}

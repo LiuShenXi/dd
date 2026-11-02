@@ -49,6 +49,43 @@ func TestAccount_IsOpenAIPassthroughEnabled(t *testing.T) {
 	})
 }
 
+func TestAccount_IsExcelBPSEnabled(t *testing.T) {
+	tests := []struct {
+		name    string
+		account *Account
+		want    bool
+	}{
+		{"oauth enabled", &Account{Platform: PlatformOpenAI, Type: AccountTypeOAuth, Extra: map[string]any{"openai_excel_bps": true}}, true},
+		{"oauth disabled", &Account{Platform: PlatformOpenAI, Type: AccountTypeOAuth, Extra: map[string]any{"openai_excel_bps": false}}, false},
+		{"apikey rejected", &Account{Platform: PlatformOpenAI, Type: AccountTypeAPIKey, Extra: map[string]any{"openai_excel_bps": true}}, false},
+		{"agent identity rejected", &Account{Platform: PlatformOpenAI, Type: AccountTypeOAuth, Credentials: map[string]any{"auth_mode": OpenAIAuthModeAgentIdentity}, Extra: map[string]any{"openai_excel_bps": true}}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) { require.Equal(t, tt.want, tt.account.IsExcelBPSEnabled()) })
+	}
+}
+
+func TestAccount_IsExcelBPSEnabledForModelScopesAfterMapping(t *testing.T) {
+	account := &Account{
+		Platform: PlatformOpenAI,
+		Type:     AccountTypeOAuth,
+		Credentials: map[string]any{
+			"model_mapping": map[string]any{"gpt-6-sol": "gpt-6-astra"},
+		},
+		Extra: map[string]any{
+			"openai_excel_bps":        true,
+			"openai_excel_bps_models": []any{"gpt-6-astra"},
+		},
+	}
+	require.True(t, account.IsExcelBPSEnabledForModel("gpt-6-sol"))
+	require.False(t, account.IsExcelBPSEnabledForModel("gpt-5.6-sol"))
+
+	account.Extra["openai_excel_bps_models"] = []any{}
+	require.False(t, account.IsExcelBPSEnabledForModel("gpt-6-sol"))
+	delete(account.Extra, "openai_excel_bps_models")
+	require.True(t, account.IsExcelBPSEnabledForModel("gpt-5.6-sol"))
+}
+
 func TestAccount_IsOpenAIOAuthPassthroughEnabled(t *testing.T) {
 	t.Run("仅OAuth类型允许返回开启", func(t *testing.T) {
 		oauthAccount := &Account{

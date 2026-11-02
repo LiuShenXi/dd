@@ -1,0 +1,63 @@
+{
+  "stage": "I4 v2 T68 actual Router HTTP SSE longer than fifteen minutes",
+  "freeze": "F3",
+  "diagnostic": false,
+  "executable": "C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/bin/go.exe",
+  "arguments": [
+    "test",
+    "-tags=integration",
+    "-json",
+    "-count=1",
+    "-timeout=20m",
+    "-run",
+    "^TestSubscriptionQuotaI4V2LongSSELease$",
+    "./internal/repository"
+  ],
+  "planned_duration_minutes": 16,
+  "actual_test_elapsed_seconds": 974.78,
+  "lease_sample_count": 62,
+  "exit_code": 0,
+  "driver_source_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "driver_source_after_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "driver_source_stable": true,
+  "candidate_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "candidate_image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "candidate_url": "http://127.0.0.1:50432",
+  "environment_receipt": "environment-I4-20261019T180032Z-active.json",
+  "pass_count": 1,
+  "failure_count": 0,
+  "skip_count": 0,
+  "functional_pass": true,
+  "acceptance": true,
+  "log": "I4-v2-T68-F3-20261019T181135Z.jsonl",
+  "actual_candidate_configured": true,
+  "actual_router_observed": true,
+  "actual_redis_renewal_observed": true,
+  "actual_client_receive_metrics_observed": true,
+  "actual_postgresql_settlement_observed": true,
+  "synthetic_provider_only": true,
+  "synthetic_provider_called": true,
+  "external_upstream_called": false,
+  "production_connected": false,
+  "finished_utc": "2026-10-19T18:28:07.8010139Z",
+  "source_compatibility": {
+    "compatible": true,
+    "mode": "approved_test_only_bridge",
+    "receipt": "coordinator-I4-F2-F3-test-only-bridge.json",
+    "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+    "driver_source_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+    "changed_files": [
+      "backend/internal/service/usage_cleanup_service_test.go"
+    ]
+  },
+  "source_compatibility_after": {
+    "compatible": true,
+    "mode": "approved_test_only_bridge",
+    "receipt": "coordinator-I4-F2-F3-test-only-bridge.json",
+    "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+    "driver_source_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+    "changed_files": [
+      "backend/internal/service/usage_cleanup_service_test.go"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-10-19T17:08:39.3999219Z",
+  "launch_result": 0,
+  "pid": 10740,
+  "binary": "C:\\ProgramData\\CodexTaskRuntime\\claude-weekly-quota\\I4-20261019T171000Z\\i4-loopback-bridge.exe",
+  "sha256": "7dfd5b1e0388853c708d74da257019de9ba1c5784d867dd6d76399cbf7385c14",
+  "cim_programdata_visible": true,
+  "private_binary_cim_visible": false,
+  "in_job_probe_success": true,
+  "in_job": false,
+  "binding": {
+    "LocalAddress": "127.0.0.1",
+    "LocalPort": 56699,
+    "OwningProcess": 10740
+  },
+  "health_status": 200,
+  "container": "9dadc16af4ada13805f4b4d8c5573b20ac91117f549bcaac1412ea9960681d9c",
+  "credentials_copied": false,
+  "permanent_startup": false,
+  "cause": "Private path CIM visibility differs from direct tool filesystem; Job inheritance remains an inference, not confirmed root cause"
+}

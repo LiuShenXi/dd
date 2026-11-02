@@ -67,6 +67,9 @@ func (r *userRepository) create(ctx context.Context, userIn *service.User, guard
 	if userIn == nil {
 		return nil
 	}
+	if userIn.ClaudeSubscriptionConcurrency != nil && !service.ValidClaudeSubscriptionConcurrency(*userIn.ClaudeSubscriptionConcurrency) {
+		return service.ErrInvalidClaudeConcurrency
+	}
 
 	// 统一使用 ent 的事务：保证用户与允许分组的更新原子化，
 	// 并避免基于 *sql.Tx 手动构造 ent client 导致的 ExecQuerier 断言错误。
@@ -148,6 +151,7 @@ func (r *userRepository) create(ctx context.Context, userIn *service.User, guard
 		SetRole(userIn.Role).
 		SetBalance(userIn.Balance).
 		SetConcurrency(userIn.Concurrency).
+		SetNillableClaudeSubscriptionConcurrency(userIn.ClaudeSubscriptionConcurrency).
 		SetStatus(userIn.Status).
 		SetSignupSource(userSignupSourceOrDefault(userIn.SignupSource)).
 		SetNillableLastLoginAt(userIn.LastLoginAt).
@@ -310,6 +314,12 @@ func (r *userRepository) Update(ctx context.Context, userIn *service.User, field
 	}
 	if fields.Concurrency {
 		updateOp = updateOp.SetConcurrency(userIn.Concurrency)
+	}
+	if fields.ClaudeSubscriptionConcurrency {
+		if userIn.ClaudeSubscriptionConcurrency == nil || !service.ValidClaudeSubscriptionConcurrency(*userIn.ClaudeSubscriptionConcurrency) {
+			return service.ErrInvalidClaudeConcurrency
+		}
+		updateOp = updateOp.SetClaudeSubscriptionConcurrency(*userIn.ClaudeSubscriptionConcurrency)
 	}
 	if fields.RPMLimit {
 		updateOp = updateOp.SetRpmLimit(userIn.RPMLimit)

@@ -1,0 +1,118 @@
+{
+  "started_utc": "2026-10-20T02:39:57.334288+00:00",
+  "command": [
+    "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-promotion-final3.test",
+    "-test.v",
+    "-test.parallel=1",
+    "-test.timeout=20m",
+    "-test.run=^TestSubscriptionQuota(Migrations_|HistoryIndexesI6_|PerformanceI6_)"
+  ],
+  "driver_sha256": "c228980169044eff0a381975577a2e717bd541cf197fb1baa84241e6cf3b8969",
+  "driver_reused_from_F1": false,
+  "driver_source_note": "Coordinator-provided latest final3 native driver; no compilation in this run",
+  "runner_sha256": "d8dba06b90db702966f72803db833f74f2bd43c70a4e5e445588078bb79e638d",
+  "postgres_image_reference": "postgres@sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd",
+  "postgres_architecture": "amd64",
+  "docker_host_architecture": "arm64",
+  "runtime_provenance_receipt": "office-PG18.6-runtime-provenance.json",
+  "synthetic_only": true,
+  "production_data_copied": false,
+  "production_modified": false,
+  "minimum_free_disk_threshold_bytes": 1288490188,
+  "free_disk_start_bytes": 3865706496,
+  "postgres_container_id": "fa34c6e5026b16900a050caf1678e21453f0b33fbbe5425714f13cc75f218130",
+  "testcontainers_session_id": "04f4291ca4725f45e971e8fe762583614d8b169fc72554090bce9c57cfa27265",
+  "postgres_actual_image_id": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd",
+  "actual_server_version_num": "180006",
+  "actual_server_version_string": "PostgreSQL 18.6 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+  "actual_container_program_sha256": "51b088c1df230893fc90182ce286d5e7caa5020ce9c01158dab462e1ec4b619a",
+  "exit_code": -15,
+  "halt_reason": "disk_free_below_1.2_GiB",
+  "free_disk_min_bytes": 862216192,
+  "elapsed_seconds": 64.09408416700899,
+  "finished_utc": "2026-10-20T02:41:01.428308+00:00",
+  "top_level_pass": 11,
+  "fail": 0,
+  "skip": 0,
+  "raw_log_sha256": "447c5e76bd3a1779bdbd6d40ec1ff29e5246ee05e713f5e79d63af1867376cc1",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-pg186-20261020T023957Z/rehearsal.log",
+  "driver_stable": true,
+  "test_results": [
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaHistoryIndexesI6_PendingCountsRetainMeaning",
+      "seconds": 1.12
+    },
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaHistoryIndexesI6_RecoversRealInvalidIndex",
+      "seconds": 1.26
+    },
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaHistoryIndexesI6_FailureRestoresSessionTimeouts",
+      "seconds": 6.22
+    },
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaMigrations_EmptyDatabaseAndReplay",
+      "seconds": 1.18
+    },
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaMigrations_Legacy297UpgradePreservesAllRows",
+      "seconds": 1.37
+    },
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaMigrations_GroupModeAndCompositeOwnership",
+      "seconds": 1.05
+    },
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaMigrations_Exact168HoursAndNumericBoundaries",
+      "seconds": 1.13
+    },
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaMigrations_ImmutableTermsAndLedger",
+      "seconds": 1.32
+    },
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaMigrations_UnknownUsageAndUsageLogLinks",
+      "seconds": 1.1
+    },
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaMigrations_OnlineIndexFailureRestoresTimeouts",
+      "seconds": 6.08
+    },
+    {
+      "status": "PASS",
+      "test": "TestSubscriptionQuotaMigrations_OnlineInvalidIndexRecovery",
+      "seconds": 1.17
+    }
+  ],
+  "performance_history_scales": [
+    0,
+    10000,
+    100000
+  ],
+  "pass": false,
+  "owned_container_cleanup": [
+    {
+      "id": "c942a226d43fdc75c360f6f02c20265e5f26323052cdb85e235ca643676686e3",
+      "removed": true
+    },
+    {
+      "id": "fa34c6e5026b16900a050caf1678e21453f0b33fbbe5425714f13cc75f218130",
+      "removed": true
+    },
+    {
+      "id": "8c75faf7f21bf324d38f076f5642cdc93eec911bd84805f8a4e70e67f02442e8",
+      "removed": true
+    }
+  ],
+  "free_disk_after_cleanup_bytes": 2783780864
+}

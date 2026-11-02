@@ -218,7 +218,7 @@
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-dark-400'
               ]"
             >
-              {{ value ?? 0 }}
+              {{ value == null ? t('concurrencyScopes.unavailable') : value }}
             </span>
           </template>
 

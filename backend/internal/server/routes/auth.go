@@ -247,6 +247,13 @@ func RegisterAuthRoutes(
 		settings.GET("/email-unsubscribe", h.Setting.UnsubscribeNotificationEmail)
 	}
 
+	// 首页车次卡片（无需认证），与公开设置同口径按 IP 限流
+	home := v1.Group("/home")
+	home.Use(panelRateLimiter.PublicIP())
+	{
+		home.GET("/products", h.HomeProducts.GetHomeProducts)
+	}
+
 	// 需要认证的当前用户信息
 	authenticated := v1.Group("")
 	authenticated.Use(gin.HandlerFunc(jwtAuth))

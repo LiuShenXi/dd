@@ -13,6 +13,7 @@ import (
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/ent/paymentorder"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
 	"github.com/Wei-Shaw/sub2api/internal/payment/provider"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
@@ -143,6 +144,23 @@ func (s *PaymentService) validateSubOrder(ctx context.Context, req CreateOrderRe
 	if err != nil || group.Status != payment.EntityStatusActive {
 		return nil, infraerrors.NotFound("GROUP_NOT_FOUND", "subscription group is no longer available")
 	}
+	if group.EffectiveSubscriptionQuotaMode() != domain.SubscriptionQuotaModeWindows {
+		if !group.IsTermQuota() || !s.quotaOrderIssueAllowed(group.ID) {
+			return nil, ErrSubscriptionQuotaBillingUnavailable
+		}
+		if err := ValidateSubscriptionQuotaMode(group); err != nil {
+			return nil, err
+		}
+		if err := validateTermPlanDuration(plan.ValidityDays, plan.ValidityUnit); err != nil {
+			return nil, err
+		}
+		if plan.TermQuotaUsd == nil {
+			return nil, ErrSubscriptionQuotaRequired
+		}
+		if _, err := domain.NormalizeSubscriptionQuotaMoney(*plan.TermQuotaUsd); err != nil {
+			return nil, ErrSubscriptionQuotaInvalid
+		}
+	}
 	if !group.IsSubscriptionType() {
 		return nil, infraerrors.BadRequest("GROUP_TYPE_MISMATCH", "group is not a subscription type")
 	}
@@ -155,6 +173,10 @@ func (s *PaymentService) createOrderInTx(ctx context.Context, req CreateOrderReq
 		return nil, fmt.Errorf("begin transaction: %w", err)
 	}
 	defer func() { _ = tx.Rollback() }()
+	plan, quotaSnapshot, err := s.freezeQuotaOrderPlan(ctx, tx, req.UserID, plan)
+	if err != nil {
+		return nil, err
+	}
 	if err := s.checkPendingLimit(ctx, tx, req.UserID, cfg.MaxPendingOrders); err != nil {
 		return nil, err
 	}
@@ -208,6 +230,9 @@ func (s *PaymentService) createOrderInTx(ctx context.Context, req CreateOrderReq
 	}
 	if plan != nil {
 		b.SetPlanID(plan.ID).SetSubscriptionGroupID(plan.GroupID).SetSubscriptionDays(psComputeValidityDays(plan.ValidityDays, plan.ValidityUnit))
+	}
+	if quotaSnapshot != nil {
+		b.SetSubscriptionQuotaSnapshot(quotaSnapshot.Map())
 	}
 	order, err := b.Save(ctx)
 	if err != nil {
@@ -412,6 +437,9 @@ func (s *PaymentService) invokeProvider(ctx context.Context, order *dbent.Paymen
 		}
 		return nil, infraerrors.ServiceUnavailable("PAYMENT_PROVIDER_MISCONFIGURED", "provider_misconfigured").
 			WithMetadata(map[string]string{"provider": sel.ProviderKey, "instance_id": sel.InstanceID})
+	}
+	if snapshot := PaymentOrderQuotaSnapshot(order); snapshot != nil {
+		plan = &dbent.SubscriptionPlan{Name: snapshot.PlanName, ProductName: snapshot.ProductName}
 	}
 	subject := s.buildPaymentSubject(plan, limitAmount, cfg, sel)
 	outTradeNo := order.OutTradeNo
@@ -731,26 +759,27 @@ func classifyCreatePaymentError(req CreateOrderRequest, providerKey string, err 
 
 func buildCreateOrderResponse(order *dbent.PaymentOrder, req CreateOrderRequest, payAmount float64, sel *payment.InstanceSelection, pr *payment.CreatePaymentResponse, resultType payment.CreatePaymentResultType) *CreateOrderResponse {
 	return &CreateOrderResponse{
-		OrderID:      order.ID,
-		Amount:       order.Amount,
-		PayAmount:    payAmount,
-		FeeRate:      order.FeeRate,
-		Status:       OrderStatusPending,
-		ResultType:   resultType,
-		PaymentType:  req.PaymentType,
-		OutTradeNo:   order.OutTradeNo,
-		PayURL:       pr.PayURL,
-		QRCode:       pr.QRCode,
-		ClientSecret: pr.ClientSecret,
-		IntentID:     pr.IntentID,
-		Currency:     pr.Currency,
-		CountryCode:  pr.CountryCode,
-		PaymentEnv:   pr.PaymentEnv,
-		OAuth:        pr.OAuth,
-		JSAPI:        pr.JSAPI,
-		JSAPIPayload: pr.JSAPI,
-		ExpiresAt:    order.ExpiresAt,
-		PaymentMode:  sel.PaymentMode,
+		SubscriptionQuotaSnapshot: PaymentOrderQuotaSnapshot(order),
+		OrderID:                   order.ID,
+		Amount:                    order.Amount,
+		PayAmount:                 payAmount,
+		FeeRate:                   order.FeeRate,
+		Status:                    OrderStatusPending,
+		ResultType:                resultType,
+		PaymentType:               req.PaymentType,
+		OutTradeNo:                order.OutTradeNo,
+		PayURL:                    pr.PayURL,
+		QRCode:                    pr.QRCode,
+		ClientSecret:              pr.ClientSecret,
+		IntentID:                  pr.IntentID,
+		Currency:                  pr.Currency,
+		CountryCode:               pr.CountryCode,
+		PaymentEnv:                pr.PaymentEnv,
+		OAuth:                     pr.OAuth,
+		JSAPI:                     pr.JSAPI,
+		JSAPIPayload:              pr.JSAPI,
+		ExpiresAt:                 order.ExpiresAt,
+		PaymentMode:               sel.PaymentMode,
 	}
 }
 

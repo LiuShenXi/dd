@@ -169,6 +169,7 @@ function mountView() {
         GroupCapacityBadge: true,
         GroupRateMultipliersModal: true,
         GroupRPMOverridesModal: true,
+        SubscriptionQuotaRolloutModal: { props: ['show', 'group'], template: '<div v-if="show" data-testid="rollout-modal-open">{{ group.id }}</div>' },
         VueDraggable: true
       }
     }
@@ -388,6 +389,23 @@ describe('GroupsView duplicate action', () => {
       wrapper.unmount()
       vi.useRealTimers()
     }
+  })
+
+  it('offers controlled rollout only for Claude windows groups or a converted group still in maintenance', async () => {
+    listGroups.mockResolvedValue({ items: [
+      sourceGroup,
+      { ...sourceGroup, id: 6, platform: 'anthropic', subscription_quota_mode: 'windows' },
+      { ...sourceGroup, id: 7, platform: 'anthropic', subscription_quota_mode: 'term', status: 'quota_maintenance' },
+      { ...sourceGroup, id: 8, platform: 'anthropic', subscription_quota_mode: 'term' },
+    ], total: 4, page: 1, page_size: 20, pages: 1 })
+    const wrapper = mountView(); await flushPromises()
+    const actions = wrapper.findAll('[data-testid="group-quota-rollout"]')
+    expect(actions).toHaveLength(2)
+    await actions[0].trigger('click')
+    expect(wrapper.get('[data-testid="rollout-modal-open"]').text()).toBe('6')
+    await actions[1].trigger('click')
+    expect(wrapper.get('[data-testid="rollout-modal-open"]').text()).toBe('7')
+    wrapper.unmount()
   })
 
 })

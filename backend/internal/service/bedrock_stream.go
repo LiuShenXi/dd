@@ -135,6 +135,7 @@ func (s *GatewayService) handleBedrockStreamingResponse(
 			}
 
 			// 转换 Bedrock 特有的 amazon-bedrock-invocationMetrics 为标准 Anthropic usage 格式
+			observeSubscriptionQuotaMetering(c, sseData, "bedrock_sse")
 			// 同时移除该字段避免透传给客户端
 			sseData = transformBedrockInvocationMetrics(sseData)
 

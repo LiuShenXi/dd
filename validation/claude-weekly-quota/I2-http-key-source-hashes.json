@@ -1,0 +1,66 @@
+[
+  {
+    "path": "backend/internal/handler/handler.go",
+    "sha256": "f94679efb78732f49c55662534f4ed66f4ffa6990806ffc09cb5ab31acd47d7c"
+  },
+  {
+    "path": "backend/internal/handler/wire.go",
+    "sha256": "2e87992880d35537b4f5f88c7956ab22022149dea654a57303313e38673e1b5a"
+  },
+  {
+    "path": "backend/internal/handler/subscription_quota_handler.go",
+    "sha256": "a99ab477fe18893758e3be1c78be0a1bd29026de784a3930f78660f2356806e9"
+  },
+  {
+    "path": "backend/internal/handler/admin/subscription_quota_handler.go",
+    "sha256": "d64f88b1c310b66cae6bcfb0719964759f4aafa7026eddbaabeb7f9beb08a26f"
+  },
+  {
+    "path": "backend/internal/handler/dto/subscription_quota.go",
+    "sha256": "d510a73a641152b557d357447c2fd5ef1352d2a5dfb31a57ced757592b16e57a"
+  },
+  {
+    "path": "backend/internal/handler/dto/subscription_quota_test.go",
+    "sha256": "da2f63a689bb13dc2e94c02494f105ef6cf4bc29bb66eda0f761b06320985960"
+  },
+  {
+    "path": "backend/internal/handler/subscriptionquota/http.go",
+    "sha256": "4f1e3e33a139430f66d0705d1a3cfe5a88d704c4897d2784bd9e2e6f4967fe0e"
+  },
+  {
+    "path": "backend/internal/server/routes/admin.go",
+    "sha256": "865c586057959c3be47d5e0f8f4947d5156c2e0038aa63465fa6481cace6df6e"
+  },
+  {
+    "path": "backend/internal/server/routes/user.go",
+    "sha256": "0a7a1d1f2df9e68e054cd29227355a89a15f99d9a9d2d348b5d7b292ce10b945"
+  },
+  {
+    "path": "backend/internal/server/routes/subscription_quota_routes_test.go",
+    "sha256": "dc6dff74cab1c8f21677fe0a30f8f13603b4e6af1c7183f1f916931706756db1"
+  },
+  {
+    "path": "backend/internal/service/api_key_service.go",
+    "sha256": "fac2819c215e57c9daa1b425434dc3458dbc490dadec302a46a8aee75d06b789"
+  },
+  {
+    "path": "backend/internal/service/admin_group.go",
+    "sha256": "4b1f5540f6889d6eada7c03e5551dfec2e6a78a15fd3494a78e41616efe42787"
+  },
+  {
+    "path": "backend/internal/service/subscription_quota_entitlement_setters.go",
+    "sha256": "55b2435061b1d27c631ced89ad9a6491c39a29bae12a511b41b57492ae59f392"
+  },
+  {
+    "path": "backend/internal/service/subscription_quota_key_entitlement_test.go",
+    "sha256": "559dd2524b3ff3b6f6fa1de692fdaa3ecc8454b0589d3341709b0db41ec45e99"
+  },
+  {
+    "path": "backend/internal/service/api_key_group_visibility_test.go",
+    "sha256": "b2163fbe45c453aec31ebcc48cf11627ea26b0beb116fa0bd1ede662049660e2"
+  },
+  {
+    "path": "validation/claude-weekly-quota/I2-http-key-windows-unit.jsonl",
+    "sha256": "148da9260598230ab148052c848408e34d72b3b618d5b57be84b1d78d679a870"
+  }
+]

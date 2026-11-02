@@ -1,0 +1,14 @@
+{
+  "new_container": "778ebf12a69854d7afd4e25e58f49b036f7683c88738f36a40f6550bfe296147",
+  "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+  "source_unchanged": true,
+  "enabled_group_ids": [
+    7
+  ],
+  "protected_group_ids": [
+    7
+  ],
+  "old_r0_preserved_stopped": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+  "old_green_running": "7002abf765e4d0808ad786a33a1ef0c31ae3fd1db89d12ce9e5301d7bcb14a55",
+  "controller_sha256": "11c5f7c8574d14c0b2caa309372759fbf92dbe947b7a43fa65e93f21e53e0696"
+}

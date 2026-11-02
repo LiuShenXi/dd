@@ -39,25 +39,26 @@ var gatewayCompatibilityMetricsLogCounter atomic.Uint64
 
 // GatewayHandler handles API gateway requests
 type GatewayHandler struct {
-	gatewayService            *service.GatewayService
-	openAIGatewayService      *service.OpenAIGatewayService
-	geminiCompatService       *service.GeminiMessagesCompatService
-	antigravityGatewayService *service.AntigravityGatewayService
-	userService               *service.UserService
-	billingCacheService       *service.BillingCacheService
-	carpoolService            *service.CarpoolService
-	usageService              *service.UsageService
-	apiKeyService             *service.APIKeyService
-	usageRecordWorkerPool     *service.UsageRecordWorkerPool
-	errorPassthroughService   *service.ErrorPassthroughService
-	contentModerationService  *service.ContentModerationService
-	securityAuditCoordinator  *securityaudit.Coordinator
-	concurrencyHelper         *ConcurrencyHelper
-	userMsgQueueHelper        *UserMsgQueueHelper
-	maxAccountSwitches        int
-	maxAccountSwitchesGemini  int
-	cfg                       *config.Config
-	settingService            *service.SettingService
+	subscriptionQuotaSummaryReader service.SubscriptionQuotaSummaryReader
+	gatewayService                 *service.GatewayService
+	openAIGatewayService           *service.OpenAIGatewayService
+	geminiCompatService            *service.GeminiMessagesCompatService
+	antigravityGatewayService      *service.AntigravityGatewayService
+	userService                    *service.UserService
+	billingCacheService            *service.BillingCacheService
+	carpoolService                 *service.CarpoolService
+	usageService                   *service.UsageService
+	apiKeyService                  *service.APIKeyService
+	usageRecordWorkerPool          *service.UsageRecordWorkerPool
+	errorPassthroughService        *service.ErrorPassthroughService
+	contentModerationService       *service.ContentModerationService
+	securityAuditCoordinator       *securityaudit.Coordinator
+	concurrencyHelper              *ConcurrencyHelper
+	userMsgQueueHelper             *UserMsgQueueHelper
+	maxAccountSwitches             int
+	maxAccountSwitchesGemini       int
+	cfg                            *config.Config
+	settingService                 *service.SettingService
 }
 
 // NewGatewayHandler creates a new GatewayHandler
@@ -241,20 +242,22 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 	subscription, _ := middleware2.GetSubscriptionFromContext(c)
 
 	// 1. 首先获取用户并发槽位
-	userReleaseFunc, err := h.concurrencyHelper.AcquireUserSlotWithWait(c, subject.UserID, subject.Concurrency, reqStream, &streamStarted)
+	userReleaseFunc, err := h.acquireGatewayUserSlotWithWait(c, apiKey, subject.UserID, subject.Concurrency, reqStream, &streamStarted)
 	if err != nil {
 		reqLog.Warn("gateway.user_slot_acquire_failed", zap.Error(err))
 		h.handleConcurrencyError(c, err, "user", streamStarted)
 		return
 	}
-	// 在请求结束或 Context 取消时确保释放槽位，避免客户端断开造成泄漏
-	userReleaseFunc = wrapReleaseOnDone(c.Request.Context(), userReleaseFunc)
+	// Claude releases after the actual local forward ends; legacy keeps its wrapper.
 	if userReleaseFunc != nil {
 		defer userReleaseFunc()
 	}
 
 	// 2. 【新增】Wait后二次检查余额/订阅
 	if err := h.billingCacheService.CheckBillingEligibility(c.Request.Context(), apiKey.User, apiKey, apiKey.Group, subscription, service.QuotaPlatform(c.Request.Context(), apiKey)); err != nil {
+		if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+			return
+		}
 		reqLog.Info("gateway.billing_eligibility_check_failed", zap.Error(err))
 		status, code, message, retryAfter := billingErrorDetails(err)
 		if retryAfter > 0 {
@@ -357,7 +360,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 					c.Request = c.Request.WithContext(ctx)
 					continue
 				case FailoverCanceled:
-					failoverClientGone(c)
+					if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+						failoverClientGone(c)
+					}
 					return
 				default: // FailoverExhausted
 					if fs.LastFailoverErr != nil {
@@ -439,6 +444,10 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				// Slot acquired: no longer waiting in queue.
 				releaseWait()
 			}
+			if claudeTermGatewayKey(apiKey) {
+				accountReleaseFunc = forwardCompletionRelease(accountReleaseFunc)
+				defer accountReleaseFunc()
+			}
 			// 终检与准入后绑定使用选号结果携带的门（见 responses 同名注释）。
 			admissionCtx := service.ContextWithSelectionProfitGate(c.Request.Context(), selection)
 			latest, vetoed, reason := h.gatewayService.GatewayProfitControlVetoLatest(admissionCtx, account)
@@ -465,7 +474,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				}
 			}
 			// 账号槽位/等待计数需要在超时或断开时安全回收
-			accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+			if !claudeTermGatewayKey(apiKey) {
+				accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+			}
 
 			// 转发请求 - 根据账号平台分流
 			var result *service.ForwardResult
@@ -475,6 +486,25 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			}
 			// 记录 Forward 前已写入字节数，Forward 后若增加则说明 SSE 内容已发，禁止 failover
 			writerSizeBeforeForward := c.Writer.Size()
+			termState, termErr := h.prepareSubscriptionQuotaForward(c, apiKey, apiKey, account.Platform, clientRequestedUsageFields(c, channelMapping, reqModel, ""))
+			if termErr != nil {
+				if accountReleaseFunc != nil {
+					accountReleaseFunc()
+				}
+				h.writeSubscriptionQuotaForwardError(c, termErr, streamStarted)
+				return
+			}
+			defer finishSubscriptionQuotaForward(termState)
+			requestCtx = service.PreserveSubscriptionQuotaForwardState(requestCtx, c.Request.Context())
+			protectedRequest, protectedErr := h.admitProtectedGroupForward(c, apiKey, apiKey, account.Platform)
+			if protectedErr != nil {
+				if accountReleaseFunc != nil {
+					accountReleaseFunc()
+				}
+				h.handleStreamingAwareError(c, http.StatusServiceUnavailable, "api_error", service.ErrSubscriptionQuotaProtectedUnavailable.Error(), streamStarted)
+				return
+			}
+			defer protectedGroupForwardEnded(protectedRequest)
 			if account.Platform == service.PlatformAntigravity {
 				result, err = h.antigravityGatewayService.ForwardGemini(
 					requestCtx,
@@ -496,6 +526,10 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			if err != nil {
 				var failoverErr *service.UpstreamFailoverError
 				if errors.As(err, &failoverErr) {
+					if termState != nil && termState.Snapshot() != nil {
+						h.handleFailoverExhausted(c, failoverErr, account.Platform, streamStarted)
+						return
+					}
 					// 流式内容已写入客户端，无法撤销，禁止 failover 以防止流拼接腐化
 					if c.Writer.Size() != writerSizeBeforeForward {
 						h.handleFailoverExhausted(c, failoverErr, service.PlatformGemini, true)
@@ -509,7 +543,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 						h.handleFailoverExhausted(c, fs.LastFailoverErr, service.PlatformGemini, streamStarted)
 						return
 					case FailoverCanceled:
-						failoverClientGone(c)
+						if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+							failoverClientGone(c)
+						}
 						return
 					}
 				}
@@ -576,25 +612,29 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			forceCacheBilling := fs.ForceCacheBilling
 			quotaPlatform := service.QuotaPlatform(c.Request.Context(), apiKey)
 			sessionID := service.ExtractClientSessionID(c)
-			h.submitUsageRecordTask(c.Request.Context(), func(ctx context.Context) {
-				if err := h.gatewayService.RecordUsage(ctx, &service.RecordUsageInput{
-					Result:             result,
-					QuotaPlatform:      quotaPlatform,
-					APIKey:             apiKey,
-					User:               apiKey.User,
-					Account:            account,
-					Subscription:       subscription,
-					PricingAt:          pricingAt,
-					InboundEndpoint:    inboundEndpoint,
-					UpstreamEndpoint:   upstreamEndpoint,
-					UserAgent:          userAgent,
-					IPAddress:          clientIP,
-					SessionID:          sessionID,
-					RequestPayloadHash: requestPayloadHash,
-					ForceCacheBilling:  forceCacheBilling,
-					APIKeyService:      h.apiKeyService,
-					ChannelUsageFields: clientRequestedUsageFields(c, channelMapping, reqModel, result.UpstreamModel),
-				}); err != nil {
+			channelUsageFields := clientRequestedUsageFields(c, channelMapping, reqModel, result.UpstreamModel)
+			h.submitProtectedGroupUsageRecordTask(c.Request.Context(), protectedRequest, result, account.ID, pricingAt, func(ctx context.Context) {
+				usageErr := h.gatewayService.RecordProtectedGroupUsage(ctx, &service.RecordUsageInput{
+					Result:                    result,
+					SubscriptionQuotaSnapshot: service.SubscriptionQuotaForwardBillingSnapshot(ctx),
+					QuotaPlatform:             quotaPlatform,
+					APIKey:                    apiKey,
+					User:                      apiKey.User,
+					Account:                   account,
+					Subscription:              subscription,
+					PricingAt:                 pricingAt,
+					InboundEndpoint:           inboundEndpoint,
+					UpstreamEndpoint:          upstreamEndpoint,
+					UserAgent:                 userAgent,
+					IPAddress:                 clientIP,
+					SessionID:                 sessionID,
+					RequestPayloadHash:        requestPayloadHash,
+					ForceCacheBilling:         forceCacheBilling,
+					APIKeyService:             h.apiKeyService,
+					ChannelUsageFields:        channelUsageFields,
+				}, protectedRequest)
+				finishProtectedGroupUsage(protectedRequest, usageErr)
+				if err := usageErr; err != nil {
 					logger.L().With(
 						zap.String("component", "handler.gateway.messages"),
 						zap.Int64("user_id", subject.UserID),
@@ -646,6 +686,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 		retryWithFallback := false
 
 		for {
+			if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+				return
+			}
 			attemptParsedReq, err := parsedReq.CloneForBody(body)
 			if err != nil {
 				h.errorResponse(c, http.StatusBadRequest, "invalid_request_error", "Failed to parse request body")
@@ -661,6 +704,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			)
 			selection, err := h.gatewayService.SelectAccountWithLoadAwareness(c.Request.Context(), currentAPIKey.GroupID, sessionKey, reqModel, fs.FailedAccountIDs, parsedReq.MetadataUserID, subject.UserID)
 			if err != nil {
+				if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+					return
+				}
 				if len(fs.FailedAccountIDs) == 0 {
 					cls := classifyNoAccountErrorFromGin(c, h.gatewayService, currentAPIKey, reqModel, reqModel, platform)
 					if !cls.ModelNotFound {
@@ -688,7 +734,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 					c.Request = c.Request.WithContext(ctx)
 					continue
 				case FailoverCanceled:
-					failoverClientGone(c)
+					if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+						failoverClientGone(c)
+					}
 					return
 				default: // FailoverExhausted
 					if fs.LastFailoverErr != nil {
@@ -780,6 +828,10 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				// Slot acquired: no longer waiting in queue.
 				releaseWait()
 			}
+			if claudeTermGatewayKey(apiKey) {
+				accountReleaseFunc = forwardCompletionRelease(accountReleaseFunc)
+				defer accountReleaseFunc()
+			}
 			// 终检与准入后绑定使用选号结果携带的门（见 responses 同名注释）。
 			admissionCtx := service.ContextWithSelectionProfitGate(c.Request.Context(), selection)
 			latest, vetoed, reason := h.gatewayService.GatewayProfitControlVetoLatest(admissionCtx, account)
@@ -811,7 +863,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				}
 			}
 			// 账号槽位/等待计数需要在超时或断开时安全回收
-			accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+			if !claudeTermGatewayKey(apiKey) {
+				accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+			}
 
 			// ===== 用户消息串行队列 START =====
 			var queueRelease func()
@@ -860,7 +914,12 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			}
 
 			// 用 wrapReleaseOnDone 确保 context 取消时自动释放（仅 serialize 模式有 queueRelease）
-			queueRelease = wrapReleaseOnDone(c.Request.Context(), queueRelease)
+			if claudeTermGatewayKey(apiKey) {
+				queueRelease = forwardCompletionRelease(queueRelease)
+				defer queueRelease()
+			} else {
+				queueRelease = wrapReleaseOnDone(c.Request.Context(), queueRelease)
+			}
 			// 注入回调到 ParsedRequest：使用外层 wrapper 以便提前清理 AfterFunc
 			attemptParsedReq.OnUpstreamAccepted = queueRelease
 			// ===== 用户消息串行队列 END =====
@@ -892,6 +951,29 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 			}
 			// 记录 Forward 前已写入字节数，Forward 后若增加则说明 SSE 内容已发，禁止 failover
 			writerSizeBeforeForward := c.Writer.Size()
+			termState, termErr := h.prepareSubscriptionQuotaForward(c, apiKey, currentAPIKey, account.Platform, clientRequestedUsageFields(c, channelMapping, reqModel, ""))
+			if termErr != nil {
+				if accountReleaseFunc != nil {
+					accountReleaseFunc()
+				}
+				h.writeSubscriptionQuotaForwardError(c, termErr, streamStarted)
+				return
+			}
+			defer finishSubscriptionQuotaForward(termState)
+			requestCtx = service.PreserveSubscriptionQuotaForwardState(requestCtx, c.Request.Context())
+			protectedRequest, protectedErr := h.admitProtectedGroupForward(c, apiKey, currentAPIKey, account.Platform)
+			if protectedErr != nil {
+				if queueRelease != nil {
+					queueRelease()
+				}
+				attemptParsedReq.OnUpstreamAccepted = nil
+				if accountReleaseFunc != nil {
+					accountReleaseFunc()
+				}
+				h.handleStreamingAwareError(c, http.StatusServiceUnavailable, "api_error", service.ErrSubscriptionQuotaProtectedUnavailable.Error(), streamStarted)
+				return
+			}
+			defer protectedGroupForwardEnded(protectedRequest)
 			if account.Platform == service.PlatformAntigravity && account.Type != service.AccountTypeAPIKey {
 				result, err = h.antigravityGatewayService.Forward(requestCtx, c, account, attemptBody, hasBoundSession)
 			} else {
@@ -938,25 +1020,29 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				forceCacheBilling := fs.ForceCacheBilling
 				quotaPlatform := service.QuotaPlatform(c.Request.Context(), currentAPIKey)
 				sessionID := service.ExtractClientSessionID(c)
-				h.submitUsageRecordTask(c.Request.Context(), func(ctx context.Context) {
-					if err := h.gatewayService.RecordUsage(ctx, &service.RecordUsageInput{
-						Result:             result,
-						QuotaPlatform:      quotaPlatform,
-						APIKey:             currentAPIKey,
-						User:               currentAPIKey.User,
-						Account:            account,
-						Subscription:       currentSubscription,
-						PricingAt:          pricingAt,
-						InboundEndpoint:    inboundEndpoint,
-						UpstreamEndpoint:   upstreamEndpoint,
-						UserAgent:          userAgent,
-						IPAddress:          clientIP,
-						SessionID:          sessionID,
-						RequestPayloadHash: requestPayloadHash,
-						ForceCacheBilling:  forceCacheBilling,
-						APIKeyService:      h.apiKeyService,
-						ChannelUsageFields: clientRequestedUsageFields(c, channelMapping, reqModel, result.UpstreamModel),
-					}); err != nil {
+				channelUsageFields := clientRequestedUsageFields(c, channelMapping, reqModel, result.UpstreamModel)
+				h.submitProtectedGroupUsageRecordTask(c.Request.Context(), protectedRequest, result, account.ID, pricingAt, func(ctx context.Context) {
+					usageErr := h.gatewayService.RecordProtectedGroupUsage(ctx, &service.RecordUsageInput{
+						Result:                    result,
+						SubscriptionQuotaSnapshot: service.SubscriptionQuotaForwardBillingSnapshot(ctx),
+						QuotaPlatform:             quotaPlatform,
+						APIKey:                    currentAPIKey,
+						User:                      currentAPIKey.User,
+						Account:                   account,
+						Subscription:              currentSubscription,
+						PricingAt:                 pricingAt,
+						InboundEndpoint:           inboundEndpoint,
+						UpstreamEndpoint:          upstreamEndpoint,
+						UserAgent:                 userAgent,
+						IPAddress:                 clientIP,
+						SessionID:                 sessionID,
+						RequestPayloadHash:        requestPayloadHash,
+						ForceCacheBilling:         forceCacheBilling,
+						APIKeyService:             h.apiKeyService,
+						ChannelUsageFields:        channelUsageFields,
+					}, protectedRequest)
+					finishProtectedGroupUsage(protectedRequest, usageErr)
+					if err := usageErr; err != nil {
 						logger.L().With(
 							zap.String("component", "handler.gateway.messages"),
 							zap.Int64("user_id", subject.UserID),
@@ -971,6 +1057,18 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 
 			if err != nil {
 				// Beta policy block: return 400 immediately, no failover
+				if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+					if result != nil {
+						submitForwardUsage(result)
+					}
+					return
+				}
+				if termState != nil && h.writeSubscriptionQuotaForwardError(c, err, streamStarted) {
+					if result != nil {
+						submitForwardUsage(result)
+					}
+					return
+				}
 				var betaBlockedErr *service.BetaBlockedError
 				if errors.As(err, &betaBlockedErr) {
 					service.MarkOpsClientBusinessLimited(c, service.OpsClientBusinessLimitedReasonLocalPolicyDenied)
@@ -980,6 +1078,10 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 
 				var promptTooLongErr *service.PromptTooLongError
 				if errors.As(err, &promptTooLongErr) {
+					if termState != nil {
+						h.handleStreamingAwareError(c, http.StatusServiceUnavailable, "api_error", service.ErrSubscriptionQuotaEndpointUnsupported.Error(), streamStarted)
+						return
+					}
 					reqLog.Warn("gateway.prompt_too_long_from_antigravity",
 						zap.Any("current_group_id", currentAPIKey.GroupID),
 						zap.Any("fallback_group_id", fallbackGroupID),
@@ -1031,6 +1133,10 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 				}
 				var failoverErr *service.UpstreamFailoverError
 				if errors.As(err, &failoverErr) {
+					if termState != nil && termState.Snapshot() != nil {
+						h.handleFailoverExhausted(c, failoverErr, account.Platform, streamStarted)
+						return
+					}
 					// 流式内容已写入客户端，无法撤销，禁止 failover 以防止流拼接腐化
 					if c.Writer.Size() != writerSizeBeforeForward {
 						h.handleFailoverExhausted(c, failoverErr, account.Platform, true)
@@ -1047,7 +1153,9 @@ func (h *GatewayHandler) Messages(c *gin.Context) {
 						h.handleFailoverExhausted(c, fs.LastFailoverErr, account.Platform, streamStarted)
 						return
 					case FailoverCanceled:
-						failoverClientGone(c)
+						if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+							failoverClientGone(c)
+						}
 						return
 					}
 				}
@@ -1569,6 +1677,10 @@ func (h *GatewayHandler) Usage(c *gin.Context) {
 
 	// 判断模式: key 有总额度或速率限制 → quota_limited，否则 → unrestricted
 	isQuotaLimited := apiKey.Quota > 0 || apiKey.HasRateLimits()
+	if apiKey.Group != nil && apiKey.Group.HasTermQuotaMode() {
+		h.usageSubscriptionQuota(c, ctx, apiKey, subject.UserID, usageData, dailyUsage, modelStats)
+		return
+	}
 
 	if isQuotaLimited {
 		h.usageQuotaLimited(c, ctx, apiKey, usageData, dailyUsage, modelStats)
@@ -1647,6 +1759,12 @@ func (h *GatewayHandler) buildAPIKeyDailyUsage(c *gin.Context, userID, apiKeyID 
 
 // usageQuotaLimited 处理 quota_limited 模式的响应
 func (h *GatewayHandler) usageQuotaLimited(c *gin.Context, ctx context.Context, apiKey *service.APIKey, usageData gin.H, dailyUsage any, modelStats any) {
+	resp := h.buildKeyLimitedUsage(ctx, apiKey, usageData, dailyUsage, modelStats)
+	h.addUserConcurrencyUsage(ctx, resp, apiKey)
+	c.JSON(http.StatusOK, resp)
+}
+
+func (h *GatewayHandler) buildKeyLimitedUsage(ctx context.Context, apiKey *service.APIKey, usageData gin.H, dailyUsage any, modelStats any) gin.H {
 	resp := gin.H{
 		"mode":    "quota_limited",
 		"isValid": apiKey.Status == service.StatusAPIKeyActive || apiKey.Status == service.StatusAPIKeyQuotaExhausted || apiKey.Status == service.StatusAPIKeyExpired,
@@ -1735,7 +1853,7 @@ func (h *GatewayHandler) usageQuotaLimited(c *gin.Context, ctx context.Context, 
 		resp["model_stats"] = modelStats
 	}
 
-	c.JSON(http.StatusOK, resp)
+	return resp
 }
 
 // usageUnrestricted 处理 unrestricted 模式的响应（向后兼容）
@@ -1779,6 +1897,7 @@ func (h *GatewayHandler) usageUnrestricted(c *gin.Context, ctx context.Context, 
 		if modelStats != nil {
 			resp["model_stats"] = modelStats
 		}
+		h.addUserConcurrencyUsage(ctx, resp, apiKey)
 		c.JSON(http.StatusOK, resp)
 		return
 	}
@@ -1807,6 +1926,7 @@ func (h *GatewayHandler) usageUnrestricted(c *gin.Context, ctx context.Context, 
 	if modelStats != nil {
 		resp["model_stats"] = modelStats
 	}
+	h.addUserConcurrencyUsage(ctx, resp, apiKey)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -1856,6 +1976,7 @@ func (h *GatewayHandler) usageCarpool(c *gin.Context, ctx context.Context, apiKe
 	if modelStats != nil {
 		resp["model_stats"] = modelStats
 	}
+	h.addUserConcurrencyUsage(ctx, resp, apiKey)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -1910,6 +2031,12 @@ func (h *GatewayHandler) calculateSubscriptionRemaining(group *service.Group, su
 
 // handleConcurrencyError handles concurrency-related acquire errors.
 func (h *GatewayHandler) handleConcurrencyError(c *gin.Context, err error, slotType string, streamStarted bool) {
+	if key, ok := middleware2.GetAPIKeyFromContext(c); ok && h.writeClaudeLeaseLoss(c, key, streamStarted) {
+		return
+	}
+	if h.writeSubscriptionQuotaForwardError(c, err, streamStarted) {
+		return
+	}
 	status, errType, code, message := concurrencyErrorResponse(err, slotType)
 	h.handleStreamingAwareErrorWithCode(c, status, errType, code, message, streamStarted)
 }
@@ -2199,13 +2326,17 @@ func (h *GatewayHandler) CountTokens(c *gin.Context) {
 
 	// 校验 billing eligibility（订阅/余额）
 	// 【注意】不计算并发，但需要校验订阅/余额
-	if err := h.billingCacheService.CheckBillingEligibility(c.Request.Context(), apiKey.User, apiKey, apiKey.Group, subscription, service.QuotaPlatform(c.Request.Context(), apiKey)); err != nil {
-		status, code, message, retryAfter := billingErrorDetails(err)
-		if retryAfter > 0 {
-			c.Header("Retry-After", strconv.Itoa(retryAfter))
+	// Term input counting is authenticated metadata: a current card and a
+	// generation admission are not required, and it creates no consumption.
+	if !apiKey.Group.IsTermQuota() {
+		if err := h.billingCacheService.CheckBillingEligibility(c.Request.Context(), apiKey.User, apiKey, apiKey.Group, subscription, service.QuotaPlatform(c.Request.Context(), apiKey)); err != nil {
+			status, code, message, retryAfter := billingErrorDetails(err)
+			if retryAfter > 0 {
+				c.Header("Retry-After", strconv.Itoa(retryAfter))
+			}
+			h.errorResponse(c, status, code, message)
+			return
 		}
-		h.errorResponse(c, status, code, message)
-		return
 	}
 
 	// 计算粘性会话 hash
@@ -2230,12 +2361,22 @@ func (h *GatewayHandler) CountTokens(c *gin.Context) {
 	setOpsSelectedAccount(c, account.ID, account.Platform)
 
 	// 转发请求（不记录使用量）
+	protectedRequest, protectedErr := h.admitProtectedGroupForward(c, apiKey, apiKey, account.Platform)
+	if protectedErr != nil {
+		h.gatewayService.ReleaseAccountSession(context.Background(), account, sessionHash)
+		h.errorResponse(c, http.StatusServiceUnavailable, "api_error", service.ErrSubscriptionQuotaProtectedUnavailable.Error())
+		return
+	}
+	defer protectedGroupForwardEnded(protectedRequest)
 	if err := h.gatewayService.ForwardCountTokens(c.Request.Context(), c, account, parsedReq); err != nil {
 		reqLog.Error("gateway.count_tokens_forward_failed", zap.Int64("account_id", account.ID), zap.Error(err))
 		// 错误响应已在 ForwardCountTokens 中处理
 		// 上游未服务该会话，立即释放选号时注册的会话槽（客户端可能已断开，用独立 ctx）
 		h.gatewayService.ReleaseAccountSession(context.Background(), account, sessionHash)
 		return
+	}
+	if err := protectedRequest.FinishCountTokens(); err != nil {
+		reqLog.Error("gateway.count_tokens_protected_completion_failed", zap.Error(err))
 	}
 }
 

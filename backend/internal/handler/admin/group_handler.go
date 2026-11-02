@@ -187,6 +187,7 @@ type CreateGroupRequest struct {
 	Platform                  string                        `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity grok kimi zhipu deepseek minimax opencode_go composite"`
 	RateMultiplier            float64                       `json:"rate_multiplier"`
 	IsExclusive               bool                          `json:"is_exclusive"`
+	SubscriptionQuotaMode     string                        `json:"subscription_quota_mode" binding:"omitempty,oneof=windows term"`
 	SubscriptionType          string                        `json:"subscription_type" binding:"omitempty,oneof=standard subscription carpool"`
 	DailyLimitUSD             optionalLimitField            `json:"daily_limit_usd"`
 	WeeklyLimitUSD            optionalLimitField            `json:"weekly_limit_usd"`
@@ -262,6 +263,7 @@ type UpdateGroupRequest struct {
 	RateMultiplier            *float64                       `json:"rate_multiplier"`
 	IsExclusive               *bool                          `json:"is_exclusive"`
 	Status                    string                         `json:"status" binding:"omitempty,oneof=active inactive"`
+	SubscriptionQuotaMode     string                         `json:"subscription_quota_mode" binding:"omitempty,oneof=windows term"`
 	SubscriptionType          string                         `json:"subscription_type" binding:"omitempty,oneof=standard subscription carpool"`
 	DailyLimitUSD             optionalLimitField             `json:"daily_limit_usd"`
 	WeeklyLimitUSD            optionalLimitField             `json:"weekly_limit_usd"`
@@ -646,6 +648,10 @@ func (h *GroupHandler) Create(c *gin.Context) {
 		return
 	}
 	if h.isSimpleMode() {
+		if req.SubscriptionQuotaMode != "" && req.SubscriptionQuotaMode != "windows" {
+			response.ErrorFrom(c, service.ErrSubscriptionQuotaGroupInvalid)
+			return
+		}
 		sanitizeCreateGroupRequestForSimpleMode(&req)
 	}
 
@@ -668,6 +674,7 @@ func (h *GroupHandler) Create(c *gin.Context) {
 		RateMultiplier:                  req.RateMultiplier,
 		IsExclusive:                     req.IsExclusive,
 		SubscriptionType:                req.SubscriptionType,
+		SubscriptionQuotaMode:           req.SubscriptionQuotaMode,
 		DailyLimitUSD:                   req.DailyLimitUSD.ToServiceInput(),
 		WeeklyLimitUSD:                  req.WeeklyLimitUSD.ToServiceInput(),
 		MonthlyLimitUSD:                 req.MonthlyLimitUSD.ToServiceInput(),
@@ -803,6 +810,10 @@ func (h *GroupHandler) Update(c *gin.Context) {
 		return
 	}
 	if h.isSimpleMode() {
+		if req.SubscriptionQuotaMode != "" && req.SubscriptionQuotaMode != "windows" {
+			response.ErrorFrom(c, service.ErrSubscriptionQuotaGroupInvalid)
+			return
+		}
 		sanitizeUpdateGroupRequestForSimpleMode(&req)
 	}
 
@@ -814,6 +825,7 @@ func (h *GroupHandler) Update(c *gin.Context) {
 		IsExclusive:                     req.IsExclusive,
 		Status:                          req.Status,
 		SubscriptionType:                req.SubscriptionType,
+		SubscriptionQuotaMode:           req.SubscriptionQuotaMode,
 		DailyLimitUSD:                   req.DailyLimitUSD.ToServiceInput(),
 		WeeklyLimitUSD:                  req.WeeklyLimitUSD.ToServiceInput(),
 		MonthlyLimitUSD:                 req.MonthlyLimitUSD.ToServiceInput(),

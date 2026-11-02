@@ -10,6 +10,7 @@ const pollOrderStatus = vi.hoisted(() => vi.fn())
 const verifyOrder = vi.hoisted(() => vi.fn())
 const verifyOrderPublic = vi.hoisted(() => vi.fn())
 const resolveOrderPublicByResumeToken = vi.hoisted(() => vi.fn())
+const getPlans = vi.hoisted(() => vi.fn())
 const refreshUser = vi.hoisted(() => vi.fn())
 
 vi.mock('vue-router', async () => {
@@ -26,7 +27,7 @@ vi.mock('vue-i18n', async () => {
   return {
     ...actual,
     useI18n: () => ({
-      t: (key: string) => key,
+      t: (key: string) => key === 'subscriptionQuota.fixedDuration' ? 'Fixed validity: 168 hours (7 days)' : key,
     }),
   }
 })
@@ -48,12 +49,14 @@ vi.mock('@/api/payment', () => ({
     verifyOrder,
     verifyOrderPublic,
     resolveOrderPublicByResumeToken,
+    getPlans,
   },
 }))
 
 import PaymentResultView from '../PaymentResultView.vue'
 import { PAYMENT_RECOVERY_STORAGE_KEY } from '@/components/payment/paymentFlow'
 import { formatPaymentAmount } from '@/components/payment/currency'
+import type { PublicOrderResult } from '@/types/payment'
 
 const orderFactory = (status: string) => ({
   id: 42,
@@ -98,6 +101,7 @@ describe('PaymentResultView', () => {
     verifyOrder.mockReset()
     verifyOrderPublic.mockReset()
     resolveOrderPublicByResumeToken.mockReset()
+    getPlans.mockReset()
     refreshUser.mockReset()
     refreshUser.mockResolvedValue({})
     window.localStorage.clear()
@@ -509,6 +513,41 @@ describe('PaymentResultView', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain(formatPaymentAmount(103, 'HKD'))
+  })
+
+  it('renders the signed-resume purchased card without rereading the edited plan or showing balance credit', async () => {
+    routeState.query = { resume_token: 'resume-frozen-card' }
+    getPlans.mockResolvedValue({ data: [{ id: 1, default_quota_usd: '999.00000000', for_sale: false }] })
+    const result: PublicOrderResult = {
+      id: 3, amount: 12.34, pay_amount: 86.38, currency: 'CNY', fee_rate: 0,
+      payment_type: 'alipay', out_trade_no: 'frozen-card-order', status: 'COMPLETED',
+      order_type: 'subscription', plan_id: 1, refund_amount: 0,
+      created_at: '2026-10-20T02:00:00Z', expires_at: '2026-10-20T03:00:00Z',
+      subscription_quota_snapshot: {
+        schema_version: 1, mode: 'term', platform: 'anthropic', group_id: 7,
+        duration_seconds: 604800, quota_usd: '125.12345678', source_plan_id: 1,
+        plan_name: 'Purchased plan', product_name: 'Claude card', group_name: 'Claude group',
+      },
+    }
+    resolveOrderPublicByResumeToken.mockResolvedValue({ data: result })
+
+    const wrapper = mount(PaymentResultView, { global: { stubs: { OrderStatusBadge: true } } })
+    await flushPromises()
+
+    expect(resolveOrderPublicByResumeToken).toHaveBeenCalledWith('resume-frozen-card')
+    expect(pollOrderStatus).not.toHaveBeenCalled()
+    expect(getPlans).not.toHaveBeenCalled()
+    expect(refreshUser).not.toHaveBeenCalled()
+    expect(wrapper.get('[data-testid="order-quota-snapshot"]').text()).toContain('125.12345678 USD')
+    expect(wrapper.get('[data-testid="order-quota-snapshot"]').text()).toContain('168 hours (7 days)')
+    expect(wrapper.text()).toContain('subscriptionQuota.salePrice')
+    expect(wrapper.text()).toContain('subscriptionQuota.backToPlans')
+    expect(wrapper.text()).not.toContain('999.00000000')
+    expect(wrapper.text()).not.toContain('payment.orders.creditedAmount')
+    expect(wrapper.text()).not.toContain('payment.orders.baseAmount')
+    expect(wrapper.text()).not.toContain('payment.result.backToRecharge')
+    await wrapper.findAll('button').find(button => button.text() === 'subscriptionQuota.backToPlans')!.trigger('click')
+    expect(routerPush).toHaveBeenCalledWith('/purchase')
   })
 
   it('normalizes aliased payment methods before rendering the label', async () => {

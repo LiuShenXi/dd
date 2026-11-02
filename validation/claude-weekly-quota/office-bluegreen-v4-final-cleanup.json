@@ -1,0 +1,45 @@
+{
+  "pass": true,
+  "time": "2026-10-20T04:02:35.732510+00:00",
+  "scope": "Only completed v4 synthetic fixtures and the precisely identified empty failed-prepare network",
+  "production_modified": false,
+  "containers": {
+    "green": "8564c75437a009980680951a02326ccce26e934a701f96d0fb24118a19f22e7d",
+    "blue": "5ab8bcc35b9ce18d9803fed97e0f041f273255cdde75fa719645ba4d61693cae",
+    "nginx": "dd65f947e254f8df9bbfbae65d998d14701c199b112e06f0a7ed8d81970ade8b",
+    "provider": "3851fa50d22342912f86a76db29f76b6be3a8dd3daf87944e6422b743134fa55",
+    "redis": "e3c557fdf44792134be398f4a7d4489680f4aeb14963d05c0d697f3ebc2767f4",
+    "postgres": "d0aa6df1e6d010b37106a13d6a16978d70758ed6fe8423e549f2f718565f0b2b"
+  },
+  "volumes": [
+    "82cc9369e3252ad1b8c82394a49c57aae4e88c09285f5d94df4e5b95d3f89496",
+    "cwq-i4-1944629485ee47cb-pgdata"
+  ],
+  "networks": [
+    {
+      "id": "25ce39c265b432666c1c8bf436e3228720bcd825c088790d3c9253d2f16940be",
+      "name": "cwq-env-bluegreen-20261020035314"
+    },
+    {
+      "id": "a1383960675f0841fb0a7e687f176cc724a0a5c3640fbf32caf1cecf84de8d28",
+      "name": "cwq-env-bluegreen-20261020032416"
+    }
+  ],
+  "free_before_bytes": 3595739136,
+  "free_after_bytes": 3595378688,
+  "private_final_snapshot": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-reconcile-20261020/post-reconcile-final-snapshot",
+  "private_manifest_sha256": "4b9089c3cc261196d04cd6e63edc051fed9abde2c6f7dfa2fd0a5cd887690900",
+  "private_database_dump": {
+    "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-reconcile-20261020/post-reconcile-final-snapshot/final-synthetic.sql.gz",
+    "bytes": 85649,
+    "sha256": "a26601d185632a2e556f2431b8b30ebeefd47cd92956992584645a72d90d8236"
+  },
+  "kept_images": [
+    "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+    "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677"
+  ],
+  "kept_native_driver": "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-promotion-final3.test",
+  "kept_native_sha256": "c228980169044eff0a381975577a2e717bd541cf197fb1baa84241e6cf3b8969",
+  "original_receipt_sha256": "b5ae4488a7cc12c169f7d36757e8dbe521bffd3a39f1bae828693bd3620aeba4",
+  "reconcile_receipt_sha256": "969a667a07fc58a8699cdb6743c0338c46099e26c1bb65768d2e71669370583a"
+}

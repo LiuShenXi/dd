@@ -1,0 +1,15 @@
+param([Parameter(Mandatory)][ValidatePattern('^[a-zA-Z0-9_-]{1,64}$')][string]$Label)
+Set-StrictMode -Version Latest
+$ErrorActionPreference='Stop'
+$public=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'environment-I4-20261019T180351Z-active.json') -Raw|ConvertFrom-Json
+$e=Get-Content -LiteralPath $public.private_fixture_path -Raw|ConvertFrom-Json
+if($e.C -ne 4){throw 'Only the exact synthetic browser C fixture is supported'}
+$sql=@"
+SELECT jsonb_build_object('user_id',u.id,'legacy_concurrency',u.concurrency,'claude_override',u.claude_subscription_concurrency,'balance',u.balance::text,'user_financial_hash',md5((to_jsonb(u)-'email'-'password_hash'-'username'-'notes')::text),'terms',(SELECT COALESCE(jsonb_agg(jsonb_build_object('id',t.id,'term_no',t.term_no,'subscription_id',t.subscription_id,'quota_usd',t.quota_usd::text,'used_usd',t.used_usd::text,'starts_at',t.starts_at,'expires_at',t.expires_at,'revision',t.revision,'cancelled_at',t.cancelled_at) ORDER BY t.id),'[]') FROM subscription_quota_terms t WHERE t.user_id=u.id),'term_hash',(SELECT md5(COALESCE(jsonb_agg(to_jsonb(t) ORDER BY t.id)::text,'[]')) FROM subscription_quota_terms t WHERE t.user_id=u.id),'parent_hash',(SELECT md5(COALESCE(jsonb_agg(to_jsonb(p) ORDER BY p.id)::text,'[]')) FROM user_subscriptions p WHERE p.user_id=u.id),'operation_count',(SELECT count(*) FROM subscription_quota_operations o WHERE o.idempotency_scope LIKE '%:user:'||u.id::text||':group:%'),'operation_hash',(SELECT md5(COALESCE(jsonb_agg(to_jsonb(o) ORDER BY o.id)::text,'[]')) FROM subscription_quota_operations o WHERE o.idempotency_scope LIKE '%:user:'||u.id::text||':group:%'),'billing_request_count',(SELECT count(*) FROM subscription_quota_requests r WHERE r.user_id=u.id),'ledger_count',(SELECT count(*) FROM subscription_quota_ledger l JOIN subscription_quota_terms t ON t.id=l.term_id WHERE t.user_id=u.id))::text FROM users u WHERE u.id=$($e.C);
+"@
+$raw=(@($sql|& 'C:/Program Files/Docker/Docker/resources/bin/docker.exe' --host npipe:////./pipe/docker_engine exec -i $e.Postgres psql -U postgres -d $e.Database -X -A -t -q -v ON_ERROR_STOP=1))-join "`n"
+if($LASTEXITCODE -ne 0){throw 'Read-only browser C snapshot failed'}
+$facts=$raw|ConvertFrom-Json
+$path=Join-Path $PSScriptRoot ('I4-browser-C-'+$Label+'-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'.json')
+[ordered]@{stage='I4 dedicated browser C read-only financial state';label=$Label;environment='environment-I4-20261019T180351Z-active.json';image_id=$public.image_id;facts=$facts;read_only=$true;main_fixture_modified=$false;production_connected=$false;raw_auth_and_payload_logged=$false;observed_utc=[DateTime]::UtcNow.ToString('o')}|ConvertTo-Json -Depth 10|Set-Content -LiteralPath $path -Encoding utf8
+[pscustomobject]@{receipt=$path;term_count=$facts.terms.Count;operation_count=$facts.operation_count;legacy_concurrency=$facts.legacy_concurrency;claude_override=$facts.claude_override;term_hash=$facts.term_hash;operation_hash=$facts.operation_hash}|ConvertTo-Json

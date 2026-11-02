@@ -1,0 +1,12 @@
+{
+  "source_before": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "source_after": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "frontend_before": "f028ff844c2b1321e6f3f30cec8bbe02ed6191832196f765d9d7887876d1a776",
+  "frontend_after": "f028ff844c2b1321e6f3f30cec8bbe02ed6191832196f765d9d7887876d1a776",
+  "changes": [
+    {
+      "path": "backend/internal/service/usage_cleanup_service_test.go",
+      "sha256": "acc655938f69c93b845f94cb8a1b9aa29b603bbbe794746b0a55fbf29a113426"
+    }
+  ]
+}

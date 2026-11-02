@@ -1075,6 +1075,16 @@ func QrCodeImgContainsFold(v string) predicate.PaymentOrder {
 	return predicate.PaymentOrder(sql.FieldContainsFold(FieldQrCodeImg, v))
 }
 
+// SubscriptionQuotaSnapshotIsNil applies the IsNil predicate on the "subscription_quota_snapshot" field.
+func SubscriptionQuotaSnapshotIsNil() predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldIsNull(FieldSubscriptionQuotaSnapshot))
+}
+
+// SubscriptionQuotaSnapshotNotNil applies the NotNil predicate on the "subscription_quota_snapshot" field.
+func SubscriptionQuotaSnapshotNotNil() predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldNotNull(FieldSubscriptionQuotaSnapshot))
+}
+
 // OrderTypeEQ applies the EQ predicate on the "order_type" field.
 func OrderTypeEQ(v string) predicate.PaymentOrder {
 	return predicate.PaymentOrder(sql.FieldEQ(FieldOrderType, v))

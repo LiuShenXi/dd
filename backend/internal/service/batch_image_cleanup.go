@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"go.uber.org/zap"
@@ -21,6 +22,7 @@ const (
 )
 
 type BatchImageCleanupService struct {
+	backgroundJobs   *backgroundjobs.Gate
 	Repo             BatchImageRepository
 	ProviderRegistry *BatchImageProviderRegistry
 	AccountResolver  BatchImageAccountResolver
@@ -97,6 +99,11 @@ func (s *BatchImageCleanupService) RunOnce(ctx context.Context, now time.Time) (
 	if s == nil || s.Repo == nil {
 		return BatchImageCleanupRunResult{}, ErrBatchImageCleanupFailed
 	}
+	ctx, done, ok := s.backgroundJobs.Enter(ctx)
+	if !ok {
+		return BatchImageCleanupRunResult{}, nil
+	}
+	defer done()
 	if now.IsZero() {
 		now = time.Now()
 	}

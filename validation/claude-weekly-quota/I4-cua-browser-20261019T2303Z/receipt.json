@@ -1,0 +1,568 @@
+{
+  "browser": "user Chrome via CUA",
+  "candidate": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "synthetic_only": true,
+  "external_upstream_called": false,
+  "steps": [
+    {
+      "case": "A first Keys display",
+      "pass": true,
+      "observed": "GPT / 原用户并发\n\n0 / 5\n\nClaude 周卡并发\n\n0 / 2\n\n等待中: 0\n\n独立默认值: 3 · 用户覆盖值: 2\n\n所有 Claude Key 和分组共用同一用户并发池，续卡不增加槽位；GPT 保持独立池。",
+      "screenshot": "A-keys-concurrency.png"
+    },
+    {
+      "case": "A current100 and queued100, shared Keys",
+      "pass": true,
+      "observed": "I4 Claude independent user cards\n\n此分组内所有 Key 共用同一张卡\n\n使用中\n本卡额度\n$100.00\n已结算用量\n$0.00\n已知待结算费用\n$0.00\n可用剩余\n$100.00\n生效时间\n2026/10/20 02:04\n到期时间\n2026/10/27 02:04\n\n剩余时间: 6d 18h 44m\n\n已排期续卡\n#2 · 待生效 · 2026/10/27 02:04\n$100.00\n周卡历史",
+      "screenshot": "A-subscription.png"
+    },
+    {
+      "case": "GPT original projection",
+      "pass": true,
+      "observed": "拼车详情\n\n查看拼车月卡有效期、可用额度与已确认的重置窗口\n\n刷新\n\n累计已使用额度\n\n$0.00\n\n本期合约已重置\n\n0\n\n拼车可用额度\n\n$550.00\n\n与普通账户余额独立\n\n会员周期\n\n2026/10/20 02:04 至 2026/11/17 02:04\n\n时间均按 Asia/Shanghai 显示\n\n进行中\n\n每周基础额度\n\n100%\n剩余\n\n当前第 1 周期\n\n下一次自然补额\n2026/10/27 02:04\n剩余 6 天 18 小时 44 分钟\n固定月卡到期时间\n2026/11/17 02:04\n账期记录\n第 1 周期\n2026/10/20 02:04 - 2026/10/27 02:04\n进行中\n重置窗口\n\n暂无重置窗口",
+      "screenshot": "A-GPT-carpool.png"
+    },
+    {
+      "case": "B inherited3 card300 Chinese",
+      "pass": true,
+      "observed": "GPT / 原用户并发\n\n0 / 5\n\nClaude 周卡并发\n\n0 / 3\n\n等待中: 0\n\n独立默认值: 3 · 用户覆盖值: 采用 Claude 默认值\n\n所有 Claude Key 和分组共用同一用户并发池，续卡不增加槽位；GPT 保持独立池。\n\nI4 Claude independent user cards\n\n此分组内所有 Key 共用同一张卡\n\n使用中\n本卡额度\n$300.00\n已结算用量\n$0.00\n已知待结算费用\n$0.00\n可用剩余\n$300.00\n生效时间\n2026/10/20 02:04\n到期时间\n2026/10/27 02:04\n\n剩余时间: 6d 18h 43m\n\n周卡历史",
+      "screenshot": "B-default3-card300-zh.png"
+    },
+    {
+      "case": "B English 390px after responsive transition",
+      "pass": true,
+      "layout": {
+        "document": 390,
+        "viewport": 390
+      },
+      "screenshot": "B-default3-card300-en-390-settled.png",
+      "diagnostic": "First screenshot captured sidebar transition; initial image retained, stable DOM has no horizontal overflow"
+    },
+    {
+      "case": "B Chinese 390px",
+      "pass": true,
+      "screenshot": "B-default3-card300-zh-390.png"
+    },
+    {
+      "case": "A Key usage concurrency on old F2 candidate",
+      "pass": false,
+      "observed": "GPT / 原用户并发\n\n0 / 5\n\nClaude 周卡并发\n\n0 / 3\n\n等待中: 0\n\n独立默认值: 3 · 用户覆盖值: 采用 Claude 默认值\n\n所有 Claude Key 和分组共用同一用户并发池，续卡不增加槽位；GPT 保持独立池。",
+      "screenshot": "A-Key-incorrect-concurrency-pre-fix.png",
+      "cause": "Native APIKey User partial Select omitted Claude override; actual repository/API independently reproduced. Repair pending; no inference of generation over-admission."
+    },
+    {
+      "case": "Admin A policy2/default3/GPT5 and Tab/Escape",
+      "pass": true,
+      "focusInside": true,
+      "editInput": "empty means omit change, current override2 is in policy display",
+      "diagnostic": "Prepared script incorrectly expected input2; corrected expectation matches existing empty=nochange contract",
+      "screenshot": "admin-A-concurrency2.png"
+    },
+    {
+      "case": "Admin B inherits3 and GPT5",
+      "pass": true,
+      "observed": "GPT / 原用户并发\n\n0 / 5\n\nClaude 周卡并发\n\n0 / 3\n\n等待中: 0\n\n独立默认值: 3 · 用户覆盖值: 采用 Claude 默认值\n\n所有 Claude Key 和分组共用同一用户并发池，续卡不增加槽位；GPT 保持独立池。",
+      "screenshot": "admin-B-inherited3.png"
+    },
+    {
+      "case": "Late A success while B pending",
+      "pass": false,
+      "amount": "300",
+      "previewDisabled": true,
+      "noPreview": true,
+      "screenshot": "late-A-success-B-still-pending.png",
+      "layer": "actual browser, real backend previews, task proxy delays on old F2 image",
+      "diagnostic": "Partial pending assertion observed, but B exceeded application request timeout before its release during coordinator code review; full scenario must rerun promptly."
+    },
+    {
+      "case": "Late A success/finally isolation",
+      "pass": true,
+      "rules": [
+        "cua_1792453428541_success_A",
+        "cua_1792453428541_success_B"
+      ],
+      "BPendingAfterA": true,
+      "BFinalPreview": "服务器预览\n\n实际采用额度: $300.00\n\n2026/10/27 02:04 — 2026/11/03 02:04",
+      "screenshot": "late-A-success-B-pending-final.png",
+      "layer": "CUA actual Chrome and backend preview; isolated proxy timing/error injection"
+    },
+    {
+      "case": "Late A error/finally isolation",
+      "pass": true,
+      "rules": [
+        "cua_1792453428541_error_A",
+        "cua_1792453428541_error_B"
+      ],
+      "BPendingAfterA": true,
+      "BFinalPreview": "服务器预览\n\n实际采用额度: $300.00\n\n2026/10/27 02:04 — 2026/11/03 02:04",
+      "screenshot": "late-A-error-B-pending-final.png",
+      "layer": "CUA actual Chrome and backend preview; isolated proxy timing/error injection"
+    },
+    {
+      "case": "F4 actual public Key usage: A1/A2 share100, GPT own projection, all owner override2",
+      "pass": true,
+      "image": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+      "observations": [
+        {
+          "key_alias": "A1",
+          "scope": "GPT / 原用户并发\n\n0 / 5\n\nClaude 周卡并发\n\n0 / 2\n\n等待中: 0\n\n独立默认值: 3 · 用户覆盖值: 2\n\n所有 Claude Key 和分组共用同一用户并发池，续卡不增加槽位；GPT 保持独立池。",
+          "cardCount": 1,
+          "cardValues": {
+            "quota-pending": "$0.00",
+            "quota-quota": "$100.00",
+            "quota-remaining": "$100.00",
+            "quota-used": "$0.00"
+          }
+        },
+        {
+          "key_alias": "A2",
+          "scope": "GPT / 原用户并发\n\n0 / 5\n\nClaude 周卡并发\n\n0 / 2\n\n等待中: 0\n\n独立默认值: 3 · 用户覆盖值: 2\n\n所有 Claude Key 和分组共用同一用户并发池，续卡不增加槽位；GPT 保持独立池。",
+          "cardCount": 1,
+          "cardValues": {
+            "quota-pending": "$0.00",
+            "quota-quota": "$100.00",
+            "quota-remaining": "$100.00",
+            "quota-used": "$0.00"
+          }
+        },
+        {
+          "key_alias": "GPT",
+          "scope": "GPT / 原用户并发\n\n0 / 5\n\nClaude 周卡并发\n\n0 / 2\n\n等待中: 0\n\n独立默认值: 3 · 用户覆盖值: 2\n\n所有 Claude Key 和分组共用同一用户并发池，续卡不增加槽位；GPT 保持独立池。",
+          "cardCount": 0,
+          "cardValues": null
+        }
+      ]
+    },
+    {
+      "case": "F4 real admin C default3 to override4 preserves GPT5",
+      "pass": true,
+      "image": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+      "real_management_write": true,
+      "before": "GPT / 原用户并发\n\n0 / 5\n\nClaude 周卡并发\n\n0 / 3\n\n等待中: 0\n\n独立默认值: 3 · 用户覆盖值: 采用 Claude 默认值\n\n所有 Claude Key 和分组共用同一用户并发池，续卡不增加槽位；GPT 保持独立池。",
+      "after": "GPT / 原用户并发\n\n0 / 5\n\nClaude 周卡并发\n\n0 / 4\n\n等待中: 0\n\n独立默认值: 3 · 用户覆盖值: 4\n\n所有 Claude Key 和分组共用同一用户并发池，续卡不增加槽位；GPT 保持独立池。",
+      "screenshot": "F4-admin-C-override4-GPT5.png"
+    },
+    {
+      "at": "2026-10-19T23:56:32.635Z",
+      "name": "F4 C actual open100 response drop automatic replay",
+      "image": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+      "pass": true,
+      "manual_retry": false,
+      "observation": "已重放原操作结果，当前周卡状态会另行刷新。\n\n实际保存的生效区间\n\n2026/10/20 07:55 — 2026/10/27 07:55 · $100.00",
+      "proxy": {
+        "once_per_rule": true,
+        "payload_logging": false,
+        "rules": [
+          {
+            "rule_id": "A_success_1",
+            "path": "/api/v1/admin/users/2/subscription-quota/terms/preview",
+            "method": "POST",
+            "phase": "after_backend_response",
+            "effect": "hold",
+            "consumed": true,
+            "in_flight": false,
+            "upstream_round_trips": 1,
+            "held": false,
+            "released": true,
+            "delivered": 1,
+            "dropped": 0,
+            "rejected_before_upstream": 0,
+            "valid_successful_term_response": false,
+            "observations": [
+              {
+                "body_sha256": "0eb58eccd2cfb4da3d703aac9e34f42fddb4b6372a85c53eec0e750b117e4034",
+                "idempotency_key_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "upstream_status": 200,
+                "term_id": null,
+                "replayed": null
+              }
+            ]
+          },
+          {
+            "rule_id": "B_success_1",
+            "path": "/api/v1/admin/users/3/subscription-quota/terms/preview",
+            "method": "POST",
+            "phase": "after_backend_response",
+            "effect": "hold",
+            "consumed": true,
+            "in_flight": false,
+            "upstream_round_trips": 1,
+            "held": false,
+            "released": true,
+            "delivered": 1,
+            "dropped": 0,
+            "rejected_before_upstream": 0,
+            "valid_successful_term_response": false,
+            "observations": [
+              {
+                "body_sha256": "caa9e52875a18dcc90f02943d7fa7e0dbd8545136b89f12bd969a75f65a6aafe",
+                "idempotency_key_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "upstream_status": 200,
+                "term_id": null,
+                "replayed": null
+              }
+            ]
+          },
+          {
+            "rule_id": "A_success_2",
+            "path": "/api/v1/admin/users/2/subscription-quota/terms/preview",
+            "method": "POST",
+            "phase": "after_backend_response",
+            "effect": "hold",
+            "consumed": true,
+            "in_flight": false,
+            "upstream_round_trips": 1,
+            "held": false,
+            "released": true,
+            "delivered": 1,
+            "dropped": 0,
+            "rejected_before_upstream": 0,
+            "valid_successful_term_response": false,
+            "observations": [
+              {
+                "body_sha256": "0eb58eccd2cfb4da3d703aac9e34f42fddb4b6372a85c53eec0e750b117e4034",
+                "idempotency_key_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "upstream_status": 200,
+                "term_id": null,
+                "replayed": null
+              }
+            ]
+          },
+          {
+            "rule_id": "B_success_2",
+            "path": "/api/v1/admin/users/3/subscription-quota/terms/preview",
+            "method": "POST",
+            "phase": "after_backend_response",
+            "effect": "hold",
+            "consumed": true,
+            "in_flight": false,
+            "upstream_round_trips": 1,
+            "held": false,
+            "released": true,
+            "delivered": 1,
+            "dropped": 0,
+            "rejected_before_upstream": 0,
+            "valid_successful_term_response": false,
+            "observations": [
+              {
+                "body_sha256": "caa9e52875a18dcc90f02943d7fa7e0dbd8545136b89f12bd969a75f65a6aafe",
+                "idempotency_key_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "upstream_status": 200,
+                "term_id": null,
+                "replayed": null
+              }
+            ]
+          },
+          {
+            "rule_id": "cua_1792453428541_success_A",
+            "path": "/api/v1/admin/users/2/subscription-quota/terms/preview",
+            "method": "POST",
+            "phase": "after_backend_response",
+            "effect": "hold",
+            "consumed": true,
+            "in_flight": false,
+            "upstream_round_trips": 1,
+            "held": false,
+            "released": true,
+            "delivered": 1,
+            "dropped": 0,
+            "rejected_before_upstream": 0,
+            "valid_successful_term_response": false,
+            "observations": [
+              {
+                "body_sha256": "0eb58eccd2cfb4da3d703aac9e34f42fddb4b6372a85c53eec0e750b117e4034",
+                "idempotency_key_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "upstream_status": 200,
+                "term_id": null,
+                "replayed": null
+              }
+            ]
+          },
+          {
+            "rule_id": "cua_1792453428541_success_B",
+            "path": "/api/v1/admin/users/3/subscription-quota/terms/preview",
+            "method": "POST",
+            "phase": "after_backend_response",
+            "effect": "hold",
+            "consumed": true,
+            "in_flight": false,
+            "upstream_round_trips": 1,
+            "held": false,
+            "released": true,
+            "delivered": 1,
+            "dropped": 0,
+            "rejected_before_upstream": 0,
+            "valid_successful_term_response": false,
+            "observations": [
+              {
+                "body_sha256": "caa9e52875a18dcc90f02943d7fa7e0dbd8545136b89f12bd969a75f65a6aafe",
+                "idempotency_key_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "upstream_status": 200,
+                "term_id": null,
+                "replayed": null
+              }
+            ]
+          },
+          {
+            "rule_id": "cua_1792453428541_error_A",
+            "path": "/api/v1/admin/users/2/subscription-quota/terms/preview",
+            "method": "POST",
+            "phase": "after_backend_response",
+            "effect": "hold",
+            "consumed": true,
+            "in_flight": false,
+            "upstream_round_trips": 1,
+            "held": false,
+            "released": true,
+            "delivered": 1,
+            "dropped": 0,
+            "rejected_before_upstream": 0,
+            "valid_successful_term_response": false,
+            "observations": [
+              {
+                "body_sha256": "0eb58eccd2cfb4da3d703aac9e34f42fddb4b6372a85c53eec0e750b117e4034",
+                "idempotency_key_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "upstream_status": 200,
+                "term_id": null,
+                "replayed": null
+              }
+            ]
+          },
+          {
+            "rule_id": "cua_1792453428541_error_B",
+            "path": "/api/v1/admin/users/3/subscription-quota/terms/preview",
+            "method": "POST",
+            "phase": "after_backend_response",
+            "effect": "hold",
+            "consumed": true,
+            "in_flight": false,
+            "upstream_round_trips": 1,
+            "held": false,
+            "released": true,
+            "delivered": 1,
+            "dropped": 0,
+            "rejected_before_upstream": 0,
+            "valid_successful_term_response": false,
+            "observations": [
+              {
+                "body_sha256": "caa9e52875a18dcc90f02943d7fa7e0dbd8545136b89f12bd969a75f65a6aafe",
+                "idempotency_key_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "upstream_status": 200,
+                "term_id": null,
+                "replayed": null
+              }
+            ]
+          },
+          {
+            "rule_id": "cua_C_open_drop_1792454127525",
+            "path": "/api/v1/admin/users/4/subscription-quota/terms",
+            "method": "POST",
+            "phase": "after_backend_response",
+            "effect": "drop",
+            "consumed": true,
+            "in_flight": false,
+            "upstream_round_trips": 1,
+            "held": false,
+            "released": false,
+            "delivered": 0,
+            "dropped": 1,
+            "rejected_before_upstream": 0,
+            "valid_successful_term_response": true,
+            "observations": [
+              {
+                "body_sha256": "dcc29cec475a7b361b6c4c652b1fb837b4843d99db56652a01599ab070c4d285",
+                "idempotency_key_sha256": "661cd7330bb375a2be8dc473cd02f87b4f88d238b2aaaafb19be517560450890",
+                "upstream_status": 201,
+                "term_id": 5,
+                "replayed": false
+              }
+            ]
+          }
+        ],
+        "synthetic_only": true,
+        "target": "http://127.0.0.1:49441"
+      },
+      "initial_manual_wait_diagnostic": "quota-error never appeared; browser/API automatic replay completed"
+    },
+    {
+      "at": "2026-10-19T23:59:24.374Z",
+      "name": "F4 C manual renew75 retry after real commit and proxy503",
+      "image": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+      "pass": true,
+      "manual_retry": true,
+      "original": {
+        "body_sha256": "701f36dcd40803d273783114a070a7887701ad6bac065491e088f0a93fb5020b",
+        "idempotency_key_sha256": "099e269944ac7c5e0541995bcd4e55428377f8161355606d9f1cf9f0bfe2d015",
+        "upstream_status": 201,
+        "term_id": 6,
+        "replayed": false
+      },
+      "retry": {
+        "body_sha256": "701f36dcd40803d273783114a070a7887701ad6bac065491e088f0a93fb5020b",
+        "idempotency_key_sha256": "099e269944ac7c5e0541995bcd4e55428377f8161355606d9f1cf9f0bfe2d015",
+        "upstream_status": 200,
+        "term_id": 6,
+        "replayed": true
+      },
+      "fault": "after actual successful commit proxy returns synthetic503; original open separately used TCP response loss"
+    },
+    {
+      "at": "2026-10-19T23:59:52.575Z",
+      "name": "F4 actual UI409 preserves draft and invalidates preview",
+      "image": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+      "pass": true,
+      "dom": {
+        "amount": "25",
+        "confirmDisabled": true,
+        "notes": "I4 CUA conflict preservation",
+        "preview": false,
+        "text": "管理 Claude 周卡 · i4-ui-c-732e5e8647f34c6fb3ed279966fe3b1b@example.invalid\n\n有效期固定 168 小时（七天）\n\nClaude 分组\n请选择 Claude 分组\nI4 Claude independent user cards\nI4 second Claude group same user concurrency pool\nClaude 周卡\n\n此分组内所有 Key 共用同一张卡\n\n使用中\n本卡额度\n$100.00\n已结算用量\n$0.00\n已知待结算费用\n$0.00\n可用剩余\n$100.00\n生效时间\n2026/10/20 07:55\n到期时间\n2026/10/27 07:55\n\n剩余时间: 6d 23h 55m\n\n已排期续卡\n#2 · 待生效 · 2026/10/27 07:55\n$75.00\n处理方式\n开通周卡\n排期续卡\n\n续卡在当前排期结束后生效，不会立即补满当前卡。\n\n当期额度（USD）\n正数 USD，最多八位小数。这是使用额度，不是售价。\n备注\n预览排期\n\n排期已变化，已保留输入的额度，请重新预览后提交。\n\n确认开卡\n\n已重放原操作结果，当前周卡状态会另行刷新。\n\n实际保存的生效区间\n\n2026/10/27 07:55 — 2026/11/03 07:55 · $75.00\n\n周卡历史\n#2 · 待生效 · 2026/10/27 07:55 — 2026/11/03 07:55 · $75.00\n取消周卡\n#1 · 使用中 · 2026/10/20 07:55 — 2026/10/27 07:55 · $100.00\n取消周卡\n\n关闭弹窗不等于取消已经发送到服务器的操作。"
+      },
+      "proxy": {
+        "rule_id": "cua_C_before_upstream409_1792454391409",
+        "path": "/api/v1/admin/users/4/subscription-quota/terms",
+        "method": "POST",
+        "phase": "before_upstream",
+        "effect": "reject",
+        "consumed": true,
+        "in_flight": false,
+        "upstream_round_trips": 0,
+        "held": false,
+        "released": false,
+        "delivered": 0,
+        "dropped": 0,
+        "rejected_before_upstream": 1,
+        "valid_successful_term_response": false,
+        "observations": [
+          {
+            "body_sha256": "a0ec7dfdc6d15899346b5cf66c37397f4fbc4c1b8c3a95fe137a4ae9768f9731",
+            "idempotency_key_sha256": "22696373cccc570b15ef48b1094c0d07d9cac7460a6593a098a5f3284ca50def",
+            "upstream_status": null,
+            "term_id": null,
+            "replayed": null
+          }
+        ]
+      },
+      "fault": "test proxy rejection before upstream, not real backend conflict"
+    },
+    {
+      "at": "2026-10-20T00:03:49.058Z",
+      "name": "F4 T48 actual expiry preserves server money then refresh selects queued17",
+      "image": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+      "pass": true,
+      "before": {
+        "fields": [
+          {
+            "id": "quota-quota",
+            "text": "$13.00"
+          },
+          {
+            "id": "quota-used",
+            "text": "$0.00"
+          },
+          {
+            "id": "quota-pending",
+            "text": "$0.00"
+          },
+          {
+            "id": "quota-remaining",
+            "text": "$13.00"
+          },
+          {
+            "id": "quota-countdown",
+            "text": "剩余时间: 0d 0h 0m"
+          }
+        ],
+        "text": "I4 Claude independent user cards\n\n此分组内所有 Key 共用同一张卡\n\n使用中\n本卡额度\n$13.00\n已结算用量\n$0.00\n已知待结算费用\n$0.00\n可用剩余\n$13.00\n生效时间\n2026/10/13 08:02\n到期时间\n2026/10/20 08:02\n\n剩余时间: 0d 0h 0m\n\n已排期续卡\n#2 · 待生效 · 2026/10/20 08:02\n$17.00\n周卡历史"
+      },
+      "while_held": {
+        "fields": [
+          {
+            "id": "quota-quota",
+            "text": "$13.00"
+          },
+          {
+            "id": "quota-used",
+            "text": "$0.00"
+          },
+          {
+            "id": "quota-pending",
+            "text": "$0.00"
+          },
+          {
+            "id": "quota-remaining",
+            "text": "$13.00"
+          },
+          {
+            "id": "quota-countdown",
+            "text": "正在刷新服务器状态…"
+          }
+        ],
+        "text": "I4 Claude independent user cards\n\n此分组内所有 Key 共用同一张卡\n\n使用中\n本卡额度\n$13.00\n已结算用量\n$0.00\n已知待结算费用\n$0.00\n可用剩余\n$13.00\n生效时间\n2026/10/13 08:02\n到期时间\n2026/10/20 08:02\n\n正在刷新服务器状态…\n\n已排期续卡\n#2 · 待生效 · 2026/10/20 08:02\n$17.00\n周卡历史"
+      },
+      "proxy_held": {
+        "rule_id": "cua_D_expiry_1792454509777",
+        "path": "/api/v1/subscription-quota",
+        "method": "GET",
+        "phase": "after_backend_response",
+        "effect": "hold",
+        "consumed": true,
+        "in_flight": false,
+        "upstream_round_trips": 1,
+        "held": true,
+        "released": false,
+        "delivered": 0,
+        "dropped": 0,
+        "rejected_before_upstream": 0,
+        "valid_successful_term_response": false,
+        "observations": [
+          {
+            "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "idempotency_key_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "upstream_status": 200,
+            "term_id": null,
+            "replayed": null
+          }
+        ]
+      },
+      "after": {
+        "fields": [
+          {
+            "id": "quota-quota",
+            "text": "$17.00"
+          },
+          {
+            "id": "quota-used",
+            "text": "$0.00"
+          },
+          {
+            "id": "quota-pending",
+            "text": "$0.00"
+          },
+          {
+            "id": "quota-remaining",
+            "text": "$17.00"
+          },
+          {
+            "id": "quota-countdown",
+            "text": "剩余时间: 6d 23h 58m"
+          }
+        ],
+        "text": "I4 Claude independent user cards\n\n此分组内所有 Key 共用同一张卡\n\n使用中\n本卡额度\n$17.00\n已结算用量\n$0.00\n已知待结算费用\n$0.00\n可用剩余\n$17.00\n生效时间\n2026/10/20 08:02\n到期时间\n2026/10/27 08:02\n\n剩余时间: 6d 23h 58m\n\n周卡历史"
+      },
+      "refresh_note": "Hold exceeded frontend30s timeout; old13/0/0/13 and queued17 stayed visible. Released held response then clicked actual Retry; fresh server response selected17. No local amount reset."
+    }
+  ],
+  "candidates": [
+    {
+      "image": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+      "scope": "initial readonly and race observations; known key projection failure retained"
+    },
+    {
+      "image": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+      "source": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+      "cutover": "environment-I4-browser-F4-cutover-20261019T234529Z.json",
+      "scope": "current candidate; exact same frontend assets"
+    }
+  ]
+}

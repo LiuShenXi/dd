@@ -1,0 +1,99 @@
+{
+  "checked_utc": "2026-10-20T02:54:30.233805+00:00",
+  "private_backup_directory": "/Users/shenxi/.codex/private/claude-weekly-quota/office-retained-fixture-backup-20261020T025428Z",
+  "backups_and_logs": [
+    {
+      "kind": "synthetic_database_dump",
+      "database": "synthetic_i4",
+      "private_file": "/Users/shenxi/.codex/private/claude-weekly-quota/office-retained-fixture-backup-20261020T025428Z/main-synthetic.dump",
+      "bytes": 709344,
+      "sha256": "97457320ef0c9212954fb40c6c49abb2bee2b77ad04953214c28dd67124a807b",
+      "pg_restore_list_verified": true,
+      "toc_sha256": "e4fc776b91d4c05547f8c25857ce812787caeea37e73ab0baff1329c686521e9"
+    },
+    {
+      "kind": "synthetic_database_dump",
+      "database": "cwq_browser_i6_4d8579907c00",
+      "private_file": "/Users/shenxi/.codex/private/claude-weekly-quota/office-retained-fixture-backup-20261020T025428Z/browser-synthetic.dump",
+      "bytes": 713692,
+      "sha256": "f9381cd171a0b4180e4d84d98c9609d0d80c65e5b7000d88782d40bf295a0af4",
+      "pg_restore_list_verified": true,
+      "toc_sha256": "ddb97cdcab8e69416b46011114371c0bf078b70d6f03e2625d5b4a71a5893d1f"
+    },
+    {
+      "kind": "container_log",
+      "container_id": "6ce4020b2d3cbbee755573fbb70da770da31225966791f7b44a2d3dd0c1f4ad4",
+      "private_file": "/Users/shenxi/.codex/private/claude-weekly-quota/office-retained-fixture-backup-20261020T025428Z/cwq-browser-i6-4d8579907c00-app-3d3c392d4246-final.log",
+      "bytes": 216999,
+      "sha256": "a3ac1943185d184dae9827247d6531ac9a813ed742504e8ca3c899009776b8eb"
+    },
+    {
+      "kind": "container_log",
+      "container_id": "2e2be5b60e25c500e7130b5bf562a2badd0c8f98ecb10052dd83b309d4d06100",
+      "private_file": "/Users/shenxi/.codex/private/claude-weekly-quota/office-retained-fixture-backup-20261020T025428Z/cwq-browser-i6-4d8579907c00-app-3c491e7a7033-final.log",
+      "bytes": 594542,
+      "sha256": "c593eeafe2583407c66fc88caec5937c0d291cfdb9f332728cb3f3651e528e08"
+    },
+    {
+      "kind": "container_log",
+      "container_id": "59feda2069b97b6add15b22daebfffdace6946fff2f8851ffe06f6d0c64fed4f",
+      "private_file": "/Users/shenxi/.codex/private/claude-weekly-quota/office-retained-fixture-backup-20261020T025428Z/cwq-browser-i6-4d8579907c00-payment-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "container_log",
+      "container_id": "1500d3a6823049f8d86587fc6a288a90932116bad8cfabca503660b05eb3ffa7",
+      "private_file": "/Users/shenxi/.codex/private/claude-weekly-quota/office-retained-fixture-backup-20261020T025428Z/cwq-browser-i6-4d8579907c00-redis-final.log",
+      "bytes": 4829,
+      "sha256": "83fc94c660710d518dbf523076550f2edb87323b76fad6ccab24546286e26fc0"
+    },
+    {
+      "kind": "container_log",
+      "container_id": "cf17387e9dcc91c6f3756252f1d25347cd256adcae777ac1d7cf8f374d310132",
+      "private_file": "/Users/shenxi/.codex/private/claude-weekly-quota/office-retained-fixture-backup-20261020T025428Z/cwq-i4-b03b632e59fd48e2-postgres-final.log",
+      "bytes": 8514,
+      "sha256": "5b2d8ef11ca464e111b81359182f0a32681d89af7de561ee482cd727db54f786"
+    }
+  ],
+  "prior_main_logs_verified_receipt": "office-I6-main-runtime-cleanup.json",
+  "removed_containers": [
+    {
+      "id": "6ce4020b2d3cbbee755573fbb70da770da31225966791f7b44a2d3dd0c1f4ad4",
+      "name": "/cwq-browser-i6-4d8579907c00-app-3d3c392d4246",
+      "image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122"
+    },
+    {
+      "id": "2e2be5b60e25c500e7130b5bf562a2badd0c8f98ecb10052dd83b309d4d06100",
+      "name": "/cwq-browser-i6-4d8579907c00-app-3c491e7a7033",
+      "image_id": "sha256:3c491e7a7033a72206fa30cf8d4895a7678908a6781912a66e16cedcbbe435bf"
+    },
+    {
+      "id": "59feda2069b97b6add15b22daebfffdace6946fff2f8851ffe06f6d0c64fed4f",
+      "name": "/cwq-browser-i6-4d8579907c00-payment",
+      "image_id": "sha256:2d20848a025bd39adeb1f732ba3b2216dc2f7502ffd9a7d61091008c3b718826"
+    },
+    {
+      "id": "1500d3a6823049f8d86587fc6a288a90932116bad8cfabca503660b05eb3ffa7",
+      "name": "/cwq-browser-i6-4d8579907c00-redis",
+      "image_id": "sha256:0514fa59e3d84e2f3be66731c5401fc2a85b8ea71b49c0116c850f6a558076f4"
+    },
+    {
+      "id": "cf17387e9dcc91c6f3756252f1d25347cd256adcae777ac1d7cf8f374d310132",
+      "name": "/cwq-i4-b03b632e59fd48e2-postgres",
+      "image_id": "sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29"
+    }
+  ],
+  "removed_named_volume": "cwq-i4-b03b632e59fd48e2-pgdata",
+  "removed_network": "cwq-env-i6-office-20261020",
+  "removed_network_subnet": "10.247.193.0/28",
+  "bridge_pid": 10704,
+  "bridge_exact_command_verified_and_stopped": true,
+  "free_bytes_before": 3021053952,
+  "free_bytes_after": 3019304960,
+  "production_data_copied": false,
+  "synthetic_only": true,
+  "F4_images_preserved": true,
+  "unknown_containers_volumes_modified": false,
+  "global_prune": false
+}

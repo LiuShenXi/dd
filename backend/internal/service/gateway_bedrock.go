@@ -142,6 +142,11 @@ func (s *GatewayService) forwardBedrock(
 	if reqStream {
 		streamResult, err := s.handleBedrockStreamingResponse(ctx, resp, c, account, startTime, reqModel)
 		if err != nil {
+			if _, term := SubscriptionQuotaForwardStateFromContext(ctx); term && completeSubscriptionQuotaMetering(c) {
+				if partial := partialStreamUsageResult(c, resp, streamResult, reqModel, mappedModel, startTime, err); partial != nil {
+					return partial, err
+				}
+			}
 			return nil, err
 		}
 		usage = streamResult.usage
@@ -197,7 +202,11 @@ func (s *GatewayService) executeBedrockUpstream(
 			return nil, err
 		}
 
+		if err := s.beforeSubscriptionQuotaSend(ctx, c, account, modelID, body); err != nil {
+			return nil, err
+		}
 		resp, err = s.httpUpstream.DoWithTLS(upstreamReq, proxyURL, account.ID, account.Concurrency, nil)
+		observeSubscriptionQuotaHTTP(ctx, resp, err)
 		if err != nil {
 			if resp != nil && resp.Body != nil {
 				_ = resp.Body.Close()
@@ -389,6 +398,7 @@ func (s *GatewayService) handleBedrockNonStreamingResponse(
 	}
 
 	// 转换 Bedrock 特有的 amazon-bedrock-invocationMetrics 为标准 Anthropic usage 格式
+	observeSubscriptionQuotaMetering(c, body, "bedrock_json")
 	// 并移除该字段避免透传给客户端
 	body = transformBedrockInvocationMetrics(body)
 

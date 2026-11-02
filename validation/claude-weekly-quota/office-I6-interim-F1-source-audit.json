@@ -1,0 +1,27 @@
+{
+  "captured_utc": "2026-10-20T02:13:22.068571+00:00",
+  "build_source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "final_working_source_sha256": "811cd122d5a0c1a7c710497009c9bff3777e4b351b5229b7f4365a40ed349ad0",
+  "frontend_dist_sha256": "b68bc9aeb8d0f96fa4363381b19673a20a406fa76aadb5e5f42f916fc4c76d12",
+  "image_ids": {
+    "r1": "sha256:7d78d912b323875ca61a4c9c716b0018716f361a7146a1443bd94c6882b3523a",
+    "r2": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483"
+  },
+  "changed_build_scope_files": [
+    {
+      "path": "backend/internal/repository/subscription_quota_rollout_http_i6_integration_test.go",
+      "build_sha256": "d391e390143d018a06b9c8f5d8437dd2db7ca91fc978dc9bc5dd0eeb75d9796c",
+      "current_sha256": "9f075f559e941f8f4087b09013f719de16ca002671be15bd3c5a697e452e3415"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_upgrade_rollback_i6_integration_test.go",
+      "build_sha256": "9ad7d7d355cbd5bc56cd308abbd3e1d3b9e9ee3941fbcb5288267e40ced5f732",
+      "current_sha256": "c1ba713a83b178c23c0c18af129fb409710b07a58d04603c40a3ac579e7d6dde"
+    }
+  ],
+  "all_other_build_input_files_unchanged": true,
+  "unchanged_file_count": 4554,
+  "product_source_and_embedded_ui_unchanged": true,
+  "explanation": "Only Go integration-test drivers changed after image construction: correct required recovery flag and preserve nc input until response completion; wait for the existing 30-second delayed auth invalidation pass. Go excludes these _test.go files from server/release builds. Runtime acceptance names the original immutable image, and corrected drivers carry their own hashes. No final-working-source match to the historical build aggregate is claimed.",
+  "pass": true
+}

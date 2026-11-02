@@ -1,0 +1,33 @@
+{
+  "stage": "I4 v2 actual isolated runtime",
+  "scenario": "ConcurrentIndependentPools",
+  "freeze": "F2",
+  "diagnostic": false,
+  "executable": "C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/bin/go.exe",
+  "arguments": [
+    "test",
+    "-tags=integration",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^TestSubscriptionQuotaI4V2ConcurrentIndependentPools$",
+    "./internal/repository"
+  ],
+  "exit_code": 0,
+  "driver_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "driver_source_after_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "driver_source_stable": true,
+  "candidate_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "candidate_image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "environment_receipt": "environment-I4-20261019T180032Z-active.json",
+  "pass_count": 1,
+  "failure_count": 0,
+  "skip_count": 0,
+  "functional_pass": true,
+  "acceptance": true,
+  "log": "I4-v2-ConcurrentIndependentPools-F2-20261019T180404Z.jsonl",
+  "external_upstream_called": false,
+  "production_connected": false,
+  "finished_utc": "2026-10-19T18:05:31.1892477Z"
+}

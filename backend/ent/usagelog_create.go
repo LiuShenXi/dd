@@ -197,6 +197,34 @@ func (_c *UsageLogCreate) SetNillableSubscriptionID(v *int64) *UsageLogCreate {
 	return _c
 }
 
+// SetSubscriptionTermID sets the "subscription_term_id" field.
+func (_c *UsageLogCreate) SetSubscriptionTermID(v int64) *UsageLogCreate {
+	_c.mutation.SetSubscriptionTermID(v)
+	return _c
+}
+
+// SetNillableSubscriptionTermID sets the "subscription_term_id" field if the given value is not nil.
+func (_c *UsageLogCreate) SetNillableSubscriptionTermID(v *int64) *UsageLogCreate {
+	if v != nil {
+		_c.SetSubscriptionTermID(*v)
+	}
+	return _c
+}
+
+// SetSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field.
+func (_c *UsageLogCreate) SetSubscriptionQuotaRequestID(v int64) *UsageLogCreate {
+	_c.mutation.SetSubscriptionQuotaRequestID(v)
+	return _c
+}
+
+// SetNillableSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field if the given value is not nil.
+func (_c *UsageLogCreate) SetNillableSubscriptionQuotaRequestID(v *int64) *UsageLogCreate {
+	if v != nil {
+		_c.SetSubscriptionQuotaRequestID(*v)
+	}
+	return _c
+}
+
 // SetCarpoolTermID sets the "carpool_term_id" field.
 func (_c *UsageLogCreate) SetCarpoolTermID(v int64) *UsageLogCreate {
 	_c.mutation.SetCarpoolTermID(v)
@@ -1049,6 +1077,14 @@ func (_c *UsageLogCreate) createSpec() (*UsageLog, *sqlgraph.CreateSpec) {
 		_spec.SetField(usagelog.FieldBillingMode, field.TypeString, value)
 		_node.BillingMode = &value
 	}
+	if value, ok := _c.mutation.SubscriptionTermID(); ok {
+		_spec.SetField(usagelog.FieldSubscriptionTermID, field.TypeInt64, value)
+		_node.SubscriptionTermID = &value
+	}
+	if value, ok := _c.mutation.SubscriptionQuotaRequestID(); ok {
+		_spec.SetField(usagelog.FieldSubscriptionQuotaRequestID, field.TypeInt64, value)
+		_node.SubscriptionQuotaRequestID = &value
+	}
 	if value, ok := _c.mutation.CarpoolTermID(); ok {
 		_spec.SetField(usagelog.FieldCarpoolTermID, field.TypeInt64, value)
 		_node.CarpoolTermID = &value
@@ -1569,6 +1605,54 @@ func (u *UsageLogUpsert) UpdateSubscriptionID() *UsageLogUpsert {
 // ClearSubscriptionID clears the value of the "subscription_id" field.
 func (u *UsageLogUpsert) ClearSubscriptionID() *UsageLogUpsert {
 	u.SetNull(usagelog.FieldSubscriptionID)
+	return u
+}
+
+// SetSubscriptionTermID sets the "subscription_term_id" field.
+func (u *UsageLogUpsert) SetSubscriptionTermID(v int64) *UsageLogUpsert {
+	u.Set(usagelog.FieldSubscriptionTermID, v)
+	return u
+}
+
+// UpdateSubscriptionTermID sets the "subscription_term_id" field to the value that was provided on create.
+func (u *UsageLogUpsert) UpdateSubscriptionTermID() *UsageLogUpsert {
+	u.SetExcluded(usagelog.FieldSubscriptionTermID)
+	return u
+}
+
+// AddSubscriptionTermID adds v to the "subscription_term_id" field.
+func (u *UsageLogUpsert) AddSubscriptionTermID(v int64) *UsageLogUpsert {
+	u.Add(usagelog.FieldSubscriptionTermID, v)
+	return u
+}
+
+// ClearSubscriptionTermID clears the value of the "subscription_term_id" field.
+func (u *UsageLogUpsert) ClearSubscriptionTermID() *UsageLogUpsert {
+	u.SetNull(usagelog.FieldSubscriptionTermID)
+	return u
+}
+
+// SetSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field.
+func (u *UsageLogUpsert) SetSubscriptionQuotaRequestID(v int64) *UsageLogUpsert {
+	u.Set(usagelog.FieldSubscriptionQuotaRequestID, v)
+	return u
+}
+
+// UpdateSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field to the value that was provided on create.
+func (u *UsageLogUpsert) UpdateSubscriptionQuotaRequestID() *UsageLogUpsert {
+	u.SetExcluded(usagelog.FieldSubscriptionQuotaRequestID)
+	return u
+}
+
+// AddSubscriptionQuotaRequestID adds v to the "subscription_quota_request_id" field.
+func (u *UsageLogUpsert) AddSubscriptionQuotaRequestID(v int64) *UsageLogUpsert {
+	u.Add(usagelog.FieldSubscriptionQuotaRequestID, v)
+	return u
+}
+
+// ClearSubscriptionQuotaRequestID clears the value of the "subscription_quota_request_id" field.
+func (u *UsageLogUpsert) ClearSubscriptionQuotaRequestID() *UsageLogUpsert {
+	u.SetNull(usagelog.FieldSubscriptionQuotaRequestID)
 	return u
 }
 
@@ -2531,6 +2615,62 @@ func (u *UsageLogUpsertOne) UpdateSubscriptionID() *UsageLogUpsertOne {
 func (u *UsageLogUpsertOne) ClearSubscriptionID() *UsageLogUpsertOne {
 	return u.Update(func(s *UsageLogUpsert) {
 		s.ClearSubscriptionID()
+	})
+}
+
+// SetSubscriptionTermID sets the "subscription_term_id" field.
+func (u *UsageLogUpsertOne) SetSubscriptionTermID(v int64) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetSubscriptionTermID(v)
+	})
+}
+
+// AddSubscriptionTermID adds v to the "subscription_term_id" field.
+func (u *UsageLogUpsertOne) AddSubscriptionTermID(v int64) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.AddSubscriptionTermID(v)
+	})
+}
+
+// UpdateSubscriptionTermID sets the "subscription_term_id" field to the value that was provided on create.
+func (u *UsageLogUpsertOne) UpdateSubscriptionTermID() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateSubscriptionTermID()
+	})
+}
+
+// ClearSubscriptionTermID clears the value of the "subscription_term_id" field.
+func (u *UsageLogUpsertOne) ClearSubscriptionTermID() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearSubscriptionTermID()
+	})
+}
+
+// SetSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field.
+func (u *UsageLogUpsertOne) SetSubscriptionQuotaRequestID(v int64) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetSubscriptionQuotaRequestID(v)
+	})
+}
+
+// AddSubscriptionQuotaRequestID adds v to the "subscription_quota_request_id" field.
+func (u *UsageLogUpsertOne) AddSubscriptionQuotaRequestID(v int64) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.AddSubscriptionQuotaRequestID(v)
+	})
+}
+
+// UpdateSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field to the value that was provided on create.
+func (u *UsageLogUpsertOne) UpdateSubscriptionQuotaRequestID() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateSubscriptionQuotaRequestID()
+	})
+}
+
+// ClearSubscriptionQuotaRequestID clears the value of the "subscription_quota_request_id" field.
+func (u *UsageLogUpsertOne) ClearSubscriptionQuotaRequestID() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearSubscriptionQuotaRequestID()
 	})
 }
 
@@ -3764,6 +3904,62 @@ func (u *UsageLogUpsertBulk) UpdateSubscriptionID() *UsageLogUpsertBulk {
 func (u *UsageLogUpsertBulk) ClearSubscriptionID() *UsageLogUpsertBulk {
 	return u.Update(func(s *UsageLogUpsert) {
 		s.ClearSubscriptionID()
+	})
+}
+
+// SetSubscriptionTermID sets the "subscription_term_id" field.
+func (u *UsageLogUpsertBulk) SetSubscriptionTermID(v int64) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetSubscriptionTermID(v)
+	})
+}
+
+// AddSubscriptionTermID adds v to the "subscription_term_id" field.
+func (u *UsageLogUpsertBulk) AddSubscriptionTermID(v int64) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.AddSubscriptionTermID(v)
+	})
+}
+
+// UpdateSubscriptionTermID sets the "subscription_term_id" field to the value that was provided on create.
+func (u *UsageLogUpsertBulk) UpdateSubscriptionTermID() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateSubscriptionTermID()
+	})
+}
+
+// ClearSubscriptionTermID clears the value of the "subscription_term_id" field.
+func (u *UsageLogUpsertBulk) ClearSubscriptionTermID() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearSubscriptionTermID()
+	})
+}
+
+// SetSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field.
+func (u *UsageLogUpsertBulk) SetSubscriptionQuotaRequestID(v int64) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetSubscriptionQuotaRequestID(v)
+	})
+}
+
+// AddSubscriptionQuotaRequestID adds v to the "subscription_quota_request_id" field.
+func (u *UsageLogUpsertBulk) AddSubscriptionQuotaRequestID(v int64) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.AddSubscriptionQuotaRequestID(v)
+	})
+}
+
+// UpdateSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field to the value that was provided on create.
+func (u *UsageLogUpsertBulk) UpdateSubscriptionQuotaRequestID() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateSubscriptionQuotaRequestID()
+	})
+}
+
+// ClearSubscriptionQuotaRequestID clears the value of the "subscription_quota_request_id" field.
+func (u *UsageLogUpsertBulk) ClearSubscriptionQuotaRequestID() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearSubscriptionQuotaRequestID()
 	})
 }
 

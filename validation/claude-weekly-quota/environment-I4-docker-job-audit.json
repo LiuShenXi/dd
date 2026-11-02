@@ -1,0 +1,14 @@
+{
+  "utc": "2026-10-19T16:59:43.7286473Z",
+  "tool_shell_pid": 41192,
+  "tool_shell_name": "pwsh.exe",
+  "parent_name": "codex.exe",
+  "IsProcessInJob_call_success": true,
+  "tool_shell_in_Windows_job": true,
+  "last_boot": "2026-10-19T20:07:54.5+08:00",
+  "free_physical_GiB": 48.73,
+  "Docker_and_bridge_exited": true,
+  "orderly_shutdown_or_panic_found_in_log_tail": false,
+  "current_Docker_application_crash_event_found": false,
+  "hypothesis": "Start-Process children inherited tool Windows job; runtime/app lifecycle can terminate both Docker Desktop and bridge. Correlation, not yet proven."
+}

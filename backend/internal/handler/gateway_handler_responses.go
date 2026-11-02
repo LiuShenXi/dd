@@ -131,19 +131,24 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 
 	service.SetOpsLatencyMs(c, service.OpsAuthLatencyMsKey, time.Since(requestStart).Milliseconds())
 
-	userReleaseFunc, err := h.concurrencyHelper.AcquireUserSlotWithWait(c, subject.UserID, subject.Concurrency, reqStream, &streamStarted)
+	userReleaseFunc, err := h.acquireGatewayUserSlotWithWait(c, apiKey, subject.UserID, subject.Concurrency, reqStream, &streamStarted)
 	if err != nil {
 		reqLog.Warn("gateway.responses.user_slot_acquire_failed", zap.Error(err))
 		h.handleConcurrencyError(c, err, "user", streamStarted)
 		return
 	}
-	userReleaseFunc = wrapReleaseOnDone(c.Request.Context(), userReleaseFunc)
 	if userReleaseFunc != nil {
 		defer userReleaseFunc()
+	}
+	if claudeTermGatewayKey(apiKey) {
+		requestCtx = c.Request.Context()
 	}
 
 	// 2. Re-check billing
 	if err := h.billingCacheService.CheckBillingEligibility(requestCtx, apiKey.User, apiKey, apiKey.Group, subscription, service.QuotaPlatform(requestCtx, apiKey)); err != nil {
+		if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+			return
+		}
 		reqLog.Info("gateway.responses.billing_check_failed", zap.Error(err))
 		status, code, message, retryAfter := billingErrorDetails(err)
 		if retryAfter > 0 {
@@ -171,10 +176,14 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 
 	for {
 		if requestCtx.Err() != nil {
+			h.writeClaudeLeaseLoss(c, apiKey, streamStarted)
 			return
 		}
 		selection, err := h.gatewayService.SelectAccountWithLoadAwareness(requestCtx, apiKey.GroupID, sessionHash, reqModel, fs.FailedAccountIDs, "", int64(0))
 		if err != nil {
+			if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+				return
+			}
 			if len(fs.FailedAccountIDs) == 0 {
 				cls := classifyNoAccountErrorFromGin(c, h.gatewayService, apiKey, reqModel, reqModel, effectiveAPIKeyPlatform(c, apiKey))
 				cls = classifySelectionFailureError(err, cls)
@@ -193,7 +202,9 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 			case FailoverContinue:
 				continue
 			case FailoverCanceled:
-				failoverClientGone(c)
+				if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+					failoverClientGone(c)
+				}
 				return
 			default:
 				if fs.LastFailoverErr != nil {
@@ -229,6 +240,10 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 				return
 			}
 		}
+		if claudeTermGatewayKey(apiKey) {
+			accountReleaseFunc = forwardCompletionRelease(accountReleaseFunc)
+			defer accountReleaseFunc()
+		}
 		// 终检与准入后绑定必须使用选号结果携带的门：门安装在调度栈的局部
 		// ctx 上（composite/fallback 还可能解析出与入口分组不同的门），直接用
 		// requestCtx 会退化为空操作。
@@ -253,7 +268,9 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 				reqLog.Warn("gateway.responses.bind_sticky_session_after_profit_admission_failed", zap.Int64("account_id", account.ID), zap.Error(err))
 			}
 		}
-		accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+		if !claudeTermGatewayKey(apiKey) {
+			accountReleaseFunc = wrapReleaseOnDone(c.Request.Context(), accountReleaseFunc)
+		}
 
 		// 5. Forward request
 		writerSizeBeforeForward := c.Writer.Size()
@@ -263,6 +280,25 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 		}
 		var result *service.ForwardResult
 		setActualUpstreamEndpoint(c, "")
+		termState, termErr := h.prepareSubscriptionQuotaForward(c, apiKey, apiKey, account.Platform, clientRequestedUsageFields(c, channelMapping, reqModel, ""))
+		if termErr != nil {
+			if accountReleaseFunc != nil {
+				accountReleaseFunc()
+			}
+			h.writeSubscriptionQuotaForwardError(c, termErr, streamStarted)
+			return
+		}
+		defer finishSubscriptionQuotaForward(termState)
+		requestCtx = service.PreserveSubscriptionQuotaForwardState(requestCtx, c.Request.Context())
+		protectedRequest, protectedErr := h.admitProtectedGroupForward(c, apiKey, apiKey, account.Platform)
+		if protectedErr != nil {
+			if accountReleaseFunc != nil {
+				accountReleaseFunc()
+			}
+			h.handleStreamingAwareError(c, http.StatusServiceUnavailable, "api_error", service.ErrSubscriptionQuotaProtectedUnavailable.Error(), streamStarted)
+			return
+		}
+		defer protectedGroupForwardEnded(protectedRequest)
 		if shouldUseAntigravityCompat(account) {
 			if h.antigravityGatewayService == nil {
 				h.responsesErrorResponse(c, http.StatusBadGateway, "upstream_error", "Antigravity compatibility service is not configured")
@@ -282,8 +318,19 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 		}
 
 		if err != nil {
+			h.submitSubscriptionQuotaUsageAfterError(c, termState, apiKey, account, subscription, result, pricingAt, clientRequestedUsageFields(c, channelMapping, reqModel, ""), body)
+			if h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+				return
+			}
+			if termState != nil && h.writeSubscriptionQuotaForwardError(c, err, streamStarted) {
+				return
+			}
 			var failoverErr *service.UpstreamFailoverError
 			if errors.As(err, &failoverErr) {
+				if termState != nil && termState.Snapshot() != nil {
+					h.handleResponsesFailoverExhausted(c, failoverErr, streamStarted)
+					return
+				}
 				// Can't failover if streaming content already sent
 				if c.Writer.Size() != writerSizeBeforeForward {
 					h.handleResponsesFailoverExhausted(c, failoverErr, true)
@@ -297,7 +344,9 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 					h.handleResponsesFailoverExhausted(c, fs.LastFailoverErr, streamStarted)
 					return
 				case FailoverCanceled:
-					failoverClientGone(c)
+					if !h.writeClaudeLeaseLoss(c, apiKey, streamStarted) {
+						failoverClientGone(c)
+					}
 					return
 				}
 			}
@@ -325,24 +374,30 @@ func (h *GatewayHandler) Responses(c *gin.Context) {
 		quotaPlatform := service.QuotaPlatform(c.Request.Context(), apiKey)
 		sessionID := service.ExtractClientSessionID(c)
 		stampForwardRequestedReasoningEffort(result, service.RequestedReasoningEffortFromContext(c.Request.Context()))
-		h.submitUsageRecordTask(c.Request.Context(), func(ctx context.Context) {
-			if err := h.gatewayService.RecordUsage(ctx, &service.RecordUsageInput{
-				Result:             result,
-				QuotaPlatform:      quotaPlatform,
-				APIKey:             apiKey,
-				User:               apiKey.User,
-				Account:            account,
-				Subscription:       subscription,
-				PricingAt:          pricingAt,
-				InboundEndpoint:    inboundEndpoint,
-				UpstreamEndpoint:   upstreamEndpoint,
-				UserAgent:          userAgent,
-				IPAddress:          clientIP,
-				RequestPayloadHash: requestPayloadHash,
-				APIKeyService:      h.apiKeyService,
-				SessionID:          sessionID,
-				ChannelUsageFields: clientRequestedUsageFields(c, channelMapping, reqModel, result.UpstreamModel),
-			}); err != nil {
+		channelUsageFields := clientRequestedUsageFields(c, channelMapping, reqModel, result.UpstreamModel)
+		forceCacheBilling := termState != nil && service.IsForceCacheBilling(c.Request.Context())
+		h.submitProtectedGroupUsageRecordTask(c.Request.Context(), protectedRequest, result, account.ID, pricingAt, func(ctx context.Context) {
+			usageErr := h.gatewayService.RecordProtectedGroupUsage(ctx, &service.RecordUsageInput{
+				Result:                    result,
+				SubscriptionQuotaSnapshot: service.SubscriptionQuotaForwardBillingSnapshot(ctx),
+				QuotaPlatform:             quotaPlatform,
+				APIKey:                    apiKey,
+				User:                      apiKey.User,
+				Account:                   account,
+				Subscription:              subscription,
+				PricingAt:                 pricingAt,
+				ForceCacheBilling:         forceCacheBilling,
+				InboundEndpoint:           inboundEndpoint,
+				UpstreamEndpoint:          upstreamEndpoint,
+				UserAgent:                 userAgent,
+				IPAddress:                 clientIP,
+				RequestPayloadHash:        requestPayloadHash,
+				APIKeyService:             h.apiKeyService,
+				SessionID:                 sessionID,
+				ChannelUsageFields:        channelUsageFields,
+			}, protectedRequest)
+			finishProtectedGroupUsage(protectedRequest, usageErr)
+			if err := usageErr; err != nil {
 				reqLog.Error("gateway.responses.record_usage_failed",
 					zap.Int64("account_id", account.ID),
 					zap.Error(err),

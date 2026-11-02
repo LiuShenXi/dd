@@ -3,15 +3,19 @@ package service
 import (
 	"time"
 
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/timezone"
 )
 
 const subscriptionDayDuration = 24 * time.Hour
 
 type UserSubscription struct {
-	ID      int64
-	UserID  int64
-	GroupID int64
+	ID            int64
+	UserID        int64
+	GroupID       int64
+	QuotaRevision int64
+	QuotaMode     string
+	QuotaSummary  *domain.SubscriptionQuotaSummary
 
 	StartsAt  time.Time
 	ExpiresAt time.Time

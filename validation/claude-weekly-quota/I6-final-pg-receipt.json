@@ -1,0 +1,25 @@
+{
+  "command_manifest": "/Users/shenxi/.codex/private/claude-weekly-quota/office/native-pg-command.json",
+  "exit_code": 0,
+  "top_level_pass": 193,
+  "all_pass": 402,
+  "fail": 0,
+  "top_level_skipped": [
+    "TestCarpoolReleaseImportRestrictedRoleAndReplay",
+    "TestCarpoolReleaseImportRollbackAndRosterGuards"
+  ],
+  "all_skipped": [
+    "TestCarpoolReleaseImportRestrictedRoleAndReplay",
+    "TestCarpoolReleaseImportRollbackAndRosterGuards",
+    "TestConcurrencyCacheSuite/TestGetAccountsLoadBatch"
+  ],
+  "raw_log_sha256": "a2b9e3cb2dcec64f418c259ee53135910a7434fa748f684afda46fb69ddeacb9",
+  "raw_log": "/tmp/claude-i6-final-pg.log",
+  "synthetic_only": true,
+  "notes": [
+    "Original TestMain PostgreSQL18.1 and Redis8.4; CI=true; no production DSN.",
+    "Two preexisting original GPT release-import suites require a separate source-runtime runner and were not executed. One existing ConcurrencyCacheSuite batch-load test is explicitly TODO-skipped.",
+    "All selected new quota/payment/conversion/migration suites ran. The later removal of synchronous metric logging is separately retested and built into the final runtime; this comprehensive PG binary precedes that isolated nonfinancial fix.",
+    "Performance rerun here shared host compilation load; use the dedicated indexed performance receipt for measured comparisons."
+  ]
+}

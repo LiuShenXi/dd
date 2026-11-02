@@ -9,6 +9,7 @@ import (
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/Wei-Shaw/sub2api/internal/handler"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/releasedrain"
 	middleware2 "github.com/Wei-Shaw/sub2api/internal/server/middleware"
 	"github.com/Wei-Shaw/sub2api/internal/server/routes"
@@ -39,8 +40,10 @@ func SetupRouter(
 	cfg *config.Config,
 	redisClient *redis.Client,
 	usagePool *service.UsageRecordWorkerPool,
+	backgroundJobs *backgroundjobs.Gate,
 ) *gin.Engine {
 	drain := releasedrain.New(os.Getenv("RELEASE_DRAIN_START_HELD") == "true", 2048, usagePool.PendingTasks)
+	drain.SetBackgroundGate(backgroundJobs)
 	r.Use(middleware2.ReleaseDrain(drain, 120*time.Second))
 	middleware2.SetIngressRejectRecorder(opsService)
 	// 缓存 iframe 页面的 origin 列表，用于动态注入 CSP frame-src

@@ -1,0 +1,25 @@
+{
+  "all_required_operations_observed": true,
+  "bounded_cardinality": true,
+  "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+  "operation_totals": {
+    "acquire.active.acquired": 42,
+    "acquire.active.full": 30,
+    "cleanup.active.acquired": 42,
+    "cleanup.active.error": 1,
+    "cleanup.active.missing": 29,
+    "cleanup.waiting.acquired": 27,
+    "cleanup.waiting.missing": 30,
+    "enqueue.waiting.acquired": 29,
+    "enqueue.waiting.full": 1,
+    "lost_lease.active.missing": 1,
+    "promote.active.acquired": 2,
+    "promote.active.full": 1188,
+    "renew.active.acquired": 130,
+    "renew.active.error": 3,
+    "renew.active.missing": 1,
+    "safety_deadline.active.unavailable": 1
+  },
+  "production_modified": false,
+  "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d"
+}

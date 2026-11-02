@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "verified_utc": "2026-10-19T13:46:28.7437992Z",
+  "freeze": "F3",
+  "source_sha256": "e2d31f2525ccf72a74eb03c308611785246ce45d0e75198ef4d06fd6d7651693",
+  "frontend_dist_sha256": "b657870fcdf990281b559656e5bd671843e0f626608a9bfd3e7dcc0d26d96542",
+  "all_final_source_checks_stable": true,
+  "pg": {
+    "acceptance": true,
+    "passed_top_level": 18,
+    "skips": 0,
+    "failures": 0,
+    "receipt": "environment-I1-F3-20261019T133930Z-pg-receipt.json"
+  },
+  "linux_race": {
+    "acceptance": true,
+    "passed_top_level": 15,
+    "skips": 0,
+    "failures": 0,
+    "go_version": "1.27.2",
+    "receipt": "environment-I1-F3-20261019T133930Z-race-receipt.json"
+  },
+  "local_image": {
+    "status": "pass",
+    "tag": "sub2api:claude-weekly-i1-r1-e2d31f2525cc",
+    "id": "sha256:459dd4757b05983d0fcf79cec26d91fcca45edacb640f32056623f9b242d36ae",
+    "platform": "linux/amd64",
+    "size_bytes": 339881387,
+    "revision": "311d11718aae939eccdd794d85044c99e8e92b26-dirty-frozen-I1-e2d31f2525ccf72a74eb03c308611785246ce45d0e75198ef4d06fd6d7651693",
+    "artifacts": [
+      {
+        "name": "sub2api",
+        "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I1-20261019T133930Z\\image-context\\sub2api",
+        "bytes": 131588256,
+        "sha256": "29e0609d4b73bc805bc9f08665794cc5ff836b23d81eca0457d52bb061d7ab00"
+      },
+      {
+        "name": "carpool-release",
+        "path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I1-20261019T133930Z\\image-context\\carpool-release",
+        "bytes": 30167200,
+        "sha256": "b0c0a4f67f98dab2123f541517f8ca7eaffc516309e1295400206ed46f789136"
+      }
+    ],
+    "receipt": "environment-I1-F3-20261019T133930Z-build-receipt.json"
+  },
+  "current_stage": "I1 preliminary compatibility R1",
+  "issuance_enabled": false,
+  "admission_enabled": false,
+  "activation_supported": false,
+  "I3_recovery_refreeze_required": true,
+  "production_enabled": false,
+  "real_upstream_called": false,
+  "runtime_difference": "Additional local packaging Dockerfile: Go1.27.2/Linux, pinned Alpine3.23.3 with PostgreSQL18.1 clients. This does not qualify a production-matching I6 image.",
+  "preserved_failures": [
+    "I1-migration-20261019T132116Z-receipt.json",
+    "environment-I1-F2-20261019T133438Z-pg-receipt.json",
+    "environment-I1-F2-20261019T133438Z-race-receipt.json"
+  ],
+  "unverified_layers": [
+    "Full application HTTP/WS final-image service behavior",
+    "Browser/UI acceptance",
+    "Performance and P95/P99",
+    "Production migration rollout or activation"
+  ],
+  "resources_retained": "environment-active.json",
+  "no_production_connection": true,
+  "acceptance": true
+}

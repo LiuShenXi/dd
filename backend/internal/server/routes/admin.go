@@ -90,6 +90,7 @@ func RegisterAdminRoutes(
 
 		// 订阅管理
 		registerSubscriptionRoutes(admin, h)
+		registerSubscriptionQuotaRoutes(admin, h)
 		registerCarpoolRoutes(admin, h)
 
 		// 使用记录管理
@@ -610,6 +611,9 @@ func registerSettingsRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		// 面板 API 限流配置
 		adminSettings.GET("/panel-rate-limit", h.Admin.Setting.GetPanelRateLimitSettings)
 		adminSettings.PUT("/panel-rate-limit", h.Admin.Setting.UpdatePanelRateLimitSettings)
+		// 首页车次卡片配置
+		adminSettings.GET("/home-products", h.Admin.Setting.GetHomeProductsSettings)
+		adminSettings.PUT("/home-products", h.Admin.Setting.UpdateHomeProductsSettings)
 		// 流超时处理配置
 		adminSettings.GET("/stream-timeout", h.Admin.Setting.GetStreamTimeoutSettings)
 		adminSettings.PUT("/stream-timeout", h.Admin.Setting.UpdateStreamTimeoutSettings)
@@ -693,6 +697,22 @@ func registerSystemRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		system.POST("/rollback", h.Admin.System.Rollback)
 		system.POST("/restart", h.Admin.System.RestartService)
 	}
+}
+
+func registerSubscriptionQuotaRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	// Reuse the existing /users/:id wildcard; Gin requires the same name for
+	// sibling paths under one parameter node.
+	admin.GET("/users/:id/subscription-quota", h.Admin.SubscriptionQuota.GetSummary)
+	admin.GET("/users/:id/subscription-quota/terms", h.Admin.SubscriptionQuota.ListTerms)
+	admin.POST("/users/:id/subscription-quota/terms/preview", h.Admin.SubscriptionQuota.Preview)
+	admin.POST("/users/:id/subscription-quota/terms", h.Admin.SubscriptionQuota.OpenTerm)
+	admin.POST("/subscription-quota/terms/:term_id/cancel", h.Admin.SubscriptionQuota.CancelTerm)
+	admin.GET("/subscription-quota/requests", h.Admin.SubscriptionQuota.ListRequests)
+	admin.POST("/subscription-quota/requests/:request_id/resolve", h.Admin.SubscriptionQuota.ResolveRequest)
+	admin.GET("/groups/:id/subscription-quota/rollout", h.Admin.SubscriptionQuota.GetRollout)
+	admin.POST("/groups/:id/subscription-quota/rollout/maintenance", h.Admin.SubscriptionQuota.MaintainRollout)
+	admin.POST("/groups/:id/subscription-quota/rollout/preview", h.Admin.SubscriptionQuota.PreviewRollout)
+	admin.POST("/groups/:id/subscription-quota/rollout/convert", h.Admin.SubscriptionQuota.ConvertRollout)
 }
 
 func registerSubscriptionRoutes(admin *gin.RouterGroup, h *handler.Handlers) {

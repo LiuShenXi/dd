@@ -1,0 +1,1570 @@
+{
+  "checked_utc": "2026-10-20T02:51:06.070004+00:00",
+  "rule": {
+    "min_bytes": 1048576,
+    "mtime_on_or_after_utc": "2026-10-20T00:00:00Z",
+    "mtime_on_or_after_Asia_Shanghai": "2026-10-20T08:00:00+08:00",
+    "content_contains_any": [
+      "github.com/Wei-Shaw/sub2api",
+      "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+    ]
+  },
+  "cache_root": "/Users/shenxi/Library/Caches/go-build",
+  "files": [
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/95/956b9da4d13c0c7598520d59bb8e0687fd341887f37d24b063db8641feaa1b5e-d",
+      "bytes": 1476262,
+      "sha256": "956b9da4d13c0c7598520d59bb8e0687fd341887f37d24b063db8641feaa1b5e",
+      "mtime_utc": "2026-10-20T01:54:29.500307+00:00",
+      "mtime_ns": 1792461269500307000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/95/95ba2a5ee2bd68e06b36a28b1410b1008fd0502a57468d99406e8cf301dff6af-d",
+      "bytes": 2471672,
+      "sha256": "95ba2a5ee2bd68e06b36a28b1410b1008fd0502a57468d99406e8cf301dff6af",
+      "mtime_utc": "2026-10-20T01:54:22.647502+00:00",
+      "mtime_ns": 1792461262647502000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/59/593af9371dbfff49be8b0a537b33a82cac09458f71de73ffcccdf9f0851b1783-d",
+      "bytes": 1416188,
+      "sha256": "593af9371dbfff49be8b0a537b33a82cac09458f71de73ffcccdf9f0851b1783",
+      "mtime_utc": "2026-10-20T01:54:29.658534+00:00",
+      "mtime_ns": 1792461269658534000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/59/59403eef00a0e41c3e2e843ef10f747a34fc3a7eab9b40a5584d076b166452af-d",
+      "bytes": 1152856,
+      "sha256": "59403eef00a0e41c3e2e843ef10f747a34fc3a7eab9b40a5584d076b166452af",
+      "mtime_utc": "2026-10-20T01:58:18.111423+00:00",
+      "mtime_ns": 1792461498111423000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/66/6695964664f9f81be744f1af63e97392a1502e0e50d872060ec5bb4238ade51e-d",
+      "bytes": 27941712,
+      "sha256": "6695964664f9f81be744f1af63e97392a1502e0e50d872060ec5bb4238ade51e",
+      "mtime_utc": "2026-10-20T02:49:17.007207+00:00",
+      "mtime_ns": 1792464557007207000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/3e/3e275ac1da2053f9460f91051307bb9a1220382683e571b6af42186f763c3060-d",
+      "bytes": 1416166,
+      "sha256": "3e275ac1da2053f9460f91051307bb9a1220382683e571b6af42186f763c3060",
+      "mtime_utc": "2026-10-20T01:54:22.728859+00:00",
+      "mtime_ns": 1792461262728859000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/50/501b0367ad7bba51547089febe4b3c8dec3ceb8be811680a61d310c72b7f294f-d",
+      "bytes": 1513678,
+      "sha256": "501b0367ad7bba51547089febe4b3c8dec3ceb8be811680a61d310c72b7f294f",
+      "mtime_utc": "2026-10-20T01:57:39.505900+00:00",
+      "mtime_ns": 1792461459505900000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/68/6875d888d7679f4a300c38b0fad5796116b54d9bcee17caf8cceb1fe3e47b2ea-d",
+      "bytes": 2736934,
+      "sha256": "6875d888d7679f4a300c38b0fad5796116b54d9bcee17caf8cceb1fe3e47b2ea",
+      "mtime_utc": "2026-10-20T01:57:39.806511+00:00",
+      "mtime_ns": 1792461459806511000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/3b/3b5ab9c0a00778173832b2e369e2490b83c7770bf6afc200cc72470cee053814-d",
+      "bytes": 1586228,
+      "sha256": "3b5ab9c0a00778173832b2e369e2490b83c7770bf6afc200cc72470cee053814",
+      "mtime_utc": "2026-10-20T01:54:30.176323+00:00",
+      "mtime_ns": 1792461270176323000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/9b/9bdffab6ed265c9620cc093598f1d9023d95f96e0f6c24e0a4ea195f4baece12-d",
+      "bytes": 3132402,
+      "sha256": "9bdffab6ed265c9620cc093598f1d9023d95f96e0f6c24e0a4ea195f4baece12",
+      "mtime_utc": "2026-10-20T01:54:29.261630+00:00",
+      "mtime_ns": 1792461269261630000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/9e/9e402ea1ddfcab8d66c97f3e7f70a3e4b7f7ea8133a9c5df5f63e991e0f3fe44-d",
+      "bytes": 2910416,
+      "sha256": "9e402ea1ddfcab8d66c97f3e7f70a3e4b7f7ea8133a9c5df5f63e991e0f3fe44",
+      "mtime_utc": "2026-10-20T01:54:43.736698+00:00",
+      "mtime_ns": 1792461283736698000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/6a/6a00d646785e6bd4fcc97c96f1bbb81ca6fcd4ab8f381333b7733a984a962197-d",
+      "bytes": 3346482,
+      "sha256": "6a00d646785e6bd4fcc97c96f1bbb81ca6fcd4ab8f381333b7733a984a962197",
+      "mtime_utc": "2026-10-20T01:57:44.580489+00:00",
+      "mtime_ns": 1792461464580489000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/35/35519d0d61acb78b2abe7b90c48fee7a263adeefa9083b19c7271bf8fd491524-d",
+      "bytes": 4718318,
+      "sha256": "35519d0d61acb78b2abe7b90c48fee7a263adeefa9083b19c7271bf8fd491524",
+      "mtime_utc": "2026-10-20T01:56:49.167186+00:00",
+      "mtime_ns": 1792461409167186000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/56/560f2d1edb3ba00bc2f8e3af62a31a77c5135e0686b4b9e6bd673612d83fd01a-d",
+      "bytes": 1114246,
+      "sha256": "560f2d1edb3ba00bc2f8e3af62a31a77c5135e0686b4b9e6bd673612d83fd01a",
+      "mtime_utc": "2026-10-20T01:54:29.306262+00:00",
+      "mtime_ns": 1792461269306262000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/34/34f0a8e43e8bd8279036059766d3f6360cf903c5a77be1a58c27fb08c63fcb86-d",
+      "bytes": 5859338,
+      "sha256": "34f0a8e43e8bd8279036059766d3f6360cf903c5a77be1a58c27fb08c63fcb86",
+      "mtime_utc": "2026-10-20T02:23:07.174788+00:00",
+      "mtime_ns": 1792462987174788000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/33/33922481e8a5a59a0b8fd3b0a666d66ce1d6ff18bb498d159388b7b94e310809-d",
+      "bytes": 1142500,
+      "sha256": "33922481e8a5a59a0b8fd3b0a666d66ce1d6ff18bb498d159388b7b94e310809",
+      "mtime_utc": "2026-10-20T01:54:30.033729+00:00",
+      "mtime_ns": 1792461270033729000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/02/02232ef604329b8d9642809abd623952c22b64fdaa854320726d04ae6f49267c-d",
+      "bytes": 17995822,
+      "sha256": "02232ef604329b8d9642809abd623952c22b64fdaa854320726d04ae6f49267c",
+      "mtime_utc": "2026-10-20T02:49:14.640390+00:00",
+      "mtime_ns": 1792464554640390000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/a4/a4abe6bd6858f47d7e0ad678d373f2c601aa571202d8e352fb8dd9025115a7f2-d",
+      "bytes": 1381326,
+      "sha256": "a4abe6bd6858f47d7e0ad678d373f2c601aa571202d8e352fb8dd9025115a7f2",
+      "mtime_utc": "2026-10-20T01:54:23.478792+00:00",
+      "mtime_ns": 1792461263478792000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/d7/d78f8d56b298f91127e86a4bc74c1a4b65db75e0d4aaec1a9c568f39f6105a19-d",
+      "bytes": 3865290,
+      "sha256": "d78f8d56b298f91127e86a4bc74c1a4b65db75e0d4aaec1a9c568f39f6105a19",
+      "mtime_utc": "2026-10-20T01:54:25.478851+00:00",
+      "mtime_ns": 1792461265478851000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/d0/d08ce02e12f7c0a420f996fb6e6c0603e4b7d438010326775122b37df9b037d2-d",
+      "bytes": 9869756,
+      "sha256": "d08ce02e12f7c0a420f996fb6e6c0603e4b7d438010326775122b37df9b037d2",
+      "mtime_utc": "2026-10-20T01:55:12.680907+00:00",
+      "mtime_ns": 1792461312680907000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/a2/a22192b6f2efc0020d44bb59e96223f80f75c653d58b1bd91e0fd015879817ce-d",
+      "bytes": 1264342,
+      "sha256": "a22192b6f2efc0020d44bb59e96223f80f75c653d58b1bd91e0fd015879817ce",
+      "mtime_utc": "2026-10-20T01:54:52.652135+00:00",
+      "mtime_ns": 1792461292652135000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/d6/d6d0e5a884cb897c1b4068d1d17c5ab7f40715586b93da8251f22bcf21ced8c1-d",
+      "bytes": 3728498,
+      "sha256": "d6d0e5a884cb897c1b4068d1d17c5ab7f40715586b93da8251f22bcf21ced8c1",
+      "mtime_utc": "2026-10-20T01:54:29.857919+00:00",
+      "mtime_ns": 1792461269857919000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/bc/bc84cd017f2f741deaf0c42c4f810db53655132d4fd6a8c56726c921f233537b-d",
+      "bytes": 2255318,
+      "sha256": "bc84cd017f2f741deaf0c42c4f810db53655132d4fd6a8c56726c921f233537b",
+      "mtime_utc": "2026-10-20T02:18:36.451485+00:00",
+      "mtime_ns": 1792462716451485000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ab/abee582196538a6c32865c2f80d29eb69d80a65c3dcf5f937ffeb3700b81fdbb-d",
+      "bytes": 1217796,
+      "sha256": "abee582196538a6c32865c2f80d29eb69d80a65c3dcf5f937ffeb3700b81fdbb",
+      "mtime_utc": "2026-10-20T01:54:29.548877+00:00",
+      "mtime_ns": 1792461269548877000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/e5/e598e167b2874e9ed893c272002d73230f500e4e5d0c825996e0587d2164314d-d",
+      "bytes": 1053196,
+      "sha256": "e598e167b2874e9ed893c272002d73230f500e4e5d0c825996e0587d2164314d",
+      "mtime_utc": "2026-10-20T01:57:40.678314+00:00",
+      "mtime_ns": 1792461460678314000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/f3/f3c0ee2c4bb6543946d8146ef133ab8316da6b990fe3998d3905bf65d6405adb-d",
+      "bytes": 1181806,
+      "sha256": "f3c0ee2c4bb6543946d8146ef133ab8316da6b990fe3998d3905bf65d6405adb",
+      "mtime_utc": "2026-10-20T01:54:25.523319+00:00",
+      "mtime_ns": 1792461265523319000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/fc/fc9f70b65b1af8c700c39e051a8b38621bfab70cc9f8b0613112922651d8b658-d",
+      "bytes": 4508352,
+      "sha256": "fc9f70b65b1af8c700c39e051a8b38621bfab70cc9f8b0613112922651d8b658",
+      "mtime_utc": "2026-10-20T02:49:18.275393+00:00",
+      "mtime_ns": 1792464558275393000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/f2/f2275f319d90fc7a4948d8a9abde57b283502ddbd25b42a02537c8e98994bf7c-d",
+      "bytes": 1688460,
+      "sha256": "f2275f319d90fc7a4948d8a9abde57b283502ddbd25b42a02537c8e98994bf7c",
+      "mtime_utc": "2026-10-20T01:54:22.990569+00:00",
+      "mtime_ns": 1792461262990569000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/e3/e34953764954bb967e3e1bc2c0887dd5f312cf05d1d24b531a8773ac8b31c2fe-d",
+      "bytes": 1265124,
+      "sha256": "e34953764954bb967e3e1bc2c0887dd5f312cf05d1d24b531a8773ac8b31c2fe",
+      "mtime_utc": "2026-10-20T01:57:39.977878+00:00",
+      "mtime_ns": 1792461459977878000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/e3/e35882715ea89a54dadca3a2e838876046991c49ef53971c54e2e61ff00f1a6d-d",
+      "bytes": 2219634,
+      "sha256": "e35882715ea89a54dadca3a2e838876046991c49ef53971c54e2e61ff00f1a6d",
+      "mtime_utc": "2026-10-20T01:58:10.627244+00:00",
+      "mtime_ns": 1792461490627244000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/cf/cf53263888a5ca4506829a99ca59824c55894a7fd6ea946aa9c80de13170229d-d",
+      "bytes": 1767368,
+      "sha256": "cf53263888a5ca4506829a99ca59824c55894a7fd6ea946aa9c80de13170229d",
+      "mtime_utc": "2026-10-20T01:54:53.474241+00:00",
+      "mtime_ns": 1792461293474241000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/cf/cf824101085977354dff97567180b3152ae1c3a93795f7dca1ff4900b6a1e1c4-d",
+      "bytes": 1571228,
+      "sha256": "cf824101085977354dff97567180b3152ae1c3a93795f7dca1ff4900b6a1e1c4",
+      "mtime_utc": "2026-10-20T01:56:47.560098+00:00",
+      "mtime_ns": 1792461407560098000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ca/ca3c02508fd45030568bd75dbb5e5e8373005f87fe0b7bc2041a54401b962745-d",
+      "bytes": 4216192,
+      "sha256": "ca3c02508fd45030568bd75dbb5e5e8373005f87fe0b7bc2041a54401b962745",
+      "mtime_utc": "2026-10-20T02:23:08.428457+00:00",
+      "mtime_ns": 1792462988428457000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/fe/fe99f6fbfbe83a6404a36e21f030dbe0406bcb07a4819cf68d37c18cb60f9fc4-d",
+      "bytes": 1887394,
+      "sha256": "fe99f6fbfbe83a6404a36e21f030dbe0406bcb07a4819cf68d37c18cb60f9fc4",
+      "mtime_utc": "2026-10-20T01:58:18.276954+00:00",
+      "mtime_ns": 1792461498276954000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/fe/fe6eea670a935b620b4a61958558ab80c48cbe2df8985eeed3e37207c0fe7e2c-d",
+      "bytes": 1556162,
+      "sha256": "fe6eea670a935b620b4a61958558ab80c48cbe2df8985eeed3e37207c0fe7e2c",
+      "mtime_utc": "2026-10-20T02:29:52.860128+00:00",
+      "mtime_ns": 1792463392860128000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ed/edb5a83bc83495edd4b80331146f4b823f65fc318e6cfd269cf46d008977d80d-d",
+      "bytes": 1219590,
+      "sha256": "edb5a83bc83495edd4b80331146f4b823f65fc318e6cfd269cf46d008977d80d",
+      "mtime_utc": "2026-10-20T01:57:39.408597+00:00",
+      "mtime_ns": 1792461459408597000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/c1/c136080fbbb5e78458b6899b051dce231449eec09488d3aeab2e6864124e5ee2-d",
+      "bytes": 7683262,
+      "sha256": "c136080fbbb5e78458b6899b051dce231449eec09488d3aeab2e6864124e5ee2",
+      "mtime_utc": "2026-10-20T01:58:49.092169+00:00",
+      "mtime_ns": 1792461529092169000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ec/ec11c6e35bd7cb95e169a943c1358a357f29135ad6f7a6361126a8186736f4ee-d",
+      "bytes": 7888068,
+      "sha256": "ec11c6e35bd7cb95e169a943c1358a357f29135ad6f7a6361126a8186736f4ee",
+      "mtime_utc": "2026-10-20T02:23:13.541526+00:00",
+      "mtime_ns": 1792462993541526000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/20/20cde17cf154ebd615757f520d73a8b0925f924c5689379e17bde048e0ab5bbc-d",
+      "bytes": 7888068,
+      "sha256": "20cde17cf154ebd615757f520d73a8b0925f924c5689379e17bde048e0ab5bbc",
+      "mtime_utc": "2026-10-20T02:49:17.925686+00:00",
+      "mtime_ns": 1792464557925686000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/4b/4b004177f834081f4ffb7744ee2a46fde34f5343b2e45ccf8ada9a40a1230c35-d",
+      "bytes": 1186344,
+      "sha256": "4b004177f834081f4ffb7744ee2a46fde34f5343b2e45ccf8ada9a40a1230c35",
+      "mtime_utc": "2026-10-20T01:57:40.186951+00:00",
+      "mtime_ns": 1792461460186951000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/4b/4bdad0fb7bb9976611afe29ded9159a7cafbe838855ff7fd5d9f3d5151c899cd-d",
+      "bytes": 1458660,
+      "sha256": "4bdad0fb7bb9976611afe29ded9159a7cafbe838855ff7fd5d9f3d5151c899cd",
+      "mtime_utc": "2026-10-20T01:58:37.820710+00:00",
+      "mtime_ns": 1792461517820710000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/29/29fc929163f78db30e569a4f10c55e638a5c294ce15a148ab4d7427a33e0ed3c-d",
+      "bytes": 14835244,
+      "sha256": "29fc929163f78db30e569a4f10c55e638a5c294ce15a148ab4d7427a33e0ed3c",
+      "mtime_utc": "2026-10-20T02:49:13.323266+00:00",
+      "mtime_ns": 1792464553323266000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/29/29424e8ef86498805d1d2eade78a6b887c4ef4228668d3835f50eb40365e12dc-d",
+      "bytes": 10106718,
+      "sha256": "29424e8ef86498805d1d2eade78a6b887c4ef4228668d3835f50eb40365e12dc",
+      "mtime_utc": "2026-10-20T02:49:17.473219+00:00",
+      "mtime_ns": 1792464557473219000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/7c/7cb094c5daecebfc02730f20b825a3e7b3915d4d3b1fdcd29f1420be0d07a016-d",
+      "bytes": 7888068,
+      "sha256": "7cb094c5daecebfc02730f20b825a3e7b3915d4d3b1fdcd29f1420be0d07a016",
+      "mtime_utc": "2026-10-20T02:35:29.784141+00:00",
+      "mtime_ns": 1792463729784141000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/16/16abfe2c1377313d55ee31bf44881ce652edff582a145ef82baf4f8a3a48bfab-d",
+      "bytes": 3517984,
+      "sha256": "16abfe2c1377313d55ee31bf44881ce652edff582a145ef82baf4f8a3a48bfab",
+      "mtime_utc": "2026-10-20T01:54:47.685356+00:00",
+      "mtime_ns": 1792461287685356000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/16/16258d52631f3fe72758fed7f28c593c02ce196e87878ed149661a7b159dbe60-d",
+      "bytes": 3217938,
+      "sha256": "16258d52631f3fe72758fed7f28c593c02ce196e87878ed149661a7b159dbe60",
+      "mtime_utc": "2026-10-20T01:57:49.053172+00:00",
+      "mtime_ns": 1792461469053172000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/42/429296f2d83aa8df5898fb1f01062337d3f745406113ad82c308e630c4c8d638-d",
+      "bytes": 1379226,
+      "sha256": "429296f2d83aa8df5898fb1f01062337d3f745406113ad82c308e630c4c8d638",
+      "mtime_utc": "2026-10-20T01:58:18.790710+00:00",
+      "mtime_ns": 1792461498790710000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/89/89639f33f2b6cac42a849f618e0251a5aff235a3cadf8d6d5d983ae003b94c82-d",
+      "bytes": 1163900,
+      "sha256": "89639f33f2b6cac42a849f618e0251a5aff235a3cadf8d6d5d983ae003b94c82",
+      "mtime_utc": "2026-10-20T01:54:23.332464+00:00",
+      "mtime_ns": 1792461263332464000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/1f/1ff7ad7bae682ae86a606f5ef4cf4e8ca97dc0808ecfaab435288e2409215f2f-d",
+      "bytes": 1760838,
+      "sha256": "1ff7ad7bae682ae86a606f5ef4cf4e8ca97dc0808ecfaab435288e2409215f2f",
+      "mtime_utc": "2026-10-20T01:54:22.820788+00:00",
+      "mtime_ns": 1792461262820788000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/1f/1f28129bd9685dfed34a9bf4db1cb5dfce7091608f93a5844af80e63186dd0db-d",
+      "bytes": 1276370,
+      "sha256": "1f28129bd9685dfed34a9bf4db1cb5dfce7091608f93a5844af80e63186dd0db",
+      "mtime_utc": "2026-10-20T01:54:30.117761+00:00",
+      "mtime_ns": 1792461270117761000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/87/87ed4c7f2e6be39cb6760091310f2c610383b53ce902ecf91eb788c5e0559d89-d",
+      "bytes": 1742168,
+      "sha256": "87ed4c7f2e6be39cb6760091310f2c610383b53ce902ecf91eb788c5e0559d89",
+      "mtime_utc": "2026-10-20T01:54:23.156166+00:00",
+      "mtime_ns": 1792461263156166000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/80/80345f84dbde552e258a93a65514be4ca65a3d1435c788eafba10f66eb0c4d84-d",
+      "bytes": 1394018,
+      "sha256": "80345f84dbde552e258a93a65514be4ca65a3d1435c788eafba10f66eb0c4d84",
+      "mtime_utc": "2026-10-20T01:54:23.529543+00:00",
+      "mtime_ns": 1792461263529543000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/74/7430bacf7029d5b8c866eed6ce7b357ed1a2dcb9a0623dc1e73767aa3ead8fd2-d",
+      "bytes": 1084044,
+      "sha256": "7430bacf7029d5b8c866eed6ce7b357ed1a2dcb9a0623dc1e73767aa3ead8fd2",
+      "mtime_utc": "2026-10-20T01:54:23.428514+00:00",
+      "mtime_ns": 1792461263428514000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/28/2812c6db08a54a0b30035073ac41788122caab07d8e756084d9ec2d8822a89cf-d",
+      "bytes": 1348670,
+      "sha256": "2812c6db08a54a0b30035073ac41788122caab07d8e756084d9ec2d8822a89cf",
+      "mtime_utc": "2026-10-20T01:58:04.694520+00:00",
+      "mtime_ns": 1792461484694520000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/17/175e1e1945b774302909e808582ed999ce8743f081142211f4487cbbf80d877b-d",
+      "bytes": 193784256,
+      "sha256": "175e1e1945b774302909e808582ed999ce8743f081142211f4487cbbf80d877b",
+      "mtime_utc": "2026-10-20T02:49:03.834916+00:00",
+      "mtime_ns": 1792464543834916000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/7e/7ef00c3a4b88c651cc3ce0a02c09446fa44054bbf1fcdc2cab3ade059b095917-d",
+      "bytes": 2128118,
+      "sha256": "7ef00c3a4b88c651cc3ce0a02c09446fa44054bbf1fcdc2cab3ade059b095917",
+      "mtime_utc": "2026-10-20T01:57:39.324991+00:00",
+      "mtime_ns": 1792461459324991000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/7e/7e63d25fdb336765bc14cfb7737e19f1cde4a6ed197b35107b4716df6d0d13a7-d",
+      "bytes": 1116356,
+      "sha256": "7e63d25fdb336765bc14cfb7737e19f1cde4a6ed197b35107b4716df6d0d13a7",
+      "mtime_utc": "2026-10-20T01:54:23.380678+00:00",
+      "mtime_ns": 1792461263380678000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/10/1000937661b72d49c4c0d8d7384ba7e4d415a09890ee0dcc66c945aa4c570f02-d",
+      "bytes": 4718318,
+      "sha256": "1000937661b72d49c4c0d8d7384ba7e4d415a09890ee0dcc66c945aa4c570f02",
+      "mtime_utc": "2026-10-20T02:20:53.982037+00:00",
+      "mtime_ns": 1792462853982037000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/26/26f315739bb4ff54f3715553f1ffe951884c03c13b7b4eef4de8cd66e0899367-d",
+      "bytes": 4508352,
+      "sha256": "26f315739bb4ff54f3715553f1ffe951884c03c13b7b4eef4de8cd66e0899367",
+      "mtime_utc": "2026-10-20T01:58:49.822530+00:00",
+      "mtime_ns": 1792461529822530000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/75/755252f8ebed3b4fc21087d9a061a04358307d1cfbbb7ea6cdc9d0d2923b5d54-d",
+      "bytes": 1269036,
+      "sha256": "755252f8ebed3b4fc21087d9a061a04358307d1cfbbb7ea6cdc9d0d2923b5d54",
+      "mtime_utc": "2026-10-20T01:57:48.702699+00:00",
+      "mtime_ns": 1792461468702699000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/81/81e226bf77ef6e5608e5cd8083d528c97ccb1a14798ddf0c2631352efc64bafc-d",
+      "bytes": 4348764,
+      "sha256": "81e226bf77ef6e5608e5cd8083d528c97ccb1a14798ddf0c2631352efc64bafc",
+      "mtime_utc": "2026-10-20T01:55:45.187983+00:00",
+      "mtime_ns": 1792461345187983000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/72/724a43097bf371c294134f4b6e8034249184021740964303689470925ebcbddc-d",
+      "bytes": 76592984,
+      "sha256": "724a43097bf371c294134f4b6e8034249184021740964303689470925ebcbddc",
+      "mtime_utc": "2026-10-20T02:49:12.378856+00:00",
+      "mtime_ns": 1792464552378856000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/44/44e3cf94b7440da9c2cd84d0be83b5a5bd17ba911a623553f0365e5957c25b67-d",
+      "bytes": 1611462,
+      "sha256": "44e3cf94b7440da9c2cd84d0be83b5a5bd17ba911a623553f0365e5957c25b67",
+      "mtime_utc": "2026-10-20T01:58:49.494252+00:00",
+      "mtime_ns": 1792461529494252000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/2a/2a84e6d49402bdc88c9c020d8ae77c2dbd18d62f571cbb0843cfd5f940457277-d",
+      "bytes": 1611462,
+      "sha256": "2a84e6d49402bdc88c9c020d8ae77c2dbd18d62f571cbb0843cfd5f940457277",
+      "mtime_utc": "2026-10-20T02:23:13.721514+00:00",
+      "mtime_ns": 1792462993721514000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/43/4343dd56dcb355113e99207cd683a37d6a2ff29f3d7e5f25b4703b32f01fbea1-d",
+      "bytes": 7685002,
+      "sha256": "4343dd56dcb355113e99207cd683a37d6a2ff29f3d7e5f25b4703b32f01fbea1",
+      "mtime_utc": "2026-10-20T02:49:17.646816+00:00",
+      "mtime_ns": 1792464557646816000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/6b/6be5f52a56a6eb81b1a007fd7fb670b4ba2cd2ac41cfc66a8773781c68cb46ea-d",
+      "bytes": 1226980,
+      "sha256": "6be5f52a56a6eb81b1a007fd7fb670b4ba2cd2ac41cfc66a8773781c68cb46ea",
+      "mtime_utc": "2026-10-20T01:54:23.842707+00:00",
+      "mtime_ns": 1792461263842707000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/00/0024b3e441384f59ac708ca75d1cc38a72f935b30970d875879dc1c67f767bd5-d",
+      "bytes": 1211342,
+      "sha256": "0024b3e441384f59ac708ca75d1cc38a72f935b30970d875879dc1c67f767bd5",
+      "mtime_utc": "2026-10-20T01:57:48.857372+00:00",
+      "mtime_ns": 1792461468857372000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/5d/5d4408711ff5f5d7b921dc3ab490d5f48c70a6bc6aa9cbc8861a49dbcf306f88-d",
+      "bytes": 4216192,
+      "sha256": "5d4408711ff5f5d7b921dc3ab490d5f48c70a6bc6aa9cbc8861a49dbcf306f88",
+      "mtime_utc": "2026-10-20T01:58:39.552456+00:00",
+      "mtime_ns": 1792461519552456000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/5d/5d1c7139eb37fa9440f4ec4bfbd9a05e64f8fec6e665c131a24c004c217e6c07-d",
+      "bytes": 3426172,
+      "sha256": "5d1c7139eb37fa9440f4ec4bfbd9a05e64f8fec6e665c131a24c004c217e6c07",
+      "mtime_utc": "2026-10-20T01:58:06.994623+00:00",
+      "mtime_ns": 1792461486994623000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/91/916b506cda7ac0b7cfd17623d8e5fd892aa7fc5e9d4d8cd6998b33e05cbda6c3-d",
+      "bytes": 6215534,
+      "sha256": "916b506cda7ac0b7cfd17623d8e5fd892aa7fc5e9d4d8cd6998b33e05cbda6c3",
+      "mtime_utc": "2026-10-20T01:56:47.886244+00:00",
+      "mtime_ns": 1792461407886244000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/65/6595c27ff4f7247933ff8dc420aeb8bae647ab525d73bf3e2b41ec0a35ee6509-d",
+      "bytes": 1361540,
+      "sha256": "6595c27ff4f7247933ff8dc420aeb8bae647ab525d73bf3e2b41ec0a35ee6509",
+      "mtime_utc": "2026-10-20T01:57:49.354612+00:00",
+      "mtime_ns": 1792461469354612000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/62/62e9b1b63ef9eb7d87569b2f00644d58b643efa8962d728569e1cf4794aa877a-d",
+      "bytes": 2313620,
+      "sha256": "62e9b1b63ef9eb7d87569b2f00644d58b643efa8962d728569e1cf4794aa877a",
+      "mtime_utc": "2026-10-20T01:58:22.542518+00:00",
+      "mtime_ns": 1792461502542518000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/96/96effee32287bb5e62cbeb07fa3a078d52172a57e2a3fdf3fed979f3c16f377f-d",
+      "bytes": 1476882,
+      "sha256": "96effee32287bb5e62cbeb07fa3a078d52172a57e2a3fdf3fed979f3c16f377f",
+      "mtime_utc": "2026-10-20T01:54:23.253756+00:00",
+      "mtime_ns": 1792461263253756000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/3f/3f36a57a0faeb6a8e1cae829fe64dcd8867c22f1039be2d8596d818e1eb4005e-d",
+      "bytes": 2255318,
+      "sha256": "3f36a57a0faeb6a8e1cae829fe64dcd8867c22f1039be2d8596d818e1eb4005e",
+      "mtime_utc": "2026-10-20T01:55:45.043004+00:00",
+      "mtime_ns": 1792461345043004000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/39/39dfa13ed644dc909864ad80f560b6c4cc616df1426a1714fac7fb17617c59be-d",
+      "bytes": 1078452,
+      "sha256": "39dfa13ed644dc909864ad80f560b6c4cc616df1426a1714fac7fb17617c59be",
+      "mtime_utc": "2026-10-20T01:54:29.409889+00:00",
+      "mtime_ns": 1792461269409889000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/52/521ec5410dece68f7ef20047f0bb60d630c45d2f80bef2fb624fda5b78853593-d",
+      "bytes": 2876992,
+      "sha256": "521ec5410dece68f7ef20047f0bb60d630c45d2f80bef2fb624fda5b78853593",
+      "mtime_utc": "2026-10-20T01:54:48.160249+00:00",
+      "mtime_ns": 1792461288160249000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/52/5273006762eee601a139df26f29c6fec843c9c952b5a10fda66a72c95fa9915e-d",
+      "bytes": 5859336,
+      "sha256": "5273006762eee601a139df26f29c6fec843c9c952b5a10fda66a72c95fa9915e",
+      "mtime_utc": "2026-10-20T01:58:38.114951+00:00",
+      "mtime_ns": 1792461518114951000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/52/52fcb10bf0dc4bce6d83a79aa94bfd23b3f846f6108fa60c884894adbdf8a2a2-d",
+      "bytes": 1096996,
+      "sha256": "52fcb10bf0dc4bce6d83a79aa94bfd23b3f846f6108fa60c884894adbdf8a2a2",
+      "mtime_utc": "2026-10-20T01:57:49.292648+00:00",
+      "mtime_ns": 1792461469292648000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/52/5257bd1c77ac60226d4ca1a8e6b60b37d3b12b7ba11d443352763189a2794f30-d",
+      "bytes": 1196550,
+      "sha256": "5257bd1c77ac60226d4ca1a8e6b60b37d3b12b7ba11d443352763189a2794f30",
+      "mtime_utc": "2026-10-20T01:57:40.236306+00:00",
+      "mtime_ns": 1792461460236306000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/63/634a374d90b942986795f9043935ee222bbf2d49a7d6635156b9ab10093dbc3a-d",
+      "bytes": 1247976,
+      "sha256": "634a374d90b942986795f9043935ee222bbf2d49a7d6635156b9ab10093dbc3a",
+      "mtime_utc": "2026-10-20T01:54:23.202131+00:00",
+      "mtime_ns": 1792461263202131000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/90/905fdf1554d39a7a0da12faf843fe4908f232e314a65a1a2a094fd14da75ebd4-d",
+      "bytes": 1072908,
+      "sha256": "905fdf1554d39a7a0da12faf843fe4908f232e314a65a1a2a094fd14da75ebd4",
+      "mtime_utc": "2026-10-20T02:29:53.118767+00:00",
+      "mtime_ns": 1792463393118767000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/90/90ec036cab00527e1d53a23b4163ea13f32c64080f067792b4328404a8ff711e-d",
+      "bytes": 5087302,
+      "sha256": "90ec036cab00527e1d53a23b4163ea13f32c64080f067792b4328404a8ff711e",
+      "mtime_utc": "2026-10-20T01:58:02.396762+00:00",
+      "mtime_ns": 1792461482396762000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ba/ba5994f5f465979a8b64e6085cbfa224d0a6c065cba1546dc754a6b4c5071085-d",
+      "bytes": 5590536,
+      "sha256": "ba5994f5f465979a8b64e6085cbfa224d0a6c065cba1546dc754a6b4c5071085",
+      "mtime_utc": "2026-10-20T01:54:43.543648+00:00",
+      "mtime_ns": 1792461283543648000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/b1/b191625053c47d6ea14ef680657272866c05c78280afa88d8d15dc8e27b4695f-d",
+      "bytes": 1072906,
+      "sha256": "b191625053c47d6ea14ef680657272866c05c78280afa88d8d15dc8e27b4695f",
+      "mtime_utc": "2026-10-20T02:20:52.035161+00:00",
+      "mtime_ns": 1792462852035161000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/b1/b18ae692d5678885a04c79a4dcb319c06b4f97c5511603a780f5ff10b6748a3f-d",
+      "bytes": 1615686,
+      "sha256": "b18ae692d5678885a04c79a4dcb319c06b4f97c5511603a780f5ff10b6748a3f",
+      "mtime_utc": "2026-10-20T01:54:45.667624+00:00",
+      "mtime_ns": 1792461285667624000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/dc/dcc18b7a609a1ed6dfa535ed2fe47764aeefa0dff65463ae7f6a85b98fee303a-d",
+      "bytes": 4508352,
+      "sha256": "dcc18b7a609a1ed6dfa535ed2fe47764aeefa0dff65463ae7f6a85b98fee303a",
+      "mtime_utc": "2026-10-20T02:23:14.151253+00:00",
+      "mtime_ns": 1792462994151253000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/b6/b6ccc4165324b393e41d1a4939300f5687f081ecafba8cf0d123b26ce1c6235b-d",
+      "bytes": 2626844,
+      "sha256": "b6ccc4165324b393e41d1a4939300f5687f081ecafba8cf0d123b26ce1c6235b",
+      "mtime_utc": "2026-10-20T01:54:29.960011+00:00",
+      "mtime_ns": 1792461269960011000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/aa/aa2f49d4d1681352bd79537a5d9901ca1f2b2057cd8680b0d19a13279ec22eab-d",
+      "bytes": 6215536,
+      "sha256": "aa2f49d4d1681352bd79537a5d9901ca1f2b2057cd8680b0d19a13279ec22eab",
+      "mtime_utc": "2026-10-20T02:20:52.396941+00:00",
+      "mtime_ns": 1792462852396941000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/aa/aa42cd27394f050efa177a133d81fe9f09a7594f8c1ca903afd212d05c4c73d3-d",
+      "bytes": 1265686,
+      "sha256": "aa42cd27394f050efa177a133d81fe9f09a7594f8c1ca903afd212d05c4c73d3",
+      "mtime_utc": "2026-10-20T01:57:40.435111+00:00",
+      "mtime_ns": 1792461460435111000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ef/ef7759c11ff018ccf0f1d8094b942fa172888d75c4713b67880628e7fcfd42e9-d",
+      "bytes": 3172352,
+      "sha256": "ef7759c11ff018ccf0f1d8094b942fa172888d75c4713b67880628e7fcfd42e9",
+      "mtime_utc": "2026-10-20T01:54:23.097513+00:00",
+      "mtime_ns": 1792461263097513000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/c4/c49f9a0b84c85f959137556aff4d3d0f20b855257f4bcc458a01f4b27d1333d8-d",
+      "bytes": 4348764,
+      "sha256": "c49f9a0b84c85f959137556aff4d3d0f20b855257f4bcc458a01f4b27d1333d8",
+      "mtime_utc": "2026-10-20T02:18:36.738610+00:00",
+      "mtime_ns": 1792462716738610000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ea/ead1d470fea630726679b812235fe31bfb46ac97034fd7cc4031bc6c6cf57ffe-d",
+      "bytes": 1569836,
+      "sha256": "ead1d470fea630726679b812235fe31bfb46ac97034fd7cc4031bc6c6cf57ffe",
+      "mtime_utc": "2026-10-20T01:54:47.954673+00:00",
+      "mtime_ns": 1792461287954673000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/ea/ea6ff177f941033d8bd06359b55dffc05d7cb9217f725a78e61e18b9a80cdb86-d",
+      "bytes": 1503846,
+      "sha256": "ea6ff177f941033d8bd06359b55dffc05d7cb9217f725a78e61e18b9a80cdb86",
+      "mtime_utc": "2026-10-20T01:58:18.058221+00:00",
+      "mtime_ns": 1792461498058221000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/cc/cc4929939480ae69de8a08489b1c865e493df6d70044adf1be931b6cd867246d-d",
+      "bytes": 1226120,
+      "sha256": "cc4929939480ae69de8a08489b1c865e493df6d70044adf1be931b6cd867246d",
+      "mtime_utc": "2026-10-20T01:54:24.041629+00:00",
+      "mtime_ns": 1792461264041629000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/f7/f79dc18329b439fc1fd3f87d27fa7f3dc652db55b97a8dbd2c5edb06689f3e8b-d",
+      "bytes": 1072906,
+      "sha256": "f79dc18329b439fc1fd3f87d27fa7f3dc652db55b97a8dbd2c5edb06689f3e8b",
+      "mtime_utc": "2026-10-20T01:56:47.444509+00:00",
+      "mtime_ns": 1792461407444509000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/f7/f72dad35851c362b3155e9606b018de13c7414d2a8a6ad157567c9d6414ad00d-d",
+      "bytes": 1319780,
+      "sha256": "f72dad35851c362b3155e9606b018de13c7414d2a8a6ad157567c9d6414ad00d",
+      "mtime_utc": "2026-10-20T01:58:10.413302+00:00",
+      "mtime_ns": 1792461490413302000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/fa/fa616cc9647823ee3bb9f8ac7544e8f38930aab40b5b8d29bf05498ed5eb3351-d",
+      "bytes": 8092244,
+      "sha256": "fa616cc9647823ee3bb9f8ac7544e8f38930aab40b5b8d29bf05498ed5eb3351",
+      "mtime_utc": "2026-10-20T01:58:02.109892+00:00",
+      "mtime_ns": 1792461482109892000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/f6/f60b52999cccf028e16156740abd45d3f3a2b0285d74ace5f61b368ea2ff1c2e-d",
+      "bytes": 2262426,
+      "sha256": "f60b52999cccf028e16156740abd45d3f3a2b0285d74ace5f61b368ea2ff1c2e",
+      "mtime_utc": "2026-10-20T01:57:49.145896+00:00",
+      "mtime_ns": 1792461469145896000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/f6/f6a551a78c878fd7a591541943ea03f9ce3a73faf6aad9dbdbdb5e63dca50e2f-d",
+      "bytes": 1050714,
+      "sha256": "f6a551a78c878fd7a591541943ea03f9ce3a73faf6aad9dbdbdb5e63dca50e2f",
+      "mtime_utc": "2026-10-20T01:57:40.559203+00:00",
+      "mtime_ns": 1792461460559203000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/e9/e95f6cb602a957f057f1994a484fea9ddecd7a25d940fc04062e06cd6274ca0d-d",
+      "bytes": 2118480,
+      "sha256": "e95f6cb602a957f057f1994a484fea9ddecd7a25d940fc04062e06cd6274ca0d",
+      "mtime_utc": "2026-10-20T01:54:52.807826+00:00",
+      "mtime_ns": 1792461292807826000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/f1/f1dacc1b621e8ae4e6bafed8cf2f99855d4b923918ec428443b6c5073a86c0e8-d",
+      "bytes": 4508352,
+      "sha256": "f1dacc1b621e8ae4e6bafed8cf2f99855d4b923918ec428443b6c5073a86c0e8",
+      "mtime_utc": "2026-10-20T02:35:30.231442+00:00",
+      "mtime_ns": 1792463730231442000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/e7/e7d836a2fac58b611f74f2ce586b56a17977a68997cee0145c1a1c25c7fe6a5f-d",
+      "bytes": 4718320,
+      "sha256": "e7d836a2fac58b611f74f2ce586b56a17977a68997cee0145c1a1c25c7fe6a5f",
+      "mtime_utc": "2026-10-20T02:29:52.643099+00:00",
+      "mtime_ns": 1792463392643099000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/46/460e84eaf48699ccd67d0e86bd41ec6240785e2db619b737080b217134698465-d",
+      "bytes": 1663920,
+      "sha256": "460e84eaf48699ccd67d0e86bd41ec6240785e2db619b737080b217134698465",
+      "mtime_utc": "2026-10-20T01:54:52.606672+00:00",
+      "mtime_ns": 1792461292606672000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/79/79dd4d33cfe480dfda96f8b10c815c8b7fc9859556336361872f2b60c5b6bcb9-d",
+      "bytes": 2703770,
+      "sha256": "79dd4d33cfe480dfda96f8b10c815c8b7fc9859556336361872f2b60c5b6bcb9",
+      "mtime_utc": "2026-10-20T01:57:48.468964+00:00",
+      "mtime_ns": 1792461468468964000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/41/4140bd01913481aa730db3e5e26485f028fd792f449f425483504bcd9cb7b0af-d",
+      "bytes": 1453090,
+      "sha256": "4140bd01913481aa730db3e5e26485f028fd792f449f425483504bcd9cb7b0af",
+      "mtime_utc": "2026-10-20T01:57:39.689101+00:00",
+      "mtime_ns": 1792461459689101000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/77/773473aec0973f9fa318c35da0e26ee08b18683874ca6c317962b4458b27f7d6-d",
+      "bytes": 1494966,
+      "sha256": "773473aec0973f9fa318c35da0e26ee08b18683874ca6c317962b4458b27f7d6",
+      "mtime_utc": "2026-10-20T01:57:39.876256+00:00",
+      "mtime_ns": 1792461459876256000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/8d/8dbe126e16d0f8ebcbbab495b7748810999f9a7c81555f18fe1a74143ce644dd-d",
+      "bytes": 1702614,
+      "sha256": "8dbe126e16d0f8ebcbbab495b7748810999f9a7c81555f18fe1a74143ce644dd",
+      "mtime_utc": "2026-10-20T01:54:23.780432+00:00",
+      "mtime_ns": 1792461263780432000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/8c/8ce84bbd4324d420df5e1eefdc859e99371dc6efbc57e99bb2d8e925fb7a5774-d",
+      "bytes": 1071578,
+      "sha256": "8ce84bbd4324d420df5e1eefdc859e99371dc6efbc57e99bb2d8e925fb7a5774",
+      "mtime_utc": "2026-10-20T01:54:24.084458+00:00",
+      "mtime_ns": 1792461264084458000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/85/850685f18a1de4dce95dc8d70b737bc5f1a628eb33b6a6328daab879ee6ae0f4-d",
+      "bytes": 9230718,
+      "sha256": "850685f18a1de4dce95dc8d70b737bc5f1a628eb33b6a6328daab879ee6ae0f4",
+      "mtime_utc": "2026-10-20T01:58:10.110121+00:00",
+      "mtime_ns": 1792461490110121000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/1d/1d5621fd0123d83731bbfe26f91f9c0c58b258f90b236d8132ca09d40a766bd4-d",
+      "bytes": 7888068,
+      "sha256": "1d5621fd0123d83731bbfe26f91f9c0c58b258f90b236d8132ca09d40a766bd4",
+      "mtime_utc": "2026-10-20T01:58:49.357053+00:00",
+      "mtime_ns": 1792461529357053000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/71/7112de69ff4b5e829ff0052bc52a6ad33791a2e6b8e5f960b396750a68e1ac2b-d",
+      "bytes": 4348764,
+      "sha256": "7112de69ff4b5e829ff0052bc52a6ad33791a2e6b8e5f960b396750a68e1ac2b",
+      "mtime_utc": "2026-10-20T02:20:18.065111+00:00",
+      "mtime_ns": 1792462818065111000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/1c/1c4a58fe8554acb6f14399d14d97b26ae913d041a208c58776049beb916fb04a-d",
+      "bytes": 8460860,
+      "sha256": "1c4a58fe8554acb6f14399d14d97b26ae913d041a208c58776049beb916fb04a",
+      "mtime_utc": "2026-10-20T01:54:43.216000+00:00",
+      "mtime_ns": 1792461283216000000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/49/4970e8001e00600c60f9b7b1f1df8194be104b4cba2a1bcc3d3cd0981cf65727-d",
+      "bytes": 1062186,
+      "sha256": "4970e8001e00600c60f9b7b1f1df8194be104b4cba2a1bcc3d3cd0981cf65727",
+      "mtime_utc": "2026-10-20T01:57:39.925018+00:00",
+      "mtime_ns": 1792461459925018000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/40/40011d9dd4ee8f11605eb0f843c73d297c2f3e164a35475e5f4ba5d6e2e28e35-d",
+      "bytes": 1518184,
+      "sha256": "40011d9dd4ee8f11605eb0f843c73d297c2f3e164a35475e5f4ba5d6e2e28e35",
+      "mtime_utc": "2026-10-20T01:57:48.571650+00:00",
+      "mtime_ns": 1792461468571650000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/2b/2bee8d0987b82ed56706dafa607852f0f39d385a08ff0ec563f63964ad1c929c-d",
+      "bytes": 1466096,
+      "sha256": "2bee8d0987b82ed56706dafa607852f0f39d385a08ff0ec563f63964ad1c929c",
+      "mtime_utc": "2026-10-20T01:57:40.506676+00:00",
+      "mtime_ns": 1792461460506676000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/47/47b06d30b76d9c6baaf092cdc9ea1c35973c4b94e296ce89ba004dbad5f5f6f7-d",
+      "bytes": 7683262,
+      "sha256": "47b06d30b76d9c6baaf092cdc9ea1c35973c4b94e296ce89ba004dbad5f5f6f7",
+      "mtime_utc": "2026-10-20T02:23:13.214918+00:00",
+      "mtime_ns": 1792462993214918000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/47/47902e7f0b9ba57230f6bf2237b6670bed6db3d48ca021ec089497bd2972392c-d",
+      "bytes": 6215536,
+      "sha256": "47902e7f0b9ba57230f6bf2237b6670bed6db3d48ca021ec089497bd2972392c",
+      "mtime_utc": "2026-10-20T02:29:52.329695+00:00",
+      "mtime_ns": 1792463392329695000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/13/13bcc69080a391fb2ce0fa4b696089dff73c36c5b2412095795e48a9a28d1fde-d",
+      "bytes": 1476494,
+      "sha256": "13bcc69080a391fb2ce0fa4b696089dff73c36c5b2412095795e48a9a28d1fde",
+      "mtime_utc": "2026-10-20T01:54:23.722089+00:00",
+      "mtime_ns": 1792461263722089000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/7a/7a037306b4f9cad3e47d56259aed961796cf16c8f0e126f00149042832de9c24-d",
+      "bytes": 1758462,
+      "sha256": "7a037306b4f9cad3e47d56259aed961796cf16c8f0e126f00149042832de9c24",
+      "mtime_utc": "2026-10-20T01:54:29.366561+00:00",
+      "mtime_ns": 1792461269366561000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/14/14ba1c420ae262e5d465a1d86db96327c03002c146fcb0969404aa7cde9362ab-d",
+      "bytes": 2442466,
+      "sha256": "14ba1c420ae262e5d465a1d86db96327c03002c146fcb0969404aa7cde9362ab",
+      "mtime_utc": "2026-10-20T01:54:57.775756+00:00",
+      "mtime_ns": 1792461297775756000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api",
+        "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/Library/Caches/go-build/22/226cdaf2f8983237738a22d1cffcb69da2f30879f915688bd0dc0a7ad79fc1c5-d",
+      "bytes": 7683966,
+      "sha256": "226cdaf2f8983237738a22d1cffcb69da2f30879f915688bd0dc0a7ad79fc1c5",
+      "mtime_utc": "2026-10-20T02:35:29.341223+00:00",
+      "mtime_ns": 1792463729341223000,
+      "matched_identifiers": [
+        "github.com/Wei-Shaw/sub2api"
+      ],
+      "kind": "task_go_cache",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final6/candidate/sub2api",
+      "bytes": 132481184,
+      "sha256": "a46cfb8e06d73a9969bf7c0fd8a4636693c38fd85935ce1b1bfaf6a994eba3b7",
+      "mtime_ns": 1792464562171418678,
+      "kind": "F4_rebuildable_executable_copy",
+      "verified_against": "office-I6-build-F4.json",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final6/candidate/carpool-release",
+      "bytes": 43012211,
+      "sha256": "43a405724da970b99a961742d5f99fa3d8c990099ca78e780562d243840290cd",
+      "mtime_ns": 1792464566032177676,
+      "kind": "F4_rebuildable_executable_copy",
+      "verified_against": "office-I6-build-F4.json",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final6/provider/provider",
+      "bytes": 9766245,
+      "sha256": "67c83c7e8b1e36d7604ccc83f4d634095ca260067dbcfa6cb21efad0df90a6bc",
+      "mtime_ns": 1792464566277045745,
+      "kind": "F4_rebuildable_executable_copy",
+      "verified_against": "office-I6-build-F4.json",
+      "removed": true
+    }
+  ],
+  "task_cache_files": 121,
+  "task_cache_bytes": 680246528,
+  "executable_copies": 3,
+  "total_removed_bytes": 865506168,
+  "free_bytes_before": 2179919872,
+  "free_bytes_after": 3045146624,
+  "preserved_native_driver": "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-promotion-final3.test",
+  "preserved_native_driver_sha256": "c228980169044eff0a381975577a2e717bd541cf197fb1baa84241e6cf3b8969",
+  "F4_R1_image_id_preserved": "sha256:c8083c2153e7d43598fd36b5c50f54667de05e34d62e72f609ae4110e05f9cee",
+  "F4_R2_image_id_preserved": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122",
+  "global_cache_cleanup": false,
+  "containers_volumes_images_modified": false,
+  "source_modified": false,
+  "private_plan": "/Users/shenxi/.codex/private/claude-weekly-quota/office/F4-exact-cache-and-copy-cleanup-plan.json",
+  "private_plan_sha256": "1a11b38b9dc85471816e42cb2af3e182985042d29ff62df9da4ee1c44aeed860"
+}

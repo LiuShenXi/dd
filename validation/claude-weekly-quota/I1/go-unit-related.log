@@ -1,0 +1,143 @@
+ok  	github.com/Wei-Shaw/sub2api/internal/service	189.077s
+ok  	github.com/Wei-Shaw/sub2api/internal/handler	39.910s
+ok  	github.com/Wei-Shaw/sub2api/internal/handler/admin	2.326s
+ok  	github.com/Wei-Shaw/sub2api/internal/handler/dto	2.467s
+ok  	github.com/Wei-Shaw/sub2api/internal/handler/quotaview	2.448s
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+2026/10/19 21:28:25 Global max request body size: 1024 bytes (0.00 MB)
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+2026/10/19 21:28:25 Global max request body size: 1024 bytes (0.00 MB)
+2026/10/19 21:28:25 HTTP/2 Cleartext (h2c) enabled: max_concurrent_streams=25, idle_timeout=30s, max_read_frame_size=65536, max_upload_buffer_per_connection=1048576, max_upload_buffer_per_stream=262144
+2026/10/19 21:28:25 Failed to set trusted proxies: invalid IP address: not-a-cidr
+2026/10/19 21:28:25 Global max request body size: 1024 bytes (0.00 MB)
+2026/10/19 21:28:25 Global max request body size: 1024 bytes (0.00 MB)
+2026/10/19 21:28:26 Global max request body size: 1024 bytes (0.00 MB)
+--- FAIL: TestAPIContracts (0.00s)
+    --- FAIL: TestAPIContracts/GET_/api/v1/groups/available (0.00s)
+        api_contract_test.go:1419: 
+            	Error Trace:	C:/Users/Administrator/.codex/worktrees/claude-weekly-quota/dd/backend/internal/server/api_contract_test.go:1419
+            	Error:      	Not equal: 
+            	            	expected: map[string]interface {}{"code":0, "data":[]interface {}{map[string]interface {}{"allow_batch_image_generation":false, "allow_image_generation":false, "allow_live":false, "allow_messages_dispatch":false, "audio_realtime_price_per_min":interface {}(nil), "audio_stt_price_per_hour":interface {}(nil), "audio_tts_price_per_million_chars":interface {}(nil), "batch_image_discount_multiplier":0, "batch_image_hold_multiplier":0, "claude_code_only":false, "created_at":"2025-01-02T03:04:05Z", "daily_limit_usd":interface {}(nil), "description":"desc", "fallback_group_id":interface {}(nil), "fallback_group_id_on_invalid_request":interface {}(nil), "id":10, "image_price_1k":interface {}(nil), "image_price_2k":interface {}(nil), "image_price_4k":interface {}(nil), "image_rate_independent":false, "image_rate_multiplier":0, "is_exclusive":false, "long_context_pricing_enabled":false, "max_reasoning_effort":"", "max_reasoning_effort_over_limit":"", "monthly_limit_usd":interface {}(nil), "name":"Group One", "peak_end":"", "peak_rate_enabled":false, "peak_rate_multiplier":1, "peak_start":"", "platform":"anthropic", "rate_multiplier":1.5, "reasoning_effort_mappings":interface {}(nil), "require_oauth_only":false, "require_privacy_set":false, "rpm_limit":0, "search_price_per_1k":interface {}(nil), "status":"active", "subscription_type":"standard", "updated_at":"2025-01-02T03:04:05Z", "video_price_1080p":interface {}(nil), "video_price_480p":interface {}(nil), "video_price_720p":interface {}(nil), "video_rate_independent":false, "video_rate_multiplier":0, "web_search_price_per_call":interface {}(nil), "weekly_limit_usd":interface {}(nil)}}, "message":"success"}
+            	            	actual  : map[string]interface {}{"code":0, "data":[]interface {}{map[string]interface {}{"allow_batch_image_generation":false, "allow_image_generation":false, "allow_live":false, "allow_messages_dispatch":false, "audio_realtime_price_per_min":interface {}(nil), "audio_stt_price_per_hour":interface {}(nil), "audio_tts_price_per_million_chars":interface {}(nil), "batch_image_discount_multiplier":0, "batch_image_hold_multiplier":0, "claude_code_only":false, "created_at":"2025-01-02T03:04:05Z", "daily_limit_usd":interface {}(nil), "description":"desc", "fallback_group_id":interface {}(nil), "fallback_group_id_on_invalid_request":interface {}(nil), "id":10, "image_price_1k":interface {}(nil), "image_price_2k":interface {}(nil), "image_price_4k":interface {}(nil), "image_rate_independent":false, "image_rate_multiplier":0, "is_exclusive":false, "long_context_pricing_enabled":false, "max_reasoning_effort":"", "max_reasoning_effort_over_limit":"", "monthly_limit_usd":interface {}(nil), "name":"Group One", "peak_end":"", "peak_rate_enabled":false, "peak_rate_multiplier":1, "peak_start":"", "platform":"anthropic", "rate_multiplier":1.5, "reasoning_effort_mappings":interface {}(nil), "require_oauth_only":false, "require_privacy_set":false, "rpm_limit":0, "search_price_per_1k":interface {}(nil), "status":"active", "subscription_quota_mode":"windows", "subscription_type":"standard", "updated_at":"2025-01-02T03:04:05Z", "video_price_1080p":interface {}(nil), "video_price_480p":interface {}(nil), "video_price_720p":interface {}(nil), "video_rate_independent":false, "video_rate_multiplier":0, "web_search_price_per_call":interface {}(nil), "weekly_limit_usd":interface {}(nil)}}, "message":"success"}
+            	            	
+            	            	Diff:
+            	            	--- Expected
+            	            	+++ Actual
+            	            	@@ -3,3 +3,3 @@
+            	            	  (string) (len=4) "data": ([]interface {}) (len=1) {
+            	            	-  (map[string]interface {}) (len=48) {
+            	            	+  (map[string]interface {}) (len=49) {
+            	            	    (string) (len=28) "allow_batch_image_generation": (bool) false,
+            	            	@@ -43,2 +43,3 @@
+            	            	    (string) (len=6) "status": (string) (len=6) "active",
+            	            	+   (string) (len=23) "subscription_quota_mode": (string) (len=7) "windows",
+            	            	    (string) (len=17) "subscription_type": (string) (len=8) "standard",
+            	Test:       	TestAPIContracts/GET_/api/v1/groups/available
+FAIL
+FAIL	github.com/Wei-Shaw/sub2api/internal/server	3.496s
+ok  	github.com/Wei-Shaw/sub2api/internal/server/middleware	2.590s
+ok  	github.com/Wei-Shaw/sub2api/internal/server/routes	10.564s
+2026/10/19 21:28:25 [Account] current extra unmarshal failed, codex ticket preservation skipped: id=41 err=json: cannot unmarshal array into Go value of type map[string]interface {}
+--- FAIL: TestPgDumperHoldsMigrationLockThroughReaderClose (0.02s)
+    backup_pg_dumper_test.go:61: 
+        	Error Trace:	C:/Users/Administrator/.codex/worktrees/claude-weekly-quota/dd/backend/internal/repository/backup_pg_dumper_test.go:61
+        	Error:      	Received unexpected error:
+        	            	start pg_dump: exec: "sh": executable file not found in %PATH%
+        	            	release backup migration lock: release migrations lock: all expectations were already fulfilled, call to ExecQuery 'SELECT pg_advisory_unlock($1)' with args [{Name: Ordinal:1 Value:694208311321144027}] was not expected
+        	Test:       	TestPgDumperHoldsMigrationLockThroughReaderClose
+--- FAIL: TestPgDumperReleasesMigrationLockWhenProcessFails (0.02s)
+    backup_pg_dumper_test.go:109: 
+        	Error Trace:	C:/Users/Administrator/.codex/worktrees/claude-weekly-quota/dd/backend/internal/repository/backup_pg_dumper_test.go:109
+        	Error:      	Received unexpected error:
+        	            	start pg_dump: exec: "sh": executable file not found in %PATH%
+        	            	release backup migration lock: release migrations lock: all expectations were already fulfilled, call to ExecQuery 'SELECT pg_advisory_unlock($1)' with args [{Name: Ordinal:1 Value:694208311321144027}] was not expected
+        	Test:       	TestPgDumperReleasesMigrationLockWhenProcessFails
+--- FAIL: TestPgDumperReportsUnlockFailureAndDiscardsConnection (0.02s)
+    backup_pg_dumper_test.go:125: 
+        	Error Trace:	C:/Users/Administrator/.codex/worktrees/claude-weekly-quota/dd/backend/internal/repository/backup_pg_dumper_test.go:125
+        	Error:      	Received unexpected error:
+        	            	start pg_dump: exec: "sh": executable file not found in %PATH%
+        	            	release backup migration lock: release migrations lock: all expectations were already fulfilled, call to ExecQuery 'SELECT pg_advisory_unlock($1)' with args [{Name: Ordinal:1 Value:694208311321144027}] was not expected
+        	Test:       	TestPgDumperReportsUnlockFailureAndDiscardsConnection
+2026/10/19 21:28:25 [OAuth] Step 3: Exchanging code for token at http://in-process/token
+2026/10/19 21:28:25 [OAuth] Step 3 Request Body: {"client_id":"9d1c250a-e61b-44d9-88ed-5944d1962f5e","code":"***","code_verifier":"***","grant_type":"authorization_code","redirect_uri":"https://platform.claude.com/oauth/code/callback","state":"STATE2"}
+2026/10/19 21:28:25 [OAuth] Step 3 Response - Status: 200, Body: {"access_token":"***","expires_in":3600,"refresh_token":"***","scope":"s","token_type":"bearer"}
+2026/10/19 21:28:25 [OAuth] Step 3 SUCCESS - Got access token
+2026/10/19 21:28:25 [OAuth] Step 3: Exchanging code for token at http://in-process/token
+2026/10/19 21:28:25 [OAuth] Step 3 Request Body: {"client_id":"9d1c250a-e61b-44d9-88ed-5944d1962f5e","code":"***","code_verifier":"***","grant_type":"authorization_code","redirect_uri":"https://platform.claude.com/oauth/code/callback"}
+2026/10/19 21:28:25 [OAuth] Step 3 Response - Status: 200, Body: {"access_token":"***","expires_in":31536000,"token_type":"bearer"}
+2026/10/19 21:28:25 [OAuth] Step 3 SUCCESS - Got access token
+2026/10/19 21:28:25 [OAuth] Step 3: Exchanging code for token at http://in-process/token
+2026/10/19 21:28:25 [OAuth] Step 3 Request Body: {"client_id":"9d1c250a-e61b-44d9-88ed-5944d1962f5e","code":"***","code_verifier":"***","grant_type":"authorization_code","redirect_uri":"https://platform.claude.com/oauth/code/callback"}
+2026/10/19 21:28:25 [OAuth] Step 3 Response - Status: 400, Body: <non-json payload redacted>
+2026/10/19 21:28:25 [OAuth] Step 2: Getting authorization code from http://in-process/v1/oauth/org-1/authorize
+2026/10/19 21:28:25 [OAuth] Step 2 Request Body: {"client_id":"9d1c250a-e61b-44d9-88ed-5944d1962f5e","code_challenge":"cc","code_challenge_method":"S256","organization_uuid":"org-1","redirect_uri":"https://platform.claude.com/oauth/code/callback","response_type":"code","scope":"user:inference","state":"st"}
+2026/10/19 21:28:25 [OAuth] Step 2 Response - Status: 200, Body: {"redirect_uri":"https://platform.claude.com/oauth/code/callback?code=AUTH\u0026state=STATE"}
+2026/10/19 21:28:25 [OAuth] Step 2 SUCCESS - Got authorization code
+2026/10/19 21:28:25 [OAuth] Step 2: Getting authorization code from http://in-process/v1/oauth/org-1/authorize
+2026/10/19 21:28:25 [OAuth] Step 2 Request Body: {"client_id":"9d1c250a-e61b-44d9-88ed-5944d1962f5e","code_challenge":"cc","code_challenge_method":"S256","organization_uuid":"org-1","redirect_uri":"https://platform.claude.com/oauth/code/callback","response_type":"code","scope":"user:inference","state":"st"}
+2026/10/19 21:28:25 [OAuth] Step 2 Response - Status: 200, Body: {"redirect_uri":"https://platform.claude.com/oauth/code/callback?state=STATE"}
+2026/10/19 21:28:25 [OAuth] Step 1: Getting organization UUID from http://in-process/api/organizations
+2026/10/19 21:28:25 [OAuth] Step 1 Response - Status: 200
+2026/10/19 21:28:25 [OAuth] Step 1 SUCCESS - Single org found, UUID: org-1, Name:
+2026/10/19 21:28:25 [OAuth] Step 1: Getting organization UUID from http://in-process/api/organizations
+2026/10/19 21:28:25 [OAuth] Step 1 Response - Status: 401
+2026/10/19 21:28:25 [OAuth] Step 1: Getting organization UUID from http://in-process/api/organizations
+2026/10/19 21:28:25 [OAuth] Step 1 FAILED - Request error: invalid character 'o' in literal null (expecting 'u')
+2026/10/19 21:28:25 Timezone initialized: Asia/Shanghai (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Local (UTC offset: +08:00)
+2026/10/19 09:28:25 Timezone initialized: America/New_York (UTC offset: -04:00)
+2026/10/19 09:28:25 Timezone initialized: Local (UTC offset: -04:00)
+2026/10/19 21:28:25 Timezone initialized: Asia/Shanghai (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Local (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Asia/Shanghai (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Local (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Asia/Shanghai (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Local (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Asia/Shanghai (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Local (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Asia/Shanghai (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Local (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Asia/Shanghai (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Local (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Asia/Shanghai (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Local (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Asia/Shanghai (UTC offset: +08:00)
+2026/10/19 21:28:25 Timezone initialized: Local (UTC offset: +08:00)
+2026/10/19 21:28:25 WARN database connection pool duration clamped key=database.conn_max_lifetime_minutes before=0 after=30
+2026/10/19 21:28:25 WARN database connection pool duration clamped key=database.conn_max_idle_time_minutes before=0 after=5
+2026/10/19 21:28:25 WARN database connection pool duration clamped key=database.conn_max_lifetime_minutes before=-1 after=30
+2026/10/19 21:28:25 WARN database connection pool duration clamped key=database.conn_max_idle_time_minutes before=-5 after=5
+2026/10/19 21:28:25 WARN database connection pool duration clamped key=database.conn_max_lifetime_minutes before=1441 after=30
+2026/10/19 21:28:25 WARN database connection pool duration clamped key=database.conn_max_idle_time_minutes before=1441 after=5
+2026/10/19 21:28:25 INFO database connection pool configured effective.max_open=40 effective.max_idle=8 effective.max_lifetime=15m0s effective.max_idle_time=3m0s
+redis: 2026/10/19 21:28:26 pool.go:762: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:1: connectex: No connection could be made because the target machine actively refused it.
+redis: 2026/10/19 21:28:26 pool.go:762: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:1: connectex: No connection could be made because the target machine actively refused it.
+redis: 2026/10/19 21:28:27 pool.go:762: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:1: connectex: No connection could be made because the target machine actively refused it.
+redis: 2026/10/19 21:28:27 pool.go:762: redis: connection pool: failed to dial after 5 attempts: dial tcp 127.0.0.1:1: connectex: No connection could be made because the target machine actively refused it.
+--- FAIL: TestUserSubscriptionGetByIDForUpdateLocksRow (0.00s)
+panic: Expected number of values to match number of columns: expected 18, actual 19 [recovered, repanicked]
+
+goroutine 3011 [running]:
+testing.tRunner.func1.2({0x7ff7f718d510, 0xfe5fc5bd640})
+	C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/src/testing/testing.go:2123 +0x239
+testing.tRunner.func1()
+	C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/src/testing/testing.go:2126 +0x329
+panic({0x7ff7f718d510?, 0xfe5fc5bd640?})
+	C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/src/runtime/panic.go:859 +0x125
+github.com/DATA-DOG/go-sqlmock.(*Rows).AddRow(0x7ff7f740f0b8?, {0xfe5f44ebe00?, 0x0?, 0x0?})
+	C:/go/pkg/mod/github.com/!d!a!t!a-!d!o!g/go-sqlmock@v1.5.2/rows.go:169 +0x399
+github.com/Wei-Shaw/sub2api/internal/repository.TestUserSubscriptionGetByIDForUpdateLocksRow(0xfe5fc84ec00)
+	C:/Users/Administrator/.codex/worktrees/claude-weekly-quota/dd/backend/internal/repository/user_subscription_lock_test.go:32 +0x67c
+testing.tRunner(0xfe5fc84ec00, 0x7ff7f7484a60)
+	C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/src/testing/testing.go:2193 +0xc3
+created by testing.(*T).Run in goroutine 1
+	C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/src/testing/testing.go:2258 +0x4b4
+FAIL	github.com/Wei-Shaw/sub2api/internal/repository	5.632s
+FAIL

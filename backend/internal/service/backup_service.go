@@ -21,6 +21,7 @@ import (
 	"github.com/robfig/cron/v3"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 )
@@ -152,9 +153,12 @@ type BackupDownloadResponse struct {
 
 // BackupService 数据库备份恢复服务
 type BackupService struct {
-	settingRepo SettingRepository
-	dbCfg       *config.DatabaseConfig
-	encryptor   SecretEncryptor
+	backgroundJobs *backgroundjobs.Gate
+	// A peer may own any persisted running record; startup cannot infer a crash.
+	preserveProcessState bool
+	settingRepo          SettingRepository
+	dbCfg                *config.DatabaseConfig
+	encryptor            SecretEncryptor
 	// encryptionKeyConfigured mirrors cfg.Totp.EncryptionKeyConfigured: false
 	// means the secret encryption key was auto-generated and does not survive a
 	// restart. Durable-secret writers must refuse to persist new secrets in that
@@ -202,6 +206,7 @@ func NewBackupService(
 	bgCtx, bgCancel := context.WithCancel(context.Background())
 	return &BackupService{
 		settingRepo:             settingRepo,
+		preserveProcessState:    cfg.Gateway.ConcurrencyStartupCleanupMode == "preserve",
 		dbCfg:                   &cfg.Database,
 		encryptor:               encryptor,
 		encryptionKeyConfigured: cfg.Totp.EncryptionKeyConfigured,
@@ -250,6 +255,9 @@ func (s *BackupService) Start() {
 
 // recoverStaleRecords 启动时将孤立的 running 记录标记为 failed，并清理已上传对象。
 func (s *BackupService) recoverStaleRecords() {
+	if s.preserveProcessState {
+		return
+	}
 	loadCtx, loadCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer loadCancel()
 
@@ -497,10 +505,15 @@ func (s *BackupService) removeCronSchedule() {
 }
 
 func (s *BackupService) runScheduledBackup() {
+	jobCtx, done, allowed := s.backgroundJobs.Enter(s.bgCtx)
+	if !allowed {
+		return
+	}
+	defer done()
 	s.wg.Add(1)
 	defer s.wg.Done()
 
-	ctx, cancel := context.WithTimeout(s.bgCtx, 30*time.Minute)
+	ctx, cancel := context.WithTimeout(jobCtx, 30*time.Minute)
 	defer cancel()
 
 	// 多实例保护: 集群部署时只让 leader 执行定时备份, 避免每个实例各自对同一个

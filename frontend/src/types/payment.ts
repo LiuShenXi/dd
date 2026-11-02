@@ -82,7 +82,22 @@ export interface CheckoutInfoResponse {
 
 // ==================== Orders ====================
 
+/** Frozen by the server when the order is created; never reconstruct from a current plan. */
+export interface SubscriptionQuotaOrderSnapshot {
+  schema_version: 1
+  mode: 'term'
+  group_id: number
+  platform: 'anthropic'
+  duration_seconds: 604800
+  quota_usd: string
+  source_plan_id: number
+  plan_name: string
+  product_name: string
+  group_name: string
+}
+
 export interface PaymentOrder {
+  subscription_quota_snapshot?: SubscriptionQuotaOrderSnapshot | null
   id: number
   user_id: number
   amount: number
@@ -106,9 +121,17 @@ export interface PaymentOrder {
   provider_instance_id?: string
 }
 
+/** Signed checkout-session lookup; owner and provider identities are omitted. */
+export interface PublicOrderResult extends Omit<PaymentOrder, 'user_id' | 'provider_instance_id' | 'refund_requested_by'> {
+  refund_requested_by?: string
+}
+
 // ==================== Plans & Channels ====================
 
 export interface SubscriptionPlan {
+  /** Missing on legacy servers means windows; term is derived from the group. */
+  quota_mode?: 'windows' | 'term'
+  default_quota_usd?: string | null
   id: number
   group_id: number
   group_platform?: string
@@ -199,6 +222,7 @@ export interface WechatJSAPIPayload {
 }
 
 export interface CreateOrderResult {
+  subscription_quota_snapshot?: SubscriptionQuotaOrderSnapshot | null
   order_id: number
   amount: number
   pay_url?: string

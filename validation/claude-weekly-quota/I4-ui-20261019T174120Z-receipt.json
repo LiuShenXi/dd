@@ -1,0 +1,28 @@
+{
+  "source_sha256": "0fe0b15e7a2876ab1f258ea88fc35750794a225242a99859e95e53d4e20765d0",
+  "source_stable": true,
+  "steps": [
+    {
+      "name": "typecheck",
+      "exit_code": 0,
+      "log": "I4-ui-20261019T174120Z-typecheck.log"
+    },
+    {
+      "name": "lint",
+      "exit_code": 0,
+      "log": "I4-ui-20261019T174120Z-lint.log"
+    },
+    {
+      "name": "tests",
+      "exit_code": 0,
+      "log": "I4-ui-20261019T174120Z-tests.log"
+    },
+    {
+      "name": "build",
+      "exit_code": 0,
+      "log": "I4-ui-20261019T174120Z-build.log"
+    }
+  ],
+  "finished_utc": "2026-10-19T17:45:27.6824480Z",
+  "browser_acceptance": false
+}

@@ -295,6 +295,9 @@ const (
 	// 面板 API 限流设置（JSON：PanelRateLimitSettings）
 	SettingKeyPanelRateLimitSettings = "panel_rate_limit_settings"
 
+	// 首页车次卡片配置（JSON：HomeProductsSettings）
+	SettingKeyHomeProductsSettings = "home_products_settings"
+
 	// 操作审计日志设置
 	SettingKeyAuditLogRetentionDays = "audit_log_retention_days" // 审计日志保留天数（<=0 永久保留），默认 180
 

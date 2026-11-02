@@ -14,6 +14,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/Wei-Shaw/sub2api/internal/handler"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 	"github.com/Wei-Shaw/sub2api/internal/repository"
 	"github.com/Wei-Shaw/sub2api/internal/securityaudit"
 	"github.com/Wei-Shaw/sub2api/internal/server"
@@ -130,8 +131,26 @@ func provideCleanup(
 	pluginManager *service.PluginManager,
 	carpool *service.CarpoolService,
 	carpoolReset *service.CarpoolResetService,
+	subscriptionQuotaRecovery *service.SubscriptionQuotaRecoveryService,
+	subscriptionQuotaRollout *service.SubscriptionQuotaRolloutService,
+	concurrency *service.ConcurrencyService,
+	backgroundJobs *backgroundjobs.Gate,
 ) func() {
 	return func() {
+		if backgroundJobs != nil {
+			backgroundJobs.Hold()
+		}
+		if subscriptionQuotaRollout != nil {
+			subscriptionQuotaRollout.Stop()
+		}
+		// Drain mandatory usage before budgeting shutdown of other services.
+		// Recovery and all database/cache resources remain available during drain.
+		if usageRecordWorkerPool != nil {
+			usageRecordWorkerPool.Stop()
+		}
+		if subscriptionQuotaRecovery != nil {
+			subscriptionQuotaRecovery.Stop()
+		}
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
@@ -308,16 +327,6 @@ func provideCleanup(
 				emailQueue.Stop()
 				return nil
 			}},
-			{"BillingCacheService", func() error {
-				billingCache.Stop()
-				return nil
-			}},
-			{"UsageRecordWorkerPool", func() error {
-				if usageRecordWorkerPool != nil {
-					usageRecordWorkerPool.Stop()
-				}
-				return nil
-			}},
 			{"OAuthService", func() error {
 				oauth.Stop()
 				return nil
@@ -403,6 +412,12 @@ func provideCleanup(
 		}
 
 		infraSteps := []cleanupStep{
+			{"ClaudeScopedConcurrencyCache", func() error {
+				if concurrency != nil {
+					return concurrency.CloseClaudeConcurrencyCache()
+				}
+				return nil
+			}},
 			{"Redis", func() error {
 				if rdb == nil {
 					return nil
@@ -446,6 +461,9 @@ func provideCleanup(
 		}
 
 		runParallel(parallelSteps)
+		if billingCache != nil {
+			billingCache.Stop()
+		}
 		runSequential(infraSteps)
 
 		// Check if context timed out

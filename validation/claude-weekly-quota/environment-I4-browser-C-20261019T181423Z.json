@@ -1,0 +1,18 @@
+{
+  "stage": "I4 independent browser C actual admin API seed",
+  "synthetic_only": true,
+  "production_connected": false,
+  "environment": "environment-I4-20261019T180351Z-active.json",
+  "candidate_image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "candidate_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "user_id": 4,
+  "email": "i4-ui-c-732e5e8647f34c6fb3ed279966fe3b1b@example.invalid",
+  "group_id": 2,
+  "legacy_concurrency": 5,
+  "claude_override": null,
+  "claude_default_effective": 3,
+  "issued_cards": 0,
+  "credential_location": "existing private fixture only",
+  "actual_create_and_read_admin_API": true,
+  "created_utc": "2026-10-19T18:14:23.8352723Z"
+}

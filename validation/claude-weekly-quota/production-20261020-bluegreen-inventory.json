@@ -1,0 +1,165 @@
+{
+  "checked_utc": "2026-10-20T03:16:15.470048+00:00",
+  "read_only": true,
+  "applications_and_data_services": [
+    {
+      "id": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+      "name": "sub2api2",
+      "image_ref": "sub2api:2.8.13-monas-bps.13",
+      "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+      "status": "running",
+      "started": "2026-10-18T15:19:07.917058186Z",
+      "restarts": 5,
+      "health": "healthy",
+      "ports": {
+        "8080/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "29080"
+          }
+        ]
+      },
+      "network_names": [
+        "sub2api2_sub2api-network"
+      ],
+      "compose_project": "sub2api2",
+      "compose_service": "sub2api",
+      "flags": {
+        "CARPOOL_BACKGROUND_ENABLED": "true",
+        "RELEASE_DRAIN_START_HELD": "false"
+      },
+      "admin_email_present": true,
+      "admin_password_present": true,
+      "mounts": [
+        {
+          "type": "bind",
+          "source": "/opt/sub2api2/data",
+          "destination": "/app/data",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "2a990fc99fa309e46fe120f794a4a8160fb71551097fdd1df536396a0f3b7ac8",
+      "name": "sub2api2-postgres",
+      "image_ref": "postgres:18-alpine",
+      "image_id": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd",
+      "status": "running",
+      "started": "2026-10-03T14:22:37.541743239Z",
+      "restarts": 0,
+      "health": "healthy",
+      "ports": {},
+      "network_names": [
+        "sub2api2_sub2api-network"
+      ],
+      "compose_project": "sub2api2",
+      "compose_service": "postgres",
+      "flags": {},
+      "admin_email_present": false,
+      "admin_password_present": false,
+      "mounts": [
+        {
+          "type": "volume",
+          "source": "/var/lib/docker/volumes/ca4b2dadfc0fe4d3d7c1eabc99b03955f21b4ee92920c8c11bda1daaed1c90d4/_data",
+          "destination": "/var/lib/postgresql",
+          "rw": true
+        },
+        {
+          "type": "bind",
+          "source": "/opt/sub2api2/postgres_data",
+          "destination": "/var/lib/postgresql/data",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "80dafa8563483d27dfcaeddfa4aadbd2d2360fae6bbe75d7bac23858efaa7e4f",
+      "name": "sub2api2-redis",
+      "image_ref": "redis:8-alpine",
+      "image_id": "sha256:bd999b5cfee25fb24b8320a31fddbd69f462df44c8138c66e369582937beebc0",
+      "status": "running",
+      "started": "2026-10-03T14:22:37.350942259Z",
+      "restarts": 0,
+      "health": "healthy",
+      "ports": {},
+      "network_names": [
+        "sub2api2_sub2api-network"
+      ],
+      "compose_project": "sub2api2",
+      "compose_service": "redis",
+      "flags": {},
+      "admin_email_present": false,
+      "admin_password_present": false,
+      "mounts": [
+        {
+          "type": "bind",
+          "source": "/opt/sub2api2/redis_data",
+          "destination": "/data",
+          "rw": true
+        }
+      ]
+    }
+  ],
+  "nginx": [
+    {
+      "path": "/etc/nginx/conf.d/sub2api-migrated.conf",
+      "sha256": "b3956a9ee51ee5a5be3d93b2f084e5de8679d762a96fb0877cd2ebad45c05492",
+      "directives": [
+        "listen 80;",
+        "server_name sub2api.monasapi.com;",
+        "listen 443 ssl http2;",
+        "server_name sub2api.monasapi.com;",
+        "include /etc/letsencrypt/options-ssl-nginx.conf;",
+        "proxy_pass http://127.0.0.1:29080;",
+        "proxy_http_version 1.1;",
+        "proxy_set_header Upgrade $http_upgrade;",
+        "proxy_set_header Connection $sub2api_connection_upgrade;",
+        "proxy_buffering off;",
+        "proxy_read_timeout 1200s;",
+        "proxy_send_timeout 1200s;"
+      ]
+    },
+    {
+      "path": "/etc/nginx/conf.d/teamsub2.conf",
+      "sha256": "70ebe713b6d151d5076125133fe161323c1ae0fd46b65b2a7658c885d3e46a42",
+      "directives": [
+        "listen 80;",
+        "server_name teamsub2.monasapi.com;",
+        "listen 443 ssl http2;",
+        "server_name teamsub2.monasapi.com;",
+        "include /etc/letsencrypt/options-ssl-nginx.conf;",
+        "proxy_pass http://127.0.0.1:29080;",
+        "proxy_http_version 1.1;",
+        "proxy_set_header Upgrade $http_upgrade;",
+        "proxy_set_header Connection $teamsub2_connection_upgrade;",
+        "proxy_buffering off;",
+        "proxy_read_timeout 1200s;",
+        "proxy_send_timeout 1200s;"
+      ]
+    },
+    {
+      "path": "/etc/nginx/nginx.conf",
+      "sha256": "f631ca94070dd540a1e4181af3365c8cb3d176d446237d4a3643f3b508d6d7de",
+      "directives": [
+        "include /etc/nginx/mime.types;",
+        "include /etc/nginx/conf.d/*.conf;",
+        "include /etc/nginx/sites-enabled/*;"
+      ]
+    }
+  ],
+  "nginx_active": "active",
+  "nginx_config_test_available": true,
+  "compose_sha256": "269ff5f945386f660eb24ace02bd7079ca87c9e70577cfa8aff51936dd105b61",
+  "resource_summary": {
+    "memory": "total        used        free      shared  buff/cache   available\nMem:            5921        4263         157         399        1500         965\nSwap:           1023        1023           0",
+    "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2        99G   89G  6.2G  94% /",
+    "uptime": "03:16:15 up 33 days, 22:28,  0 users,  load average: 0.60, 0.54, 0.64"
+  },
+  "readiness_status": {
+    "/health": 200,
+    "/v1/models": 401,
+    "/api/v1/admin/release/status": 401
+  },
+  "known_bluegreen_dirs": [],
+  "program_sha256": "85d991720e15993813fdfdddc408852fefe90c54314e760d68765cf5ba0767cd"
+}

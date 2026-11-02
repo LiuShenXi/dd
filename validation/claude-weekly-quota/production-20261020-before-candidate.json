@@ -1,0 +1,97 @@
+{
+  "timestamp_utc": "2026-10-20T03:52:03.723697+00:00",
+  "containers": [
+    {
+      "name": "sub2api2",
+      "id": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+      "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+      "running": true,
+      "status": "running",
+      "started": "2026-10-18T15:19:07.917058186Z",
+      "restarts": 5,
+      "restart_policy": "unless-stopped",
+      "oom_killed": false,
+      "health": "healthy",
+      "flags": {
+        "RELEASE_DRAIN_START_HELD": "false"
+      }
+    },
+    {
+      "name": "sub2api2-postgres",
+      "id": "2a990fc99fa309e46fe120f794a4a8160fb71551097fdd1df536396a0f3b7ac8",
+      "image_id": "sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd",
+      "running": true,
+      "status": "running",
+      "started": "2026-10-03T14:22:37.541743239Z",
+      "restarts": 0,
+      "restart_policy": "unless-stopped",
+      "oom_killed": false,
+      "health": "healthy",
+      "flags": {}
+    },
+    {
+      "name": "sub2api2-redis",
+      "id": "80dafa8563483d27dfcaeddfa4aadbd2d2360fae6bbe75d7bac23858efaa7e4f",
+      "image_id": "sha256:bd999b5cfee25fb24b8320a31fddbd69f462df44c8138c66e369582937beebc0",
+      "running": true,
+      "status": "running",
+      "started": "2026-10-03T14:22:37.350942259Z",
+      "restarts": 0,
+      "restart_policy": "unless-stopped",
+      "oom_killed": false,
+      "health": "healthy",
+      "flags": {}
+    }
+  ],
+  "routes": [
+    {
+      "url": "http://127.0.0.1:29080",
+      "/health": 200,
+      "/v1/models": 401,
+      "/": 200,
+      "index_sha256": "84f2d7d8679e12f3648cbcc4e0c090bafb7c9c2a533cdc17c1238a5efa1696e6",
+      "release_status_http": 200,
+      "release_status": {
+        "state": "open",
+        "active_http": 2,
+        "pending_usage": 0,
+        "queued_http": 0
+      }
+    },
+    {
+      "url": "http://127.0.0.1:29081",
+      "unavailable": true
+    },
+    {
+      "url": "https://sub2api.monasapi.com",
+      "/health": 200,
+      "/v1/models": 401,
+      "/": 200,
+      "index_sha256": "f76b8b035da63ba3f9878a9821712022bbcc96099b5c4cef8ee1e72b431b9d79",
+      "release_status_http": 200,
+      "release_status": {
+        "state": "open",
+        "active_http": 2,
+        "pending_usage": 0,
+        "queued_http": 0
+      }
+    },
+    {
+      "url": "https://teamsub2.monasapi.com",
+      "/health": 200,
+      "/v1/models": 401,
+      "/": 200,
+      "index_sha256": "7c585165995477610cda0ed72e702db320aa4d7a29a68032ad02b5f0c3822193",
+      "release_status_http": 200,
+      "release_status": {
+        "state": "open",
+        "active_http": 2,
+        "pending_usage": 0,
+        "queued_http": 0
+      }
+    }
+  ],
+  "database": {
+    "new_schema_query_available": false
+  }
+}

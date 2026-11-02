@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-10-20T03:44:41.203250+00:00",
+  "status": "controller_source_frozen_pending_full_isolated_runtime_proof",
+  "scope": "Host Nginx release controller, fail-closed retirement tests, legacy deploy entrypoint deprecation and runbook. No production operations performed by this agent.",
+  "files": {
+    "deploy/blue-green/scripts/host-release.py": {
+      "sha256": "13f2468b5d352429a316108675212a5161e86295f165c822fb23b2378cb63f03"
+    },
+    "deploy/blue-green/scripts/test_host_release.py": {
+      "sha256": "5a4bdf27a179799aa55757bd3e1848fd73e2c7783cc8781287df7c9f7a7293ac"
+    },
+    "deploy/blue-green/scripts/deploy.sh": {
+      "sha256": "55b457ead86f4e7e0ad3330cc64bc06f89f98930d7e6bcaa111b061ba6d2d072"
+    },
+    "deploy/blue-green/HOST_RELEASE.md": {
+      "sha256": "8b48e00163cae039b449a1e3859872db3cae9cc5fa335f0237fa43e5f978af0e"
+    },
+    "deploy/blue-green/README.md": {
+      "sha256": "981d39378e803f865c48d443470e36c60d8178323c1de4e00982c1179078cf12"
+    }
+  },
+  "checks": [
+    {
+      "command": "python3 deploy/blue-green/scripts/test_host_release.py -q",
+      "result": "PASS",
+      "tests": 31
+    },
+    {
+      "command": "python3 deploy/blue-green/scripts/test_release_guards.py -q",
+      "result": "PASS",
+      "tests": 13
+    },
+    {
+      "command": "python3 -m py_compile deploy/blue-green/scripts/host-release.py deploy/blue-green/scripts/test_host_release.py",
+      "result": "PASS"
+    },
+    {
+      "command": "bash -n deploy/blue-green/scripts/deploy.sh",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check -- deploy/blue-green .trellis/spec/backend/release-safety.md",
+      "result": "PASS"
+    },
+    {
+      "command": "Explicit trailing-whitespace check including ignored new controller/test files",
+      "result": "PASS"
+    }
+  ],
+  "retirement_contract": {
+    "natural_ingress_first": true,
+    "deferred_timeout_preserves_old_process": true,
+    "external_counts": [
+      "backup_running",
+      "restore_running",
+      "detached_image_tasks",
+      "batch_active"
+    ],
+    "external_evidence": "Required live exact-process collector after ingress and release counters are quiet, with timestamp from current invocation. Positive counts defer; missing, null, boolean, negative or unknown counts refuse before restart-policy mutation and stop.",
+    "legacy_backup_schedule": "Must be explicitly verified false alongside legacy scheduled/channel/batch/CN conditions.",
+    "stop_order": "Persist intent; verify all evidence; disable exact old container restart; verify process/policy/quiescence again; stop; verify stopped; activate exact new background instance.",
+    "rollback": "Only same still-running process and exact recorded drain operation. Never starts or restarts a container."
+  },
+  "runtime_evidence_boundary": {
+    "reported_by": "/root/i5_integration",
+    "observed_by_this_agent": false,
+    "reported_pass": [
+      "Isolated real Nginx install-route/status with two Host routes and real worker generations",
+      "R0 HTTP/SSE/WS/TLS HTTP2 baseline",
+      "Root-owned main-server-inflight.py against real isolated PostgreSQL/Redis: processing=1, completed=0, unknown state refused"
+    ],
+    "pending": [
+      "Full candidate cutover, route-identity failure compensation, old ingress timeout preservation, rollback and eventual retirement proof"
+    ]
+  },
+  "notes": [
+    "New scripts are ignored by the repository scripts pattern and require explicit git add -f by coordinator.",
+    "No secrets, HTTP response bodies or Docker environment values are recorded.",
+    "Spec append at .trellis/spec/backend/release-safety.md is shared with backend owner; not pinned as exclusively owned source."
+  ]
+}

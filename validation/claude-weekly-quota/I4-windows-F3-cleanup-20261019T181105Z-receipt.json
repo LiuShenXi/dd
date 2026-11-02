@@ -1,0 +1,16 @@
+{
+  "stage": "F3 test-only cleanup counter synchronization",
+  "command": "go test -tags=unit -count=1 -timeout=2m -json -run ^TestUsageCleanupService ./internal/service",
+  "exit_code": 0,
+  "source_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "source_after_sha256": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "source_stable": true,
+  "top_passes": 31,
+  "including_subtest_passes": 31,
+  "failure_count": 0,
+  "individual_skip_count": 0,
+  "log": "I4-windows-F3-cleanup-20261019T181105Z.jsonl",
+  "source_before_manifest": "I4-windows-F3-cleanup-20261019T181105Z-source-before.json",
+  "source_after_manifest": "I4-windows-F3-cleanup-20261019T181105Z-source-after.json",
+  "production_connected": false
+}

@@ -1,0 +1,58 @@
+{
+  "captured_utc": "2026-10-20T02:24:28.922864+00:00",
+  "F1_source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "F2_source_sha256": "56f189a7e2c4c32a96ea439d15687e809f9839670f63181e5312851642b757a4",
+  "working_source_matches_F2": true,
+  "frontend_dist_identical": true,
+  "changed_build_scope_files": [
+    {
+      "path": "backend/internal/repository/subscription_quota_plan_units_i5_integration_test.go",
+      "F1_sha256": null,
+      "F2_sha256": "dd791cd2279d3619e987c72052b1939c946b8385c848f68ab669d79f56a927d5"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_promotion_http_i6_integration_test.go",
+      "F1_sha256": null,
+      "F2_sha256": "18da5a6af93b2b5b799e7be831c39bfc70e5d5c4c5bf057c7a50cfef66181c0a"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_rollout_http_i6_integration_test.go",
+      "F1_sha256": "d391e390143d018a06b9c8f5d8437dd2db7ca91fc978dc9bc5dd0eeb75d9796c",
+      "F2_sha256": "57e86d0083f1e527f9ced0d86bc4171784d2e766ed3a67877f6207f7057e01f1"
+    },
+    {
+      "path": "backend/internal/repository/subscription_quota_upgrade_rollback_i6_integration_test.go",
+      "F1_sha256": "9ad7d7d355cbd5bc56cd308abbd3e1d3b9e9ee3941fbcb5288267e40ced5f732",
+      "F2_sha256": "c1ba713a83b178c23c0c18af129fb409710b07a58d04603c40a3ac579e7d6dde"
+    },
+    {
+      "path": "backend/internal/service/payment_config_plans.go",
+      "F1_sha256": "732c5aafb81b51ec40a7326ba90279d0061b63691948446302939d38c3a2bc18",
+      "F2_sha256": "7aa93eb2840693fc4ddd6124b98334c8a939fa920608a686712c7c74c446c093"
+    },
+    {
+      "path": "backend/internal/service/payment_order.go",
+      "F1_sha256": "9fb8ecea8b9b75d2d0fa157eb814aeb6ac8d087c25e74c207308084f9152bf43",
+      "F2_sha256": "b06f18f1a0f635ca7dbf4ffd678e244013a8e20cc383d0e4bf8af5dd0bee0646"
+    },
+    {
+      "path": "backend/internal/service/subscription_quota_payment_test.go",
+      "F1_sha256": "6401cce8fe6400680867c549ac6fdcac8aa7d7a0d1fc3aefb566faa70dedbc62",
+      "F2_sha256": "7fe2ee8a194df9ef7a1cced610b26e5dbf43f7bdab03d6473151ba97ff6957e4"
+    }
+  ],
+  "production_changes": [
+    {
+      "path": "backend/internal/service/payment_config_plans.go",
+      "F1_sha256": "732c5aafb81b51ec40a7326ba90279d0061b63691948446302939d38c3a2bc18",
+      "F2_sha256": "7aa93eb2840693fc4ddd6124b98334c8a939fa920608a686712c7c74c446c093"
+    },
+    {
+      "path": "backend/internal/service/payment_order.go",
+      "F1_sha256": "9fb8ecea8b9b75d2d0fa157eb814aeb6ac8d087c25e74c207308084f9152bf43",
+      "F2_sha256": "b06f18f1a0f635ca7dbf4ffd678e244013a8e20cc383d0e4bf8af5dd0bee0646"
+    }
+  ],
+  "reuse_scope": "F1 actual concurrency, lease renewal, controlled conversion, Redis fault, metadata, wallet, WS and scope metrics use identical production paths. F2 only accepts canonical days and legacy day in fixed 7-day paid plan validation. F2 payment/UI and R0-R1-R2-R1 image rollback are separately rerun. Test-driver-only changes are attributed independently; no claim all 74 cases ran on F2.",
+  "pass": true
+}

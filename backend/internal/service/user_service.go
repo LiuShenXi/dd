@@ -96,17 +96,18 @@ type UserListFilters struct {
 // 注意这里没有 balance / total_recharged：余额只能经由 AdjustBalance、
 // SetBalance、UpdateBalance、DeductBalance 等原子接口修改，Update 永远不碰它们。
 type UserUpdateFields struct {
-	Email        bool
-	Username     bool
-	Notes        bool
-	PasswordHash bool
-	Role         bool
-	Status       bool
-	Concurrency  bool
-	RPMLimit     bool
-	SignupSource bool
-	LastLoginAt  bool
-	LastActiveAt bool
+	Email                         bool
+	Username                      bool
+	Notes                         bool
+	PasswordHash                  bool
+	Role                          bool
+	Status                        bool
+	Concurrency                   bool
+	ClaudeSubscriptionConcurrency bool
+	RPMLimit                      bool
+	SignupSource                  bool
+	LastLoginAt                   bool
+	LastActiveAt                  bool
 	// BalanceNotifySettings 覆盖 balance_notify_enabled / _threshold_type / _threshold。
 	BalanceNotifySettings bool
 	// BalanceNotifyExtraEmails 与上一项分开，避免"改通知阈值"覆盖并发的"加通知邮箱"。
@@ -291,6 +292,7 @@ type ChangePasswordRequest struct {
 
 // UserService 用户服务
 type UserService struct {
+	claudeConcurrency    *ConcurrencyService
 	userRepo             UserRepository
 	settingRepo          SettingRepository
 	authCacheInvalidator APIKeyAuthCacheInvalidator
@@ -325,6 +327,7 @@ func (s *UserService) GetProfile(ctx context.Context, userID int64) (*User, erro
 		return nil, fmt.Errorf("get user: %w", err)
 	}
 	normalizeLoadedUserTokenVersion(user)
+	user.ClaudeConcurrencyView = s.claudeConcurrency.ClaudeConcurrencyView(ctx, user)
 	if err := s.hydrateUserAvatar(ctx, user); err != nil {
 		return nil, fmt.Errorf("get user avatar: %w", err)
 	}

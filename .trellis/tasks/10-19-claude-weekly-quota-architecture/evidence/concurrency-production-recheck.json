@@ -1,0 +1,13 @@
+{
+  "checked_at_utc": "2026-10-19T16:36:39.235972+00:00",
+  "checked_at_asia_shanghai": "2026-10-20T00:36:39.235972+08:00",
+  "host_alias": "main-server",
+  "container": "sub2api2",
+  "image": "sub2api:2.8.13-monas-bps.13",
+  "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+  "revision": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
+  "binary_sha256": "85d991720e15993813fdfdddc408852fefe90c54314e760d68765cf5ba0767cd",
+  "health": "healthy",
+  "method": "Read-only docker inspect and sha256sum through SSH; no production writes or billable requests",
+  "conclusion": "Production user concurrency is shared by user_id; Claude term scope isolation is a required new implementation."
+}

@@ -100,6 +100,11 @@ func Concurrency(v int) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldConcurrency, v))
 }
 
+// ClaudeSubscriptionConcurrency applies equality check predicate on the "claude_subscription_concurrency" field. It's identical to ClaudeSubscriptionConcurrencyEQ.
+func ClaudeSubscriptionConcurrency(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldClaudeSubscriptionConcurrency, v))
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldStatus, v))
@@ -623,6 +628,56 @@ func ConcurrencyLT(v int) predicate.User {
 // ConcurrencyLTE applies the LTE predicate on the "concurrency" field.
 func ConcurrencyLTE(v int) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldConcurrency, v))
+}
+
+// ClaudeSubscriptionConcurrencyEQ applies the EQ predicate on the "claude_subscription_concurrency" field.
+func ClaudeSubscriptionConcurrencyEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldClaudeSubscriptionConcurrency, v))
+}
+
+// ClaudeSubscriptionConcurrencyNEQ applies the NEQ predicate on the "claude_subscription_concurrency" field.
+func ClaudeSubscriptionConcurrencyNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldClaudeSubscriptionConcurrency, v))
+}
+
+// ClaudeSubscriptionConcurrencyIn applies the In predicate on the "claude_subscription_concurrency" field.
+func ClaudeSubscriptionConcurrencyIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldClaudeSubscriptionConcurrency, vs...))
+}
+
+// ClaudeSubscriptionConcurrencyNotIn applies the NotIn predicate on the "claude_subscription_concurrency" field.
+func ClaudeSubscriptionConcurrencyNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldClaudeSubscriptionConcurrency, vs...))
+}
+
+// ClaudeSubscriptionConcurrencyGT applies the GT predicate on the "claude_subscription_concurrency" field.
+func ClaudeSubscriptionConcurrencyGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldClaudeSubscriptionConcurrency, v))
+}
+
+// ClaudeSubscriptionConcurrencyGTE applies the GTE predicate on the "claude_subscription_concurrency" field.
+func ClaudeSubscriptionConcurrencyGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldClaudeSubscriptionConcurrency, v))
+}
+
+// ClaudeSubscriptionConcurrencyLT applies the LT predicate on the "claude_subscription_concurrency" field.
+func ClaudeSubscriptionConcurrencyLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldClaudeSubscriptionConcurrency, v))
+}
+
+// ClaudeSubscriptionConcurrencyLTE applies the LTE predicate on the "claude_subscription_concurrency" field.
+func ClaudeSubscriptionConcurrencyLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldClaudeSubscriptionConcurrency, v))
+}
+
+// ClaudeSubscriptionConcurrencyIsNil applies the IsNil predicate on the "claude_subscription_concurrency" field.
+func ClaudeSubscriptionConcurrencyIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldClaudeSubscriptionConcurrency))
+}
+
+// ClaudeSubscriptionConcurrencyNotNil applies the NotNil predicate on the "claude_subscription_concurrency" field.
+func ClaudeSubscriptionConcurrencyNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldClaudeSubscriptionConcurrency))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.

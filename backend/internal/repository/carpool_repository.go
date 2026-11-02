@@ -421,17 +421,21 @@ func prepareCarpoolUserGroupTx(ctx context.Context, tx *sql.Tx, params domain.Cr
 		}
 	}
 	// Lock every existing Key without changing its identity, group, quota, or status.
-	rows, err := tx.QueryContext(ctx, `SELECT group_id FROM api_keys WHERE user_id=$1 AND deleted_at IS NULL ORDER BY id FOR UPDATE`, params.UserID)
+	// Only Key rows are locked. Acquiring a Claude scope/term or group lock
+	// after the user/Key locks would invert the quota settlement lock order.
+	rows, err := tx.QueryContext(ctx, `SELECT k.group_id,COALESCE(g.platform,''),COALESCE(g.subscription_type,''),COALESCE(g.subscription_quota_mode,'') FROM api_keys k LEFT JOIN groups g ON g.id=k.group_id AND g.deleted_at IS NULL WHERE k.user_id=$1 AND k.deleted_at IS NULL ORDER BY k.id FOR UPDATE OF k`, params.UserID)
 	if err != nil {
 		return err
 	}
 	for rows.Next() {
 		var keyGroup sql.NullInt64
-		if err = rows.Scan(&keyGroup); err != nil {
+		var keyPlatform, keyType, keyQuotaMode string
+		if err = rows.Scan(&keyGroup, &keyPlatform, &keyType, &keyQuotaMode); err != nil {
 			_ = rows.Close()
 			return err
 		}
-		if !keyGroup.Valid || keyGroup.Int64 != params.GroupID {
+		claudeTerm := keyGroup.Valid && keyPlatform == service.PlatformAnthropic && keyType == service.SubscriptionTypeSubscription && keyQuotaMode == domain.SubscriptionQuotaModeTerm
+		if !keyGroup.Valid || (keyGroup.Int64 != params.GroupID && !claudeTerm) {
 			_ = rows.Close()
 			return service.ErrCarpoolOpeningKeyGroup
 		}

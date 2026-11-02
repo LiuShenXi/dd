@@ -1,0 +1,140 @@
+{
+  "stage": "I4 read-only exact task resource isolation",
+  "network": "cwq-env-20261019t131000z-e4f68a1d-net",
+  "internal": true,
+  "subnets": [
+    "10.247.190.0/24"
+  ],
+  "containers": [
+    {
+      "running": "true",
+      "image": "claude-weekly-quota-provider:067695fb9d71",
+      "host_bindings": {},
+      "container": "a84adf2bb695b101b30cd007999a0b3adc284ef1bb4d0de04d732e03e90158b9",
+      "environment": "main",
+      "role": "provider",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "sub2api:claude-weekly-i4-candidate-aa71d6226b7b",
+      "host_bindings": {},
+      "container": "c84eb08dfcdf03b499376f3cd660c91d8a92e794e891aa9e41d902abfeabfe6b",
+      "environment": "main",
+      "role": "application2",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "postgres:18.1-alpine3.23",
+      "host_bindings": {},
+      "container": "561a79732b9909ef4a885b005c78caae655d1e2d1f9c26e319e4f54687cca386",
+      "environment": "main",
+      "role": "postgres",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "sub2api:claude-weekly-i4-candidate-aa71d6226b7b",
+      "host_bindings": {},
+      "container": "49989d0f4da39fea553017c03076d463091ba16be6cfdc87f5d3f9f06e12961d",
+      "environment": "main",
+      "role": "application",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "redis:8.4-alpine",
+      "host_bindings": {},
+      "container": "9901a76eb63430d291e7580a70eaafa375c8461dcdca6b9e9ad0ac96df35f3fa",
+      "environment": "main",
+      "role": "redis",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "claude-weekly-quota-provider:067695fb9d71",
+      "host_bindings": {},
+      "container": "18c3e855e54fd0c73c320f9f79c5f5152fc8f07ff945f52f55913c338ba3268f",
+      "environment": "browser",
+      "role": "provider",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "postgres:18.1-alpine3.23",
+      "host_bindings": {},
+      "container": "41263efb3805b795047fbd98004af6e91fdc17a64e01b3f45afb81233c18a203",
+      "environment": "browser",
+      "role": "postgres",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "sub2api:claude-weekly-i4-candidate-aa71d6226b7b",
+      "host_bindings": {},
+      "container": "24d38063bd27b95da04fce8cef63e93b54de8f4530121114b557e72d3f97d60d",
+      "environment": "browser",
+      "role": "application",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "redis:8.4-alpine",
+      "host_bindings": {},
+      "container": "782f5b0f60da138a2572987c8c573c0d84fa6b21edfe259c54ed298eec608877",
+      "environment": "browser",
+      "role": "redis",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "claude-weekly-quota-provider:067695fb9d71",
+      "host_bindings": {},
+      "container": "4e51595f9e3ca67368067fe187e08416357d5f7cf72aeaa17ca67bc1a5aa150b",
+      "environment": "websocket",
+      "role": "provider",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "sub2api:claude-weekly-i4-candidate-aa71d6226b7b",
+      "host_bindings": {},
+      "container": "2a9b829656d0676b11eeea49b44b6de38a511c1caea0a514b4d44066eda01180",
+      "environment": "websocket",
+      "role": "application2",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "postgres:18.1-alpine3.23",
+      "host_bindings": {},
+      "container": "36b7843275ef93301268a390892b442117e3d5e50857318048ee76dfbf9bf511",
+      "environment": "websocket",
+      "role": "postgres",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "sub2api:claude-weekly-i4-candidate-aa71d6226b7b",
+      "host_bindings": {},
+      "container": "6dd71ad402a9213844ad8b3b8fe557c15798acd7e4e0608e3c28c2e911dccf7f",
+      "environment": "websocket",
+      "role": "application",
+      "published_ports": {}
+    },
+    {
+      "running": "true",
+      "image": "redis:8.4-alpine",
+      "host_bindings": {},
+      "container": "79b4d70e0171886eea278a6621a84a3f360c5e3b731a3a86af74a6298a1f9010",
+      "environment": "websocket",
+      "role": "redis",
+      "published_ports": {}
+    }
+  ],
+  "external_provider_network": false,
+  "database_host_ports": [],
+  "production_connected": false,
+  "observed_utc": "2026-10-19T18:23:55.9950589Z"
+}

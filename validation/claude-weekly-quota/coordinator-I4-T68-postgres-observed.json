@@ -1,0 +1,35 @@
+{
+  "accepted": true,
+  "observed_utc": "2026-10-19T18:28:59.1601864Z",
+  "read_only": true,
+  "synthetic_only": true,
+  "production_connected": false,
+  "environment_receipt": "environment-I4-20261019T180032Z-active.json",
+  "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "requests": [
+    {
+      "id": 31,
+      "status": "settled",
+      "term_id": 1,
+      "user_id": 2,
+      "log_acked": true,
+      "api_key_id": 1,
+      "dedup_rows": 1,
+      "ledger_rows": 1,
+      "actual_cost_usd": "0.00060000"
+    },
+    {
+      "id": 32,
+      "status": "settled",
+      "term_id": 1,
+      "user_id": 2,
+      "log_acked": true,
+      "api_key_id": 2,
+      "dedup_rows": 1,
+      "ledger_rows": 1,
+      "actual_cost_usd": "0.00060000"
+    }
+  ],
+  "source": "coordinator independently executed SELECT after completed T68",
+  "limits": "B and other-wallet before/after invariants rely on original executed test; this separate observation checks exact final requests only"
+}

@@ -1,0 +1,15 @@
+{
+  "accepted_T68_only": true,
+  "reviewed_utc": "2026-10-19T18:29:27.920564+00:00",
+  "actual_stream_seconds": "973.0817914",
+  "lease_samples": 62,
+  "candidate_image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "source_compatibility": "approved F2 image with F3 test-only bridge",
+  "independent_postgres_observation": "coordinator-I4-T68-postgres-observed.json",
+  "exact_original_card_debit": "0.00120000",
+  "other_wallet_invariants": "Executed original test full-row guards; separate SELECT proves final original-card requests only",
+  "I4_gate_accepted": false,
+  "browser_executed": false,
+  "production_deployed": false,
+  "remote_branch_pushed": false
+}

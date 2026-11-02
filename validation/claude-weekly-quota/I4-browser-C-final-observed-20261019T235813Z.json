@@ -1,0 +1,54 @@
+{
+  "stage": "I4 C actual UI final SQL observations",
+  "image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+  "facts": {
+    "terms": [
+      {
+        "id": 5,
+        "term_no": 1,
+        "used_usd": "0.00000000",
+        "quota_usd": "100.00000000",
+        "starts_at": "2026-10-20T07:55:28.655025+08:00",
+        "expires_at": "2026-10-27T07:55:28.655025+08:00",
+        "cancelled_at": null,
+        "subscription_id": 5,
+        "duration_seconds": 604800.0
+      }
+    ],
+    "balance": "0.00000000",
+    "parents": [
+      {
+        "id": 5,
+        "starts_at": "2026-10-20T07:55:28.655025+08:00",
+        "deleted_at": null,
+        "expires_at": "2026-10-27T07:55:28.655025+08:00",
+        "quota_revision": 1
+      }
+    ],
+    "user_id": 4,
+    "operations": [
+      {
+        "id": 5,
+        "kind": "open_term",
+        "request_fingerprint": "3ef3115581445156f435a77ba6c8e69841268f73f3f596d1a84efd41a89b901b",
+        "idempotency_key_sha256": "661cd7330bb375a2be8dc473cd02f87b4f88d238b2aaaafb19be517560450890"
+      }
+    ],
+    "ledger_count": 0,
+    "request_count": 0,
+    "claude_override": 4,
+    "legacy_concurrency": 5
+  },
+  "checks": {
+    "legacy5": true,
+    "claude4": true,
+    "two_terms": false,
+    "two_operations": false,
+    "no_consumption": true
+  },
+  "final_pass": false,
+  "require_final": false,
+  "read_only": true,
+  "raw_idempotency_auth_payload_logged": false,
+  "observed_utc": "2026-10-19T23:58:13.6609756Z"
+}

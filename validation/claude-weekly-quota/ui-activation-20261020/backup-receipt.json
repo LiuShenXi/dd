@@ -1,0 +1,22 @@
+{
+  "finished_utc": "2026-10-20T04:30:34.269912+00:00",
+  "backup_verified": true,
+  "files": {
+    "configuration-and-data.tar.gz": {
+      "bytes": 195021148,
+      "sha256": "bf0d3bda5d0af1e4e29342baa4395e1433bc1848a07cb63ac7bccfdec3b920bb"
+    },
+    "database.dump": {
+      "bytes": 174117498,
+      "sha256": "e3dd1d4396faddec3983408213e6ac63cc550ec948824e47d3f030dd6b06d773"
+    },
+    "containers.private.json": {
+      "bytes": 42777,
+      "sha256": "f756443400829076b4d31c3a052c9fb59eba04ac5a1420cde2e60e766a409084"
+    },
+    "database.toc.private": {
+      "bytes": 112443,
+      "sha256": "54d628c8be20a02953cc2144436b1ede5c0d0674442d89ef1eaf1aba3c93d354"
+    }
+  }
+}

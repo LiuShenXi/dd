@@ -104,16 +104,18 @@ type subscriptionCacheInvalidationPubSub interface {
 // BillingCacheService 计费缓存服务
 // 负责余额和订阅数据的缓存管理，提供高性能的计费资格检查
 type BillingCacheService struct {
-	cache                 BillingCache
-	userRepo              UserRepository
-	subRepo               UserSubscriptionRepository
-	apiKeyRateLimitLoader apiKeyRateLimitLoader
-	userRPMCache          UserRPMCache
-	userGroupRateRepo     UserGroupRateRepository
-	cfg                   *config.Config
-	circuitBreaker        *billingCircuitBreaker
-	userPlatformQuotaRepo UserPlatformQuotaRepository
-	carpoolGatewayBilling CarpoolGatewayBilling
+	cache                            BillingCache
+	userRepo                         UserRepository
+	subRepo                          UserSubscriptionRepository
+	apiKeyRateLimitLoader            apiKeyRateLimitLoader
+	userRPMCache                     UserRPMCache
+	userGroupRateRepo                UserGroupRateRepository
+	cfg                              *config.Config
+	circuitBreaker                   *billingCircuitBreaker
+	userPlatformQuotaRepo            UserPlatformQuotaRepository
+	carpoolGatewayBilling            CarpoolGatewayBilling
+	subscriptionQuotaProtectedGroups *SubscriptionQuotaProtectedGroupService
+	subscriptionQuotaGatewayBilling  SubscriptionQuotaGatewayBilling
 
 	cacheWriteChan     chan cacheWriteTask
 	cacheWriteWg       sync.WaitGroup
@@ -734,6 +736,23 @@ func (s *BillingCacheService) IncrementUserPlatformQuotaUsage(userID int64, plat
 // 订阅模式：检查缓存用量未超过限额（Group限额从参数传入）
 // platform 为请求的目标平台（如 "anthropic"），传空串 "" 时跳过 user × platform quota 检查。
 func (s *BillingCacheService) CheckBillingEligibility(ctx context.Context, user *User, apiKey *APIKey, group *Group, subscription *UserSubscription, platform string) error {
+	if err := ValidateSubscriptionQuotaMode(group); err != nil {
+		return err
+	}
+	if group.HasTermQuotaMode() {
+		if s == nil || !SubscriptionQuotaAdmissionEnabled(s.cfg, group.ID) || s.SubscriptionQuotaGatewayBilling() == nil {
+			return ErrSubscriptionQuotaBillingUnavailable
+		}
+		if platform != PlatformAnthropic || user == nil || apiKey == nil || apiKey.UserID != user.ID || apiKey.GroupID == nil || *apiKey.GroupID != group.ID {
+			return ErrSubscriptionQuotaEndpointUnsupported
+		}
+		if apiKey.HasRateLimits() {
+			if err := s.checkAPIKeyRateLimits(ctx, apiKey); err != nil {
+				return err
+			}
+		}
+		return s.checkRPM(ctx, user, group)
+	}
 	// 简易模式：跳过所有计费检查
 	if s.cfg.RunMode == config.RunModeSimple {
 		return nil

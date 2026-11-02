@@ -19,6 +19,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 )
 
 // ─── Mocks ───
@@ -1319,4 +1320,58 @@ func TestBackupService_StartRestore_SplitParts(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "completed", final.RestoreStatus)
 	require.Equal(t, dumpContent, dumper.restored)
+}
+
+func TestBackupService_PreserveStartupDoesNotRecoverAnotherProcess(t *testing.T) {
+	repo := newMockSettingRepo()
+	seedS3Config(t, repo)
+	store := newMockObjectStore()
+	cfg := &config.Config{}
+	cfg.Gateway.ConcurrencyStartupCleanupMode = "preserve"
+	svc := NewBackupService(repo, cfg, &plainEncryptor{}, func(context.Context, *BackupS3Config) (BackupObjectStore, error) { return store, nil }, &mockDumper{})
+	before := &BackupRecord{ID: "blue-live-backup", Status: "running", RestoreStatus: "running", S3Key: "backups/live/object", StartedAt: time.Now().Format(time.RFC3339)}
+	store.objects[before.S3Key] = []byte("owned by live blue")
+	require.NoError(t, svc.saveRecord(context.Background(), before))
+	svc.Start()
+	defer svc.Stop()
+	after, err := svc.GetBackupRecord(context.Background(), before.ID)
+	require.NoError(t, err)
+	require.Equal(t, before, after)
+	store.mu.Lock()
+	defer store.mu.Unlock()
+	require.Empty(t, store.deletedKeys)
+	require.Equal(t, []byte("owned by live blue"), store.objects[before.S3Key])
+}
+
+func TestBackupService_ScheduledRoleCountsEntireBackupUntilComplete(t *testing.T) {
+	repo := newMockSettingRepo()
+	seedS3Config(t, repo)
+	dumper := &blockingDumper{blockCh: make(chan struct{}), data: []byte("synthetic dump")}
+	svc := newTestBackupService(repo, dumper, newMockObjectStore())
+	gate := backgroundjobs.New("legacy", nil)
+	svc.backgroundJobs = gate
+	finished := make(chan struct{})
+	var release sync.Once
+	defer release.Do(func() { close(dumper.blockCh) })
+	go func() { defer close(finished); svc.runScheduledBackup() }()
+	require.Eventually(t, func() bool { return gate.Status().ActiveTasks == 1 }, time.Second, time.Millisecond)
+	gate.Hold()
+	require.Equal(t, int64(1), gate.Status().ActiveTasks)
+	select {
+	case <-finished:
+		t.Fatal("drain cancelled accepted backup")
+	default:
+	}
+	release.Do(func() { close(dumper.blockCh) })
+	select {
+	case <-finished:
+	case <-time.After(3 * time.Second):
+		t.Fatal("backup did not finish")
+	}
+	require.Zero(t, gate.Status().ActiveTasks)
+	require.Equal(t, "held", gate.Status().State)
+	records, err := svc.ListBackups(context.Background())
+	require.NoError(t, err)
+	require.Len(t, records, 1)
+	require.Equal(t, "completed", records[0].Status)
 }

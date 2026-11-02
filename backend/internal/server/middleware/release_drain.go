@@ -38,7 +38,7 @@ func ReleaseDrainBypass(method, route string) bool {
 		return false
 	}
 	switch route {
-	case "/api/v1/admin/release/drain", "/api/v1/admin/release/lock", "/api/v1/admin/release/cancel", "/api/v1/admin/release/resume":
+	case "/api/v1/admin/release/drain", "/api/v1/admin/release/lock", "/api/v1/admin/release/cancel", "/api/v1/admin/release/resume", "/api/v1/admin/release/background/activate":
 		return true
 	default:
 		return false

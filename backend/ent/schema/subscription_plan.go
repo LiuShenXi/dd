@@ -31,6 +31,10 @@ func (SubscriptionPlan) Annotations() []schema.Annotation {
 func (SubscriptionPlan) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("group_id"),
+		// Exact decimal text at the Go boundary; never convert a card allowance
+		// through a binary float. SQL owns the NUMERIC constraint.
+		field.String("term_quota_usd").Optional().Nillable().
+			SchemaType(map[string]string{dialect.Postgres: "numeric(20,8)"}),
 		field.String("name").
 			MaxLen(100).
 			NotEmpty(),

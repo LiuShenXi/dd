@@ -310,6 +310,60 @@ func (_u *UsageLogUpdate) ClearSubscriptionID() *UsageLogUpdate {
 	return _u
 }
 
+// SetSubscriptionTermID sets the "subscription_term_id" field.
+func (_u *UsageLogUpdate) SetSubscriptionTermID(v int64) *UsageLogUpdate {
+	_u.mutation.ResetSubscriptionTermID()
+	_u.mutation.SetSubscriptionTermID(v)
+	return _u
+}
+
+// SetNillableSubscriptionTermID sets the "subscription_term_id" field if the given value is not nil.
+func (_u *UsageLogUpdate) SetNillableSubscriptionTermID(v *int64) *UsageLogUpdate {
+	if v != nil {
+		_u.SetSubscriptionTermID(*v)
+	}
+	return _u
+}
+
+// AddSubscriptionTermID adds value to the "subscription_term_id" field.
+func (_u *UsageLogUpdate) AddSubscriptionTermID(v int64) *UsageLogUpdate {
+	_u.mutation.AddSubscriptionTermID(v)
+	return _u
+}
+
+// ClearSubscriptionTermID clears the value of the "subscription_term_id" field.
+func (_u *UsageLogUpdate) ClearSubscriptionTermID() *UsageLogUpdate {
+	_u.mutation.ClearSubscriptionTermID()
+	return _u
+}
+
+// SetSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field.
+func (_u *UsageLogUpdate) SetSubscriptionQuotaRequestID(v int64) *UsageLogUpdate {
+	_u.mutation.ResetSubscriptionQuotaRequestID()
+	_u.mutation.SetSubscriptionQuotaRequestID(v)
+	return _u
+}
+
+// SetNillableSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field if the given value is not nil.
+func (_u *UsageLogUpdate) SetNillableSubscriptionQuotaRequestID(v *int64) *UsageLogUpdate {
+	if v != nil {
+		_u.SetSubscriptionQuotaRequestID(*v)
+	}
+	return _u
+}
+
+// AddSubscriptionQuotaRequestID adds value to the "subscription_quota_request_id" field.
+func (_u *UsageLogUpdate) AddSubscriptionQuotaRequestID(v int64) *UsageLogUpdate {
+	_u.mutation.AddSubscriptionQuotaRequestID(v)
+	return _u
+}
+
+// ClearSubscriptionQuotaRequestID clears the value of the "subscription_quota_request_id" field.
+func (_u *UsageLogUpdate) ClearSubscriptionQuotaRequestID() *UsageLogUpdate {
+	_u.mutation.ClearSubscriptionQuotaRequestID()
+	return _u
+}
+
 // SetCarpoolTermID sets the "carpool_term_id" field.
 func (_u *UsageLogUpdate) SetCarpoolTermID(v int64) *UsageLogUpdate {
 	_u.mutation.ResetCarpoolTermID()
@@ -1267,6 +1321,24 @@ func (_u *UsageLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.BillingModeCleared() {
 		_spec.ClearField(usagelog.FieldBillingMode, field.TypeString)
 	}
+	if value, ok := _u.mutation.SubscriptionTermID(); ok {
+		_spec.SetField(usagelog.FieldSubscriptionTermID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedSubscriptionTermID(); ok {
+		_spec.AddField(usagelog.FieldSubscriptionTermID, field.TypeInt64, value)
+	}
+	if _u.mutation.SubscriptionTermIDCleared() {
+		_spec.ClearField(usagelog.FieldSubscriptionTermID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.SubscriptionQuotaRequestID(); ok {
+		_spec.SetField(usagelog.FieldSubscriptionQuotaRequestID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedSubscriptionQuotaRequestID(); ok {
+		_spec.AddField(usagelog.FieldSubscriptionQuotaRequestID, field.TypeInt64, value)
+	}
+	if _u.mutation.SubscriptionQuotaRequestIDCleared() {
+		_spec.ClearField(usagelog.FieldSubscriptionQuotaRequestID, field.TypeInt64)
+	}
 	if value, ok := _u.mutation.CarpoolTermID(); ok {
 		_spec.SetField(usagelog.FieldCarpoolTermID, field.TypeInt64, value)
 	}
@@ -1919,6 +1991,60 @@ func (_u *UsageLogUpdateOne) SetNillableSubscriptionID(v *int64) *UsageLogUpdate
 // ClearSubscriptionID clears the value of the "subscription_id" field.
 func (_u *UsageLogUpdateOne) ClearSubscriptionID() *UsageLogUpdateOne {
 	_u.mutation.ClearSubscriptionID()
+	return _u
+}
+
+// SetSubscriptionTermID sets the "subscription_term_id" field.
+func (_u *UsageLogUpdateOne) SetSubscriptionTermID(v int64) *UsageLogUpdateOne {
+	_u.mutation.ResetSubscriptionTermID()
+	_u.mutation.SetSubscriptionTermID(v)
+	return _u
+}
+
+// SetNillableSubscriptionTermID sets the "subscription_term_id" field if the given value is not nil.
+func (_u *UsageLogUpdateOne) SetNillableSubscriptionTermID(v *int64) *UsageLogUpdateOne {
+	if v != nil {
+		_u.SetSubscriptionTermID(*v)
+	}
+	return _u
+}
+
+// AddSubscriptionTermID adds value to the "subscription_term_id" field.
+func (_u *UsageLogUpdateOne) AddSubscriptionTermID(v int64) *UsageLogUpdateOne {
+	_u.mutation.AddSubscriptionTermID(v)
+	return _u
+}
+
+// ClearSubscriptionTermID clears the value of the "subscription_term_id" field.
+func (_u *UsageLogUpdateOne) ClearSubscriptionTermID() *UsageLogUpdateOne {
+	_u.mutation.ClearSubscriptionTermID()
+	return _u
+}
+
+// SetSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field.
+func (_u *UsageLogUpdateOne) SetSubscriptionQuotaRequestID(v int64) *UsageLogUpdateOne {
+	_u.mutation.ResetSubscriptionQuotaRequestID()
+	_u.mutation.SetSubscriptionQuotaRequestID(v)
+	return _u
+}
+
+// SetNillableSubscriptionQuotaRequestID sets the "subscription_quota_request_id" field if the given value is not nil.
+func (_u *UsageLogUpdateOne) SetNillableSubscriptionQuotaRequestID(v *int64) *UsageLogUpdateOne {
+	if v != nil {
+		_u.SetSubscriptionQuotaRequestID(*v)
+	}
+	return _u
+}
+
+// AddSubscriptionQuotaRequestID adds value to the "subscription_quota_request_id" field.
+func (_u *UsageLogUpdateOne) AddSubscriptionQuotaRequestID(v int64) *UsageLogUpdateOne {
+	_u.mutation.AddSubscriptionQuotaRequestID(v)
+	return _u
+}
+
+// ClearSubscriptionQuotaRequestID clears the value of the "subscription_quota_request_id" field.
+func (_u *UsageLogUpdateOne) ClearSubscriptionQuotaRequestID() *UsageLogUpdateOne {
+	_u.mutation.ClearSubscriptionQuotaRequestID()
 	return _u
 }
 
@@ -2908,6 +3034,24 @@ func (_u *UsageLogUpdateOne) sqlSave(ctx context.Context) (_node *UsageLog, err 
 	}
 	if _u.mutation.BillingModeCleared() {
 		_spec.ClearField(usagelog.FieldBillingMode, field.TypeString)
+	}
+	if value, ok := _u.mutation.SubscriptionTermID(); ok {
+		_spec.SetField(usagelog.FieldSubscriptionTermID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedSubscriptionTermID(); ok {
+		_spec.AddField(usagelog.FieldSubscriptionTermID, field.TypeInt64, value)
+	}
+	if _u.mutation.SubscriptionTermIDCleared() {
+		_spec.ClearField(usagelog.FieldSubscriptionTermID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.SubscriptionQuotaRequestID(); ok {
+		_spec.SetField(usagelog.FieldSubscriptionQuotaRequestID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedSubscriptionQuotaRequestID(); ok {
+		_spec.AddField(usagelog.FieldSubscriptionQuotaRequestID, field.TypeInt64, value)
+	}
+	if _u.mutation.SubscriptionQuotaRequestIDCleared() {
+		_spec.ClearField(usagelog.FieldSubscriptionQuotaRequestID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.CarpoolTermID(); ok {
 		_spec.SetField(usagelog.FieldCarpoolTermID, field.TypeInt64, value)

@@ -1,0 +1,37 @@
+{
+  "checked_utc": "2026-10-20T02:48:07.726087+00:00",
+  "authorized_scope": "Retired main runtime test driver and rebuildable F3 final5 executable copies only",
+  "files": [
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-final.test",
+      "bytes": 145129906,
+      "sha256": "d5c5c1757fe08a7d65d7f837ace6c6f4576b8e0fdded3985ef838f5ad02640b5",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final5/candidate/sub2api",
+      "bytes": 132481184,
+      "sha256": "c657448546019944a6a7a12e23e3a82f0e608b201fdc403872663c3e643e55c1",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final5/candidate/carpool-release",
+      "bytes": 43012211,
+      "sha256": "43a405724da970b99a961742d5f99fa3d8c990099ca78e780562d243840290cd",
+      "removed": true
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final5/provider/provider",
+      "bytes": 9766245,
+      "sha256": "67c83c7e8b1e36d7604ccc83f4d634095ca260067dbcfa6cb21efad0df90a6bc",
+      "removed": true
+    }
+  ],
+  "total_removed_bytes": 330389546,
+  "free_bytes_before": 2776293376,
+  "free_bytes_after": 2031792128,
+  "preserved_driver": "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-promotion-final3.test",
+  "preserved_driver_sha256": "c228980169044eff0a381975577a2e717bd541cf197fb1baa84241e6cf3b8969",
+  "images_modified": false,
+  "source_modified": false
+}

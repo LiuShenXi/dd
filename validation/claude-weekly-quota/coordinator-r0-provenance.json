@@ -1,0 +1,22 @@
+{
+  "checked_at_utc": "2026-10-19T17:15:18.604557+00:00",
+  "archive_sha256": "b674eede6f68d30e432e241554dfdb817773887b114696286ffad1a6a70b6531",
+  "production_oci_index_digest": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+  "platform": {
+    "architecture": "amd64",
+    "os": "linux"
+  },
+  "platform_manifest_digest": "sha256:b09a9a84f3a94e9274e6f5c3d5f8a3ba15412d39bc542071807cee72d4dc1c77",
+  "config_digest_and_classic_import_id": "sha256:7e6d174ece5f28faf73680802bd52ff0b34a30bd59600125e9aaf53e843aa7a6",
+  "production_engine": "29.8.0",
+  "local_engine": "25.0.3",
+  "rootfs_diff_ids_identical": true,
+  "rootfs_layer_count": 20,
+  "revision": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d",
+  "binary_sha256_identical": "85d991720e15993813fdfdddc408852fefe90c54314e760d68765cf5ba0767cd",
+  "application_started": false,
+  "local_probe_network": "none",
+  "production_modified": false,
+  "provenance_verified": true,
+  "id_difference_explanation": "The production containerd store reports the OCI index digest; the classic Docker image store reports its linux/amd64 image configuration digest. The exported OCI graph, local RootFS, labels and executable match production."
+}

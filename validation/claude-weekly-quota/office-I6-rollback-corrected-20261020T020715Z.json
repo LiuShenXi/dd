@@ -1,0 +1,35 @@
+{
+  "step": "rollback-corrected",
+  "started_utc": "2026-10-20T02:07:15.932047+00:00",
+  "tests": [
+    "TestSubscriptionQuotaI6ImageUpgradeAndRollback"
+  ],
+  "command": [
+    "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-rollback-final.test",
+    "-test.v",
+    "-test.parallel=1",
+    "-test.timeout=15m",
+    "-test.run=^TestSubscriptionQuotaI6ImageUpgradeAndRollback$"
+  ],
+  "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+  "r1_image_id": "sha256:7d78d912b323875ca61a4c9c716b0018716f361a7146a1443bd94c6882b3523a",
+  "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "driver_sha256": "3075032b63841889778121bab8dc425e0724417a7cdac53100b41169dccb85d8",
+  "test_source_sha256": "0794fc3f6f77b365fff659fc475c823c0aa8b9c9838b1b53a324b90da2eb19c8",
+  "runner_sha256": "0064d4fa2cc957d81453b21b8b18ad23a52072c4569514d2afc542ec97f9f707",
+  "synthetic_only": true,
+  "production_modified": false,
+  "network_subnet": "10.247.192.0/28",
+  "previous_failure_receipt": "office-I6-rollback-receipt.json",
+  "previous_failure_log_sha256": "09234173f534e5199b30e0a694d25bc69228fcd3656abdb83533297163f28e58",
+  "exit_code": 1,
+  "finished_utc": "2026-10-20T02:07:24.983676+00:00",
+  "top_level_pass": 0,
+  "fail": 1,
+  "skip": 0,
+  "driver_stable": false,
+  "test_source_stable": true,
+  "raw_log_sha256": "b12384974c43f3dd717ccec992adea32dce839e7d8b6b4f16d61126e47a6de9c",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-rollback-20261020T020715Z/rollback.log",
+  "pass": false
+}

@@ -467,6 +467,15 @@ func (s *RedeemService) redeem(ctx context.Context, userID int64, code string, r
 		return nil, fmt.Errorf("get user: %w", err)
 	}
 
+	if redeemCode.Type == RedeemTypeSubscription {
+		if redeemCode.GroupID == nil {
+			return nil, ErrSubscriptionQuotaGroupInvalid
+		}
+		if err := s.subscriptionService.rejectLegacyQuotaGroup(ctx, *redeemCode.GroupID); err != nil {
+			return nil, err
+		}
+	}
+
 	// 使用数据库事务保证兑换码标记与权益发放的原子性
 	tx, err := s.entClient.Tx(ctx)
 	if err != nil {
@@ -697,6 +706,9 @@ func (s *RedeemService) GetUserHistory(ctx context.Context, userID int64, limit 
 
 // reduceOrCancelSubscription 缩短订阅天数，剩余天数 <= 0 时取消订阅
 func (s *RedeemService) reduceOrCancelSubscription(ctx context.Context, userID, groupID int64, reduceDays int, code string) error {
+	if err := s.subscriptionService.rejectLegacyQuotaGroup(ctx, groupID); err != nil {
+		return err
+	}
 	sub, err := s.subscriptionService.userSubRepo.GetByUserIDAndGroupID(ctx, userID, groupID)
 	if err != nil {
 		return ErrSubscriptionNotFound

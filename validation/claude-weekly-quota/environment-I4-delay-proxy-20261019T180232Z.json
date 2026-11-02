@@ -1,0 +1,18 @@
+{
+  "synthetic_only": true,
+  "url": "http://127.0.0.1:64539",
+  "target": "http://127.0.0.1:50432",
+  "pid": 6044,
+  "in_job": false,
+  "loopback_only": true,
+  "binary": "C:\\ProgramData\\CodexTaskRuntime\\claude-weekly-quota\\I4-delay-proxy-dfa2c137c4d94571ba2a11cd0be000d1\\i4-delay-proxy.exe",
+  "binary_sha256": "2a2efd13bea34b18a2be3014b0682a16e1959980f554f0a2c0090f37aad06f2c",
+  "source_sha256": "a7b30a5301cf75a3778b0a87e9d72de327b92ff43c7a2f1a09cdd777ae967f65",
+  "environment": "environment-I4-20261019T180032Z-active.json",
+  "control_path": "/__cwq/control",
+  "payload_logging": false,
+  "credentials_copied": false,
+  "health_status": 200,
+  "purpose": "T47 late A preview success/error/finally and exact summary response hold, browser checks still required",
+  "created_utc": "2026-10-19T18:02:32.4722141Z"
+}

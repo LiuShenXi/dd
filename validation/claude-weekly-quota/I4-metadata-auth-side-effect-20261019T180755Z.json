@@ -1,0 +1,16 @@
+{
+  "synthetic_only": true,
+  "environment": "environment-I4-20261019T180032Z-active.json",
+  "key_id": 1,
+  "http_status": 200,
+  "changed_fields": [
+    "last_used_at",
+    "updated_at"
+  ],
+  "only_auth_last_use_metadata": true,
+  "all_quota_rate_window_limits_identity_and_other_key_columns_exactly_unchanged": true,
+  "private_snapshot_directory": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T180032Z",
+  "original_failure": "I4-v2-MetadataAndUnsupportedRoutes-F2-20261019T180616Z-receipt.json",
+  "conclusion": "Authenticated metadata can update Key last-use timestamps; this is not a generation or monetary charge. The subsequent full-row guard runs after this legitimate authentication update.",
+  "observed_utc": "2026-10-19T18:07:55.8379926Z"
+}

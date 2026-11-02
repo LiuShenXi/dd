@@ -1,0 +1,12 @@
+{
+  "pass": false,
+  "started": "2026-10-20T03:51:34.928278+00:00",
+  "finished": "2026-10-20T03:52:07.588958+00:00",
+  "candidate": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0",
+  "error_type": "AssertionError",
+  "reason": "timeout: actual asynchronous GPT usage pending after HTTP complete",
+  "synthetic_only": true,
+  "production_modified": false,
+  "private_evidence": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v3-20261020",
+  "timeline_sha256": "2174c391fd23c5c639d8aa39dbc6ecced39a4339e2475dcb0261937687efe51d"
+}

@@ -126,7 +126,7 @@ func (h *SubscriptionHandler) GetProgress(c *gin.Context) {
 
 	progress, err := h.subscriptionService.GetSubscriptionProgress(c.Request.Context(), subscriptionID)
 	if err != nil {
-		response.NotFound(c, "Subscription not found")
+		response.ErrorFrom(c, err)
 		return
 	}
 

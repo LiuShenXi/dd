@@ -1,0 +1,77 @@
+{
+  "current_driver_source": "394913132389c24e38234d4949907d6ac2a4e67afb68a96189516e19f92543b3",
+  "source_bridge": "coordinator-I4-F2-F3-test-only-bridge.json",
+  "environments": [
+    {
+      "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+      "volume": "cwq-i4-400c0c53bbea4fb2-pgdata",
+      "external_egress": false,
+      "database_host_ports": [],
+      "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+      "url2": "http://127.0.0.1:49735",
+      "role": "main",
+      "network": "cwq-env-20261019t131000z-e4f68a1d-net",
+      "private_fixture_path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T180032Z\\synthetic-fixture.json",
+      "manifest": "environment-I4-20261019T180032Z-active.json",
+      "containers": {
+        "provider": "a84adf2bb695b101b30cd007999a0b3adc284ef1bb4d0de04d732e03e90158b9",
+        "application2": "c84eb08dfcdf03b499376f3cd660c91d8a92e794e891aa9e41d902abfeabfe6b",
+        "postgres": "561a79732b9909ef4a885b005c78caae655d1e2d1f9c26e319e4f54687cca386",
+        "application": "49989d0f4da39fea553017c03076d463091ba16be6cfdc87f5d3f9f06e12961d",
+        "redis": "9901a76eb63430d291e7580a70eaafa375c8461dcdca6b9e9ad0ac96df35f3fa"
+      },
+      "synthetic_only": true,
+      "url": "http://127.0.0.1:50432"
+    },
+    {
+      "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+      "volume": "cwq-i4-270e5eb812a74087-pgdata",
+      "external_egress": false,
+      "database_host_ports": [],
+      "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+      "url2": "",
+      "role": "browser",
+      "network": "cwq-env-20261019t131000z-e4f68a1d-net",
+      "private_fixture_path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T180351Z\\synthetic-fixture.json",
+      "manifest": "environment-I4-20261019T180351Z-active.json",
+      "containers": {
+        "provider": "18c3e855e54fd0c73c320f9f79c5f5152fc8f07ff945f52f55913c338ba3268f",
+        "application2": "",
+        "postgres": "41263efb3805b795047fbd98004af6e91fdc17a64e01b3f45afb81233c18a203",
+        "application": "24d38063bd27b95da04fce8cef63e93b54de8f4530121114b557e72d3f97d60d",
+        "redis": "782f5b0f60da138a2572987c8c573c0d84fa6b21edfe259c54ed298eec608877"
+      },
+      "synthetic_only": true,
+      "url": "http://127.0.0.1:49441"
+    },
+    {
+      "image_source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+      "volume": "cwq-i4-32328807bc894333-pgdata",
+      "external_egress": false,
+      "database_host_ports": [],
+      "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+      "url2": "http://127.0.0.1:52513",
+      "role": "websocket",
+      "network": "cwq-env-20261019t131000z-e4f68a1d-net",
+      "private_fixture_path": "C:\\Users\\Administrator\\AppData\\Local\\Codex\\PrivateTests\\claude-weekly-quota\\I4-20261019T180642Z\\synthetic-fixture.json",
+      "manifest": "environment-I4-20261019T180642Z-active.json",
+      "containers": {
+        "provider": "4e51595f9e3ca67368067fe187e08416357d5f7cf72aeaa17ca67bc1a5aa150b",
+        "application2": "2a9b829656d0676b11eeea49b44b6de38a511c1caea0a514b4d44066eda01180",
+        "postgres": "36b7843275ef93301268a390892b442117e3d5e50857318048ee76dfbf9bf511",
+        "application": "6dd71ad402a9213844ad8b3b8fe557c15798acd7e4e0608e3c28c2e911dccf7f",
+        "redis": "79b4d70e0171886eea278a6621a84a3f360c5e3b731a3a86af74a6298a1f9010"
+      },
+      "synthetic_only": true,
+      "url": "http://127.0.0.1:59331"
+    }
+  ],
+  "resources_retained_for_I5_I6": true,
+  "I3_R1_tag_unchanged": true,
+  "retained_diagnostic_resources": "Earlier environment-I4 manifests remain historical; no unrelated containers were stopped",
+  "created_utc": "2026-10-19T18:15:49.9796624Z",
+  "environment_validation_status": "Complete actual HTTP/Redis/PG/fault/WS/long-stream and unit race; browser UI still pending",
+  "final_duration_receipt": "I4-v2-T68-F3-20261019T181135Z-receipt.json",
+  "final_duration_postgres_details": "I4-v2-T68-F3-20261019T181135Z-postgres-details.json",
+  "last_updated_utc": "2026-10-19T18:29:59.6792991Z"
+}

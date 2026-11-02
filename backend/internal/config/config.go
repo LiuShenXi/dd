@@ -91,6 +91,7 @@ type Config struct {
 	APIKeyAuth              APIKeyAuthCacheConfig         `mapstructure:"api_key_auth_cache"`
 	SubscriptionCache       SubscriptionCacheConfig       `mapstructure:"subscription_cache"`
 	SubscriptionMaintenance SubscriptionMaintenanceConfig `mapstructure:"subscription_maintenance"`
+	SubscriptionQuota       SubscriptionQuotaConfig       `mapstructure:"subscription_quota"`
 	Dashboard               DashboardCacheConfig          `mapstructure:"dashboard_cache"`
 	DashboardAgg            DashboardAggregationConfig    `mapstructure:"dashboard_aggregation"`
 	UsageCleanup            UsageCleanupConfig            `mapstructure:"usage_cleanup"`
@@ -1041,6 +1042,13 @@ type GatewayConfig struct {
 	// ConcurrencySlotTTLMinutes: 并发槽位过期时间（分钟）
 	// 应大于最长 LLM 请求时间，防止请求完成前槽位过期
 	ConcurrencySlotTTLMinutes int `mapstructure:"concurrency_slot_ttl_minutes"`
+	// Exclusive retains legacy single-process startup cleanup. Preserve is required
+	// whenever another process may own live account/user slots or wait counters.
+	ConcurrencyStartupCleanupMode string `mapstructure:"concurrency_startup_cleanup_mode"`
+	// Coordinated holds autonomous external jobs until explicit release activation
+	// and owns one PostgreSQL leader session through the end of all claimed work.
+	BackgroundJobMode       string `mapstructure:"background_job_mode"`
+	BackgroundJobsStartHeld bool   `mapstructure:"background_jobs_start_held"`
 	// SessionIdleTimeoutMinutes: 会话空闲超时时间（分钟），默认 5 分钟
 	// 用于 Anthropic OAuth/SetupToken 账号的会话数量限制功能
 	// 空闲超过此时间的会话将被自动释放
@@ -1680,12 +1688,13 @@ type TurnstileConfig struct {
 }
 
 type DefaultConfig struct {
-	AdminEmail      string  `mapstructure:"admin_email"`
-	AdminPassword   string  `mapstructure:"admin_password"`
-	UserConcurrency int     `mapstructure:"user_concurrency"`
-	UserBalance     float64 `mapstructure:"user_balance"`
-	APIKeyPrefix    string  `mapstructure:"api_key_prefix"`
-	RateMultiplier  float64 `mapstructure:"rate_multiplier"`
+	AdminEmail                    string  `mapstructure:"admin_email"`
+	AdminPassword                 string  `mapstructure:"admin_password"`
+	UserConcurrency               int     `mapstructure:"user_concurrency"`
+	ClaudeSubscriptionConcurrency int     `mapstructure:"claude_subscription_concurrency"`
+	UserBalance                   float64 `mapstructure:"user_balance"`
+	APIKeyPrefix                  string  `mapstructure:"api_key_prefix"`
+	RateMultiplier                float64 `mapstructure:"rate_multiplier"`
 }
 
 type RateLimitConfig struct {
@@ -1718,6 +1727,22 @@ type SubscriptionCacheConfig struct {
 	L1Size        int `mapstructure:"l1_size"`
 	L1TTLSeconds  int `mapstructure:"l1_ttl_seconds"`
 	JitterPercent int `mapstructure:"jitter_percent"`
+}
+
+// SubscriptionQuotaConfig separates issuance, generation and recovery. R1
+// recognizes term groups. Admission additionally requires startup capability checks.
+type SubscriptionQuotaConfig struct {
+	RolloutReplicaID          string        `mapstructure:"rollout_replica_id"`
+	RolloutExpectedReplicaIDs []string      `mapstructure:"rollout_expected_replica_ids"`
+	IssueEnabled              bool          `mapstructure:"issue_enabled"`
+	AdmissionEnabled          bool          `mapstructure:"admission_enabled"`
+	RecoveryEnabled           bool          `mapstructure:"recovery_enabled"`
+	EnabledGroupIDs           []int64       `mapstructure:"enabled_group_ids"`
+	ProtectedGroupIDs         []int64       `mapstructure:"protected_group_ids"`
+	RecoveryBatchSize         int           `mapstructure:"recovery_batch_size"`
+	RecoveryInterval          time.Duration `mapstructure:"recovery_interval"`
+	RecoveryItemTimeout       time.Duration `mapstructure:"recovery_item_timeout"`
+	RequestStaleGrace         time.Duration `mapstructure:"request_stale_grace"`
 }
 
 // SubscriptionMaintenanceConfig 订阅窗口维护后台任务配置。
@@ -2010,6 +2035,17 @@ func configureConfigSource(setConfigFile, addConfigPath func(string)) {
 
 func setDefaults() {
 	viper.SetDefault("run_mode", RunModeStandard)
+	viper.SetDefault("subscription_quota.rollout_replica_id", "")
+	viper.SetDefault("subscription_quota.rollout_expected_replica_ids", []string{})
+	viper.SetDefault("subscription_quota.issue_enabled", false)
+	viper.SetDefault("subscription_quota.admission_enabled", false)
+	viper.SetDefault("subscription_quota.recovery_enabled", true)
+	viper.SetDefault("subscription_quota.enabled_group_ids", []int64{})
+	viper.SetDefault("subscription_quota.protected_group_ids", []int64{})
+	viper.SetDefault("subscription_quota.recovery_batch_size", 100)
+	viper.SetDefault("subscription_quota.recovery_interval", "30s")
+	viper.SetDefault("subscription_quota.recovery_item_timeout", "5s")
+	viper.SetDefault("subscription_quota.request_stale_grace", "1m")
 
 	// Server
 	viper.SetDefault("server.host", "0.0.0.0")
@@ -2298,6 +2334,7 @@ func setDefaults() {
 	viper.SetDefault("default.admin_email", "")
 	viper.SetDefault("default.admin_password", "")
 	viper.SetDefault("default.user_concurrency", 5)
+	viper.SetDefault("default.claude_subscription_concurrency", 3)
 	viper.SetDefault("default.user_balance", 0)
 	viper.SetDefault("default.api_key_prefix", "sk-")
 	viper.SetDefault("default.rate_multiplier", 1.0)
@@ -2510,6 +2547,9 @@ func setDefaults() {
 	viper.SetDefault("gateway.idle_conn_timeout_seconds", 90) // 空闲连接超时（秒）
 	viper.SetDefault("gateway.max_upstream_clients", 5000)
 	viper.SetDefault("gateway.client_idle_ttl_seconds", 900)
+	viper.SetDefault("gateway.concurrency_startup_cleanup_mode", "exclusive")
+	viper.SetDefault("gateway.background_job_mode", "legacy")
+	viper.SetDefault("gateway.background_jobs_start_held", true)
 	viper.SetDefault("gateway.concurrency_slot_ttl_minutes", 30) // 并发槽位过期时间（支持超长请求）
 	viper.SetDefault("gateway.stream_data_interval_timeout", 180)
 	viper.SetDefault("gateway.stream_keepalive_interval", 10)
@@ -2678,6 +2718,22 @@ func setEnvReachableDefaults() {
 }
 
 func (c *Config) Validate() error {
+	if c.SubscriptionQuota.AdmissionEnabled && (len(c.SubscriptionQuota.EnabledGroupIDs) == 0 || c.RunMode == RunModeSimple || !c.SubscriptionQuota.RecoveryEnabled) {
+		return fmt.Errorf("subscription_quota admission requires standard mode, explicit enabled group IDs and recovery")
+	}
+	if c.SubscriptionQuota.RecoveryBatchSize < 0 || c.SubscriptionQuota.RecoveryBatchSize > 1000 || c.SubscriptionQuota.RecoveryInterval < 0 || c.SubscriptionQuota.RecoveryItemTimeout < 0 || c.SubscriptionQuota.RequestStaleGrace < 0 {
+		return fmt.Errorf("invalid subscription_quota recovery limits")
+	}
+	if c.SubscriptionQuota.IssueEnabled && (len(c.SubscriptionQuota.EnabledGroupIDs) == 0 || c.RunMode == RunModeSimple) {
+		return fmt.Errorf("subscription_quota issuance requires explicit enabled group IDs and standard mode")
+	}
+	for _, ids := range [][]int64{c.SubscriptionQuota.EnabledGroupIDs, c.SubscriptionQuota.ProtectedGroupIDs} {
+		for _, id := range ids {
+			if id <= 0 {
+				return fmt.Errorf("subscription_quota group IDs must be positive")
+			}
+		}
+	}
 	forwardedClientIPHeaders, err := NormalizeForwardedClientIPHeaders(c.Security.ForwardedClientIPHeaders)
 	if err != nil {
 		return fmt.Errorf("security.forwarded_client_ip_headers: %w", err)
@@ -3378,6 +3434,16 @@ func (c *Config) Validate() error {
 	}
 	if c.Gateway.ClientIdleTTLSeconds <= 0 {
 		return fmt.Errorf("gateway.client_idle_ttl_seconds must be positive")
+	}
+	switch c.Gateway.ConcurrencyStartupCleanupMode {
+	case "", "exclusive", "preserve":
+	default:
+		return fmt.Errorf("gateway.concurrency_startup_cleanup_mode must be exclusive or preserve")
+	}
+	switch c.Gateway.BackgroundJobMode {
+	case "", "legacy", "coordinated":
+	default:
+		return fmt.Errorf("gateway.background_job_mode must be legacy or coordinated")
 	}
 	if c.Gateway.ConcurrencySlotTTLMinutes <= 0 {
 		return fmt.Errorf("gateway.concurrency_slot_ttl_minutes must be positive")

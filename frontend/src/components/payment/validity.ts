@@ -15,9 +15,10 @@ type TranslateFn = (key: string) => string
  * 生效周期一致。
  */
 export function planValiditySuffix(
-  plan: Pick<SubscriptionPlan, 'validity_days' | 'validity_unit'>,
+  plan: Pick<SubscriptionPlan, 'validity_days' | 'validity_unit' | 'quota_mode'>,
   t: TranslateFn,
 ): string {
+  if (plan.quota_mode === 'term') return `7${t('payment.days')}`
   const unit = String(plan.validity_unit || 'day').trim().toLowerCase()
   const base = unit.endsWith('s') ? unit.slice(0, -1) : unit
   const days = plan.validity_days

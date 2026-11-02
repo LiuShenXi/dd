@@ -1,0 +1,14 @@
+{
+  "backup_schedule_enabled": false,
+  "scheduled_enabled": 0,
+  "channel_enabled": 0,
+  "batch_jobs": 0,
+  "cn_active_accounts": 0,
+  "backup_running": 0,
+  "restore_running": 0,
+  "version": 1,
+  "container_id": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+  "started_at": "2026-10-18T15:19:07.917058186Z",
+  "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677",
+  "checked_at_utc": "2026-10-20T03:40:07.457740+00:00"
+}

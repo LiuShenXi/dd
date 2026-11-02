@@ -130,6 +130,16 @@ func SubscriptionID(v int64) predicate.UsageLog {
 	return predicate.UsageLog(sql.FieldEQ(FieldSubscriptionID, v))
 }
 
+// SubscriptionTermID applies equality check predicate on the "subscription_term_id" field. It's identical to SubscriptionTermIDEQ.
+func SubscriptionTermID(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldEQ(FieldSubscriptionTermID, v))
+}
+
+// SubscriptionQuotaRequestID applies equality check predicate on the "subscription_quota_request_id" field. It's identical to SubscriptionQuotaRequestIDEQ.
+func SubscriptionQuotaRequestID(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldEQ(FieldSubscriptionQuotaRequestID, v))
+}
+
 // CarpoolTermID applies equality check predicate on the "carpool_term_id" field. It's identical to CarpoolTermIDEQ.
 func CarpoolTermID(v int64) predicate.UsageLog {
 	return predicate.UsageLog(sql.FieldEQ(FieldCarpoolTermID, v))
@@ -1068,6 +1078,106 @@ func SubscriptionIDIsNil() predicate.UsageLog {
 // SubscriptionIDNotNil applies the NotNil predicate on the "subscription_id" field.
 func SubscriptionIDNotNil() predicate.UsageLog {
 	return predicate.UsageLog(sql.FieldNotNull(FieldSubscriptionID))
+}
+
+// SubscriptionTermIDEQ applies the EQ predicate on the "subscription_term_id" field.
+func SubscriptionTermIDEQ(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldEQ(FieldSubscriptionTermID, v))
+}
+
+// SubscriptionTermIDNEQ applies the NEQ predicate on the "subscription_term_id" field.
+func SubscriptionTermIDNEQ(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNEQ(FieldSubscriptionTermID, v))
+}
+
+// SubscriptionTermIDIn applies the In predicate on the "subscription_term_id" field.
+func SubscriptionTermIDIn(vs ...int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldIn(FieldSubscriptionTermID, vs...))
+}
+
+// SubscriptionTermIDNotIn applies the NotIn predicate on the "subscription_term_id" field.
+func SubscriptionTermIDNotIn(vs ...int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNotIn(FieldSubscriptionTermID, vs...))
+}
+
+// SubscriptionTermIDGT applies the GT predicate on the "subscription_term_id" field.
+func SubscriptionTermIDGT(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldGT(FieldSubscriptionTermID, v))
+}
+
+// SubscriptionTermIDGTE applies the GTE predicate on the "subscription_term_id" field.
+func SubscriptionTermIDGTE(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldGTE(FieldSubscriptionTermID, v))
+}
+
+// SubscriptionTermIDLT applies the LT predicate on the "subscription_term_id" field.
+func SubscriptionTermIDLT(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldLT(FieldSubscriptionTermID, v))
+}
+
+// SubscriptionTermIDLTE applies the LTE predicate on the "subscription_term_id" field.
+func SubscriptionTermIDLTE(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldLTE(FieldSubscriptionTermID, v))
+}
+
+// SubscriptionTermIDIsNil applies the IsNil predicate on the "subscription_term_id" field.
+func SubscriptionTermIDIsNil() predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldIsNull(FieldSubscriptionTermID))
+}
+
+// SubscriptionTermIDNotNil applies the NotNil predicate on the "subscription_term_id" field.
+func SubscriptionTermIDNotNil() predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNotNull(FieldSubscriptionTermID))
+}
+
+// SubscriptionQuotaRequestIDEQ applies the EQ predicate on the "subscription_quota_request_id" field.
+func SubscriptionQuotaRequestIDEQ(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldEQ(FieldSubscriptionQuotaRequestID, v))
+}
+
+// SubscriptionQuotaRequestIDNEQ applies the NEQ predicate on the "subscription_quota_request_id" field.
+func SubscriptionQuotaRequestIDNEQ(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNEQ(FieldSubscriptionQuotaRequestID, v))
+}
+
+// SubscriptionQuotaRequestIDIn applies the In predicate on the "subscription_quota_request_id" field.
+func SubscriptionQuotaRequestIDIn(vs ...int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldIn(FieldSubscriptionQuotaRequestID, vs...))
+}
+
+// SubscriptionQuotaRequestIDNotIn applies the NotIn predicate on the "subscription_quota_request_id" field.
+func SubscriptionQuotaRequestIDNotIn(vs ...int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNotIn(FieldSubscriptionQuotaRequestID, vs...))
+}
+
+// SubscriptionQuotaRequestIDGT applies the GT predicate on the "subscription_quota_request_id" field.
+func SubscriptionQuotaRequestIDGT(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldGT(FieldSubscriptionQuotaRequestID, v))
+}
+
+// SubscriptionQuotaRequestIDGTE applies the GTE predicate on the "subscription_quota_request_id" field.
+func SubscriptionQuotaRequestIDGTE(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldGTE(FieldSubscriptionQuotaRequestID, v))
+}
+
+// SubscriptionQuotaRequestIDLT applies the LT predicate on the "subscription_quota_request_id" field.
+func SubscriptionQuotaRequestIDLT(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldLT(FieldSubscriptionQuotaRequestID, v))
+}
+
+// SubscriptionQuotaRequestIDLTE applies the LTE predicate on the "subscription_quota_request_id" field.
+func SubscriptionQuotaRequestIDLTE(v int64) predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldLTE(FieldSubscriptionQuotaRequestID, v))
+}
+
+// SubscriptionQuotaRequestIDIsNil applies the IsNil predicate on the "subscription_quota_request_id" field.
+func SubscriptionQuotaRequestIDIsNil() predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldIsNull(FieldSubscriptionQuotaRequestID))
+}
+
+// SubscriptionQuotaRequestIDNotNil applies the NotNil predicate on the "subscription_quota_request_id" field.
+func SubscriptionQuotaRequestIDNotNil() predicate.UsageLog {
+	return predicate.UsageLog(sql.FieldNotNull(FieldSubscriptionQuotaRequestID))
 }
 
 // CarpoolTermIDEQ applies the EQ predicate on the "carpool_term_id" field.

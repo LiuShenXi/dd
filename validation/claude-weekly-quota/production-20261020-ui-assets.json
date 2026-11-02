@@ -1,0 +1,30 @@
+{
+  "timestamp_utc": "2026-10-20T03:58:32.186041+00:00",
+  "all_public_assets_match_candidate": true,
+  "assets": {
+    "http://127.0.0.1:29081": {
+      "/assets/index-BdEGy-qe.js": "89201addf397b21ce26d7e82cac0ccd97b4f0163ad48248025572ce3ae302bf3",
+      "/assets/index-SOfsATQZ.css": "c6f64271699fcc3307c334435fca79020329210426efd89160dc6fd4e5760bec",
+      "/assets/vendor-i18n-DWQ9VCtw.js": "c2034eff02c383e777bfb57428a2ec2c58446e614b9287db09fc6fa2370a83ac",
+      "/assets/vendor-misc-CxnrnQht.js": "f166b6dd31b281cd868cb7a20508ac43882a6c40d5836fbbad9af6637fa586a8",
+      "/assets/vendor-misc-DB0Q8XAf.css": "4b398481a7ce8375af4d9f58f39410c73a0b70726fe513686d3d51c10ad76cb5",
+      "/assets/vendor-vue-CPzGZve1.js": "562f3245d570d6901d6d302e72168f6a3875f4e6df4debfc8f8ae38d14e8c107"
+    },
+    "https://sub2api.monasapi.com": {
+      "/assets/index-BdEGy-qe.js": "89201addf397b21ce26d7e82cac0ccd97b4f0163ad48248025572ce3ae302bf3",
+      "/assets/index-SOfsATQZ.css": "c6f64271699fcc3307c334435fca79020329210426efd89160dc6fd4e5760bec",
+      "/assets/vendor-i18n-DWQ9VCtw.js": "c2034eff02c383e777bfb57428a2ec2c58446e614b9287db09fc6fa2370a83ac",
+      "/assets/vendor-misc-CxnrnQht.js": "f166b6dd31b281cd868cb7a20508ac43882a6c40d5836fbbad9af6637fa586a8",
+      "/assets/vendor-misc-DB0Q8XAf.css": "4b398481a7ce8375af4d9f58f39410c73a0b70726fe513686d3d51c10ad76cb5",
+      "/assets/vendor-vue-CPzGZve1.js": "562f3245d570d6901d6d302e72168f6a3875f4e6df4debfc8f8ae38d14e8c107"
+    },
+    "https://teamsub2.monasapi.com": {
+      "/assets/index-BdEGy-qe.js": "89201addf397b21ce26d7e82cac0ccd97b4f0163ad48248025572ce3ae302bf3",
+      "/assets/index-SOfsATQZ.css": "c6f64271699fcc3307c334435fca79020329210426efd89160dc6fd4e5760bec",
+      "/assets/vendor-i18n-DWQ9VCtw.js": "c2034eff02c383e777bfb57428a2ec2c58446e614b9287db09fc6fa2370a83ac",
+      "/assets/vendor-misc-CxnrnQht.js": "f166b6dd31b281cd868cb7a20508ac43882a6c40d5836fbbad9af6637fa586a8",
+      "/assets/vendor-misc-DB0Q8XAf.css": "4b398481a7ce8375af4d9f58f39410c73a0b70726fe513686d3d51c10ad76cb5",
+      "/assets/vendor-vue-CPzGZve1.js": "562f3245d570d6901d6d302e72168f6a3875f4e6df4debfc8f8ae38d14e8c107"
+    }
+  }
+}

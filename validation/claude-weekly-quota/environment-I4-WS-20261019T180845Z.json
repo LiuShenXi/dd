@@ -1,0 +1,18 @@
+{
+  "stage": "I4 dedicated synthetic GPT WS HTTP bridge",
+  "source_sha256": "aa71d6226b7beab62cc04b5a9c584619d7fda2989e93155d3dbf69740e36f3ba",
+  "image_id": "sha256:64aac420e42f38a4c4faa523d8b9b8cd02339dc7c0627d0444ad97966f3a019c",
+  "environment": "environment-I4-20261019T180642Z-active.json",
+  "application": "2a9b829656d0676b11eeea49b44b6de38a511c1caea0a514b4d44066eda01180",
+  "url": "http://127.0.0.1:52513",
+  "synthetic_only": true,
+  "separate_PG_Redis_provider_from_main_and_browser": true,
+  "configuration_difference": [
+    "GATEWAY_OPENAI_WS_MODE_ROUTER_V2_ENABLED=true",
+    "synthetic GPT account extra openai_apikey_responses_websockets_v2_mode=http_bridge"
+  ],
+  "all_instances_started_before_capacity_traffic": true,
+  "external_upstream_called": false,
+  "production_connected": false,
+  "created_utc": "2026-10-19T18:08:45.5473005Z"
+}

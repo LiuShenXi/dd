@@ -1,0 +1,11 @@
+{
+  "stage": "I4 browser fault proxy final idle observation",
+  "target": "http://127.0.0.1:49441",
+  "port54551_held": 0,
+  "port54551_inflight": 0,
+  "port54551_unconsumed": 0,
+  "port59160_holding": false,
+  "loopback_direct_health": 200,
+  "read_only": true,
+  "observed_utc": "2026-10-20T00:06:03.1868112Z"
+}

@@ -59,6 +59,11 @@ func GroupID(v int64) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldGroupID, v))
 }
 
+// TermQuotaUsd applies equality check predicate on the "term_quota_usd" field. It's identical to TermQuotaUsdEQ.
+func TermQuotaUsd(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldTermQuotaUsd, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldName, v))
@@ -162,6 +167,81 @@ func GroupIDLT(v int64) predicate.SubscriptionPlan {
 // GroupIDLTE applies the LTE predicate on the "group_id" field.
 func GroupIDLTE(v int64) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldLTE(FieldGroupID, v))
+}
+
+// TermQuotaUsdEQ applies the EQ predicate on the "term_quota_usd" field.
+func TermQuotaUsdEQ(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldTermQuotaUsd, v))
+}
+
+// TermQuotaUsdNEQ applies the NEQ predicate on the "term_quota_usd" field.
+func TermQuotaUsdNEQ(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNEQ(FieldTermQuotaUsd, v))
+}
+
+// TermQuotaUsdIn applies the In predicate on the "term_quota_usd" field.
+func TermQuotaUsdIn(vs ...string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldIn(FieldTermQuotaUsd, vs...))
+}
+
+// TermQuotaUsdNotIn applies the NotIn predicate on the "term_quota_usd" field.
+func TermQuotaUsdNotIn(vs ...string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNotIn(FieldTermQuotaUsd, vs...))
+}
+
+// TermQuotaUsdGT applies the GT predicate on the "term_quota_usd" field.
+func TermQuotaUsdGT(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldGT(FieldTermQuotaUsd, v))
+}
+
+// TermQuotaUsdGTE applies the GTE predicate on the "term_quota_usd" field.
+func TermQuotaUsdGTE(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldGTE(FieldTermQuotaUsd, v))
+}
+
+// TermQuotaUsdLT applies the LT predicate on the "term_quota_usd" field.
+func TermQuotaUsdLT(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldLT(FieldTermQuotaUsd, v))
+}
+
+// TermQuotaUsdLTE applies the LTE predicate on the "term_quota_usd" field.
+func TermQuotaUsdLTE(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldLTE(FieldTermQuotaUsd, v))
+}
+
+// TermQuotaUsdContains applies the Contains predicate on the "term_quota_usd" field.
+func TermQuotaUsdContains(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldContains(FieldTermQuotaUsd, v))
+}
+
+// TermQuotaUsdHasPrefix applies the HasPrefix predicate on the "term_quota_usd" field.
+func TermQuotaUsdHasPrefix(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldHasPrefix(FieldTermQuotaUsd, v))
+}
+
+// TermQuotaUsdHasSuffix applies the HasSuffix predicate on the "term_quota_usd" field.
+func TermQuotaUsdHasSuffix(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldHasSuffix(FieldTermQuotaUsd, v))
+}
+
+// TermQuotaUsdIsNil applies the IsNil predicate on the "term_quota_usd" field.
+func TermQuotaUsdIsNil() predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldIsNull(FieldTermQuotaUsd))
+}
+
+// TermQuotaUsdNotNil applies the NotNil predicate on the "term_quota_usd" field.
+func TermQuotaUsdNotNil() predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNotNull(FieldTermQuotaUsd))
+}
+
+// TermQuotaUsdEqualFold applies the EqualFold predicate on the "term_quota_usd" field.
+func TermQuotaUsdEqualFold(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEqualFold(FieldTermQuotaUsd, v))
+}
+
+// TermQuotaUsdContainsFold applies the ContainsFold predicate on the "term_quota_usd" field.
+func TermQuotaUsdContainsFold(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldContainsFold(FieldTermQuotaUsd, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.

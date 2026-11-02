@@ -1,0 +1,69 @@
+2026/10/20 00:13:48 http2: server: error reading preface from client //./pipe/docker_engine: file has already been closed
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.13kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.23.3@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/postgres:18.1-alpine3.23@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [runtime-base 1/6] FROM docker.io/library/alpine:3.23.3@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+#5 DONE 0.0s
+
+#6 [pg-client 1/1] FROM docker.io/library/postgres:18.1-alpine3.23@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 162.29MB 3.2s done
+#7 DONE 3.2s
+
+#8 [runtime-base 2/6] RUN apk add --no-cache ca-certificates tzdata su-exec libpq zstd-libs lz4-libs krb5-libs libldap libedit     && addgroup -g 1000 sub2api     && adduser -u 1000 -G sub2api -s /bin/sh -D sub2api     && mkdir -p /app/data && chown sub2api:sub2api /app/data
+#8 CACHED
+
+#9 [runtime-base 3/6] COPY --from=pg-client /usr/local/bin/pg_dump /usr/local/bin/pg_dump
+#9 CACHED
+
+#10 [runtime-base 4/6] COPY --from=pg-client /usr/local/bin/psql /usr/local/bin/psql
+#10 CACHED
+
+#11 [runtime-base 5/6] COPY --from=pg-client /usr/local/lib/libpq.so.5* /usr/local/lib/
+#11 CACHED
+
+#12 [runtime-base 6/6] WORKDIR /app
+#12 CACHED
+
+#13 [local-r1 1/5] COPY --chown=sub2api:sub2api sub2api /app/sub2api
+#13 DONE 0.4s
+
+#14 [local-r1 2/5] COPY --chown=sub2api:sub2api carpool-release /app/carpool-release
+#14 DONE 0.1s
+
+#15 [local-r1 3/5] COPY --chown=sub2api:sub2api resources /app/resources
+#15 DONE 0.1s
+
+#16 [local-r1 4/5] COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+#16 DONE 0.1s
+
+#17 [local-r1 5/5] RUN sed -i 's/\r$//' /app/docker-entrypoint.sh && chmod 0755 /app/docker-entrypoint.sh /app/sub2api /app/carpool-release
+#17 DONE 0.5s
+
+#18 exporting to image
+#18 exporting layers
+#18 exporting layers 0.3s done
+#18 writing image sha256:c17ee70e59572a06cb4b44d7334739120f0425d71cb2978e705ae36943ea0897 done
+#18 naming to docker.io/library/sub2api:claude-weekly-i3-receipt-r1-c9d25ce07053 done
+#18 DONE 0.3s
+
+View build details: docker-desktop://dashboard/build/default/default/fmhczn2ghfq4lpnrdmpzgp8lk
+
+What's Next?
+  1. Sign in to your Docker account → docker login
+  2. View a summary of image vulnerabilities and recommendations → docker scout quickview

@@ -1,0 +1,8 @@
+{
+  "baseline": "9d7f6ec4f",
+  "revision": "acec71b8783be83698b3bf435df5f4873dc28299",
+  "built": "2026-09-27T05:43:59Z",
+  "sha256": "73199b1c14c91d151cbd02b7b2176bb60133835b42f12a0be987d9cf414bf382",
+  "version": "2.8.13-monas-bps.7",
+  "baseline_image": "sha256:6618da177d57996b7c81e33331c172d96a1f63a9074d960e8aff74b9ef54df26"
+}

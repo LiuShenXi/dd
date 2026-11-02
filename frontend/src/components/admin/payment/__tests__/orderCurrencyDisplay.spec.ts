@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { quotaOrderSnapshot } from '@/__tests__/subscriptionQuotaFixtures'
 import type { PaymentOrder } from '@/types/payment'
 import AdminOrderDetail from '../AdminOrderDetail.vue'
 import AdminOrderTable from '../AdminOrderTable.vue'
@@ -149,5 +150,26 @@ describe('admin order currency display', () => {
     expect(text).toContain('$108.00')
     expect(text).toContain('¥108.00')
     expect(text).toContain('$100.00')
+  })
+})
+
+describe('Claude immutable order entitlement display', () => {
+  it('renders historical quota separately from payment and disables automatic refunds', () => {
+    const wrapper = mount(AdminOrderDetail, { props: { show: true, order: orderFactory({ subscription_quota_snapshot: quotaOrderSnapshot(), amount: 9.99, pay_amount: 71.43, currency: 'CNY', refund_amount: 0 }) }, global: { stubs: { BaseDialog: BaseDialogStub } } })
+    expect(wrapper.text()).toContain('¥71.43')
+    expect(wrapper.get('[data-testid="order-quota-snapshot"]').text()).toContain('$100.00000001 USD')
+    expect(wrapper.text()).toContain('Original weekly card')
+    expect(wrapper.text()).not.toContain('payment.orders.creditedAmount')
+    expect(wrapper.findAll('button').some(button => button.text() === 'payment.admin.refund')).toBe(false)
+    expect(wrapper.text()).toContain('subscriptionQuota.manualRefund')
+    wrapper.unmount()
+  })
+  it('shows frozen rights on the user order history without a live plan lookup', () => {
+    const wrapper = mount(OrderTable, { props: { orders: [orderFactory({ subscription_quota_snapshot: quotaOrderSnapshot(), amount: 9.99, pay_amount: 71.43, currency: 'CNY' })], loading: false }, global: { stubs: { DataTable: DataTableStub } } })
+    expect(wrapper.text()).toContain('¥71.43')
+    expect(wrapper.text()).toContain('$100.00000001 USD')
+    expect(wrapper.text()).toContain('Original weekly card')
+    expect(wrapper.text()).not.toContain('payment.orders.creditedAmount')
+    wrapper.unmount()
   })
 })

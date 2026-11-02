@@ -1,0 +1,116 @@
+{
+  "timestamp_utc": "2026-10-20T04:02:45.888888+00:00",
+  "release_complete": true,
+  "active_slot": "green",
+  "phase": "active",
+  "background_activation_confirmed": true,
+  "containers": {
+    "sub2api2": {
+      "id": "9fa54d496591fee26ccd415df5c6211add972f48fcbceacef8c446ff735a69e9",
+      "started_at": "2026-10-18T15:19:07.917058186Z",
+      "finished_at": "2026-10-20T03:58:49.778120798Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "running": false,
+      "restart_policy": "no",
+      "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677"
+    },
+    "sub2api2-green": {
+      "id": "7002abf765e4d0808ad786a33a1ef0c31ae3fd1db89d12ce9e5301d7bcb14a55",
+      "started_at": "2026-10-20T03:56:02.662056444Z",
+      "finished_at": "0001-01-01T00:00:00Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "running": true,
+      "restart_policy": "unless-stopped",
+      "image_id": "sha256:1ef6ac26fd2405baa50ca36d6b6629bd2d19c736e8e85702902220c6aab152c0"
+    }
+  },
+  "binary_sha256": "68f7a0b6414e6b8586f8e3b4631cb67b998cf2a581b22b6e3a0388ed7391f958",
+  "binary_version": "2026-10-20T12:02:45.860+0800\tINFO\tstdlog\tSub2API 2.8.13-monas-claude-weekly.1 (commit: cace0104c6bbda896b321506ead009da4cfe8ac5, built: 2026-10-20T03:46:25.991186+00:00)\t{\"service\": \"sub2api\", \"env\": \"bootstrap\", \"legacy_stdlog\": true}",
+  "scripts_sha256": {
+    "host-release.py": "13f2468b5d352429a316108675212a5161e86295f165c822fb23b2378cb63f03",
+    "release-guard.py": "2d22573a328b8bc7ca264aba207ee3c75bab9b937f71d14a6b90927cc17dd5a2",
+    "main-server-inflight.py": "46c389eef0dd2bbfb4d33ca7eded9ac4f7b0a0412eb39bdd601a36263a85aeb5",
+    "background-reconcile.py": "69fe83fead918542e9925194bd521c5b8310c3f3be50dd928fccb26232f57a8f"
+  },
+  "release_operations": [
+    {
+      "utc": "2026-10-20T03:56:59.482048+00:00",
+      "action": [
+        "--config",
+        "/opt/sub2api2/blue-green/private/config.json",
+        "install-route"
+      ],
+      "exit_code": 0
+    },
+    {
+      "utc": "2026-10-20T03:56:59.679649+00:00",
+      "action": [
+        "/usr/bin/python3",
+        "/root/sub2api-release-20261020/legacy-background.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "utc": "2026-10-20T03:58:31.077388+00:00",
+      "action": [
+        "green",
+        "--timeout",
+        "90"
+      ],
+      "exit_code": 3
+    },
+    {
+      "utc": "2026-10-20T03:58:41.242823+00:00",
+      "action": [
+        "/usr/bin/python3",
+        "/root/sub2api-release-20261020/legacy-background.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "utc": "2026-10-20T03:58:50.326683+00:00",
+      "action": [
+        "green",
+        "--timeout",
+        "90"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "continuity": {
+    "sub2api.monasapi.com": {
+      "samples": 225,
+      "non_200": 0,
+      "first": "2026-10-20T03:55:12.742634+00:00",
+      "last": "2026-10-20T04:02:45.035831+00:00",
+      "p95_ms": 13.688,
+      "max_ms": 29.251
+    },
+    "teamsub2.monasapi.com": {
+      "samples": 225,
+      "non_200": 0,
+      "first": "2026-10-20T03:55:12.751034+00:00",
+      "last": "2026-10-20T04:02:45.043749+00:00",
+      "p95_ms": 11.447,
+      "max_ms": 20.283
+    }
+  },
+  "observed_health_failures": 0,
+  "timer": {
+    "ActiveState": "active",
+    "SubState": "waiting",
+    "UnitFileState": "enabled"
+  },
+  "reconcile_service": {
+    "Result": "success",
+    "ExecMainStatus": "0"
+  },
+  "systemd_verify": {
+    "exit_code": 0,
+    "unrelated_existing_warning": "xray.service uses nobody; unchanged"
+  },
+  "nginx_version": "nginx version: nginx/1.30.5",
+  "monitor_scope": "2-second public health sampling; no synthetic billable production calls, not proof of every customer request"
+}

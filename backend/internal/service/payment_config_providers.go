@@ -173,6 +173,8 @@ func (s *PaymentConfigService) countPendingOrdersByPlan(ctx context.Context, pla
 	return s.entClient.PaymentOrder.Query().
 		Where(
 			paymentorder.PlanIDEQ(planID),
+			// Frozen quota orders remain fulfillable after their source plan is deleted.
+			paymentorder.SubscriptionQuotaSnapshotIsNil(),
 			paymentorder.StatusIn(pendingOrderStatuses...),
 		).Count(ctx)
 }

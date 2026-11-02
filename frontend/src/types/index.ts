@@ -1,6 +1,7 @@
 /**
  * Core Type Definitions for Sub2API Frontend
  */
+import type { UserConcurrencyProjection } from './userConcurrency'
 
 // ==================== Common Types ====================
 
@@ -63,7 +64,7 @@ export interface UserProfileSourceContext {
   provider_label?: string | null
 }
 
-export interface User {
+export interface User extends UserConcurrencyProjection {
   id: number
   username: string
   email: string
@@ -111,7 +112,7 @@ export interface AdminUser extends User {
   // 管理侧权限开关，普通用户接口不返回。
   restrict_public_groups?: boolean
   // 当前并发数（仅管理员列表接口返回）
-  current_concurrency?: number
+  current_concurrency?: number | null
 }
 
 export interface LoginRequest {
@@ -561,6 +562,7 @@ export interface ReasoningEffortMapping {
 }
 
 export interface Group {
+  subscription_quota_mode?: 'windows' | 'term'
   id: number
   name: string
   description: string | null
@@ -2032,6 +2034,7 @@ export interface ApiKeyUsageTrendPoint {
 // ==================== Admin User Management ====================
 
 export interface UpdateUserRequest {
+  claude_subscription_concurrency?: number
   email?: string
   password?: string
   username?: string
@@ -2056,6 +2059,8 @@ export interface ChangePasswordRequest {
 // ==================== User Subscription Types ====================
 
 export interface UserSubscription {
+  quota_mode?: 'windows' | 'term'
+  quota_summary?: import('./subscriptionQuota').SubscriptionQuotaSummary | null
   id: number
   user_id: number
   group_id: number
@@ -2076,27 +2081,24 @@ export interface UserSubscription {
 }
 
 export interface SubscriptionProgress {
-  subscription_id: number
-  daily: {
-    used: number
-    limit: number | null
-    percentage: number
-    reset_in_seconds: number | null
-  } | null
-  weekly: {
-    used: number
-    limit: number | null
-    percentage: number
-    reset_in_seconds: number | null
-  } | null
-  monthly: {
-    used: number
-    limit: number | null
-    percentage: number
-    reset_in_seconds: number | null
-  } | null
-  expires_at: string | null
-  days_remaining: number | null
+  quota_mode?: 'windows' | 'term'
+  quota_summary?: import('./subscriptionQuota').SubscriptionQuotaSummary | null
+  id: number
+  group_name: string
+  expires_at: string
+  expires_in_days: number
+  daily?: SubscriptionWindowProgress | null
+  weekly?: SubscriptionWindowProgress | null
+  monthly?: SubscriptionWindowProgress | null
+}
+export interface SubscriptionWindowProgress {
+  limit_usd: number
+  used_usd: number
+  remaining_usd: number
+  percentage: number
+  window_start: string
+  resets_at: string
+  resets_in_seconds: number
 }
 
 export interface AssignSubscriptionRequest {

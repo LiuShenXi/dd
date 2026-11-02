@@ -16,6 +16,7 @@ import (
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/ent/paymentauditlog"
 	"github.com/Wei-Shaw/sub2api/ent/paymentorder"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 )
@@ -538,11 +539,32 @@ func (s *PaymentService) ExecuteSubscriptionFulfillment(ctx context.Context, oid
 }
 
 func (s *PaymentService) doSub(ctx context.Context, o *dbent.PaymentOrder, lease *paymentFulfillmentLease) error {
+	if o.SubscriptionQuotaSnapshot != nil {
+		if _, err := domain.ParseSubscriptionQuotaOrderSnapshot(o.SubscriptionQuotaSnapshot); err != nil {
+			return ErrSubscriptionQuotaOrderSnapshot
+		}
+		if s.subscriptionQuotaPayment == nil {
+			return ErrSubscriptionQuotaBillingUnavailable
+		}
+		if lease == nil {
+			return ErrSubscriptionQuotaPaymentLease
+		}
+		if _, err := s.subscriptionQuotaPayment.FulfillPaidTerm(ctx, domain.SubscriptionQuotaPaidTermParams{OrderID: o.ID, LeaseVersion: lease.version}); err != nil {
+			return err
+		}
+		if err := s.applyAffiliateRebateForOrder(ctx, o); err != nil {
+			return err
+		}
+		return s.markCompleted(ctx, o, lease, "SUBSCRIPTION_SUCCESS")
+	}
 	gid := *o.SubscriptionGroupID
 	days := *o.SubscriptionDays
 	g, err := s.groupRepo.GetByID(ctx, gid)
 	if err != nil || g.Status != payment.EntityStatusActive {
 		return fmt.Errorf("group %d no longer exists or inactive", gid)
+	}
+	if g.EffectiveSubscriptionQuotaMode() != domain.SubscriptionQuotaModeWindows {
+		return ErrSubscriptionQuotaOrderSnapshot
 	}
 	if err := s.ensurePaymentSubscriptionAssigned(ctx, o, gid, days); err != nil {
 		return err
@@ -554,6 +576,9 @@ func (s *PaymentService) doSub(ctx context.Context, o *dbent.PaymentOrder, lease
 }
 
 func (s *PaymentService) ensurePaymentSubscriptionAssigned(ctx context.Context, o *dbent.PaymentOrder, groupID int64, days int) error {
+	if err := s.rejectLegacyQuotaOrder(ctx, o); err != nil {
+		return err
+	}
 	if s.subscriptionSvc == nil {
 		return errors.New("subscription service is unavailable")
 	}

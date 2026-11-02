@@ -38,10 +38,11 @@
           <input v-model="form.balance" type="number" step="any" class="input" />
         </div>
         <div>
-          <label class="input-label">{{ t('admin.users.columns.concurrency') }}</label>
+          <label class="input-label">{{ t('concurrencyScopes.legacy') }}</label>
           <input v-model.number="form.concurrency" type="number" class="input" />
         </div>
       </div>
+      <label class="block"><span class="input-label">{{ t('concurrencyScopes.editOverride') }}</span><input v-model="claudeOverride" type="text" inputmode="numeric" class="input" data-testid="claude-concurrency-input" /><span class="input-hint">{{ t('concurrencyScopes.createHint') }}</span></label>
       <div>
         <label class="input-label">{{ t('admin.users.form.rpmLimit') }}</label>
         <input
@@ -58,8 +59,8 @@
     <template #footer>
       <div class="flex justify-end gap-3">
         <button @click="$emit('close')" type="button" class="btn btn-secondary">{{ t('common.cancel') }}</button>
-        <button type="submit" form="create-user-form" :disabled="loading" class="btn btn-primary">
-          {{ loading ? t('admin.users.creating') : t('common.create') }}
+        <button type="submit" form="create-user-form" :disabled="mutationBusy" class="btn btn-primary">
+          {{ mutationBusy ? t('admin.users.creating') : t('common.create') }}
         </button>
       </div>
     </template>
@@ -77,31 +78,42 @@ import BaseDialog from '@/components/common/BaseDialog.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { useStepUp, isStepUpBlocked, isStepUpCancelled, stepUpBlockReason } from '@/composables/useStepUp'
 import TotpStepUpDialog from '@/components/auth/TotpStepUpDialog.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useQuotaRequestIdentity } from '@/composables/useQuotaRequestIdentity'
+import { useQuotaMutationMutex } from '@/composables/useQuotaMutationMutex'
 
 const props = defineProps<{ show: boolean }>()
 const emit = defineEmits(['close', 'success']); const { t } = useI18n()
 const appStore = useAppStore()
+const auth = useAuthStore(), claudeOverride = ref('')
 
 const form = reactive({ email: '', password: '', username: '', notes: '', role: 'user' as 'user' | 'admin', balance: '', concurrency: 1, rpm_limit: 0 })
+const identity = useQuotaRequestIdentity(() => JSON.stringify([props.show, auth.user?.id, form, claudeOverride.value]))
+const mutex = useQuotaMutationMutex('admin-user-create', () => String(auth.user?.id))
+const mutationBusy = mutex.busy
 
 const stepUp = useStepUp()
-const loading = ref(false)
-
 const submit = async () => {
-  if (loading.value) return
-  loading.value = true
+  if (!props.show || mutationBusy.value) return
+  if (claudeOverride.value !== '' && (!/^[1-9]\d*$/.test(claudeOverride.value) || !Number.isSafeInteger(Number(claudeOverride.value)))) { appStore.showError(t('concurrencyScopes.invalid')); return }
+  const current = identity.capture()
+  const releaseMutation = mutex.acquire()
+  if (!releaseMutation) return
   try {
     const { balance: rawBalance, ...rest } = { ...form }
     const balance = String(rawBalance).trim()
-    const payload: typeof rest & { balance?: number } = { ...rest }
+    const payload: typeof rest & { balance?: number; claude_subscription_concurrency?: number } = { ...rest }
+    if (claudeOverride.value !== '') payload.claude_subscription_concurrency = Number(claudeOverride.value)
     if (balance !== '') {
       payload.balance = Number(balance)
     }
     // 创建管理员属敏感操作：后端返回 STEP_UP_REQUIRED 时弹 TOTP 验证并重试
-    await stepUp.run(() => adminAPI.users.create(payload))
+    await stepUp.run(() => { if (!current()) throw new Error('STALE_USER_CREATE'); return adminAPI.users.create(payload) })
+    if (!current()) return
     appStore.showSuccess(t('admin.users.userCreated'))
     emit('success'); emit('close')
   } catch (e: any) {
+    if (!current()) return
     if (isStepUpCancelled(e)) {
       // 用户主动取消二次验证：静默返回，表单保持打开。
     } else if (isStepUpBlocked(e)) {
@@ -113,10 +125,10 @@ const submit = async () => {
     } else {
       appStore.showError(e?.message || t('admin.users.failedToCreate'))
     }
-  } finally { loading.value = false }
+  } finally { releaseMutation() }
 }
 
-watch(() => props.show, (v) => { if(v) Object.assign(form, { email: '', password: '', username: '', notes: '', role: 'user', balance: '', concurrency: 1, rpm_limit: 0 }) })
+watch(() => props.show, (v) => { if(v) { Object.assign(form, { email: '', password: '', username: '', notes: '', role: 'user', balance: '', concurrency: 1, rpm_limit: 0 }); claudeOverride.value = '' } })
 
 const generateRandomPassword = () => {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*'

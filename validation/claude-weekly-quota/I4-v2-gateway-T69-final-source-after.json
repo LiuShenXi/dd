@@ -1,0 +1,42 @@
+[
+  {
+    "path": "internal/handler/gateway_helper.go",
+    "sha256": "21f07c4951bab54629a2f5c709ebd53e432d5107ad0bd67beead99fef2aba007"
+  },
+  {
+    "path": "internal/handler/gateway_handler.go",
+    "sha256": "f04f33caaf764881a077eae5a89f4a96611fe6ef99693dab06485324b94902c0"
+  },
+  {
+    "path": "internal/handler/gateway_handler_chat_completions.go",
+    "sha256": "93af4eee75a371d326c6984f1ef876049251bfedd4db1c04a166d3a7b3c9a0c2"
+  },
+  {
+    "path": "internal/handler/gateway_handler_responses.go",
+    "sha256": "8d84c906093dcc40460446386e4a41138f4d48530798b91af1d65f59b37d0ea5"
+  },
+  {
+    "path": "internal/service/gateway_usage_billing.go",
+    "sha256": "291534f76d3b200ecab1654bb6220d59776aac30182df1219fc098d998d279df"
+  },
+  {
+    "path": "internal/handler/subscription_quota_concurrency_v2_test.go",
+    "sha256": "0429889385a20e5114c48889ce1c506e884f186bdc6351904938029485ecd0a3"
+  },
+  {
+    "path": "internal/handler/subscription_quota_protected_concurrency_v2_test.go",
+    "sha256": "2821f9c14e0578fa21a63384ff8340f906a468e8312b17be33f0e51d55050243"
+  },
+  {
+    "path": "internal/handler/subscription_quota_concurrency_router_v2_test.go",
+    "sha256": "ee0eba34d559b81454000e79b5f97ee8cca620027e0eaa9cfc5125a89acd8a3d"
+  },
+  {
+    "path": "internal/service/subscription_quota_concurrency_context_test.go",
+    "sha256": "1ced63012b7e81918c6fe3dbfdf3946c46b5207ceba2bc5e77a227c654c9fc1a"
+  },
+  {
+    "path": "internal/service/subscription_quota_concurrency_transport_test.go",
+    "sha256": "831f7788ef3d723ee73ae3639bd4b37b793e66b524d443cca1c06cdb61f89a46"
+  }
+]

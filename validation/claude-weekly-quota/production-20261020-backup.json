@@ -1,0 +1,31 @@
+{
+  "finished_utc": "2026-10-20T03:27:52.033676+00:00",
+  "backup_verified": true,
+  "database_toc_entries": 1400,
+  "legacy_background": {
+    "scheduled_enabled": 0,
+    "channel_enabled": 0,
+    "batch_jobs": 0,
+    "cn_active_accounts": 0
+  },
+  "production_application_changed": false,
+  "first_receipt_failure": "Python3.10 lacks hashlib.file_digest; existing dump and tar independently rechecked without re-export",
+  "files": {
+    "configuration-and-data.tar.gz": {
+      "bytes": 194977229,
+      "sha256": "599765a595825b3197cd88bb0d5bae568ecc5fb3fb7eb86a11ce5162eab0d7b9"
+    },
+    "database.dump": {
+      "bytes": 173809289,
+      "sha256": "1a3f5e3dce91a546c3c6cb22684694776e6b74192473d51aafe555145a47280c"
+    },
+    "containers.private.json": {
+      "bytes": 41429,
+      "sha256": "b8901d1e787f7ea4e4c428655c883b0a8f630b44413d2e01629192e20c525ce1"
+    },
+    "database.toc.private": {
+      "bytes": 103064,
+      "sha256": "2c9ebb353aee9941ab06306f57b91f93e917cfefaa7c0c34df58d0748e084bcf"
+    }
+  }
+}

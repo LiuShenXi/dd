@@ -15,6 +15,8 @@ const (
 	FieldID = "id"
 	// FieldGroupID holds the string denoting the group_id field in the database.
 	FieldGroupID = "group_id"
+	// FieldTermQuotaUsd holds the string denoting the term_quota_usd field in the database.
+	FieldTermQuotaUsd = "term_quota_usd"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
@@ -49,6 +51,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldGroupID,
+	FieldTermQuotaUsd,
 	FieldName,
 	FieldDescription,
 	FieldPrice,
@@ -118,6 +121,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByGroupID orders the results by the group_id field.
 func ByGroupID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldGroupID, opts...).ToFunc()
+}
+
+// ByTermQuotaUsd orders the results by the term_quota_usd field.
+func ByTermQuotaUsd(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTermQuotaUsd, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.

@@ -1,0 +1,15 @@
+{
+  "checks": [
+    {
+      "checked_utc": "2026-10-20T02:58:34.378320+00:00",
+      "free_bytes": 5325127680
+    },
+    {
+      "checked_utc": "2026-10-20T02:58:46.383887+00:00",
+      "free_bytes": 5324029952
+    }
+  ],
+  "interval_seconds": 12,
+  "minimum_start_bytes": 4831838208,
+  "both_pass": true
+}

@@ -1,0 +1,68 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from environment-I1-R1.Dockerfile
+#1 transferring dockerfile: 2.02kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.23.3@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/postgres:18.1-alpine3.23@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B 0.0s done
+#4 DONE 0.0s
+
+#5 [runtime-base 1/6] FROM docker.io/library/alpine:3.23.3@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+#5 DONE 0.0s
+
+#6 [pg-client 1/1] FROM docker.io/library/postgres:18.1-alpine3.23@sha256:aa6eb304ddb6dd26df23d05db4e5cb05af8951cda3e0dc57731b771e0ef4ab29
+#6 DONE 0.7s
+
+#7 [runtime-base 2/6] RUN apk add --no-cache ca-certificates tzdata su-exec libpq zstd-libs lz4-libs krb5-libs libldap libedit     && addgroup -g 1000 sub2api     && adduser -u 1000 -G sub2api -s /bin/sh -D sub2api     && mkdir -p /app/data && chown sub2api:sub2api /app/data
+#7 2.230 ( 1/17) Installing ca-certificates (20260909-r0)
+#7 2.360 ( 2/17) Installing krb5-conf (1.0-r2)
+#7 2.479 ( 3/17) Installing libcom_err (1.47.3-r0)
+#7 2.590 ( 4/17) Installing keyutils-libs (1.6.3-r4)
+#7 2.715 ( 5/17) Installing libverto (0.3.2-r2)
+#7 2.832 ( 6/17) Installing krb5-libs (1.22.1-r0)
+#7 2.981 ( 7/17) Installing ncurses-terminfo-base (6.5_p20251123-r0)
+#7 3.098 ( 8/17) Installing libncursesw (6.5_p20251123-r0)
+#7 3.217 ( 9/17) Installing libedit (20251016.3.1-r0)
+#7 3.332 (10/17) Installing gdbm (1.26-r0)
+#7 3.447 (11/17) Installing libsasl (2.1.28-r9)
+#7 3.561 (12/17) Installing libldap (2.6.13-r0)
+#7 3.681 (13/17) Installing libpq (18.6-r0)
+#7 3.814 (14/17) Installing lz4-libs (1.10.0-r0)
+#7 3.937 (15/17) Installing su-exec (0.3-r0)
+#7 4.052 (16/17) Installing tzdata (2026e-r0)
+#7 4.206 (17/17) Installing zstd-libs (1.5.7-r2)
+#7 4.337 Executing busybox-1.37.0-r30.trigger
+#7 4.343 Executing ca-certificates-20260909-r0.trigger
+#7 4.401 OK: 12.8 MiB in 33 packages
+#7 DONE 4.6s
+
+#8 [runtime-base 3/6] COPY --from=pg-client /usr/local/bin/pg_dump /usr/local/bin/pg_dump
+#8 DONE 0.2s
+
+#9 [runtime-base 4/6] COPY --from=pg-client /usr/local/bin/psql /usr/local/bin/psql
+#9 DONE 0.3s
+
+#10 [runtime-base 5/6] COPY --from=pg-client /usr/local/lib/libpq.so.5* /usr/local/lib/
+#10 DONE 0.3s
+
+#11 [runtime-base 6/6] WORKDIR /app
+#11 DONE 0.3s
+
+#12 exporting to image
+#12 exporting layers
+#12 exporting layers 0.5s done
+#12 writing image sha256:51390475470127bf04eb0d9ec012e224f9e71d72ef9828caf7ea302e1fab2b05 0.0s done
+#12 naming to docker.io/library/claude-weekly-quota-runtime:alpine3.23.3-pg18.1 0.0s done
+#12 DONE 0.5s
+
+View build details: docker-desktop://dashboard/build/default/default/ozdtxjx5uv0yqqik2cqfz0vsu
+
+What's Next?
+  View a summary of image vulnerabilities and recommendations → docker scout quickview

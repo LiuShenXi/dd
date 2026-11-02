@@ -1,0 +1,96 @@
+{
+  "removed": [
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "69d234caf4623c68a11155123ac1c1e735b62382abdb9f8c49f2dfcb6dc553d9-d",
+      "bytes": 90097806
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "0205f810bccd946abcf2f3598e764408d4239c2ced91367815da688b6b166385-d",
+      "bytes": 88555450
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "bd195ce19c7cbf3d4d5f226fa6134d190fd4234b42fd2782ef6063bc74b67769-d",
+      "bytes": 88547528
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "f41bcade8871127a818375a80a41c3d9f4d4aff66f2629faa8879755e0cc6a1d-d",
+      "bytes": 88542388
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "c1100bf7b05192c2b834cdf08f8a1664a748fb2b70eacbcefe3029d0ee026c5b-d",
+      "bytes": 231049004
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "118a7ffecb8470603381af4b01e7a12479b6f404dc325526b0422a0ff7514a2b-d",
+      "bytes": 253091090
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "80fb2c0bff17bd07d11f40f1883f286593e02e84edc69cd5fdc9244835070de5-d",
+      "bytes": 88547544
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "175e1e1945b774302909e808582ed999ce8743f081142211f4487cbbf80d877b-d",
+      "bytes": 193784256
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "213a3c8c298ffa348e52822aed42638b66dd60261c24ee6091b5569bae1292b6-d",
+      "bytes": 88561774
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "9687a8d103cb30fa112d693f0a934f333690daa49e2644818db4d92992a3bd1a-d",
+      "bytes": 88548708
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "3078977f090c72df78bf2d30b464b63f8a5f5529ea47e4191933c8895c9a549b-d",
+      "bytes": 88555448
+    },
+    {
+      "kind": "rebuildable_old_task_go_cache",
+      "name": "f907711ef0f530306fd9348cbf2f376cffa9eb0af57ea3ef9ce43dc2b3848400-d",
+      "bytes": 93303704
+    },
+    {
+      "kind": "superseded_task_test_binary",
+      "name": "/private/tmp/claude-i6-repository.test",
+      "bytes": 144967570,
+      "sha256": "225a64dbac39e4662616858d2096a1c5c6a2eb5167b80b3dde9ac80d18a7a4fb"
+    },
+    {
+      "kind": "superseded_task_test_binary",
+      "name": "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository.test",
+      "bytes": 145129730,
+      "sha256": "da756108b4dbac66bd3aa53303953888a2fe54bcdfa5eaed7e1f1bb6517ce350"
+    },
+    {
+      "kind": "superseded_task_build_binary",
+      "name": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final2/candidate/sub2api",
+      "bytes": 132477088,
+      "sha256": "ccc0fa44f323f42720586e8988ace9b4ffd1011f70279746c01cf9b4df071a0c"
+    },
+    {
+      "kind": "superseded_task_build_binary",
+      "name": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final2/candidate/carpool-release",
+      "bytes": 43012211,
+      "sha256": "2c77c6a56c9c0896ca059cb35ee438075ec41258cfc6bae8d5260510301a3533"
+    },
+    {
+      "kind": "superseded_task_build_binary",
+      "name": "/Users/shenxi/.codex/private/claude-weekly-quota/office-build-20261020-final2/provider/provider",
+      "bytes": 9766245,
+      "sha256": "67c83c7e8b1e36d7604ccc83f4d634095ca260067dbcfa6cb21efad0df90a6bc"
+    }
+  ],
+  "user_data_removed": false,
+  "current_running_binaries_removed": false
+}

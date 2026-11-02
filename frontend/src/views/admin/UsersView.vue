@@ -574,10 +574,7 @@
           </template>
 
           <template #cell-concurrency="{ row }">
-            <UserConcurrencyCell
-              :current="row.current_concurrency ?? 0"
-              :max="row.concurrency"
-            />
+            <UserConcurrencyScopes :source="row" compact />
           </template>
 
           <template #cell-status="{ value }">
@@ -693,6 +690,9 @@
               </button>
 
               <!-- Allowed Groups -->
+              <button @click="quotaUser = user; showQuotaModal = true; closeActionMenu()" class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700">
+                <Icon name="creditCard" size="sm" class="text-orange-500" />{{ t('subscriptionQuota.manage') }}
+              </button>
               <button
                 @click="handleAllowedGroups(user); closeActionMenu()"
                 class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
@@ -776,8 +776,8 @@
       @confirm="confirmBulkDelete"
       @cancel="bulkDeleteIds = []"
     />
-    <UserCreateModal :show="showCreateModal" @close="showCreateModal = false" @success="loadUsers" />
-    <UserEditModal :show="showEditModal" :user="editingUser" @close="closeEditModal" @success="loadUsers" />
+    <UserCreateModal v-if="showCreateModal" :show="showCreateModal" @close="showCreateModal = false" @success="loadUsers" />
+    <UserEditModal v-if="showEditModal" :show="showEditModal" :user="editingUser" @close="closeEditModal" @success="loadUsers" />
     <BulkEditUserModal
       :show="showBulkEditModal"
       :selected-ids="selectedIds"
@@ -797,6 +797,7 @@
     <GroupReplaceModal :show="showGroupReplaceModal" :user="groupReplaceUser" :old-group="groupReplaceOldGroup" :all-groups="allGroups" @close="closeGroupReplaceModal" @success="loadUsers" />
     <UserAttributesConfigModal :show="showAttributesModal" @close="handleAttributesModalClose" />
     <CarpoolTermModal :show="showCarpoolTermModal" :user="carpoolTermUser" @close="closeCarpoolTermModal" @success="loadUsers" />
+    <SubscriptionQuotaTermModal v-if="showQuotaModal" :show="showQuotaModal" :user="quotaUser" @close="showQuotaModal = false; quotaUser = null" />
   </AppLayout>
 </template>
 
@@ -826,7 +827,6 @@ import GroupBadge from '@/components/common/GroupBadge.vue'
 import Select from '@/components/common/Select.vue'
 import { buildApiKeyGroupFilterOptions } from './apiKeyGroupFilterOptions'
 import UserAttributesConfigModal from '@/components/user/UserAttributesConfigModal.vue'
-import UserConcurrencyCell from '@/components/user/UserConcurrencyCell.vue'
 import PlatformUsageBreakdown from '@/components/user/PlatformUsageBreakdown.vue'
 import PlatformCostCell from '@/components/user/PlatformCostCell.vue'
 import UserPlatformQuotaCell from '@/components/user/UserPlatformQuotaCell.vue'
@@ -840,6 +840,8 @@ import UserBalanceModal from '@/components/admin/user/UserBalanceModal.vue'
 import UserBalanceHistoryModal from '@/components/admin/user/UserBalanceHistoryModal.vue'
 import GroupReplaceModal from '@/components/admin/user/GroupReplaceModal.vue'
 import CarpoolTermModal from '@/components/admin/user/CarpoolTermModal.vue'
+import SubscriptionQuotaTermModal from '@/components/admin/user/SubscriptionQuotaTermModal.vue'
+import UserConcurrencyScopes from '@/components/common/UserConcurrencyScopes.vue'
 
 const appStore = useAppStore()
 
@@ -1570,6 +1572,8 @@ const showBalanceHistoryModal = ref(false)
 const balanceHistoryUser = ref<AdminUser | null>(null)
 
 const showCarpoolTermModal = ref(false)
+const showQuotaModal = ref(false)
+const quotaUser = ref<AdminUser | null>(null)
 const carpoolTermUser = ref<AdminUser | null>(null)
 
 const handleCarpoolTerm = (user: AdminUser) => {

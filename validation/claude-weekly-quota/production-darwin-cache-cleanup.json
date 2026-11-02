@@ -1,0 +1,7 @@
+{
+  "timestamp_utc": "2026-10-20T03:49:48.143171+00:00",
+  "scope": "regenerable Darwin ARM64 go1.27.0 build archives created today; no source/log/fixture/runtime image changes",
+  "files": 1473,
+  "bytes": 1309942980,
+  "free_bytes": 3592052736
+}

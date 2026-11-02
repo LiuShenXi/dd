@@ -1,0 +1,13 @@
+{
+  "samples": 250,
+  "start_utc": "2026-10-20T04:52:20.628419+00:00",
+  "end_utc": "2026-10-20T04:56:30.916039+00:00",
+  "status_counts": {
+    "200": 250
+  },
+  "by_host": {
+    "sub2api.monasapi.com": 125,
+    "teamsub2.monasapi.com": 125
+  },
+  "failures": []
+}

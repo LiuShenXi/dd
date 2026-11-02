@@ -1,0 +1,21 @@
+{
+  "step": "prepare",
+  "started_utc": "2026-10-20T01:59:51.401659+00:00",
+  "finished_utc": "2026-10-20T01:59:58.411383+00:00",
+  "exit_code": 1,
+  "tests": [
+    "TestSubscriptionQuotaI4PrepareEnvironment"
+  ],
+  "top_level_pass": 0,
+  "all_pass": 0,
+  "fail": 1,
+  "skip": 0,
+  "image_id": "sha256:951abfcc0e007eefe87a1bfc193b150be43a1680f41411c7df577004f20bcb5a",
+  "source_sha256": "5caffc17b1abd4686f838a4988478f86abde2268e09a87651c02533c400c0afc",
+  "driver_sha256": "547f284298fa525711eded58808bb66410fb8878132bd71d78b9fa6ce2778e5e",
+  "raw_log_sha256": "57f7539f172951a759147be1b4550811f5f019688e61d7845eaa59f591894b0f",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020/prepare.log",
+  "synthetic_only": true,
+  "production_modified": false,
+  "pass": false
+}

@@ -1,0 +1,22 @@
+{
+  "checked_utc": "2026-10-20T02:55:47.879544+00:00",
+  "rule": {
+    "no_minimum_size": true,
+    "mtime_on_or_after_utc": "2026-10-20T00:00:00Z",
+    "contains_any": [
+      "github.com/Wei-Shaw/sub2api",
+      "/Users/shenxi/Desktop/WORK-SPACE/dd/backend"
+    ]
+  },
+  "file_count": 292,
+  "total_removed_bytes": 76160198,
+  "under_1MiB_files": 292,
+  "under_1MiB_bytes": 76160198,
+  "free_bytes_before": 4600885248,
+  "free_bytes_after": 3602464768,
+  "private_per_file_manifest": "/Users/shenxi/.codex/private/claude-weekly-quota/office/F4-small-task-cache-cleanup-plan.json",
+  "private_per_file_manifest_sha256": "46831a0223a2bf9328ad0f5c7d8773e81214711b1e831bb092c194b347ae21de",
+  "preserved_driver_sha256": "c228980169044eff0a381975577a2e717bd541cf197fb1baa84241e6cf3b8969",
+  "unrelated_cache_removed": false,
+  "containers_images_volumes_modified": false
+}

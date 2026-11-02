@@ -1,0 +1,99 @@
+{
+  "verified_utc": "2026-10-22T02:09:07.725612+00:00",
+  "version": "2.8.13-monas-claude-weekly.3",
+  "head": "8982c3f6132603d2a424e25a74a95c200b297f1a",
+  "image_id": "sha256:5fa04a58c0caabcedbc4c9ff153d1d7f7fe37f00039a2ce7e44061696643cf10",
+  "active_slot": "blue",
+  "active_container": {
+    "id": "9d41c4992890d1b11070f739d84838bf1b0bccb556fefe4a078eae4fa0853009",
+    "image": "sha256:5fa04a58c0caabcedbc4c9ff153d1d7f7fe37f00039a2ce7e44061696643cf10",
+    "started_at": "2026-10-22T02:06:19.159632169Z",
+    "running": true,
+    "restart_count": 0
+  },
+  "retired_container": {
+    "id": "cb20cb0f9c564fc18f94f3c1c1d24e0321d6dc9625bc09331bbe0d11be845d67",
+    "image": "sha256:3691b498ce6a5ac1979dec0266d014fad9acfa387078a32188c5b59e93ddaac1",
+    "started_at": "2026-10-20T04:55:42.102741949Z",
+    "running": false,
+    "restart_count": 0
+  },
+  "retired_restart_policy": "no",
+  "unrelated_containers_unchanged": 27,
+  "routes": {
+    "sub2api.monasapi.com": {
+      "health": 200,
+      "unauthenticated_models": 401,
+      "instance_id": "8f2119a9f0c4ec144da9681e8eb8b625"
+    },
+    "teamsub2.monasapi.com": {
+      "health": 200,
+      "unauthenticated_models": 401,
+      "instance_id": "8f2119a9f0c4ec144da9681e8eb8b625"
+    }
+  },
+  "release_status": {
+    "operation_id": "",
+    "state": "open",
+    "active_http": 4,
+    "pending_usage": 0,
+    "queued_http": 0,
+    "background_jobs": {
+      "mode": "coordinated",
+      "state": "active",
+      "active_tasks": 0,
+      "instance_id": "8f2119a9f0c4ec144da9681e8eb8b625",
+      "leader": true
+    }
+  },
+  "waiver": {
+    "id": 441,
+    "user_id": 16,
+    "term_id": 3,
+    "status": "no_charge",
+    "revision": 2,
+    "actual_cost_usd": 0.0,
+    "last_error_category": null
+  },
+  "real_call": {
+    "http_status": 200,
+    "message_stop": true,
+    "billing": {
+      "id": 449,
+      "user_id": 16,
+      "api_key_id": 98,
+      "term_id": 3,
+      "status": "settled",
+      "actual_cost_usd": 0.005432,
+      "model": "claude-opus-5-5",
+      "input_tokens": 6750,
+      "output_tokens": 8
+    }
+  },
+  "user_summary": {
+    "group_id": 7,
+    "quota_mode": "term",
+    "revision": 1,
+    "server_time": "2026-10-22T02:09:07.723886Z",
+    "current_term": {
+      "id": 3,
+      "group_id": 7,
+      "subscription_id": 3,
+      "term_no": 1,
+      "quota_usd": "165.00000000",
+      "used_usd": "67.33803940",
+      "pending_usd": "0.00000000",
+      "remaining_usd": "97.66196060",
+      "status": "active",
+      "lifecycle_state": "active",
+      "starts_at": "2026-10-20T13:24:41.903497+08:00",
+      "expires_at": "2026-10-27T13:24:41.903497+08:00",
+      "cancelled_at": null,
+      "revision": 445,
+      "unsettled_request_count": 1
+    },
+    "last_term": null,
+    "next_terms": []
+  },
+  "background_reconcile_timer": "active"
+}

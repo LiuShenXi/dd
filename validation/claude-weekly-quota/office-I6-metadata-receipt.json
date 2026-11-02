@@ -1,0 +1,23 @@
+{
+  "step": "metadata",
+  "started_utc": "2026-10-20T02:08:20.770156+00:00",
+  "finished_utc": "2026-10-20T02:08:24.747137+00:00",
+  "exit_code": 0,
+  "tests": [
+    "TestSubscriptionQuotaI4MetadataAndUnsupportedRoutes"
+  ],
+  "top_level_pass": 1,
+  "all_pass": 15,
+  "fail": 0,
+  "skip": 0,
+  "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+  "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "driver_sha256": "d5c5c1757fe08a7d65d7f837ace6c6f4576b8e0fdded3985ef838f5ad02640b5",
+  "driver_stable": true,
+  "runner_sha256": "071c0127a417fe3d8460ea1539c8301336bddf2e8d7a7ad6a82a0845d03526ce",
+  "raw_log_sha256": "f26201804c8296f713bf28c304a0251756859129ff9d55e5518daef2d6a01b1c",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/metadata.log",
+  "synthetic_only": true,
+  "production_modified": false,
+  "pass": true
+}

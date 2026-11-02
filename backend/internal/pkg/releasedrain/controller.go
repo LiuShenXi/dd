@@ -7,6 +7,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"sync"
+
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 )
 
 var (
@@ -16,22 +18,25 @@ var (
 )
 
 type Status struct {
-	OperationID  string `json:"operation_id"`
-	State        string `json:"state"`
-	ActiveHTTP   int64  `json:"active_http"`
-	PendingUsage int64  `json:"pending_usage"`
-	QueuedHTTP   int64  `json:"queued_http"`
+	OperationID    string                 `json:"operation_id"`
+	State          string                 `json:"state"`
+	ActiveHTTP     int64                  `json:"active_http"`
+	PendingUsage   int64                  `json:"pending_usage"`
+	QueuedHTTP     int64                  `json:"queued_http"`
+	BackgroundJobs *backgroundjobs.Status `json:"background_jobs,omitempty"`
 }
 
 type Controller struct {
-	mu           sync.Mutex
-	operationID  string
-	state        string
-	active       int64
-	queued       int64
-	queueLimit   int64
-	changed      chan struct{}
-	pendingUsage func() int64
+	mu                sync.Mutex
+	operationID       string
+	state             string
+	active            int64
+	queued            int64
+	queueLimit        int64
+	changed           chan struct{}
+	pendingUsage      func() int64
+	background        *backgroundjobs.Gate
+	backgroundWasHeld bool
 }
 
 func New(startHeld bool, queueLimit int64, pendingUsage func() int64) *Controller {
@@ -42,6 +47,42 @@ func New(startHeld bool, queueLimit int64, pendingUsage func() int64) *Controlle
 		c.operationID = newOperationID()
 	}
 	return c
+}
+
+// SetBackgroundGate attaches the process-wide autonomous job controller before serving.
+func (c *Controller) SetBackgroundGate(g *backgroundjobs.Gate) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.background = g
+	if g != nil {
+		c.backgroundWasHeld = g.Status().State == "held"
+		if c.state != "open" {
+			g.Hold()
+		}
+	}
+}
+
+func (c *Controller) ActivateBackground(ctx context.Context, instanceID string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.state != "open" || c.background == nil {
+		return ErrState
+	}
+	return c.background.Activate(ctx, instanceID)
+}
+
+func (c *Controller) backgroundActive() int64 {
+	if c.background == nil {
+		return 0
+	}
+	return c.background.Status().ActiveTasks
+}
+
+func (c *Controller) restoreBackground(ctx context.Context) error {
+	if c.background == nil || c.backgroundWasHeld {
+		return nil
+	}
+	return c.background.Activate(ctx, c.background.Status().InstanceID)
 }
 
 func newOperationID() string {
@@ -62,7 +103,12 @@ func (c *Controller) usage() int64 {
 func (c *Controller) Status() Status {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	return Status{c.operationID, c.state, c.active, c.usage(), c.queued}
+	status := Status{OperationID: c.operationID, State: c.state, ActiveHTTP: c.active, PendingUsage: c.usage(), QueuedHTTP: c.queued}
+	if c.background != nil {
+		bg := c.background.Status()
+		status.BackgroundJobs = &bg
+	}
+	return status
 }
 
 // Enter counts the complete handler lifetime, including upgraded WebSocket sessions.
@@ -110,6 +156,9 @@ func (c *Controller) Drain() (Status, error) {
 		return c.Status(), ErrState
 	}
 	c.state = "draining"
+	if c.background != nil {
+		c.backgroundWasHeld = c.background.Hold()
+	}
 	c.operationID = newOperationID()
 	c.mu.Unlock()
 	return c.Status(), nil
@@ -121,7 +170,7 @@ func (c *Controller) LockMigration(id string) error {
 	if id == "" || id != c.operationID || c.state != "draining" {
 		return ErrState
 	}
-	if c.active != 0 || c.usage() != 0 {
+	if c.active != 0 || c.usage() != 0 || c.backgroundActive() != 0 {
 		return ErrBusy
 	}
 	c.state = "migrating"
@@ -133,6 +182,9 @@ func (c *Controller) Cancel(id string) error {
 	defer c.mu.Unlock()
 	if id == "" || id != c.operationID || c.state != "draining" {
 		return ErrState
+	}
+	if err := c.restoreBackground(context.Background()); err != nil {
+		return err
 	}
 	c.open()
 	return nil
@@ -146,7 +198,7 @@ func (c *Controller) Resume(ctx context.Context, id string, refresh func(context
 		c.mu.Unlock()
 		return ErrState
 	}
-	if c.active != 0 || c.usage() != 0 {
+	if c.active != 0 || c.usage() != 0 || c.backgroundActive() != 0 {
 		c.mu.Unlock()
 		return ErrBusy
 	}
@@ -159,6 +211,10 @@ func (c *Controller) Resume(ctx context.Context, id string, refresh func(context
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if err != nil {
+		c.state = "migrating"
+		return err
+	}
+	if err := c.restoreBackground(ctx); err != nil {
 		c.state = "migrating"
 		return err
 	}

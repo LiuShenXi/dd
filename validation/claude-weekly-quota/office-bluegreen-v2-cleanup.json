@@ -1,0 +1,51 @@
+{
+  "pass": true,
+  "time": "2026-10-20T03:46:15.946274+00:00",
+  "scope": "Only completed v2 synthetic fixture; v3 and all images/native retained",
+  "containers": {
+    "blue": "77b2124aa3b698bd5c041022d7ddbf61f984e65b6e5c500d80d1c1732becb197",
+    "nginx": "186979c992b3b7df7ae38d7d497871960614e72f99e50d1fccba4e4276c7fe3f",
+    "provider": "9bf315b23987ca8473ade1cfa9e5ea9ed518af94d15d5a22e18dc3896d44b635",
+    "redis": "6cea976743b8e06e56775845b2a8cbfe92d8edc2dd985f0ee33b21741f785c95",
+    "postgres": "999523851b9fe62e45d3e3c0aa0deb816e73b483ef798088a50cc373ea484060"
+  },
+  "volumes": [
+    "37af0deff88f8a027b4921af540a258eee85a7bb65be767d83260420c3ec168a",
+    "cwq-i4-a83754bfeace4396-pgdata"
+  ],
+  "network": "cwq-env-bluegreen-20261020032504",
+  "free_before_bytes": 3053445120,
+  "free_after_bytes": 3052720128,
+  "private_backups": [
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v2-20261020/final-blue.log",
+      "bytes": 71416,
+      "sha256": "fcc93f76944278f71eb6d3b4656a63a58263462b42e5662c21086639b143a47f"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v2-20261020/final-nginx.log",
+      "bytes": 3946,
+      "sha256": "b09751cab6f3e909d2af684a08a72c6657cb476169702953f9b03cd87627d787"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v2-20261020/final-provider.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v2-20261020/final-redis.log",
+      "bytes": 6605,
+      "sha256": "52e1b3b30d1b911a568bcd97fabf8f003433920a0c1344da05fe16efc59a7ccf"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v2-20261020/final-postgres.log",
+      "bytes": 2186,
+      "sha256": "db1efc183b4e86b7a697606a5f4b1a042d8af71b74548404400dbffbf963f109"
+    },
+    {
+      "path": "/Users/shenxi/.codex/private/claude-weekly-quota/office-bluegreen-v2-20261020/final-synthetic.sql.gz",
+      "bytes": 84483,
+      "sha256": "647049a3f2252db2a0fddbc17638f64bd634ec37db5235bf0a7f2bd9b788191a"
+    }
+  ]
+}

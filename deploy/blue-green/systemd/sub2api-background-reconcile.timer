@@ -1,0 +1,11 @@
+[Unit]
+Description=Periodically revalidate completed Sub2API background ownership
+
+[Timer]
+OnBootSec=90s
+OnUnitActiveSec=60s
+AccuracySec=5s
+Unit=sub2api-background-reconcile.service
+
+[Install]
+WantedBy=timers.target

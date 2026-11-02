@@ -11,6 +11,7 @@ import (
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/pagination"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/timezone"
@@ -47,6 +48,7 @@ type SubscriptionService struct {
 	groupRepo           GroupRepository
 	userSubRepo         UserSubscriptionRepository
 	billingCacheService *BillingCacheService
+	quotaSummaryReader  SubscriptionQuotaSummaryReader
 	entClient           *dbent.Client
 
 	// L1 缓存：加速中间件热路径的订阅查询
@@ -223,6 +225,9 @@ func (s *SubscriptionService) assignOrExtendSubscription(ctx context.Context, in
 	group, err := s.groupRepo.GetByID(ctx, input.GroupID)
 	if err != nil {
 		return nil, false, fmt.Errorf("group not found: %w", err)
+	}
+	if group.EffectiveSubscriptionQuotaMode() != "windows" {
+		return nil, false, ErrLegacySubscriptionOperationUnsupported
 	}
 	if !group.IsSubscriptionType() {
 		return nil, false, ErrGroupNotSubscriptionType
@@ -509,6 +514,9 @@ func (s *SubscriptionService) assignSubscriptionWithReuse(ctx context.Context, i
 	if err != nil {
 		return nil, false, fmt.Errorf("group not found: %w", err)
 	}
+	if group.EffectiveSubscriptionQuotaMode() != "windows" {
+		return nil, false, ErrLegacySubscriptionOperationUnsupported
+	}
 	if !group.IsSubscriptionType() {
 		return nil, false, ErrGroupNotSubscriptionType
 	}
@@ -604,6 +612,10 @@ func (s *SubscriptionService) RevokeSubscription(ctx context.Context, subscripti
 		return err
 	}
 
+	if err := legacySubscriptionModeError(sub); err != nil {
+		return err
+	}
+
 	if err := s.userSubRepo.Delete(ctx, subscriptionID); err != nil {
 		return err
 	}
@@ -619,6 +631,10 @@ func (s *SubscriptionService) RevokeSubscription(ctx context.Context, subscripti
 func (s *SubscriptionService) RestoreSubscription(ctx context.Context, subscriptionID int64) (*UserSubscription, error) {
 	sub, err := s.userSubRepo.GetByIDIncludeDeleted(ctx, subscriptionID)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := legacySubscriptionModeError(sub); err != nil {
 		return nil, err
 	}
 	if sub.DeletedAt == nil {
@@ -652,7 +668,14 @@ func (s *SubscriptionService) RestoreSubscription(ctx context.Context, subscript
 
 // ExtendSubscription 调整订阅时长（正数延长，负数缩短）
 func (s *SubscriptionService) ExtendSubscription(ctx context.Context, subscriptionID int64, days int) (*UserSubscription, error) {
-	err := s.withSubscriptionUpdateTx(ctx, func(txCtx context.Context) error {
+	preflight, err := s.userSubRepo.GetByID(ctx, subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+	if err := legacySubscriptionModeError(preflight); err != nil {
+		return nil, err
+	}
+	err = s.withSubscriptionUpdateTx(ctx, func(txCtx context.Context) error {
 		// Lock the row before reading its expiry. Without this lock, concurrent
 		// adjustments can both calculate from the same stale expiry and lose one
 		// of the updates when they write the absolute timestamp.
@@ -736,7 +759,15 @@ func (s *SubscriptionService) ExtendSubscription(ctx context.Context, subscripti
 
 // GetByID 根据ID获取订阅
 func (s *SubscriptionService) GetByID(ctx context.Context, id int64) (*UserSubscription, error) {
-	return s.userSubRepo.GetByID(ctx, id)
+	sub, err := s.userSubRepo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := s.projectQuotaRows(ctx, []UserSubscription{*sub}, false)
+	if err != nil {
+		return nil, err
+	}
+	return &rows[0], nil
 }
 
 // GetActiveSubscription 获取用户对特定分组的有效订阅
@@ -787,7 +818,7 @@ func (s *SubscriptionService) ListUserSubscriptions(ctx context.Context, userID 
 	}
 	normalizeExpiredWindows(subs)
 	normalizeSubscriptionStatus(subs)
-	return subs, nil
+	return s.projectQuotaRows(ctx, subs, false)
 }
 
 // ListActiveUserSubscriptions 获取用户的所有有效订阅
@@ -797,7 +828,7 @@ func (s *SubscriptionService) ListActiveUserSubscriptions(ctx context.Context, u
 		return nil, err
 	}
 	normalizeExpiredWindows(subs)
-	return subs, nil
+	return s.projectQuotaRows(ctx, subs, true)
 }
 
 // ListGroupSubscriptions 获取分组的所有订阅
@@ -809,7 +840,8 @@ func (s *SubscriptionService) ListGroupSubscriptions(ctx context.Context, groupI
 	}
 	normalizeExpiredWindows(subs)
 	normalizeSubscriptionStatus(subs)
-	return subs, pag, nil
+	subs, err = s.projectQuotaRows(ctx, subs, false)
+	return subs, pag, err
 }
 
 // List 获取所有订阅（分页，支持筛选和排序）
@@ -821,7 +853,8 @@ func (s *SubscriptionService) List(ctx context.Context, page, pageSize int, user
 	}
 	normalizeExpiredWindows(subs)
 	normalizeSubscriptionStatus(subs)
-	return subs, pag, nil
+	subs, err = s.projectQuotaRows(ctx, subs, false)
+	return subs, pag, err
 }
 
 // normalizeExpiredWindows 将已过期窗口的数据清零（仅影响返回数据，不影响数据库）
@@ -870,6 +903,9 @@ func startOfDay(t time.Time) time.Time {
 
 // CheckAndActivateWindow 检查并激活窗口（首次使用时）
 func (s *SubscriptionService) CheckAndActivateWindow(ctx context.Context, sub *UserSubscription) error {
+	if err := legacySubscriptionModeError(sub); err != nil {
+		return err
+	}
 	return s.checkAndActivateWindowAt(ctx, sub, s.now())
 }
 
@@ -892,6 +928,13 @@ func (s *SubscriptionService) AdminResetQuota(ctx context.Context, subscriptionI
 	if err != nil {
 		return nil, err
 	}
+
+	if err := legacySubscriptionModeError(sub); err != nil {
+		return nil, err
+	}
+	if sub.Group != nil && sub.Group.Status == domain.SubscriptionQuotaMaintenanceStatus {
+		return nil, ErrSubscriptionQuotaRolloutBlocked
+	}
 	now := s.now()
 	// 日窗口锚点取当天 0 点：手动重置只清空用量，不改变“每天 0 点刷新”的节奏。
 	// 周/月窗口保持锚定重置时刻（期限对齐滚动窗口语义）。
@@ -911,6 +954,9 @@ func (s *SubscriptionService) AdminResetQuota(ctx context.Context, subscriptionI
 
 // CheckAndResetWindows 检查并重置过期的窗口
 func (s *SubscriptionService) CheckAndResetWindows(ctx context.Context, sub *UserSubscription) error {
+	if err := legacySubscriptionModeError(sub); err != nil {
+		return err
+	}
 	now := s.now()
 	needsInvalidateCache := false
 
@@ -1003,6 +1049,9 @@ func (s *SubscriptionService) CheckUsageLimits(ctx context.Context, sub *UserSub
 // 仅做内存检查，不触发 DB 写入。调用方必须在放行请求前同步完成窗口维护。
 // 返回 needsMaintenance 表示是否需要执行窗口维护并回读数据库快照。
 func (s *SubscriptionService) ValidateAndCheckLimits(sub *UserSubscription, group *Group) (needsMaintenance bool, err error) {
+	if group != nil && group.EffectiveSubscriptionQuotaMode() != "windows" {
+		return false, ErrSubscriptionQuotaBillingUnavailable
+	}
 	now := s.now()
 	// 1. 验证订阅状态
 	if sub.Status == SubscriptionStatusExpired {
@@ -1056,6 +1105,9 @@ func (s *SubscriptionService) DoWindowMaintenance(sub *UserSubscription) {
 	if s == nil {
 		return
 	}
+	if legacySubscriptionModeError(sub) != nil {
+		return
+	}
 	if s.maintenanceQueue != nil {
 		err := s.maintenanceQueue.TryEnqueue(func() {
 			s.doWindowMaintenance(sub)
@@ -1096,13 +1148,15 @@ func (s *SubscriptionService) RecordUsage(ctx context.Context, subscriptionID in
 
 // SubscriptionProgress 订阅进度
 type SubscriptionProgress struct {
-	ID            int64                `json:"id"`
-	GroupName     string               `json:"group_name"`
-	ExpiresAt     time.Time            `json:"expires_at"`
-	ExpiresInDays int                  `json:"expires_in_days"`
-	Daily         *UsageWindowProgress `json:"daily,omitempty"`
-	Weekly        *UsageWindowProgress `json:"weekly,omitempty"`
-	Monthly       *UsageWindowProgress `json:"monthly,omitempty"`
+	ID            int64                            `json:"id"`
+	GroupName     string                           `json:"group_name"`
+	ExpiresAt     time.Time                        `json:"expires_at"`
+	ExpiresInDays int                              `json:"expires_in_days"`
+	Daily         *UsageWindowProgress             `json:"daily,omitempty"`
+	Weekly        *UsageWindowProgress             `json:"weekly,omitempty"`
+	Monthly       *UsageWindowProgress             `json:"monthly,omitempty"`
+	QuotaMode     string                           `json:"quota_mode"`
+	QuotaSummary  *domain.SubscriptionQuotaSummary `json:"quota_summary"`
 }
 
 // UsageWindowProgress 使用窗口进度
@@ -1130,6 +1184,12 @@ func (s *SubscriptionService) GetSubscriptionProgress(ctx context.Context, subsc
 			return nil, err
 		}
 	}
+	sub.Group = group
+	rows, err := s.projectQuotaRows(ctx, []UserSubscription{*sub}, false)
+	if err != nil {
+		return nil, err
+	}
+	sub = &rows[0]
 
 	return s.calculateProgress(sub, group), nil
 }
@@ -1141,6 +1201,14 @@ func (s *SubscriptionService) calculateProgress(sub *UserSubscription, group *Gr
 		GroupName:     group.Name,
 		ExpiresAt:     sub.ExpiresAt,
 		ExpiresInDays: sub.DaysRemaining(),
+		QuotaMode:     "windows",
+	}
+	if group.HasTermQuotaMode() {
+		progress.QuotaMode, progress.QuotaSummary = "term", sub.QuotaSummary
+		if sub.QuotaSummary != nil && sub.QuotaSummary.CurrentTerm != nil {
+			progress.ExpiresAt = sub.QuotaSummary.CurrentTerm.ExpiresAt
+		}
+		return progress
 	}
 
 	// 日进度
@@ -1230,7 +1298,7 @@ func (s *SubscriptionService) calculateProgress(sub *UserSubscription, group *Gr
 // GetUserSubscriptionsWithProgress 获取用户所有订阅及进度
 func (s *SubscriptionService) GetUserSubscriptionsWithProgress(ctx context.Context, userID int64) ([]SubscriptionProgress, error) {
 	// ListActiveByUserID 已使用 .WithGroup() eager-load Group 关联，1 次查询获取所有数据
-	subs, err := s.userSubRepo.ListActiveByUserID(ctx, userID)
+	subs, err := s.ListActiveUserSubscriptions(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -1250,6 +1318,9 @@ func (s *SubscriptionService) GetUserSubscriptionsWithProgress(ctx context.Conte
 
 // ValidateSubscription 验证订阅是否有效
 func (s *SubscriptionService) ValidateSubscription(ctx context.Context, sub *UserSubscription) error {
+	if err := legacySubscriptionModeError(sub); err != nil {
+		return err
+	}
 	if sub.Status == SubscriptionStatusExpired {
 		return ErrSubscriptionExpired
 	}

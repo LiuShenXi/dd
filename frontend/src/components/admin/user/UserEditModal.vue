@@ -42,7 +42,7 @@
         <textarea v-model="form.notes" rows="3" class="input"></textarea>
       </div>
       <div>
-        <label class="input-label">{{ t('admin.users.columns.concurrency') }}</label>
+        <label class="input-label">{{ t('concurrencyScopes.legacy') }}</label>
         <input
           v-model.number="form.concurrency"
           type="number"
@@ -54,6 +54,8 @@
         />
         <p class="input-hint">{{ t('admin.users.form.concurrencyHint') }}</p>
       </div>
+      <UserConcurrencyScopes v-if="user" :source="user" />
+      <label class="block"><span class="input-label">{{ t('concurrencyScopes.editOverride') }}</span><input v-model="claudeOverride" type="text" inputmode="numeric" class="input" data-testid="claude-concurrency-input" /><span class="input-hint">{{ t('concurrencyScopes.editHint') }}</span></label>
       <div>
         <label class="input-label">{{ t('admin.users.form.rpmLimit') }}</label>
         <input
@@ -71,8 +73,8 @@
     <template #footer>
       <div class="flex justify-end gap-3">
         <button @click="$emit('close')" type="button" class="btn btn-secondary">{{ t('common.cancel') }}</button>
-        <button type="submit" form="edit-user-form" :disabled="submitting" class="btn btn-primary">
-          {{ submitting ? t('admin.users.updating') : t('common.update') }}
+        <button type="submit" form="edit-user-form" :disabled="mutationBusy" class="btn btn-primary" data-testid="user-edit-submit">
+          {{ mutationBusy ? t('admin.users.updating') : t('common.update') }}
         </button>
       </div>
     </template>
@@ -95,12 +97,19 @@ import UserAttributeForm from '@/components/user/UserAttributeForm.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { useStepUp, isStepUpBlocked, isStepUpCancelled, stepUpBlockReason } from '@/composables/useStepUp'
 import TotpStepUpDialog from '@/components/auth/TotpStepUpDialog.vue'
+import UserConcurrencyScopes from '@/components/common/UserConcurrencyScopes.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useQuotaRequestIdentity } from '@/composables/useQuotaRequestIdentity'
+import { useQuotaMutationMutex } from '@/composables/useQuotaMutationMutex'
 
 const props = defineProps<{ show: boolean, user: AdminUser | null }>()
 const emit = defineEmits(['close', 'success'])
 const { t } = useI18n(); const appStore = useAppStore(); const { copyToClipboard } = useClipboard()
 
-const submitting = ref(false); const passwordCopied = ref(false)
+const passwordCopied = ref(false)
+const auth = useAuthStore(), claudeOverride = ref('')
+const mutex = useQuotaMutationMutex('admin-user-edit', () => JSON.stringify([auth.user?.id, props.user?.id]))
+const mutationBusy = mutex.busy
 const roleOptions = computed(() => [
   { value: 'user', label: t('admin.users.roles.user') },
   { value: 'admin', label: t('admin.users.roles.admin') }
@@ -115,11 +124,13 @@ const form = reactive({
   rpm_limit: 0,
   customAttributes: {} as UserAttributeValuesMap
 })
+const identity = useQuotaRequestIdentity(() => JSON.stringify([props.show, props.user?.id, auth.user?.id, form, claudeOverride.value]))
 
 watch(() => props.user, (u) => {
   if (u) {
     Object.assign(form, { email: u.email, password: '', username: u.username || '', notes: u.notes || '', role: u.role || 'user', concurrency: u.concurrency, rpm_limit: u.rpm_limit ?? 0, customAttributes: {} })
     passwordCopied.value = false
+    claudeOverride.value = ''
   }
 }, { immediate: true })
 
@@ -136,7 +147,7 @@ const copyPassword = async () => {
 const stepUp = useStepUp()
 
 const handleUpdateUser = async () => {
-  if (!props.user) return
+  if (!props.show || !props.user || mutationBusy.value) return
   if (!form.email.trim()) {
     appStore.showError(t('admin.users.emailRequired'))
     return
@@ -146,17 +157,28 @@ const handleUpdateUser = async () => {
     appStore.showError(t('admin.users.concurrencyNonNegative'))
     return
   }
+  if (claudeOverride.value !== '' && (!/^[1-9]\d*$/.test(claudeOverride.value) || !Number.isSafeInteger(Number(claudeOverride.value)))) {
+    appStore.showError(t('concurrencyScopes.invalid'))
+    return
+  }
   const userId = props.user.id
-  submitting.value = true
+  const current = identity.capture()
+  const attributes = { ...form.customAttributes }
+  const releaseMutation = mutex.acquire()
+  if (!releaseMutation) return
   try {
     const data: any = { email: form.email, username: form.username, notes: form.notes, role: form.role, concurrency: form.concurrency, rpm_limit: form.rpm_limit }
+    if (claudeOverride.value !== '') data.claude_subscription_concurrency = Number(claudeOverride.value)
     if (form.password.trim()) data.password = form.password.trim()
     // 提升为管理员属敏感操作：后端返回 STEP_UP_REQUIRED 时弹 TOTP 验证并重试
-    await stepUp.run(() => adminAPI.users.update(userId, data))
-    if (Object.keys(form.customAttributes).length > 0) await adminAPI.userAttributes.updateUserAttributeValues(userId, form.customAttributes)
+    await stepUp.run(() => { if (!current()) throw new Error('STALE_USER_EDIT'); return adminAPI.users.update(userId, data) })
+    if (!current()) return
+    if (Object.keys(attributes).length > 0) await adminAPI.userAttributes.updateUserAttributeValues(userId, attributes)
+    if (!current()) return
     appStore.showSuccess(t('admin.users.userUpdated'))
     emit('success'); emit('close')
   } catch (e: any) {
+    if (!current()) return
     if (isStepUpCancelled(e)) {
       // 用户主动取消二次验证：静默返回，表单保持打开。
     } else if (isStepUpBlocked(e)) {
@@ -168,6 +190,6 @@ const handleUpdateUser = async () => {
     } else {
       appStore.showError(e?.message || t('admin.users.failedToUpdate'))
     }
-  } finally { submitting.value = false }
+  } finally { releaseMutation() }
 }
 </script>

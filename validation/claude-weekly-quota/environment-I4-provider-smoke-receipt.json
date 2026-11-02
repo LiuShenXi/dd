@@ -1,0 +1,33 @@
+{
+  "utc": "2026-10-19T16:33:07.5338710Z",
+  "image": "claude-weekly-quota-provider:8f7296fb0a63",
+  "image_id": "sha256:bea8be5cf5d021bfcce8a075a922b68ab0ba6b75fb56883d54bf830cb7556170",
+  "source_sha256": "8f7296fb0a63e1852cb96cf3bad33146cd8e80acc30e1b1381d4e2c90b1d37c6",
+  "network": "none",
+  "host_ports": [],
+  "synthetic_only": true,
+  "external_calls": false,
+  "checks": [
+    {
+      "path": "/v1/messages",
+      "stream": false,
+      "passed": true
+    },
+    {
+      "path": "/v1/messages",
+      "stream": true,
+      "passed": true
+    },
+    {
+      "path": "/v1/responses",
+      "stream": false,
+      "passed": true
+    },
+    {
+      "path": "/v1/responses",
+      "stream": true,
+      "passed": true
+    }
+  ],
+  "business_HTTP_matrix_proven": false
+}

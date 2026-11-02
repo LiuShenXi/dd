@@ -1,0 +1,105 @@
+{
+  "existing_migrations": 297,
+  "local_migrations": 307,
+  "checksum_algorithm": "SHA256(strings.TrimSpace(file)) matches migration runner",
+  "pending": [
+    "245_subscription_quota_structure.sql",
+    "246_subscription_quota_usage_links.sql",
+    "247_subscription_quota_usage_index_notx.sql",
+    "248_subscription_quota_usage_validate.sql",
+    "249_subscription_quota_protected_groups.sql",
+    "250_subscription_quota_usage_cost_width.sql",
+    "251_claude_subscription_concurrency.sql",
+    "252_subscription_quota_order_snapshot_immutable.sql",
+    "253_subscription_quota_rollout.sql",
+    "254_subscription_quota_history_indexes_notx.sql"
+  ],
+  "changed_existing": [],
+  "database_only": [],
+  "cost_columns": [
+    {
+      "table": "usage_dashboard_daily",
+      "column": "account_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_dashboard_daily",
+      "column": "actual_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_dashboard_daily",
+      "column": "total_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_dashboard_hourly",
+      "column": "account_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_dashboard_hourly",
+      "column": "actual_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_dashboard_hourly",
+      "column": "total_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_group_daily_rollups",
+      "column": "actual_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_logs",
+      "column": "account_stats_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_logs",
+      "column": "actual_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_logs",
+      "column": "cache_creation_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_logs",
+      "column": "cache_read_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_logs",
+      "column": "input_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_logs",
+      "column": "output_cost",
+      "precision": 20,
+      "scale": 10
+    },
+    {
+      "table": "usage_logs",
+      "column": "total_cost",
+      "precision": 20,
+      "scale": 10
+    }
+  ]
+}

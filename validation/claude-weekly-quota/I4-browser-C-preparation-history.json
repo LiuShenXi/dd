@@ -1,0 +1,37 @@
+{
+  "stage": "I4 independent synthetic browser C preparation history",
+  "synthetic_only": true,
+  "production_connected": false,
+  "environment": "environment-I4-20261019T180351Z-active.json",
+  "steps": [
+    {
+      "operation": "original admin POST users",
+      "user_created": false,
+      "reason": "ADMIN_COMPLIANCE_ACK_REQUIRED",
+      "status": 423
+    },
+    {
+      "operation": "original GET compliance then POST compliance/accept",
+      "status": 200,
+      "scope": "fictional test admin in local synthetic instance only; existing service API, no settings SQL bypass"
+    },
+    {
+      "operation": "original admin POST users with explicit null Claude create field",
+      "user_created": false,
+      "reason": "INVALID_CLAUDE_SUBSCRIPTION_CONCURRENCY",
+      "status": 400
+    },
+    {
+      "legacy_concurrency": 5,
+      "status": 200,
+      "claude_override": null,
+      "operation": "original admin POST users omitting override then GET and PG read",
+      "receipt": "environment-I4-browser-C-20261019T181423Z.json",
+      "issued_cards": 0,
+      "effective_claude_concurrency": 3,
+      "user_id": 4
+    }
+  ],
+  "credentials": "existing private fixture only; no values recorded",
+  "actual_UI_executed": false
+}

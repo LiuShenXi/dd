@@ -1,0 +1,5 @@
+{"Time":"2026-10-19T21:21:35.4469402+08:00","Action":"start","Package":"github.com/Wei-Shaw/sub2api/internal/repository"}
+{"Time":"2026-10-19T21:21:38.5163858+08:00","Action":"output","Package":"github.com/Wei-Shaw/sub2api/internal/repository","Output":"2026/10/19 13:21:38 Timezone initialized: UTC (UTC offset: +00:00)\n"}
+{"Time":"2026-10-19T21:21:43.5877085+08:00","Action":"output","Package":"github.com/Wei-Shaw/sub2api/internal/repository","Output":"2026/10/19 13:21:43 failed to apply db migrations: validate migration 247_subscription_quota_usage_index_notx.sql: *_notx.sql must not mix non-CONCURRENTLY SQL statements\n"}
+{"Time":"2026-10-19T21:21:43.5932398+08:00","Action":"output","Package":"github.com/Wei-Shaw/sub2api/internal/repository","Output":"FAIL\tgithub.com/Wei-Shaw/sub2api/internal/repository\t8.146s\n","OutputType":"frame"}
+{"Time":"2026-10-19T21:21:43.5932398+08:00","Action":"fail","Package":"github.com/Wei-Shaw/sub2api/internal/repository","Elapsed":8.146}

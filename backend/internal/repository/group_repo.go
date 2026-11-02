@@ -90,6 +90,9 @@ func createGroupRecord(ctx context.Context, client *dbent.Client, groupIn *servi
 	if groupIn == nil {
 		return errors.New("group is nil")
 	}
+	if err := service.ValidateSubscriptionQuotaMode(groupIn); err != nil {
+		return err
+	}
 	modelPricing, err := json.Marshal(groupIn.ModelPricing)
 	if err != nil {
 		return fmt.Errorf("marshal group model pricing: %w", err)
@@ -103,6 +106,7 @@ func createGroupRecord(ctx context.Context, client *dbent.Client, groupIn *servi
 		SetIsExclusive(groupIn.IsExclusive).
 		SetStatus(groupIn.Status).
 		SetSubscriptionType(groupIn.SubscriptionType).
+		SetSubscriptionQuotaMode(groupIn.EffectiveSubscriptionQuotaMode()).
 		SetNillableDailyLimitUsd(groupIn.DailyLimitUSD).
 		SetNillableWeeklyLimitUsd(groupIn.WeeklyLimitUSD).
 		SetNillableMonthlyLimitUsd(groupIn.MonthlyLimitUSD).
@@ -201,6 +205,9 @@ func (r *groupRepository) CreateFromSource(ctx context.Context, groupIn *service
 	if groupIn == nil {
 		return errors.New("group is nil")
 	}
+	if err := service.ValidateSubscriptionQuotaMode(groupIn); err != nil {
+		return err
+	}
 	tx, err := r.client.Tx(ctx)
 	if err != nil && !errors.Is(err, dbent.ErrTxStarted) {
 		return err
@@ -290,6 +297,7 @@ func (r *groupRepository) Update(ctx context.Context, groupIn *service.Group) er
 		SetIsExclusive(groupIn.IsExclusive).
 		SetStatus(groupIn.Status).
 		SetSubscriptionType(groupIn.SubscriptionType).
+		SetSubscriptionQuotaMode(groupIn.EffectiveSubscriptionQuotaMode()).
 		SetNillableDailyLimitUsd(groupIn.DailyLimitUSD).
 		SetNillableWeeklyLimitUsd(groupIn.WeeklyLimitUSD).
 		SetNillableMonthlyLimitUsd(groupIn.MonthlyLimitUSD).
@@ -443,9 +451,19 @@ func (r *groupRepository) Update(ctx context.Context, groupIn *service.Group) er
 }
 
 func (r *groupRepository) Delete(ctx context.Context, id int64) error {
-	_, err := r.client.Group.Delete().Where(group.IDEQ(id)).Exec(ctx)
+	affected, err := r.client.Group.Delete().Where(group.IDEQ(id), group.SubscriptionQuotaModeEQ("windows")).Exec(ctx)
 	if err != nil {
 		return translatePersistenceError(err, service.ErrGroupNotFound, nil)
+	}
+	if affected == 0 {
+		var mode string
+		readErr := scanSingleRow(ctx, r.sql, `SELECT subscription_quota_mode FROM groups WHERE id=$1 AND deleted_at IS NULL`, []any{id}, &mode)
+		if readErr != nil && !errors.Is(readErr, sql.ErrNoRows) {
+			return readErr
+		}
+		if readErr == nil && mode != "windows" {
+			return service.ErrLegacySubscriptionOperationUnsupported
+		}
 	}
 	if err := enqueueSchedulerOutbox(ctx, r.sql, service.SchedulerOutboxEventGroupChanged, nil, &id, nil); err != nil {
 		logger.LegacyPrintf("repository.group", "[SchedulerOutbox] enqueue group delete failed: group=%d err=%v", id, err)
@@ -874,14 +892,15 @@ func (r *groupRepository) deleteCascade(ctx context.Context, id int64, requireEm
 
 	// Lock the group row to avoid concurrent writes while we cascade.
 	// 这里使用 exec.QueryContext 手动扫描，确保同一事务内加锁并能区分"未找到"与其他错误。
-	rows, err := exec.QueryContext(ctx, "SELECT id, subscription_type FROM groups WHERE id = $1 AND deleted_at IS NULL FOR UPDATE", id)
+	rows, err := exec.QueryContext(ctx, "SELECT id, subscription_type, subscription_quota_mode FROM groups WHERE id = $1 AND deleted_at IS NULL FOR UPDATE", id)
 	if err != nil {
 		return nil, err
 	}
 	var lockedID int64
 	var subscriptionType string
+	var quotaMode string
 	if rows.Next() {
-		if err := rows.Scan(&lockedID, &subscriptionType); err != nil {
+		if err := rows.Scan(&lockedID, &subscriptionType, &quotaMode); err != nil {
 			_ = rows.Close()
 			return nil, err
 		}
@@ -894,6 +913,11 @@ func (r *groupRepository) deleteCascade(ctx context.Context, id int64, requireEm
 	}
 	if lockedID == 0 {
 		return nil, service.ErrGroupNotFound
+	}
+	// Term mutations lock parent before group. Stop while holding only the
+	// group lock, before any parent access, to preserve history and lock order.
+	if quotaMode != "windows" {
+		return nil, service.ErrLegacySubscriptionOperationUnsupported
 	}
 	if requireEmpty {
 		var hasAccount bool

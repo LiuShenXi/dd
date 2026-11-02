@@ -1,0 +1,43 @@
+{
+  "stage": "I4 v2 actual isolated runtime",
+  "scenario": "MetadataAndUnsupportedRoutes",
+  "freeze": "F4",
+  "diagnostic": false,
+  "executable": "C:/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.0.windows-amd64/bin/go.exe",
+  "arguments": [
+    "test",
+    "-tags=integration",
+    "-json",
+    "-count=1",
+    "-timeout=5m",
+    "-run",
+    "^TestSubscriptionQuotaI4MetadataAndUnsupportedRoutes$",
+    "./internal/repository"
+  ],
+  "exit_code": 0,
+  "driver_source_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+  "driver_source_after_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+  "driver_source_stable": true,
+  "candidate_source_sha256": "9e2654b342516eee35f4d66e78ebfc13a550f1acb5515f94f291fffe66887f9c",
+  "candidate_image_id": "sha256:4bfa2945902b61e8386d8aadcbd59a2a42117efc1ea99d5bc63978f5be4a24b9",
+  "environment_receipt": "environment-I4-20261019T234019Z-active.json",
+  "pass_count": 1,
+  "failure_count": 0,
+  "skip_count": 0,
+  "functional_pass": true,
+  "acceptance": true,
+  "log": "I4-v2-MetadataAndUnsupportedRoutes-F4-20261019T234155Z.jsonl",
+  "external_upstream_called": false,
+  "production_connected": false,
+  "finished_utc": "2026-10-19T23:42:15.3630560Z",
+  "source_compatibility": {
+    "compatible": true,
+    "mode": "exact_source",
+    "receipt": null
+  },
+  "source_compatibility_after": {
+    "compatible": true,
+    "mode": "exact_source",
+    "receipt": null
+  }
+}

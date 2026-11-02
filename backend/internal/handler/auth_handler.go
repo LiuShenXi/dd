@@ -428,7 +428,9 @@ func (h *AuthHandler) GetCurrentUser(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.GetByID(c.Request.Context(), subject.UserID)
+	// This display endpoint hydrates the independent concurrency projection.
+	// GetByID remains free of Redis reads for authentication hot paths.
+	user, err := h.userService.GetProfile(c.Request.Context(), subject.UserID)
 	if err != nil {
 		response.ErrorFrom(c, err)
 		return

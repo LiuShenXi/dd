@@ -198,6 +198,7 @@ export default {
     mySubscriptions: 'My Subscriptions',
     carpoolDetails: 'Carpool Details',
     carpoolManagement: 'Carpool Management',
+    productConfig: 'Product Config',
     buySubscription: 'Recharge / Subscription',
     recharge: 'Recharge',
     subscribe: 'Subscription',

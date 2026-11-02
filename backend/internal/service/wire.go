@@ -10,6 +10,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/antigravity"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/backgroundjobs"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/xai"
 	"github.com/google/wire"
@@ -100,8 +101,9 @@ func ProvideBatchImageModelPricingResolver(resolver *ModelPricingResolver) *Batc
 	return &BatchImageModelPricingResolver{Resolver: resolver}
 }
 
-func ProvideBatchImageCleanupService(repo BatchImageRepository, accountRepo AccountRepository, cfg *config.Config) *BatchImageCleanupService {
+func ProvideBatchImageCleanupService(repo BatchImageRepository, accountRepo AccountRepository, cfg *config.Config, gate *backgroundjobs.Gate) *BatchImageCleanupService {
 	svc := NewBatchImageCleanupService(repo, accountRepo, cfg)
+	svc.backgroundJobs = gate
 	svc.Start()
 	return svc
 }
@@ -316,12 +318,14 @@ func ProvideCNProviderBalanceCheckService(
 	balanceService *CNProviderBalanceService,
 	quotaService *CNProviderQuotaService,
 	cfg *config.Config,
+	gate *backgroundjobs.Gate,
 ) *CNProviderBalanceCheckService {
 	minutes := 10
 	if cfg != nil && cfg.Gateway.CNProviders.BalanceCheckIntervalMinutes > 0 {
 		minutes = cfg.Gateway.CNProviders.BalanceCheckIntervalMinutes
 	}
 	svc := NewCNProviderBalanceCheckService(accountRepo, balanceService, quotaService, cfg, time.Duration(minutes)*time.Minute)
+	svc.backgroundJobs = gate
 	svc.Start()
 	return svc
 }
@@ -440,13 +444,31 @@ func ProvideDeferredService(accountRepo AccountRepository, timingWheel *TimingWh
 	return svc
 }
 
+// ProvideBackgroundJobGate creates the release-scoped autonomous job leader.
+func ProvideBackgroundJobGate(cfg *config.Config, db *sql.DB) *backgroundjobs.Gate {
+	mode := "legacy"
+	if cfg != nil && cfg.Gateway.BackgroundJobMode != "" {
+		mode = cfg.Gateway.BackgroundJobMode
+	}
+	gate := backgroundjobs.New(mode, backgroundjobs.PostgresLocker{DB: db})
+	if mode == "coordinated" && !cfg.Gateway.BackgroundJobsStartHeld {
+		if err := gate.Activate(context.Background(), gate.Status().InstanceID); err != nil {
+			logger.LegacyPrintf("service.background_jobs", "Background jobs remain held: %v", err)
+		}
+	}
+	return gate
+}
+
 // ProvideConcurrencyService creates ConcurrencyService and starts slot cleanup worker.
-func ProvideConcurrencyService(cache ConcurrencyCache, accountRepo AccountRepository, cfg *config.Config) *ConcurrencyService {
+func ProvideConcurrencyService(cache ConcurrencyCache, accountRepo AccountRepository, policy ClaudeConcurrencyPolicyRepository, cfg *config.Config) *ConcurrencyService {
 	svc := NewConcurrencyService(cache)
-	if err := svc.CleanupStaleProcessSlots(context.Background()); err != nil {
-		logger.LegacyPrintf("service.concurrency", "Warning: startup cleanup stale process slots failed: %v", err)
+	if cfg == nil || cfg.Gateway.ConcurrencyStartupCleanupMode != "preserve" {
+		if err := svc.CleanupStaleProcessSlots(context.Background()); err != nil {
+			logger.LegacyPrintf("service.concurrency", "Warning: startup cleanup stale process slots failed: %v", err)
+		}
 	}
 	if cfg != nil {
+		svc.ConfigureClaudeSubscriptionConcurrency(policy, cfg.Default.ClaudeSubscriptionConcurrency)
 		svc.SetAccountLoadBatchCacheTTL(time.Duration(cfg.Gateway.Scheduling.LoadBatchCacheTTLMS) * time.Millisecond)
 		svc.StartSlotCleanupWorker(accountRepo, cfg.Gateway.Scheduling.SlotCleanupInterval)
 	}
@@ -633,8 +655,10 @@ func ProvideScheduledTestRunnerService(
 	accountTestSvc *AccountTestService,
 	rateLimitSvc *RateLimitService,
 	cfg *config.Config,
+	gate *backgroundjobs.Gate,
 ) *ScheduledTestRunnerService {
 	svc := NewScheduledTestRunnerService(planRepo, scheduledSvc, accountTestSvc, rateLimitSvc, cfg)
+	svc.backgroundJobs = gate
 	svc.Start()
 	return svc
 }
@@ -697,8 +721,10 @@ func ProvideBackupService(
 	dumper DBDumper,
 	lockCache LeaderLockCache,
 	db *sql.DB,
+	gate *backgroundjobs.Gate,
 ) *BackupService {
 	svc := NewBackupService(settingRepo, cfg, encryptor, storeFactory, dumper)
+	svc.backgroundJobs = gate
 	svc.SetLeaderLock(lockCache, db)
 	svc.Start()
 	return svc
@@ -826,9 +852,17 @@ func ProvideBillingCacheService(
 	cfg *config.Config,
 	userPlatformQuotaRepo UserPlatformQuotaRepository,
 	carpoolService *CarpoolService,
+	protectedGroupRepo SubscriptionQuotaProtectedGroupRepository,
+	quotaService *SubscriptionQuotaService,
 ) *BillingCacheService {
 	svc := NewBillingCacheService(cache, userRepo, subRepo, apiKeyRepo, rpmCache, rateRepo, cfg, userPlatformQuotaRepo)
 	svc.SetCarpoolGatewayBilling(carpoolService)
+	var protectedIDs []int64
+	if cfg != nil {
+		protectedIDs = cfg.SubscriptionQuota.ProtectedGroupIDs
+	}
+	svc.SetSubscriptionQuotaProtectedGroups(NewSubscriptionQuotaProtectedGroupService(protectedGroupRepo, protectedIDs))
+	svc.SetSubscriptionQuotaGatewayBilling(quotaService)
 	return svc
 }
 
@@ -844,10 +878,13 @@ func ProvideAPIKeyService(
 	billingCacheService *BillingCacheService,
 	concurrencyService *ConcurrencyService,
 	carpoolService *CarpoolService,
+	quotaEntitlements SubscriptionQuotaEntitlementReader,
 ) *APIKeyService {
 	svc := NewAPIKeyService(apiKeyRepo, userRepo, groupRepo, userSubRepo, userGroupRateRepo, cache, cfg)
 	svc.SetRateLimitCacheInvalidator(billingCacheService)
 	svc.SetConcurrencyService(concurrencyService)
+	svc.SetSubscriptionQuotaEntitlementReader(quotaEntitlements)
+	svc.SetSubscriptionQuotaGatewayBilling(billingCacheService.SubscriptionQuotaGatewayBilling())
 	carpoolService.SetAuthInvalidator(svc)
 	return svc
 }
@@ -857,7 +894,7 @@ var ProviderSet = wire.NewSet(
 	// Core services
 	ProvideAuthService,
 	NewPasskeyService,
-	NewUserService,
+	ProvideUserService,
 	ProvideAPIKeyService,
 	ProvideAPIKeyAuthCacheInvalidator,
 	ProvideAuthCacheInvalidationWorker,
@@ -871,11 +908,16 @@ var ProviderSet = wire.NewSet(
 	NewDashboardService,
 	ProvidePricingService,
 	NewBillingService,
+	ProvideSubscriptionQuotaService,
+	ProvideSubscriptionQuotaResolutionService,
+	ProvideSubscriptionQuotaRolloutService,
+	ProvideSubscriptionQuotaRecoveryService,
+	ProvideSubscriptionQuotaEntitlementReader,
 	ProvideCarpoolService,
 	ProvideCarpoolResetService,
 	ProvideBillingCacheService,
 	NewAnnouncementService,
-	NewAdminService,
+	ProvideAdminService,
 	NewGatewayService,
 	NewOpenAIGatewayService,
 	ProvideImageStorageSettingService,
@@ -932,9 +974,10 @@ var ProviderSet = wire.NewSet(
 	NewTurnstileService,
 	NewTencentCaptchaService,
 	NewAliyunCaptchaService,
-	NewSubscriptionService,
+	ProvideSubscriptionService,
 	wire.Bind(new(DefaultSubscriptionAssigner), new(*SubscriptionService)),
 	ProvideConcurrencyService,
+	ProvideBackgroundJobGate,
 	ProvideUserMessageQueueService,
 	NewUsageRecordWorkerPool,
 	ProvideSchedulerSnapshotService,
@@ -1006,9 +1049,10 @@ func ProvideBalanceNotifyService(emailService *EmailService, settingRepo Setting
 }
 
 // ProvidePaymentService creates PaymentService and attaches notification email delivery.
-func ProvidePaymentService(entClient *dbent.Client, registry *payment.Registry, loadBalancer payment.LoadBalancer, redeemService *RedeemService, subscriptionSvc *SubscriptionService, configService *PaymentConfigService, userRepo UserRepository, groupRepo GroupRepository, affiliateService *AffiliateService, notificationEmailService *NotificationEmailService) *PaymentService {
+func ProvidePaymentService(entClient *dbent.Client, registry *payment.Registry, loadBalancer payment.LoadBalancer, redeemService *RedeemService, subscriptionSvc *SubscriptionService, configService *PaymentConfigService, userRepo UserRepository, groupRepo GroupRepository, affiliateService *AffiliateService, notificationEmailService *NotificationEmailService, quotaPayment SubscriptionQuotaPaymentRepository, cfg *config.Config) *PaymentService {
 	svc := NewPaymentService(entClient, registry, loadBalancer, redeemService, subscriptionSvc, configService, userRepo, groupRepo, affiliateService)
 	svc.SetNotificationEmailService(notificationEmailService)
+	svc.SetSubscriptionQuotaPayment(quotaPayment, cfg)
 	return svc
 }
 
@@ -1043,6 +1087,7 @@ func ProvideChannelMonitorRunner(
 	svc *ChannelMonitorService,
 	settingService *SettingService,
 	quotaFetcher *ChannelMonitorQuotaFetcher,
+	gate *backgroundjobs.Gate,
 ) *ChannelMonitorRunner {
 	r := NewChannelMonitorRunner(svc, settingService)
 	if svc != nil {
@@ -1052,6 +1097,7 @@ func ProvideChannelMonitorRunner(
 		svc.SetScheduler(r)
 		svc.SetQuotaFetcher(quotaFetcher)
 	}
+	r.backgroundJobs = gate
 	r.Start()
 	return r
 }

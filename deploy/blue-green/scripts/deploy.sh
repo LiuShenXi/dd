@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+# Retired: the old deadline path below can stop a process with live streams or
+# pending usage. Fail before sourcing helpers, acquiring locks or changing files.
+echo 'Legacy deploy.sh is disabled. Use reviewed host-release.py --config PRIVATE_JSON release SLOT; see HOST_RELEASE.md.' >&2
+exit 2
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 # shellcheck source=common.sh
 source "$SCRIPT_DIR/common.sh"

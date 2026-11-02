@@ -375,6 +375,9 @@ func normalizeUpdateGroupInputForSimpleMode(input *UpdateGroupInput) {
 }
 
 func (s *adminServiceImpl) CreateGroup(ctx context.Context, input *CreateGroupInput) (*Group, error) {
+	if s.cfg != nil && s.cfg.RunMode == config.RunModeSimple && input.SubscriptionQuotaMode != "" && input.SubscriptionQuotaMode != "windows" {
+		return nil, ErrSubscriptionQuotaGroupInvalid
+	}
 	if s.cfg != nil && s.cfg.RunMode == config.RunModeSimple && NormalizeGroupPlatform(input.Platform) == PlatformComposite {
 		return nil, infraerrors.BadRequest("SIMPLE_MODE_GROUP_NOT_BINDABLE", "composite groups are not supported in simple mode")
 	}
@@ -563,6 +566,7 @@ func (s *adminServiceImpl) CreateGroup(ctx context.Context, input *CreateGroupIn
 		IsExclusive:                     input.IsExclusive,
 		Status:                          StatusActive,
 		SubscriptionType:                subscriptionType,
+		SubscriptionQuotaMode:           input.SubscriptionQuotaMode,
 		DailyLimitUSD:                   dailyLimit,
 		WeeklyLimitUSD:                  weeklyLimit,
 		MonthlyLimitUSD:                 monthlyLimit,
@@ -624,6 +628,9 @@ func (s *adminServiceImpl) CreateGroup(ctx context.Context, input *CreateGroupIn
 		group.AllowLive = false
 	}
 	sanitizeGroupReasoningEffortPolicy(group)
+	if err := ValidateSubscriptionQuotaMode(group); err != nil {
+		return nil, err
+	}
 	if err := s.groupRepo.Create(ctx, group); err != nil {
 		return nil, err
 	}
@@ -746,6 +753,9 @@ func (s *adminServiceImpl) validateFallbackGroupOnInvalidRequest(ctx context.Con
 }
 
 func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *UpdateGroupInput) (*Group, error) {
+	if s.cfg != nil && s.cfg.RunMode == config.RunModeSimple && input.SubscriptionQuotaMode != "" && input.SubscriptionQuotaMode != "windows" {
+		return nil, ErrSubscriptionQuotaGroupInvalid
+	}
 	group, err := s.groupRepo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -758,6 +768,13 @@ func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *Upd
 	}
 	if s.cfg != nil && s.cfg.RunMode == config.RunModeSimple {
 		normalizeUpdateGroupInputForSimpleMode(input)
+	}
+
+	if input.SubscriptionQuotaMode != "" {
+		if !group.HasTermQuotaMode() && input.SubscriptionQuotaMode == "term" {
+			return nil, infraerrors.Conflict("TERM_TRANSITION_REQUIRED", "use the protected group transition operation")
+		}
+		group.SubscriptionQuotaMode = input.SubscriptionQuotaMode
 	}
 
 	// 渠道缓存里存了 groupID → platform 的映射，改了平台要让它失效（见函数末尾）
@@ -1052,6 +1069,9 @@ func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *Upd
 		}
 	}
 
+	if err := ValidateSubscriptionQuotaMode(group); err != nil {
+		return nil, err
+	}
 	if err := s.groupRepo.Update(ctx, group); err != nil {
 		return nil, err
 	}
@@ -1353,7 +1373,18 @@ func (s *adminServiceImpl) AdminUpdateAPIKeyGroupID(ctx context.Context, keyID i
 			return nil, infraerrors.BadRequest("GROUP_NOT_ACTIVE", "target group is not active")
 		}
 		// 订阅类型分组：用户须持有该分组的有效订阅才可绑定
-		if group.IsSubscriptionType() {
+		if group.HasTermQuotaMode() {
+			if s.subscriptionQuotaEntitlements == nil {
+				return nil, ErrSubscriptionQuotaBillingUnavailable
+			}
+			current, err := s.subscriptionQuotaEntitlements.HasCurrentTerm(ctx, apiKey.UserID, *groupID)
+			if err != nil {
+				return nil, err
+			}
+			if !current {
+				return nil, infraerrors.BadRequest("SUBSCRIPTION_REQUIRED", "user does not have a current term for this group")
+			}
+		} else if group.IsSubscriptionType() {
 			if s.userSubRepo == nil {
 				return nil, infraerrors.InternalServer("SUBSCRIPTION_REPOSITORY_UNAVAILABLE", "subscription repository is not configured")
 			}

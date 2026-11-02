@@ -1,0 +1,1135 @@
+[
+  {
+    "target_bulk_history_rows": 0,
+    "actual_request_rows": 1,
+    "actual_ledger_rows": 1,
+    "database_bytes": 19527359,
+    "claude_admission": {
+      "samples": 96,
+      "p50_ms": 4.238584,
+      "p95_ms": 6.316417,
+      "p99_ms": 10.488167,
+      "max_ms": 10.488167
+    },
+    "backlog": {
+      "samples": 20,
+      "p50_ms": 0.2365,
+      "p95_ms": 0.313375,
+      "p99_ms": 0.540916,
+      "max_ms": 0.540916
+    },
+    "gpt_only_control": {
+      "elapsed_ms": 467.947959,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 6.780792,
+        "p95_ms": 23.568167,
+        "p99_ms": 102.1155,
+        "max_ms": 102.1155
+      },
+      "claude_apply": {
+        "samples": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0
+      },
+      "same_scope_wait": {
+        "samples": 136,
+        "p50_ms": 0.463708,
+        "p95_ms": 1.23325,
+        "p99_ms": 5.137583,
+        "max_ms": 10.457417
+      },
+      "independent_scope_wait": {
+        "samples": 136,
+        "p50_ms": 0.425208,
+        "p95_ms": 1.0915,
+        "p99_ms": 5.143166,
+        "max_ms": 9.825958
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-gpt": 36
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "gpt": 205.151931299747
+      },
+      "lane_elapsed_ms": {
+        "gpt": 467.945875
+      }
+    },
+    "gpt_and_claude": {
+      "elapsed_ms": 956.962625,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 5.79925,
+        "p95_ms": 7.049167,
+        "p99_ms": 11.12825,
+        "max_ms": 11.12825
+      },
+      "claude_apply": {
+        "samples": 96,
+        "p50_ms": 15.599,
+        "p95_ms": 23.668583,
+        "p99_ms": 179.971916,
+        "max_ms": 179.971916
+      },
+      "same_scope_wait": {
+        "samples": 55,
+        "p50_ms": 13.127375,
+        "p95_ms": 20.228417,
+        "p99_ms": 91.787542,
+        "max_ms": 91.787542
+      },
+      "independent_scope_wait": {
+        "samples": 362,
+        "p50_ms": 0.296,
+        "p95_ms": 0.537417,
+        "p99_ms": 0.6835,
+        "max_ms": 0.966708
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-claude": 148,
+        "cwq-i6-gpt": 31,
+        "cwq-i6-observer": 137
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "claude": 100.31759830590913,
+        "gpt": 334.30495469995486
+      },
+      "lane_elapsed_ms": {
+        "claude": 956.960709,
+        "gpt": 287.162959
+      }
+    },
+    "explain_analyze_buffers": {
+      "backlog": [
+        {
+          "Plan": {
+            "Node Type": "Aggregate",
+            "Strategy": "Plain",
+            "Partial Mode": "Simple",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 11.05,
+            "Total Cost": 11.07,
+            "Plan Rows": 1,
+            "Plan Width": 64,
+            "Actual Startup Time": 0.007,
+            "Actual Total Time": 0.008,
+            "Actual Rows": 1.0,
+            "Actual Loops": 1,
+            "Disabled": false,
+            "Shared Hit Blocks": 1,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0,
+            "Plans": [
+              {
+                "Node Type": "Seq Scan",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Relation Name": "subscription_quota_requests",
+                "Alias": "subscription_quota_requests",
+                "Startup Cost": 0.0,
+                "Total Cost": 10.97,
+                "Plan Rows": 3,
+                "Plan Width": 82,
+                "Actual Startup Time": 0.006,
+                "Actual Total Time": 0.006,
+                "Actual Rows": 0.0,
+                "Actual Loops": 1,
+                "Disabled": false,
+                "Filter": "(((status)::text = ANY ('{admitted,usage_known,reconcile_required}'::text[])) OR (((status)::text = 'settled'::text) AND (usage_log_recorded_at IS NULL)))",
+                "Rows Removed by Filter": 1,
+                "Shared Hit Blocks": 1,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              }
+            ]
+          },
+          "Planning": {
+            "Shared Hit Blocks": 4,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0
+          },
+          "Planning Time": 0.15,
+          "Triggers": [],
+          "Execution Time": 0.039
+        }
+      ],
+      "ledger_sum_in_apply": [
+        {
+          "Plan": {
+            "Node Type": "Index Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "subscription_quota_terms_id_subscription_id_user_id_group_i_key",
+            "Relation Name": "subscription_quota_terms",
+            "Alias": "subscription_quota_terms",
+            "Startup Cost": 8.32,
+            "Total Cost": 16.34,
+            "Plan Rows": 1,
+            "Plan Width": 1,
+            "Actual Startup Time": 0.234,
+            "Actual Total Time": 0.235,
+            "Actual Rows": 1.0,
+            "Actual Loops": 1,
+            "Disabled": false,
+            "Index Cond": "(id = '1'::bigint)",
+            "Rows Removed by Index Recheck": 0,
+            "Index Searches": 1,
+            "Shared Hit Blocks": 4,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0,
+            "Plans": [
+              {
+                "Node Type": "Aggregate",
+                "Strategy": "Plain",
+                "Partial Mode": "Simple",
+                "Parent Relationship": "InitPlan",
+                "Subplan Name": "InitPlan 1",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 8.16,
+                "Total Cost": 8.17,
+                "Plan Rows": 1,
+                "Plan Width": 32,
+                "Actual Startup Time": 0.223,
+                "Actual Total Time": 0.223,
+                "Actual Rows": 1.0,
+                "Actual Loops": 1,
+                "Disabled": false,
+                "Shared Hit Blocks": 2,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0,
+                "Plans": [
+                  {
+                    "Node Type": "Index Only Scan",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Scan Direction": "Forward",
+                    "Index Name": "subscription_quota_ledger_term_total",
+                    "Relation Name": "subscription_quota_ledger",
+                    "Alias": "subscription_quota_ledger",
+                    "Startup Cost": 0.14,
+                    "Total Cost": 8.16,
+                    "Plan Rows": 1,
+                    "Plan Width": 20,
+                    "Actual Startup Time": 0.051,
+                    "Actual Total Time": 0.052,
+                    "Actual Rows": 1.0,
+                    "Actual Loops": 1,
+                    "Disabled": false,
+                    "Index Cond": "(term_id = '1'::bigint)",
+                    "Rows Removed by Index Recheck": 0,
+                    "Heap Fetches": 1,
+                    "Index Searches": 1,
+                    "Shared Hit Blocks": 2,
+                    "Shared Read Blocks": 0,
+                    "Shared Dirtied Blocks": 0,
+                    "Shared Written Blocks": 0,
+                    "Local Hit Blocks": 0,
+                    "Local Read Blocks": 0,
+                    "Local Dirtied Blocks": 0,
+                    "Local Written Blocks": 0,
+                    "Temp Read Blocks": 0,
+                    "Temp Written Blocks": 0
+                  }
+                ]
+              }
+            ]
+          },
+          "Planning": {
+            "Shared Hit Blocks": 1,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0
+          },
+          "Planning Time": 0.065,
+          "Triggers": [],
+          "Execution Time": 0.291
+        }
+      ],
+      "reconciliation_in_admission": [
+        {
+          "Plan": {
+            "Node Type": "Aggregate",
+            "Strategy": "Plain",
+            "Partial Mode": "Simple",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 8.14,
+            "Total Cost": 8.15,
+            "Plan Rows": 1,
+            "Plan Width": 8,
+            "Actual Startup Time": 0.007,
+            "Actual Total Time": 0.007,
+            "Actual Rows": 1.0,
+            "Actual Loops": 1,
+            "Disabled": false,
+            "Shared Hit Blocks": 2,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0,
+            "Plans": [
+              {
+                "Node Type": "Index Only Scan",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Scan Direction": "Forward",
+                "Index Name": "subscription_quota_requests_reconciliation_hold",
+                "Relation Name": "subscription_quota_requests",
+                "Alias": "subscription_quota_requests",
+                "Startup Cost": 0.12,
+                "Total Cost": 8.14,
+                "Plan Rows": 1,
+                "Plan Width": 0,
+                "Actual Startup Time": 0.006,
+                "Actual Total Time": 0.006,
+                "Actual Rows": 0.0,
+                "Actual Loops": 1,
+                "Disabled": false,
+                "Index Cond": "(term_id = '1'::bigint)",
+                "Rows Removed by Index Recheck": 0,
+                "Heap Fetches": 0,
+                "Index Searches": 1,
+                "Shared Hit Blocks": 2,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              }
+            ]
+          },
+          "Planning": {
+            "Shared Hit Blocks": 1,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0
+          },
+          "Planning Time": 0.089,
+          "Triggers": [],
+          "Execution Time": 0.016
+        }
+      ]
+    }
+  },
+  {
+    "target_bulk_history_rows": 10000,
+    "actual_request_rows": 10097,
+    "actual_ledger_rows": 10097,
+    "database_bytes": 50976447,
+    "claude_admission": {
+      "samples": 96,
+      "p50_ms": 3.795417,
+      "p95_ms": 4.6595,
+      "p99_ms": 6.398,
+      "max_ms": 6.398
+    },
+    "backlog": {
+      "samples": 20,
+      "p50_ms": 0.345625,
+      "p95_ms": 0.408125,
+      "p99_ms": 0.427,
+      "max_ms": 0.427
+    },
+    "gpt_only_control": {
+      "elapsed_ms": 294.234209,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 5.742125,
+        "p95_ms": 8.082541,
+        "p99_ms": 8.991209,
+        "max_ms": 8.991209
+      },
+      "claude_apply": {
+        "samples": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0
+      },
+      "same_scope_wait": {
+        "samples": 106,
+        "p50_ms": 0.357917,
+        "p95_ms": 0.668958,
+        "p99_ms": 0.801916,
+        "max_ms": 0.802166
+      },
+      "independent_scope_wait": {
+        "samples": 106,
+        "p50_ms": 0.364,
+        "p95_ms": 0.582333,
+        "p99_ms": 0.702375,
+        "max_ms": 0.709292
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-gpt": 23
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "gpt": 326.27277462986103
+      },
+      "lane_elapsed_ms": {
+        "gpt": 294.232334
+      }
+    },
+    "gpt_and_claude": {
+      "elapsed_ms": 914.088792,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 5.877833,
+        "p95_ms": 7.866417,
+        "p99_ms": 13.094458,
+        "max_ms": 13.094458
+      },
+      "claude_apply": {
+        "samples": 96,
+        "p50_ms": 17.343917,
+        "p95_ms": 24.630709,
+        "p99_ms": 40.001209,
+        "max_ms": 40.001209
+      },
+      "same_scope_wait": {
+        "samples": 49,
+        "p50_ms": 15.107792,
+        "p95_ms": 22.167667,
+        "p99_ms": 35.550208,
+        "max_ms": 35.550208
+      },
+      "independent_scope_wait": {
+        "samples": 346,
+        "p50_ms": 0.285792,
+        "p95_ms": 0.495334,
+        "p99_ms": 0.683708,
+        "max_ms": 1.07225
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-claude": 151,
+        "cwq-i6-gpt": 34,
+        "cwq-i6-observer": 136
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "claude": 105.0227637825087,
+        "gpt": 320.9258260786212
+      },
+      "lane_elapsed_ms": {
+        "claude": 914.087542,
+        "gpt": 299.134542
+      }
+    },
+    "explain_analyze_buffers": {
+      "backlog": [
+        {
+          "Plan": {
+            "Node Type": "Aggregate",
+            "Strategy": "Plain",
+            "Partial Mode": "Simple",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 199.86,
+            "Total Cost": 199.88,
+            "Plan Rows": 1,
+            "Plan Width": 64,
+            "Actual Startup Time": 0.057,
+            "Actual Total Time": 0.057,
+            "Actual Rows": 1.0,
+            "Actual Loops": 1,
+            "Disabled": false,
+            "Shared Hit Blocks": 101,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0,
+            "Plans": [
+              {
+                "Node Type": "Index Only Scan",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Scan Direction": "Forward",
+                "Index Name": "subscription_quota_requests_backlog",
+                "Relation Name": "subscription_quota_requests",
+                "Alias": "subscription_quota_requests",
+                "Startup Cost": 0.27,
+                "Total Cost": 197.46,
+                "Plan Rows": 96,
+                "Plan Width": 24,
+                "Actual Startup Time": 0.021,
+                "Actual Total Time": 0.044,
+                "Actual Rows": 96.0,
+                "Actual Loops": 1,
+                "Disabled": false,
+                "Heap Fetches": 291,
+                "Index Searches": 1,
+                "Shared Hit Blocks": 101,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              }
+            ]
+          },
+          "Planning": {
+            "Shared Hit Blocks": 7,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0
+          },
+          "Planning Time": 0.109,
+          "Triggers": [],
+          "Execution Time": 0.069
+        }
+      ],
+      "ledger_sum_in_apply": [
+        {
+          "Plan": {
+            "Node Type": "Seq Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Relation Name": "subscription_quota_terms",
+            "Alias": "subscription_quota_terms",
+            "Startup Cost": 288.47,
+            "Total Cost": 289.48,
+            "Plan Rows": 1,
+            "Plan Width": 1,
+            "Actual Startup Time": 1.293,
+            "Actual Total Time": 1.294,
+            "Actual Rows": 1.0,
+            "Actual Loops": 1,
+            "Disabled": false,
+            "Filter": "(id = '1'::bigint)",
+            "Rows Removed by Filter": 0,
+            "Shared Hit Blocks": 138,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0,
+            "Plans": [
+              {
+                "Node Type": "Aggregate",
+                "Strategy": "Plain",
+                "Partial Mode": "Simple",
+                "Parent Relationship": "InitPlan",
+                "Subplan Name": "InitPlan 1",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 288.46,
+                "Total Cost": 288.47,
+                "Plan Rows": 1,
+                "Plan Width": 32,
+                "Actual Startup Time": 1.287,
+                "Actual Total Time": 1.287,
+                "Actual Rows": 1.0,
+                "Actual Loops": 1,
+                "Disabled": false,
+                "Shared Hit Blocks": 137,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0,
+                "Plans": [
+                  {
+                    "Node Type": "Seq Scan",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Relation Name": "subscription_quota_ledger",
+                    "Alias": "subscription_quota_ledger",
+                    "Startup Cost": 0.0,
+                    "Total Cost": 263.21,
+                    "Plan Rows": 10097,
+                    "Plan Width": 5,
+                    "Actual Startup Time": 0.003,
+                    "Actual Total Time": 0.616,
+                    "Actual Rows": 10097.0,
+                    "Actual Loops": 1,
+                    "Disabled": false,
+                    "Filter": "(term_id = '1'::bigint)",
+                    "Rows Removed by Filter": 0,
+                    "Shared Hit Blocks": 137,
+                    "Shared Read Blocks": 0,
+                    "Shared Dirtied Blocks": 0,
+                    "Shared Written Blocks": 0,
+                    "Local Hit Blocks": 0,
+                    "Local Read Blocks": 0,
+                    "Local Dirtied Blocks": 0,
+                    "Local Written Blocks": 0,
+                    "Temp Read Blocks": 0,
+                    "Temp Written Blocks": 0
+                  }
+                ]
+              }
+            ]
+          },
+          "Planning": {
+            "Shared Hit Blocks": 63,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0
+          },
+          "Planning Time": 0.221,
+          "Triggers": [],
+          "Execution Time": 1.306
+        }
+      ],
+      "reconciliation_in_admission": [
+        {
+          "Plan": {
+            "Node Type": "Aggregate",
+            "Strategy": "Plain",
+            "Partial Mode": "Simple",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 4.15,
+            "Total Cost": 4.16,
+            "Plan Rows": 1,
+            "Plan Width": 8,
+            "Actual Startup Time": 0.005,
+            "Actual Total Time": 0.005,
+            "Actual Rows": 1.0,
+            "Actual Loops": 1,
+            "Disabled": false,
+            "Shared Hit Blocks": 2,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0,
+            "Plans": [
+              {
+                "Node Type": "Index Only Scan",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Scan Direction": "Forward",
+                "Index Name": "subscription_quota_requests_reconciliation_hold",
+                "Relation Name": "subscription_quota_requests",
+                "Alias": "subscription_quota_requests",
+                "Startup Cost": 0.12,
+                "Total Cost": 4.14,
+                "Plan Rows": 1,
+                "Plan Width": 0,
+                "Actual Startup Time": 0.004,
+                "Actual Total Time": 0.004,
+                "Actual Rows": 0.0,
+                "Actual Loops": 1,
+                "Disabled": false,
+                "Index Cond": "(term_id = '1'::bigint)",
+                "Rows Removed by Index Recheck": 0,
+                "Heap Fetches": 0,
+                "Index Searches": 1,
+                "Shared Hit Blocks": 2,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              }
+            ]
+          },
+          "Planning": {
+            "Shared Hit Blocks": 7,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0
+          },
+          "Planning Time": 0.092,
+          "Triggers": [],
+          "Execution Time": 0.013
+        }
+      ]
+    }
+  },
+  {
+    "target_bulk_history_rows": 100000,
+    "actual_request_rows": 100193,
+    "actual_ledger_rows": 100193,
+    "database_bytes": 318469823,
+    "claude_admission": {
+      "samples": 96,
+      "p50_ms": 3.467667,
+      "p95_ms": 5.309958,
+      "p99_ms": 8.864709,
+      "max_ms": 8.864709
+    },
+    "backlog": {
+      "samples": 20,
+      "p50_ms": 0.339167,
+      "p95_ms": 0.388375,
+      "p99_ms": 0.406792,
+      "max_ms": 0.406792
+    },
+    "gpt_only_control": {
+      "elapsed_ms": 296.218416,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 5.597041,
+        "p95_ms": 9.433417,
+        "p99_ms": 13.543458,
+        "max_ms": 13.543458
+      },
+      "claude_apply": {
+        "samples": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0
+      },
+      "same_scope_wait": {
+        "samples": 106,
+        "p50_ms": 0.351375,
+        "p95_ms": 0.631458,
+        "p99_ms": 0.848958,
+        "max_ms": 0.994625
+      },
+      "independent_scope_wait": {
+        "samples": 105,
+        "p50_ms": 0.364375,
+        "p95_ms": 0.639042,
+        "p99_ms": 0.823542,
+        "max_ms": 1.001375
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-gpt": 26
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "gpt": 324.0866888546091
+      },
+      "lane_elapsed_ms": {
+        "gpt": 296.217041
+      }
+    },
+    "gpt_and_claude": {
+      "elapsed_ms": 1915.100583,
+      "gpt_apply": {
+        "samples": 96,
+        "p50_ms": 6.44675,
+        "p95_ms": 11.645917,
+        "p99_ms": 15.118792,
+        "max_ms": 15.118792
+      },
+      "claude_apply": {
+        "samples": 96,
+        "p50_ms": 37.3095,
+        "p95_ms": 55.264833,
+        "p99_ms": 66.886708,
+        "max_ms": 66.886708
+      },
+      "same_scope_wait": {
+        "samples": 49,
+        "p50_ms": 35.101208,
+        "p95_ms": 49.761625,
+        "p99_ms": 63.980417,
+        "max_ms": 63.980417
+      },
+      "independent_scope_wait": {
+        "samples": 683,
+        "p50_ms": 0.312125,
+        "p95_ms": 0.644042,
+        "p99_ms": 1.030708,
+        "max_ms": 5.735375
+      },
+      "errors": [],
+      "sampled_lock_waits": {
+        "cwq-i6-claude": 310,
+        "cwq-i6-gpt": 35,
+        "cwq-i6-observer": 304
+      },
+      "deadlock_delta": 0,
+      "completion_rps": {
+        "claude": 50.12800373734344,
+        "gpt": 282.330659474748
+      },
+      "lane_elapsed_ms": {
+        "claude": 1915.097208,
+        "gpt": 340.026833
+      }
+    },
+    "explain_analyze_buffers": {
+      "backlog": [
+        {
+          "Plan": {
+            "Node Type": "Aggregate",
+            "Strategy": "Plain",
+            "Partial Mode": "Simple",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 410.43,
+            "Total Cost": 410.44,
+            "Plan Rows": 1,
+            "Plan Width": 64,
+            "Actual Startup Time": 0.223,
+            "Actual Total Time": 0.224,
+            "Actual Rows": 1.0,
+            "Actual Loops": 1,
+            "Disabled": false,
+            "Shared Hit Blocks": 88,
+            "Shared Read Blocks": 52,
+            "Shared Dirtied Blocks": 2,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0,
+            "Plans": [
+              {
+                "Node Type": "Index Only Scan",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Scan Direction": "Forward",
+                "Index Name": "subscription_quota_requests_backlog",
+                "Relation Name": "subscription_quota_requests",
+                "Alias": "subscription_quota_requests",
+                "Startup Cost": 0.27,
+                "Total Cost": 405.25,
+                "Plan Rows": 207,
+                "Plan Width": 24,
+                "Actual Startup Time": 0.061,
+                "Actual Total Time": 0.195,
+                "Actual Rows": 192.0,
+                "Actual Loops": 1,
+                "Disabled": false,
+                "Heap Fetches": 289,
+                "Index Searches": 1,
+                "Shared Hit Blocks": 88,
+                "Shared Read Blocks": 52,
+                "Shared Dirtied Blocks": 2,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              }
+            ]
+          },
+          "Planning": {
+            "Shared Hit Blocks": 11,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0
+          },
+          "Planning Time": 0.147,
+          "Triggers": [],
+          "Execution Time": 0.239
+        }
+      ],
+      "ledger_sum_in_apply": [
+        {
+          "Plan": {
+            "Node Type": "Seq Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Relation Name": "subscription_quota_terms",
+            "Alias": "subscription_quota_terms",
+            "Startup Cost": 2841.91,
+            "Total Cost": 2842.92,
+            "Plan Rows": 1,
+            "Plan Width": 1,
+            "Actual Startup Time": 21.513,
+            "Actual Total Time": 21.515,
+            "Actual Rows": 1.0,
+            "Actual Loops": 1,
+            "Disabled": false,
+            "Filter": "(id = '1'::bigint)",
+            "Rows Removed by Filter": 0,
+            "Shared Hit Blocks": 1340,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0,
+            "Plans": [
+              {
+                "Node Type": "Aggregate",
+                "Strategy": "Plain",
+                "Partial Mode": "Simple",
+                "Parent Relationship": "InitPlan",
+                "Subplan Name": "InitPlan 1",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 2841.9,
+                "Total Cost": 2841.91,
+                "Plan Rows": 1,
+                "Plan Width": 32,
+                "Actual Startup Time": 21.488,
+                "Actual Total Time": 21.489,
+                "Actual Rows": 1.0,
+                "Actual Loops": 1,
+                "Disabled": false,
+                "Shared Hit Blocks": 1339,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0,
+                "Plans": [
+                  {
+                    "Node Type": "Seq Scan",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Relation Name": "subscription_quota_ledger",
+                    "Alias": "subscription_quota_ledger",
+                    "Startup Cost": 0.0,
+                    "Total Cost": 2591.41,
+                    "Plan Rows": 100193,
+                    "Plan Width": 5,
+                    "Actual Startup Time": 0.004,
+                    "Actual Total Time": 10.971,
+                    "Actual Rows": 100193.0,
+                    "Actual Loops": 1,
+                    "Disabled": false,
+                    "Filter": "(term_id = '1'::bigint)",
+                    "Rows Removed by Filter": 0,
+                    "Shared Hit Blocks": 1339,
+                    "Shared Read Blocks": 0,
+                    "Shared Dirtied Blocks": 0,
+                    "Shared Written Blocks": 0,
+                    "Local Hit Blocks": 0,
+                    "Local Read Blocks": 0,
+                    "Local Dirtied Blocks": 0,
+                    "Local Written Blocks": 0,
+                    "Temp Read Blocks": 0,
+                    "Temp Written Blocks": 0
+                  }
+                ]
+              }
+            ]
+          },
+          "Planning": {
+            "Shared Hit Blocks": 30,
+            "Shared Read Blocks": 5,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 5,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0
+          },
+          "Planning Time": 0.697,
+          "Triggers": [],
+          "Execution Time": 21.56
+        }
+      ],
+      "reconciliation_in_admission": [
+        {
+          "Plan": {
+            "Node Type": "Aggregate",
+            "Strategy": "Plain",
+            "Partial Mode": "Simple",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 4.15,
+            "Total Cost": 4.16,
+            "Plan Rows": 1,
+            "Plan Width": 8,
+            "Actual Startup Time": 0.008,
+            "Actual Total Time": 0.008,
+            "Actual Rows": 1.0,
+            "Actual Loops": 1,
+            "Disabled": false,
+            "Shared Hit Blocks": 2,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0,
+            "Plans": [
+              {
+                "Node Type": "Index Only Scan",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Scan Direction": "Forward",
+                "Index Name": "subscription_quota_requests_reconciliation_hold",
+                "Relation Name": "subscription_quota_requests",
+                "Alias": "subscription_quota_requests",
+                "Startup Cost": 0.12,
+                "Total Cost": 4.14,
+                "Plan Rows": 1,
+                "Plan Width": 0,
+                "Actual Startup Time": 0.006,
+                "Actual Total Time": 0.006,
+                "Actual Rows": 0.0,
+                "Actual Loops": 1,
+                "Disabled": false,
+                "Index Cond": "(term_id = '1'::bigint)",
+                "Rows Removed by Index Recheck": 0,
+                "Heap Fetches": 0,
+                "Index Searches": 1,
+                "Shared Hit Blocks": 2,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              }
+            ]
+          },
+          "Planning": {
+            "Shared Hit Blocks": 11,
+            "Shared Read Blocks": 0,
+            "Shared Dirtied Blocks": 0,
+            "Shared Written Blocks": 0,
+            "Local Hit Blocks": 0,
+            "Local Read Blocks": 0,
+            "Local Dirtied Blocks": 0,
+            "Local Written Blocks": 0,
+            "Temp Read Blocks": 0,
+            "Temp Written Blocks": 0
+          },
+          "Planning Time": 0.213,
+          "Triggers": [],
+          "Execution Time": 0.024
+        }
+      ]
+    }
+  }
+]

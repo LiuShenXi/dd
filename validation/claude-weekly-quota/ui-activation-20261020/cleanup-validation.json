@@ -1,0 +1,41 @@
+{
+  "checked_at_utc": "2026-10-20T04:51:56.686833+00:00",
+  "checks": {
+    "focused_frontend_tests": 43,
+    "locale_key_tests": 3,
+    "eslint_affected_files": "passed",
+    "vue_tsc": "passed",
+    "vite_embedded_build": "passed",
+    "release_controller_tests": 34,
+    "git_diff_check": "passed"
+  },
+  "existing_usage_ui": {
+    "path": "/usage",
+    "group_filter": 7,
+    "key_name": "Claude 周卡界面验收",
+    "model": "claude-haiku-4-5-20251001",
+    "input_tokens": 4105,
+    "output_tokens": 1,
+    "actual_cost_usd": "0.000822",
+    "matching_rows": 1
+  },
+  "removed": [
+    "user subscription concurrency strip",
+    "key management concurrency strip and profile fetch",
+    "key usage query concurrency strip",
+    "embedded per-card request table and usage fetch"
+  ],
+  "accounting_backend_changed": false,
+  "build_retries": [
+    "Docker local tag repaired from already-verified immutable image ID",
+    "initial uncached link exhausted disk; old task build binaries removed; retry uses completed compile cache"
+  ],
+  "production_ui": {
+    "subscriptions_version": "2.8.13-monas-claude-weekly.2",
+    "subscription_banner_absent": true,
+    "expanded_history_usage_table_absent": true,
+    "card_remaining_usd": "0.999178",
+    "keys_banner_absent": true,
+    "screenshot": "user-card-clean.png"
+  }
+}

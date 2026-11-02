@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "task": "claude-weekly-quota",
+  "run_id": "20261019T131000Z-e4f68a1d",
+  "created_utc": "2026-10-19T13:10:00.4723533Z",
+  "endpoint": "npipe:////./pipe/docker_engine",
+  "repository": "C:\\Users\\Administrator\\.codex\\worktrees\\claude-weekly-quota\\dd",
+  "synthetic_only": true,
+  "credential_policy": "PostgreSQL trust authentication is confined to this new internal network; no real credentials or copied data are used.",
+  "existing_resources_policy": "Docker Desktop startup automatically started existing containers according to their restart policies. No existing container was explicitly started, stopped, updated, or used by this task.",
+  "containers": [
+    {
+      "id": "8c37eb44aef47f2a76fe505cad871c2efa1346a84b172768eda0c682ecb71295",
+      "name": "cwq-env-20261019t131000z-e4f68a1d-postgres",
+      "role": "postgres",
+      "image_id": "sha256:04468c397044e22f2311a8fd8e5ddb478ab686b67634da068b9bd4b2d2eb3252",
+      "host_ports": [],
+      "docker_socket_mounted": false
+    },
+    {
+      "id": "4b844d199a6a2f2d09859a9a431ba4ddc3269c3a1f32eb232e6c812519fa4ed9",
+      "name": "cwq-env-20261019t131000z-e4f68a1d-redis",
+      "role": "redis",
+      "image_id": "sha256:7ebbc18dec8fe54c06b66eb496df0094a2412445e510789b5fcdda3a7085469c",
+      "host_ports": [],
+      "docker_socket_mounted": false
+    },
+    {
+      "id": "c4021bc85978aa01455046b26738307e3808a5d3cf5ff2c008fb5c1c01629cea",
+      "name": "cwq-env-20261019t131000z-e4f68a1d-runner",
+      "role": "runner",
+      "image_id": "sha256:f44e6bb974dfb3184c724916d90673588096f0185d6e25fc6178997f12265039",
+      "host_ports": [],
+      "docker_socket_mounted": false
+    }
+  ],
+  "volumes": [
+    {
+      "name": "cwq-env-20261019t131000z-e4f68a1d-pgdata",
+      "role": "pgdata"
+    },
+    {
+      "name": "cwq-env-20261019t131000z-e4f68a1d-gocache",
+      "role": "gocache"
+    },
+    {
+      "name": "cwq-env-20261019t131000z-e4f68a1d-gomodcache",
+      "role": "gomodcache"
+    },
+    {
+      "name": "cwq-env-20261019t131000z-e4f68a1d-output",
+      "role": "output"
+    }
+  ],
+  "network": {
+    "id": "57adb4f8ce9e1c39075048d8a77a5130951b6178d16ed9fbcb9c1161615f49f1",
+    "name": "cwq-env-20261019t131000z-e4f68a1d-net",
+    "internal": true,
+    "subnet": "10.247.190.0/24"
+  },
+  "checks": {
+    "engine": {
+      "version": "25.0.3",
+      "name": "docker-desktop",
+      "os": "linux",
+      "architecture": "x86_64",
+      "cpus": 20,
+      "memory_bytes": 33569480704
+    },
+    "postgres": {
+      "server_version": "18.1",
+      "timezone": "UTC",
+      "public_tables": 0,
+      "hours_168_seconds": 604800.0
+    },
+    "redis": {
+      "ping": "PONG",
+      "dbsize": 0,
+      "version": "8.4.6"
+    },
+    "linux": {
+      "go_version": "go version go1.27.2 linux/amd64",
+      "gcc_version": "15.2.0",
+      "source_readable": true,
+      "module_proxy": "file:///module-proxy",
+      "external_network": false,
+      "docker_socket_mounted": false
+    }
+  },
+  "status": "ready"
+}

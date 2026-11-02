@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-19T17:00:24.4302102Z",
+  "launch": "WMI Create ShowWindow0",
+  "process_id": 30404,
+  "process_name": null,
+  "parent_name": null,
+  "job_probe_succeeded": false,
+  "in_Windows_job": false,
+  "global_settings_changed": false,
+  "permanent_startup_entry_created": false,
+  "causal_hypothesis_not_proven": true
+}

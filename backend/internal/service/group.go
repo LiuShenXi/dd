@@ -34,11 +34,12 @@ type Group struct {
 	// an already committed one-click copy. It must never be mapped to API DTOs.
 	DuplicateOperationID string
 
-	SubscriptionType    string
-	DailyLimitUSD       *float64
-	WeeklyLimitUSD      *float64
-	MonthlyLimitUSD     *float64
-	DefaultValidityDays int
+	SubscriptionType      string
+	SubscriptionQuotaMode string
+	DailyLimitUSD         *float64
+	WeeklyLimitUSD        *float64
+	MonthlyLimitUSD       *float64
+	DefaultValidityDays   int
 
 	// 图片生成计费配置（antigravity 和 gemini 平台使用）
 	AllowImageGeneration         bool
@@ -157,6 +158,23 @@ func (g *Group) IsSubscriptionType() bool {
 
 func (g *Group) IsCarpoolType() bool {
 	return g.SubscriptionType == SubscriptionTypeCarpool
+}
+
+func (g *Group) EffectiveSubscriptionQuotaMode() string {
+	if g == nil {
+		return domain.SubscriptionQuotaModeWindows
+	}
+	return domain.NormalizeSubscriptionQuotaMode(g.SubscriptionQuotaMode)
+}
+
+// HasTermQuotaMode identifies the mode even if another group attribute is
+// invalid. Such a group must never fall through to legacy billing.
+func (g *Group) HasTermQuotaMode() bool {
+	return g != nil && g.EffectiveSubscriptionQuotaMode() == domain.SubscriptionQuotaModeTerm
+}
+
+func (g *Group) IsTermQuota() bool {
+	return g.HasTermQuotaMode() && g.Platform == PlatformAnthropic && g.IsSubscriptionType()
 }
 
 func (g *Group) HasDailyLimit() bool {
@@ -317,6 +335,10 @@ func parseMinutes(hhmm string) (int, bool) {
 //
 // 该方法是纯函数，不读取任何外部状态，便于单测。
 func (g *Group) PeakMultiplierAt(now time.Time) float64 {
+	return g.peakMultiplierAtLocation(now, timezone.Location())
+}
+
+func (g *Group) peakMultiplierAtLocation(now time.Time, location *time.Location) float64 {
 	if g == nil || !g.IsSubscriptionType() || !g.PeakRateEnabled || g.PeakStart == "" || g.PeakEnd == "" {
 		return 1.0
 	}
@@ -325,7 +347,7 @@ func (g *Group) PeakMultiplierAt(now time.Time) float64 {
 	if !ok1 || !ok2 || start >= end {
 		return 1.0
 	}
-	t := now.In(timezone.Location())
+	t := now.In(location)
 	cur := t.Hour()*60 + t.Minute()
 	if cur >= start && cur < end {
 		return g.PeakRateMultiplier

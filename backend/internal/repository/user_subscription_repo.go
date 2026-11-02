@@ -138,6 +138,7 @@ func (r *userSubscriptionRepository) Update(ctx context.Context, sub *service.Us
 
 	client := clientFromContext(ctx, r.client)
 	builder := client.UserSubscription.UpdateOneID(sub.ID).
+		Where(usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows"))).
 		SetUserID(sub.UserID).
 		SetGroupID(sub.GroupID).
 		SetStartsAt(sub.StartsAt).
@@ -164,7 +165,7 @@ func (r *userSubscriptionRepository) Update(ctx context.Context, sub *service.Us
 func (r *userSubscriptionRepository) Delete(ctx context.Context, id int64) error {
 	// Match GORM semantics: deleting a missing row is not an error.
 	client := clientFromContext(ctx, r.client)
-	_, err := client.UserSubscription.Delete().Where(usersubscription.IDEQ(id)).Exec(ctx)
+	_, err := client.UserSubscription.Delete().Where(usersubscription.IDEQ(id), usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows"))).Exec(ctx)
 	return err
 }
 
@@ -172,6 +173,7 @@ func (r *userSubscriptionRepository) Restore(ctx context.Context, subscriptionID
 	client := clientFromContext(ctx, r.client)
 	queryCtx := mixins.SkipSoftDelete(ctx)
 	_, err := client.UserSubscription.UpdateOneID(subscriptionID).
+		Where(usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows"))).
 		SetStatus(restoredStatus).
 		ClearDeletedAt().
 		SetUpdatedAt(time.Now()).
@@ -347,6 +349,7 @@ func (r *userSubscriptionRepository) ExistsActiveByUserIDAndGroupID(ctx context.
 func (r *userSubscriptionRepository) ExtendExpiry(ctx context.Context, subscriptionID int64, newExpiresAt time.Time) error {
 	client := clientFromContext(ctx, r.client)
 	_, err := client.UserSubscription.UpdateOneID(subscriptionID).
+		Where(usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows"))).
 		SetExpiresAt(newExpiresAt).
 		Save(ctx)
 	return translatePersistenceError(err, service.ErrSubscriptionNotFound, nil)
@@ -355,6 +358,7 @@ func (r *userSubscriptionRepository) ExtendExpiry(ctx context.Context, subscript
 func (r *userSubscriptionRepository) UpdateStatus(ctx context.Context, subscriptionID int64, status string) error {
 	client := clientFromContext(ctx, r.client)
 	_, err := client.UserSubscription.UpdateOneID(subscriptionID).
+		Where(usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows"))).
 		SetStatus(status).
 		Save(ctx)
 	return translatePersistenceError(err, service.ErrSubscriptionNotFound, nil)
@@ -363,6 +367,7 @@ func (r *userSubscriptionRepository) UpdateStatus(ctx context.Context, subscript
 func (r *userSubscriptionRepository) UpdateNotes(ctx context.Context, subscriptionID int64, notes string) error {
 	client := clientFromContext(ctx, r.client)
 	_, err := client.UserSubscription.UpdateOneID(subscriptionID).
+		Where(usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows"))).
 		SetNotes(notes).
 		Save(ctx)
 	return translatePersistenceError(err, service.ErrSubscriptionNotFound, nil)
@@ -373,6 +378,7 @@ func (r *userSubscriptionRepository) ActivateWindows(ctx context.Context, id int
 	n, err := client.UserSubscription.Update().
 		Where(
 			usersubscription.IDEQ(id),
+			usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows")),
 			usersubscription.DailyWindowStartIsNil(),
 			usersubscription.WeeklyWindowStartIsNil(),
 			usersubscription.MonthlyWindowStartIsNil(),
@@ -386,7 +392,7 @@ func (r *userSubscriptionRepository) ActivateWindows(ctx context.Context, id int
 
 func (r *userSubscriptionRepository) ResetUsageWindows(ctx context.Context, id int64, resetDaily, resetWeekly, resetMonthly bool, dailyStart, periodicStart time.Time) error {
 	client := clientFromContext(ctx, r.client)
-	update := client.UserSubscription.UpdateOneID(id)
+	update := client.UserSubscription.UpdateOneID(id).Where(usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows")))
 	if resetDaily {
 		update.SetDailyUsageUsd(0).SetDailyWindowStart(dailyStart)
 	}
@@ -402,7 +408,7 @@ func (r *userSubscriptionRepository) ResetUsageWindows(ctx context.Context, id i
 
 func (r *userSubscriptionRepository) ResetDailyUsage(ctx context.Context, id int64, expectedWindowStart *time.Time, newWindowStart time.Time) error {
 	client := clientFromContext(ctx, r.client)
-	query := client.UserSubscription.Update().Where(usersubscription.IDEQ(id))
+	query := client.UserSubscription.Update().Where(usersubscription.IDEQ(id), usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows")))
 	if expectedWindowStart == nil {
 		query = query.Where(usersubscription.DailyWindowStartIsNil())
 	} else {
@@ -417,7 +423,7 @@ func (r *userSubscriptionRepository) ResetDailyUsage(ctx context.Context, id int
 
 func (r *userSubscriptionRepository) ResetWeeklyUsage(ctx context.Context, id int64, expectedWindowStart *time.Time, newWindowStart time.Time) error {
 	client := clientFromContext(ctx, r.client)
-	query := client.UserSubscription.Update().Where(usersubscription.IDEQ(id))
+	query := client.UserSubscription.Update().Where(usersubscription.IDEQ(id), usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows")))
 	if expectedWindowStart == nil {
 		query = query.Where(usersubscription.WeeklyWindowStartIsNil())
 	} else {
@@ -432,7 +438,7 @@ func (r *userSubscriptionRepository) ResetWeeklyUsage(ctx context.Context, id in
 
 func (r *userSubscriptionRepository) ResetMonthlyUsage(ctx context.Context, id int64, expectedWindowStart *time.Time, newWindowStart time.Time) error {
 	client := clientFromContext(ctx, r.client)
-	query := client.UserSubscription.Update().Where(usersubscription.IDEQ(id))
+	query := client.UserSubscription.Update().Where(usersubscription.IDEQ(id), usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows")))
 	if expectedWindowStart == nil {
 		query = query.Where(usersubscription.MonthlyWindowStartIsNil())
 	} else {
@@ -455,12 +461,12 @@ func (r *userSubscriptionRepository) translateConditionalWindowReset(ctx context
 
 	// A stale reset is an expected no-op: another request already advanced the
 	// window. Preserve not-found semantics for callers that target a missing row.
-	exists, err := client.UserSubscription.Query().Where(usersubscription.IDEQ(id)).Exist(ctx)
+	stored, err := client.UserSubscription.Query().Where(usersubscription.IDEQ(id)).WithGroup().Only(ctx)
 	if err != nil {
 		return translatePersistenceError(err, service.ErrSubscriptionNotFound, nil)
 	}
-	if !exists {
-		return service.ErrSubscriptionNotFound
+	if stored.Edges.Group != nil && stored.Edges.Group.SubscriptionQuotaMode != "windows" {
+		return service.ErrLegacySubscriptionOperationUnsupported
 	}
 	return nil
 }
@@ -481,6 +487,7 @@ func (r *userSubscriptionRepository) IncrementUsage(ctx context.Context, id int6
 			AND us.deleted_at IS NULL
 			AND us.group_id = g.id
 			AND g.deleted_at IS NULL
+			AND g.subscription_quota_mode = 'windows'
 	`
 
 	client := clientFromContext(ctx, r.client)
@@ -507,6 +514,7 @@ func (r *userSubscriptionRepository) BatchUpdateExpiredStatus(ctx context.Contex
 	n, err := client.UserSubscription.Update().
 		Where(
 			usersubscription.StatusEQ(service.SubscriptionStatusActive),
+			usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows")),
 			usersubscription.ExpiresAtLTE(time.Now()),
 		).
 		SetStatus(service.SubscriptionStatusExpired).
@@ -521,6 +529,7 @@ func (r *userSubscriptionRepository) ListExpired(ctx context.Context) ([]service
 	subs, err := client.UserSubscription.Query().
 		Where(
 			usersubscription.StatusEQ(service.SubscriptionStatusActive),
+			usersubscription.HasGroupWith(group.SubscriptionQuotaModeEQ("windows")),
 			usersubscription.ExpiresAtLTE(time.Now()),
 		).
 		All(ctx)
@@ -644,6 +653,7 @@ func userSubscriptionEntityToServiceWithStatusMapping(m *dbent.UserSubscription,
 		ID:                 m.ID,
 		UserID:             m.UserID,
 		GroupID:            m.GroupID,
+		QuotaRevision:      m.QuotaRevision,
 		StartsAt:           m.StartsAt,
 		ExpiresAt:          m.ExpiresAt,
 		Status:             status,

@@ -53,19 +53,24 @@
           <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.peakRate') }}</span>
           <span class="text-right font-medium text-amber-700 dark:text-amber-300">{{ peakRateDisplay }}</span>
         </div>
-        <div v-if="plan.daily_limit_usd != null" class="flex items-center justify-between">
+        <div v-if="isTerm" class="col-span-2 flex flex-wrap items-center justify-between gap-2" data-testid="plan-term-quota">
+          <span class="text-gray-500 dark:text-dark-400">{{ t('subscriptionQuota.quota') }}</span>
+          <span class="font-semibold text-gray-800 dark:text-gray-200">{{ formatQuotaUSD(plan.default_quota_usd) }} USD</span>
+          <span class="w-full text-gray-500 dark:text-dark-400">{{ t('subscriptionQuota.fixedDuration') }}</span>
+        </div>
+        <div v-if="!isTerm && plan.daily_limit_usd != null" class="flex items-center justify-between">
           <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.dailyLimit') }}</span>
           <span class="font-medium text-gray-700 dark:text-gray-300">${{ plan.daily_limit_usd }}</span>
         </div>
-        <div v-if="plan.weekly_limit_usd != null" class="flex items-center justify-between">
+        <div v-if="!isTerm && plan.weekly_limit_usd != null" class="flex items-center justify-between">
           <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.weeklyLimit') }}</span>
           <span class="font-medium text-gray-700 dark:text-gray-300">${{ plan.weekly_limit_usd }}</span>
         </div>
-        <div v-if="plan.monthly_limit_usd != null" class="flex items-center justify-between">
+        <div v-if="!isTerm && plan.monthly_limit_usd != null" class="flex items-center justify-between">
           <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.monthlyLimit') }}</span>
           <span class="font-medium text-gray-700 dark:text-gray-300">${{ plan.monthly_limit_usd }}</span>
         </div>
-        <div v-if="plan.daily_limit_usd == null && plan.weekly_limit_usd == null && plan.monthly_limit_usd == null" class="flex items-center justify-between">
+        <div v-if="!isTerm && plan.daily_limit_usd == null && plan.weekly_limit_usd == null && plan.monthly_limit_usd == null" class="flex items-center justify-between">
           <span class="text-gray-400 dark:text-dark-500">{{ t('payment.planCard.quota') }}</span>
           <span class="font-medium text-gray-700 dark:text-gray-300">{{ t('payment.planCard.unlimited') }}</span>
         </div>
@@ -92,11 +97,13 @@
 
       <div class="flex-1" />
 
+      <p v-if="isTerm" class="mb-3 text-xs text-gray-500 dark:text-gray-400">{{ t(purchasable ? 'subscriptionQuota.purchaseHint' : 'subscriptionQuota.invalidPlan') }}</p>
       <!-- Subscribe Button -->
       <button
         type="button"
         :class="['w-full rounded-xl py-2.5 text-sm font-semibold transition-all active:scale-[0.98]', btnClass]"
-        @click="emit('select', plan)"
+        :disabled="!purchasable"
+        @click="purchasable && emit('select', plan)"
       >
         {{ isRenewal ? t('payment.renewNow') : t('payment.subscribeNow') }}
       </button>
@@ -105,6 +112,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatQuotaUSD, validQuotaInput } from '@/utils/claudeQuota'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { SubscriptionPlan } from '@/types/payment'
@@ -128,6 +136,8 @@ const props = defineProps<{ plan: SubscriptionPlan; activeSubscriptions?: UserSu
 const emit = defineEmits<{ select: [plan: SubscriptionPlan] }>()
 const { t } = useI18n()
 
+const isTerm = computed(() => props.plan.quota_mode === 'term')
+const purchasable = computed(() => !isTerm.value || validQuotaInput(props.plan.default_quota_usd ?? ''))
 const platform = computed(() => props.plan.group_platform || '')
 const isRenewal = computed(() =>
   props.activeSubscriptions?.some(s => s.group_id === props.plan.group_id && s.status === 'active') ?? false

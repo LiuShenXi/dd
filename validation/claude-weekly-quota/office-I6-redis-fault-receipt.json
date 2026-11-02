@@ -1,0 +1,23 @@
+{
+  "step": "redis-fault",
+  "started_utc": "2026-10-20T02:11:40.486979+00:00",
+  "finished_utc": "2026-10-20T02:12:50.845329+00:00",
+  "exit_code": 0,
+  "tests": [
+    "TestSubscriptionQuotaI4V2RedisFaultCancelsActualUpstream"
+  ],
+  "top_level_pass": 1,
+  "all_pass": 1,
+  "fail": 0,
+  "skip": 0,
+  "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+  "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "driver_sha256": "d5c5c1757fe08a7d65d7f837ace6c6f4576b8e0fdded3985ef838f5ad02640b5",
+  "driver_stable": true,
+  "runner_sha256": "071c0127a417fe3d8460ea1539c8301336bddf2e8d7a7ad6a82a0845d03526ce",
+  "raw_log_sha256": "78dbd3a8d9e03c052ce5daea518b21dead3d557942226e5e63a1bcbfbd5d4d86",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/redis-fault.log",
+  "synthetic_only": true,
+  "production_modified": false,
+  "pass": true
+}

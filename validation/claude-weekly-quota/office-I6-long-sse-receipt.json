@@ -1,0 +1,23 @@
+{
+  "step": "long-sse",
+  "started_utc": "2026-10-20T02:13:10.816530+00:00",
+  "finished_utc": "2026-10-20T02:29:28.695575+00:00",
+  "exit_code": 0,
+  "tests": [
+    "TestSubscriptionQuotaI4V2LongSSELease"
+  ],
+  "top_level_pass": 1,
+  "all_pass": 1,
+  "fail": 0,
+  "skip": 0,
+  "image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+  "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+  "driver_sha256": "d5c5c1757fe08a7d65d7f837ace6c6f4576b8e0fdded3985ef838f5ad02640b5",
+  "driver_stable": true,
+  "runner_sha256": "58a64096e616852da571aef80eb70366dbab25ef57510ae1e638ea94690fce2b",
+  "raw_log_sha256": "5a2abb8472e56eb1f725e91083484a2465401ccfc62f147464a2a447d6afb4b3",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-runtime-20261020-v2/long-sse.log",
+  "synthetic_only": true,
+  "production_modified": false,
+  "pass": true
+}

@@ -1,0 +1,49 @@
+{
+  "step": "F2-actual-image-upgrade-rollback",
+  "started_utc": "2026-10-20T02:23:59.991396+00:00",
+  "tests": [
+    "TestSubscriptionQuotaI6ImageUpgradeAndRollback"
+  ],
+  "command": [
+    "/Users/shenxi/.codex/private/claude-weekly-quota/office/repository-rollback-final.test",
+    "-test.v",
+    "-test.parallel=1",
+    "-test.timeout=15m",
+    "-test.run=^TestSubscriptionQuotaI6ImageUpgradeAndRollback$"
+  ],
+  "build_receipt": "/Users/shenxi/Desktop/WORK-SPACE/dd/validation/claude-weekly-quota/office-I6-build-F2.json",
+  "build_receipt_sha256": "46aa55cc9a3f47ed2910cf3465d0d0b538b87c2707f2fd650b5aacb7a6287306",
+  "image_id": "sha256:3e18edda6b675cb73d108c92acf139dfe1f6e45b92e5abc8aef1594d2eec39f3",
+  "r1_image_id": "sha256:9940143ccd871a797893e37b685d211996ce4b75e930747f84d7a099be9e6dc8",
+  "provider_image_id": "sha256:628bb0e61febcd1f5fd94c0ae89bf3f5f3e24fe8f25c3a6019a5f98b4af7893f",
+  "source_sha256": "56f189a7e2c4c32a96ea439d15687e809f9839670f63181e5312851642b757a4",
+  "driver_sha256": "f73265ba2226adc1a0b41894513477b041528fe3423eac76d02ea77d24799abd",
+  "test_source_sha256": "c1ba713a83b178c23c0c18af129fb409710b07a58d04603c40a3ac579e7d6dde",
+  "driver_reused_from_F1": true,
+  "runner_sha256": "033be88b75d5cae0bb699fcde64f67c220f53f43034aa484c586066c9a8481a3",
+  "synthetic_only": true,
+  "production_modified": false,
+  "network_subnet": "10.247.192.0/28",
+  "main_fixture_modified": false,
+  "f1_build_receipt_sha256_before": "01b892385a18bd69aa3df0425ddac7198c542bfcac902b1ffe8e10fcffdd5da9",
+  "preexisting_network_ids": [
+    "835cfd6db9389889ef63273ed9b552bae28422dd9f060abffccf5d6fcd5106e4",
+    "1fc5e4e4056ccdbea979fa3da3e4d28411883b3704ddb3e29d5ed636ca68079c",
+    "aa4b14cdc8bcdab3a6bc0ba72622c882f36fafa6e2e42233691b57fce0b9811c",
+    "d554b57c19b4068be22304a03289bb29dbbd35060d6c400a9f3ff8f76a8a44c2",
+    "649b863e40073c2b04a251855abf1b90e94feea030098cacf99191fab122dbb2",
+    "1a24fcc5460530353288c2435fec0a790064359f3bef5ce0f54ea8e32b05d30e"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-10-20T02:24:12.679226+00:00",
+  "top_level_pass": 1,
+  "fail": 0,
+  "skip": 0,
+  "driver_stable": true,
+  "test_source_stable": true,
+  "build_receipt_stable": true,
+  "f1_build_receipt_unchanged": true,
+  "raw_log_sha256": "47682cee7fdbd5fe8f674610f3d8279cbfae71b10150044044fa2fb1e8ff7906",
+  "private_log": "/Users/shenxi/.codex/private/claude-weekly-quota/office-f2-rollback-20261020T022359Z/rollback.log",
+  "pass": true
+}

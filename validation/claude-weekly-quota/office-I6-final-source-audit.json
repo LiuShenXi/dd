@@ -1,0 +1,174 @@
+{
+  "captured_utc": "2026-10-20T02:50:50.200338+00:00",
+  "builds": {
+    "F1": {
+      "source_sha256": "2ceb119eb44d2d8d9ba68e37e0cfe4646b51cc067628cc34175734607daaa55d",
+      "r2_image_id": "sha256:feee80eaef62bbb64848acd7253e9b0e00ba0fba7923120494c4d2e93031a483",
+      "r1_image_id": "sha256:7d78d912b323875ca61a4c9c716b0018716f361a7146a1443bd94c6882b3523a",
+      "frontend_dist_sha256": "b68bc9aeb8d0f96fa4363381b19673a20a406fa76aadb5e5f42f916fc4c76d12"
+    },
+    "F2": {
+      "source_sha256": "56f189a7e2c4c32a96ea439d15687e809f9839670f63181e5312851642b757a4",
+      "r2_image_id": "sha256:3e18edda6b675cb73d108c92acf139dfe1f6e45b92e5abc8aef1594d2eec39f3",
+      "r1_image_id": "sha256:9940143ccd871a797893e37b685d211996ce4b75e930747f84d7a099be9e6dc8",
+      "frontend_dist_sha256": "b68bc9aeb8d0f96fa4363381b19673a20a406fa76aadb5e5f42f916fc4c76d12"
+    },
+    "F3": {
+      "source_sha256": "d6ac92adeb97249c1a792e2586c358f63da20790283c5481fee6baafa8cae1b8",
+      "r2_image_id": "sha256:3c491e7a7033a72206fa30cf8d4895a7678908a6781912a66e16cedcbbe435bf",
+      "r1_image_id": "sha256:677a6f41dc672b1658c30e6c048bddfceab3eb770a5ac120bd5aa79ef4c1e092",
+      "frontend_dist_sha256": "29d5416ccca084276f6706984a5f096b36949a56daaace416671c74303173c36"
+    },
+    "F4": {
+      "source_sha256": "8a1629916bd4ee338ffdfa51a368f20a347012281be914242c669e12138b20af",
+      "r2_image_id": "sha256:3d3c392d424663235dce2a7130ac4abe272a2e04ca3540d1ea0746840a84f122",
+      "r1_image_id": "sha256:c8083c2153e7d43598fd36b5c50f54667de05e34d62e72f609ae4110e05f9cee",
+      "frontend_dist_sha256": "27e20aee4b1a066adfc079d51df9654ca105f5a2e4ac386d14b612107624d5f6"
+    }
+  },
+  "working_source_matches_F4": true,
+  "deltas": [
+    {
+      "from": "F1",
+      "to": "F2",
+      "product_changes": [
+        {
+          "path": "backend/internal/service/payment_config_plans.go",
+          "before_sha256": "732c5aafb81b51ec40a7326ba90279d0061b63691948446302939d38c3a2bc18",
+          "after_sha256": "7aa93eb2840693fc4ddd6124b98334c8a939fa920608a686712c7c74c446c093"
+        },
+        {
+          "path": "backend/internal/service/payment_order.go",
+          "before_sha256": "9fb8ecea8b9b75d2d0fa157eb814aeb6ac8d087c25e74c207308084f9152bf43",
+          "after_sha256": "b06f18f1a0f635ca7dbf4ffd678e244013a8e20cc383d0e4bf8af5dd0bee0646"
+        }
+      ],
+      "test_changes": [
+        {
+          "path": "backend/internal/repository/subscription_quota_plan_units_i5_integration_test.go",
+          "before_sha256": null,
+          "after_sha256": "dd791cd2279d3619e987c72052b1939c946b8385c848f68ab669d79f56a927d5"
+        },
+        {
+          "path": "backend/internal/repository/subscription_quota_promotion_http_i6_integration_test.go",
+          "before_sha256": null,
+          "after_sha256": "18da5a6af93b2b5b799e7be831c39bfc70e5d5c4c5bf057c7a50cfef66181c0a"
+        },
+        {
+          "path": "backend/internal/repository/subscription_quota_rollout_http_i6_integration_test.go",
+          "before_sha256": "d391e390143d018a06b9c8f5d8437dd2db7ca91fc978dc9bc5dd0eeb75d9796c",
+          "after_sha256": "57e86d0083f1e527f9ced0d86bc4171784d2e766ed3a67877f6207f7057e01f1"
+        },
+        {
+          "path": "backend/internal/repository/subscription_quota_upgrade_rollback_i6_integration_test.go",
+          "before_sha256": "9ad7d7d355cbd5bc56cd308abbd3e1d3b9e9ee3941fbcb5288267e40ced5f732",
+          "after_sha256": "c1ba713a83b178c23c0c18af129fb409710b07a58d04603c40a3ac579e7d6dde"
+        },
+        {
+          "path": "backend/internal/service/subscription_quota_payment_test.go",
+          "before_sha256": "6401cce8fe6400680867c549ac6fdcac8aa7d7a0d1fc3aefb566faa70dedbc62",
+          "after_sha256": "7fe2ee8a194df9ef7a1cced610b26e5dbf43f7bdab03d6473151ba97ff6957e4"
+        }
+      ],
+      "embedded_frontend_changed_paths": 0,
+      "embedded_frontend_changed_list_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "from": "F2",
+      "to": "F3",
+      "product_changes": [
+        {
+          "path": "backend/internal/handler/payment_handler.go",
+          "before_sha256": "29e77a322ed07bf0009512346c02d477546f6ce2a0e50e7936a4b501a251823c",
+          "after_sha256": "607a8da93be72c4070ec2f13114ef8ea1d4d76b3090a71cc2469b65c7454bdeb"
+        },
+        {
+          "path": "frontend/src/api/payment.ts",
+          "before_sha256": "01229c6b62a3becec718d63e1cbc6cee1eb05bad469593ef3d1429088dba5b59",
+          "after_sha256": "6cfa754626e2bf7560f6cbbc491b95cc97a4a92f897e103be87aa69fa11d8a95"
+        },
+        {
+          "path": "frontend/src/i18n/locales/en/subscriptionQuota.ts",
+          "before_sha256": "a1a49b71433e1bc4b599594054bc34ab58d5de10a9103982099f619ef4410ed2",
+          "after_sha256": "c472232708db1a7e0bad5f1ddd6f80eca6ecab2694ff7b47125891aed2fc3b7b"
+        },
+        {
+          "path": "frontend/src/i18n/locales/zh/subscriptionQuota.ts",
+          "before_sha256": "fcf10ff0aa60fe057d935ad6e1ee1836e53dc09ac7c4e3ef4a23ce31e30c2064",
+          "after_sha256": "4a4e162e993fbf598016603e90fded0bee08fc755f95eb594f0064834972ab18"
+        },
+        {
+          "path": "frontend/src/types/payment.ts",
+          "before_sha256": "7523dba95fdfcf27b26ea896af1d8632684906083f431e162e85cb4e0e7e0276",
+          "after_sha256": "6c542a1638b905f09cd94582b908e09593e90672953b0f9ca8b86defe178094e"
+        },
+        {
+          "path": "frontend/src/views/admin/orders/AdminPaymentPlansView.vue",
+          "before_sha256": "966e8bb48bf362b62775335a067bc09e9ecb548e3866e6e22a5cfc48d7627c1e",
+          "after_sha256": "9d80c9029b16cb2d1ad7488e7ecc50fa7bfc4b532bc08bb8bd353d0b305b1c73"
+        },
+        {
+          "path": "frontend/src/views/user/PaymentResultView.vue",
+          "before_sha256": "c8b42e9d4261f7358f7a498a969702a59dae91e81a94bdb459c2d09ae48c865b",
+          "after_sha256": "1be9642ba4b8fd456ed290458bead940637f736b466da9119e8c113724ae38e6"
+        }
+      ],
+      "test_changes": [
+        {
+          "path": "backend/internal/handler/payment_handler_resume_test.go",
+          "before_sha256": "129aaa23c50245110b7f3ecbdb6cee297031142f34bef5aa065d08e1e3b3de9e",
+          "after_sha256": "1304c09ce0ce77706ddc5dcf62e078a8caf908d88e3c5a377ec8eec53e2baa23"
+        },
+        {
+          "path": "backend/internal/repository/subscription_quota_promotion_http_i6_integration_test.go",
+          "before_sha256": "18da5a6af93b2b5b799e7be831c39bfc70e5d5c4c5bf057c7a50cfef66181c0a",
+          "after_sha256": "fb2868726b50c97657c406da00875ac7fcbb136f0334ee435c6dcc92a0d0e8eb"
+        },
+        {
+          "path": "frontend/src/views/admin/orders/__tests__/AdminPaymentPlansView.spec.ts",
+          "before_sha256": "0bf6f0cb08af7571ced269485bb4d0428485e7b252dad165ecf193a89423a772",
+          "after_sha256": "e18be170cd5fd76b2582beb97a11706254b504d28c70404727462b04d68a8abb"
+        },
+        {
+          "path": "frontend/src/views/user/__tests__/PaymentResultView.spec.ts",
+          "before_sha256": "f7684c9d2e37a702b8ae9a2e20b32995bd7ec707379552273a11fcb7fd970590",
+          "after_sha256": "66b905e2933e9f48c71e7fc934e00f606877b3af7820909abfcb2e27baa090a4"
+        }
+      ],
+      "embedded_frontend_changed_paths": 228,
+      "embedded_frontend_changed_list_sha256": "1b4a72d1e261931b1bdc94d2a96abc0ceb34b6328f3949df1a300a9dd265923e"
+    },
+    {
+      "from": "F3",
+      "to": "F4",
+      "product_changes": [
+        {
+          "path": "frontend/src/views/admin/orders/AdminOrdersView.vue",
+          "before_sha256": "50aa4afda334b1acc1ee9f17fe55b190a590bd78ef753d2b4ac3d8eb7c164535",
+          "after_sha256": "7a3c114178c6ab539abc8d1494cd51855dab8a206b2a0ed09d0807f30c278cb6"
+        }
+      ],
+      "test_changes": [
+        {
+          "path": "backend/internal/repository/subscription_quota_promotion_http_i6_integration_test.go",
+          "before_sha256": "fb2868726b50c97657c406da00875ac7fcbb136f0334ee435c6dcc92a0d0e8eb",
+          "after_sha256": "6ac5f55e0e3d071a7dfe48b149b31f3d87af358533f56d5adf2b0dd1da6a0115"
+        },
+        {
+          "path": "frontend/src/views/admin/orders/__tests__/AdminOrdersView.spec.ts",
+          "before_sha256": null,
+          "after_sha256": "ba3024b166d1add128189c8051e03b06624d5cf12bbad5807478ae30e6ad6a02"
+        }
+      ],
+      "embedded_frontend_changed_paths": 225,
+      "embedded_frontend_changed_list_sha256": "d67ee4a954b9e69a385f47e6ddceef225d4eae3c4d4d40a76b13c920c1a3f885"
+    }
+  ],
+  "reuse_scope": [
+    "F1 lease, concurrency, settlement, conversion, Redis fault, wallets, metadata, WS, long-SSE, promotion and metrics retain their actual F1 identities. F2 changes only shared fixed-seven-day plan validation to accept canonical days and legacy day; its paid and rollback tests were rerun.",
+    "F3 backend change is the signed resume-token public order DTO projection of validated frozen rights. Anonymous trade-number polling retains its minimal response. Targeted handler tests and F3 actual paid browser result and R0-R1-R2-R1 rollback passed; F2 payment service logic is identical.",
+    "F4 product delta is only the actual admin/orders view: frozen summary, correct sale-price label, manual refund instructions and legacy refund action guards with separate mutation target. 22 targeted tests, lint, typecheck and build passed. Its final browser gate is recorded separately. All backend production files and migration SQL are identical to F3; reuse F3 rollback and earlier unchanged backend path evidence, not a claim all tests ran on F4.",
+    "Test-only promotion changes preserve baseline unrelated account leases and omit only unrelated recovery updated_at timestamps from foreign-card hashes; no financial guard, Redis ownership or fixture balance was fabricated. The corrected driver separately passed on F1."
+  ],
+  "pass": true
+}

@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "action": "token_refreshed",
+  "timestamp_utc": "2026-10-20T04:01:05.516443+00:00",
+  "trigger": "normal early refresh via private expiry scheduling; signed JWT unchanged",
+  "access_and_refresh_rotated": true,
+  "stored_access_matches_pair": true,
+  "http_gate": "open",
+  "background_state": "active",
+  "password_reset": false
+}

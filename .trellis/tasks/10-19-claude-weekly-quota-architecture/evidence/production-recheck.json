@@ -1,0 +1,1 @@
+{"checked_at_utc": "2026-10-19T12:49:06.702350+00:00", "app_image": "sub2api:2.8.13-monas-bps.13", "image_id": "sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677", "revision": "8d869d41f40d6eedbe2ee05aaf8973145cccbe4d", "binary_sha256": "85d991720e15993813fdfdddc408852fefe90c54314e760d68765cf5ba0767cd", "health": "healthy", "db_image": "postgres:18-alpine"}

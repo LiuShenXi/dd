@@ -155,6 +155,12 @@ func (_c *PaymentOrderCreate) SetNillableQrCodeImg(v *string) *PaymentOrderCreat
 	return _c
 }
 
+// SetSubscriptionQuotaSnapshot sets the "subscription_quota_snapshot" field.
+func (_c *PaymentOrderCreate) SetSubscriptionQuotaSnapshot(v map[string]interface{}) *PaymentOrderCreate {
+	_c.mutation.SetSubscriptionQuotaSnapshot(v)
+	return _c
+}
+
 // SetOrderType sets the "order_type" field.
 func (_c *PaymentOrderCreate) SetOrderType(v string) *PaymentOrderCreate {
 	_c.mutation.SetOrderType(v)
@@ -753,6 +759,10 @@ func (_c *PaymentOrderCreate) createSpec() (*PaymentOrder, *sqlgraph.CreateSpec)
 		_spec.SetField(paymentorder.FieldQrCodeImg, field.TypeString, value)
 		_node.QrCodeImg = &value
 	}
+	if value, ok := _c.mutation.SubscriptionQuotaSnapshot(); ok {
+		_spec.SetField(paymentorder.FieldSubscriptionQuotaSnapshot, field.TypeJSON, value)
+		_node.SubscriptionQuotaSnapshot = value
+	}
 	if value, ok := _c.mutation.OrderType(); ok {
 		_spec.SetField(paymentorder.FieldOrderType, field.TypeString, value)
 		_node.OrderType = value
@@ -1129,6 +1139,24 @@ func (u *PaymentOrderUpsert) UpdateQrCodeImg() *PaymentOrderUpsert {
 // ClearQrCodeImg clears the value of the "qr_code_img" field.
 func (u *PaymentOrderUpsert) ClearQrCodeImg() *PaymentOrderUpsert {
 	u.SetNull(paymentorder.FieldQrCodeImg)
+	return u
+}
+
+// SetSubscriptionQuotaSnapshot sets the "subscription_quota_snapshot" field.
+func (u *PaymentOrderUpsert) SetSubscriptionQuotaSnapshot(v map[string]interface{}) *PaymentOrderUpsert {
+	u.Set(paymentorder.FieldSubscriptionQuotaSnapshot, v)
+	return u
+}
+
+// UpdateSubscriptionQuotaSnapshot sets the "subscription_quota_snapshot" field to the value that was provided on create.
+func (u *PaymentOrderUpsert) UpdateSubscriptionQuotaSnapshot() *PaymentOrderUpsert {
+	u.SetExcluded(paymentorder.FieldSubscriptionQuotaSnapshot)
+	return u
+}
+
+// ClearSubscriptionQuotaSnapshot clears the value of the "subscription_quota_snapshot" field.
+func (u *PaymentOrderUpsert) ClearSubscriptionQuotaSnapshot() *PaymentOrderUpsert {
+	u.SetNull(paymentorder.FieldSubscriptionQuotaSnapshot)
 	return u
 }
 
@@ -1827,6 +1855,27 @@ func (u *PaymentOrderUpsertOne) UpdateQrCodeImg() *PaymentOrderUpsertOne {
 func (u *PaymentOrderUpsertOne) ClearQrCodeImg() *PaymentOrderUpsertOne {
 	return u.Update(func(s *PaymentOrderUpsert) {
 		s.ClearQrCodeImg()
+	})
+}
+
+// SetSubscriptionQuotaSnapshot sets the "subscription_quota_snapshot" field.
+func (u *PaymentOrderUpsertOne) SetSubscriptionQuotaSnapshot(v map[string]interface{}) *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.SetSubscriptionQuotaSnapshot(v)
+	})
+}
+
+// UpdateSubscriptionQuotaSnapshot sets the "subscription_quota_snapshot" field to the value that was provided on create.
+func (u *PaymentOrderUpsertOne) UpdateSubscriptionQuotaSnapshot() *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.UpdateSubscriptionQuotaSnapshot()
+	})
+}
+
+// ClearSubscriptionQuotaSnapshot clears the value of the "subscription_quota_snapshot" field.
+func (u *PaymentOrderUpsertOne) ClearSubscriptionQuotaSnapshot() *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.ClearSubscriptionQuotaSnapshot()
 	})
 }
 
@@ -2759,6 +2808,27 @@ func (u *PaymentOrderUpsertBulk) UpdateQrCodeImg() *PaymentOrderUpsertBulk {
 func (u *PaymentOrderUpsertBulk) ClearQrCodeImg() *PaymentOrderUpsertBulk {
 	return u.Update(func(s *PaymentOrderUpsert) {
 		s.ClearQrCodeImg()
+	})
+}
+
+// SetSubscriptionQuotaSnapshot sets the "subscription_quota_snapshot" field.
+func (u *PaymentOrderUpsertBulk) SetSubscriptionQuotaSnapshot(v map[string]interface{}) *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.SetSubscriptionQuotaSnapshot(v)
+	})
+}
+
+// UpdateSubscriptionQuotaSnapshot sets the "subscription_quota_snapshot" field to the value that was provided on create.
+func (u *PaymentOrderUpsertBulk) UpdateSubscriptionQuotaSnapshot() *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.UpdateSubscriptionQuotaSnapshot()
+	})
+}
+
+// ClearSubscriptionQuotaSnapshot clears the value of the "subscription_quota_snapshot" field.
+func (u *PaymentOrderUpsertBulk) ClearSubscriptionQuotaSnapshot() *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.ClearSubscriptionQuotaSnapshot()
 	})
 }
 

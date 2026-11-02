@@ -28,6 +28,20 @@ func (_c *SubscriptionPlanCreate) SetGroupID(v int64) *SubscriptionPlanCreate {
 	return _c
 }
 
+// SetTermQuotaUsd sets the "term_quota_usd" field.
+func (_c *SubscriptionPlanCreate) SetTermQuotaUsd(v string) *SubscriptionPlanCreate {
+	_c.mutation.SetTermQuotaUsd(v)
+	return _c
+}
+
+// SetNillableTermQuotaUsd sets the "term_quota_usd" field if the given value is not nil.
+func (_c *SubscriptionPlanCreate) SetNillableTermQuotaUsd(v *string) *SubscriptionPlanCreate {
+	if v != nil {
+		_c.SetTermQuotaUsd(*v)
+	}
+	return _c
+}
+
 // SetName sets the "name" field.
 func (_c *SubscriptionPlanCreate) SetName(v string) *SubscriptionPlanCreate {
 	_c.mutation.SetName(v)
@@ -363,6 +377,10 @@ func (_c *SubscriptionPlanCreate) createSpec() (*SubscriptionPlan, *sqlgraph.Cre
 		_spec.SetField(subscriptionplan.FieldGroupID, field.TypeInt64, value)
 		_node.GroupID = value
 	}
+	if value, ok := _c.mutation.TermQuotaUsd(); ok {
+		_spec.SetField(subscriptionplan.FieldTermQuotaUsd, field.TypeString, value)
+		_node.TermQuotaUsd = &value
+	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(subscriptionplan.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -482,6 +500,24 @@ func (u *SubscriptionPlanUpsert) UpdateGroupID() *SubscriptionPlanUpsert {
 // AddGroupID adds v to the "group_id" field.
 func (u *SubscriptionPlanUpsert) AddGroupID(v int64) *SubscriptionPlanUpsert {
 	u.Add(subscriptionplan.FieldGroupID, v)
+	return u
+}
+
+// SetTermQuotaUsd sets the "term_quota_usd" field.
+func (u *SubscriptionPlanUpsert) SetTermQuotaUsd(v string) *SubscriptionPlanUpsert {
+	u.Set(subscriptionplan.FieldTermQuotaUsd, v)
+	return u
+}
+
+// UpdateTermQuotaUsd sets the "term_quota_usd" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsert) UpdateTermQuotaUsd() *SubscriptionPlanUpsert {
+	u.SetExcluded(subscriptionplan.FieldTermQuotaUsd)
+	return u
+}
+
+// ClearTermQuotaUsd clears the value of the "term_quota_usd" field.
+func (u *SubscriptionPlanUpsert) ClearTermQuotaUsd() *SubscriptionPlanUpsert {
+	u.SetNull(subscriptionplan.FieldTermQuotaUsd)
 	return u
 }
 
@@ -722,6 +758,27 @@ func (u *SubscriptionPlanUpsertOne) AddGroupID(v int64) *SubscriptionPlanUpsertO
 func (u *SubscriptionPlanUpsertOne) UpdateGroupID() *SubscriptionPlanUpsertOne {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdateGroupID()
+	})
+}
+
+// SetTermQuotaUsd sets the "term_quota_usd" field.
+func (u *SubscriptionPlanUpsertOne) SetTermQuotaUsd(v string) *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetTermQuotaUsd(v)
+	})
+}
+
+// UpdateTermQuotaUsd sets the "term_quota_usd" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertOne) UpdateTermQuotaUsd() *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdateTermQuotaUsd()
+	})
+}
+
+// ClearTermQuotaUsd clears the value of the "term_quota_usd" field.
+func (u *SubscriptionPlanUpsertOne) ClearTermQuotaUsd() *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.ClearTermQuotaUsd()
 	})
 }
 
@@ -1157,6 +1214,27 @@ func (u *SubscriptionPlanUpsertBulk) AddGroupID(v int64) *SubscriptionPlanUpsert
 func (u *SubscriptionPlanUpsertBulk) UpdateGroupID() *SubscriptionPlanUpsertBulk {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdateGroupID()
+	})
+}
+
+// SetTermQuotaUsd sets the "term_quota_usd" field.
+func (u *SubscriptionPlanUpsertBulk) SetTermQuotaUsd(v string) *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetTermQuotaUsd(v)
+	})
+}
+
+// UpdateTermQuotaUsd sets the "term_quota_usd" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertBulk) UpdateTermQuotaUsd() *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdateTermQuotaUsd()
+	})
+}
+
+// ClearTermQuotaUsd clears the value of the "term_quota_usd" field.
+func (u *SubscriptionPlanUpsertBulk) ClearTermQuotaUsd() *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.ClearTermQuotaUsd()
 	})
 }
 

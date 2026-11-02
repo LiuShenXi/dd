@@ -128,6 +128,7 @@ export async function getById(id: number, includeDeleted = false): Promise<Admin
  * @returns Created user
  */
 export async function create(userData: {
+  claude_subscription_concurrency?: number
   email: string
   password: string
   username?: string

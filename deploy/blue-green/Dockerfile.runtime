@@ -1,0 +1,25 @@
+# Verified production R0 supplies OS libraries and entrypoint; the builder checks
+# every inherited RootFS layer and records both executable hashes.
+ARG RUNTIME_BASE=sub2api:2.8.13-monas-bps.13
+FROM ${RUNTIME_BASE}
+ARG REVISION
+ARG SOURCE_SHA256
+ARG BUILD_DATE
+LABEL org.opencontainers.image.title="Monas Claude weekly quota" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      com.monas.source-sha256="${SOURCE_SHA256}" \
+      com.monas.deployment="host-nginx-blue-green" \
+      com.monas.runtime-r0-oci-index="sha256:fb5ecafe42c3346916e901879ba5b3064c16c91ab3e0d76e748e643e377e8677"
+# New paid cards and term admission require a separately configured group rollout.
+ENV SUBSCRIPTION_QUOTA_ISSUE_ENABLED=false \
+    SUBSCRIPTION_QUOTA_ADMISSION_ENABLED=false \
+    SUBSCRIPTION_QUOTA_RECOVERY_ENABLED=true \
+    DEFAULT_CLAUDE_SUBSCRIPTION_CONCURRENCY=3 \
+    RELEASE_DRAIN_START_HELD=false \
+    GATEWAY_CONCURRENCY_STARTUP_CLEANUP_MODE=preserve \
+    GATEWAY_BACKGROUND_JOB_MODE=coordinated \
+    GATEWAY_BACKGROUND_JOBS_START_HELD=true
+COPY --chown=1000:1000 --chmod=0755 sub2api /app/sub2api
+COPY --chown=1000:1000 --chmod=0755 carpool-release /app/carpool-release
+COPY --chown=1000:1000 resources /app/resources
