@@ -73,6 +73,7 @@ type Handlers struct {
 	ModelPlaza        *ModelPlazaHandler
 	AsyncImage        *AsyncImageHandler
 	BatchImage        *BatchImageHandler
+	HomeProducts      *HomeProductsHandler
 }
 
 // BuildInfo contains build-time information

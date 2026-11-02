@@ -198,6 +198,7 @@ export default {
     mySubscriptions: '我的订阅',
     carpoolDetails: '拼车详情',
     carpoolManagement: '拼车管理',
+    productConfig: '车次配置',
     buySubscription: '充值/订阅',
     recharge: '充值',
     subscribe: '订阅',

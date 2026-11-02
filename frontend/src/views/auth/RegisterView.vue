@@ -1,5 +1,5 @@
 <template>
-  <AuthLayout>
+  <AuthLayout water-train>
     <div class="space-y-6">
       <!-- Title -->
       <div class="text-center">
@@ -1094,7 +1094,7 @@ async function handleRegister(): Promise<void> {
     appStore.showSuccess(t('auth.accountCreatedSuccess', { siteName: siteName.value }))
 
     // Redirect to dashboard
-    await router.push('/dashboard')
+    await router.push('/home')
   } catch (error: unknown) {
     // Handle registration error
     errorMessage.value = buildRegistrationErrorMessage(error, t('auth.registrationFailed'))

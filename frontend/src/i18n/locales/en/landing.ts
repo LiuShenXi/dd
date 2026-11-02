@@ -49,6 +49,71 @@ export default {
       title: 'We Solve These Problems',
       subtitle: 'Three simple steps to stress-free AI access'
     },
+    products: {
+      title: 'Pick your train',
+      subtitle: 'Clear prices and rules at a glance. Hop on what fits you.',
+      status: {
+        available: 'Available',
+        pilot: 'Pilot',
+        soon: 'Coming soon'
+      },
+      priceTbd: 'TBD',
+      tierSeats: 'Plan',
+      tierPrice: 'Price',
+      tierQuota: 'Weekly quota',
+      seats: '{n}-seat',
+      viewRules: 'View detailed rules',
+      contact: 'To sign up, add the conductor on WeChat {wechat} or QQ {qq}',
+      backHome: 'Back to home',
+      rulesDoc: 'Rules',
+      summary: 'Key rules',
+      docPending: 'The detailed rules document is being written. Contact the conductor if you have questions.',
+      notFound: 'Plan not found',
+      gpt: {
+        mark: 'G',
+        name: 'GPT Carpool',
+        tagline: 'Shared official Codex subscription pool',
+        priceUnit: 'from / 28 days',
+        highlight: 'Up to ${quota} quota per week',
+        highlightPending: 'Loading prices',
+        rules: {
+          term: '{days}-day membership, first week of quota on activation',
+          refill: 'Quota refills every {cycle} days',
+          boost: '{boosts} boosts per term, each adds {percent}% of the weekly quota',
+          officialReset: 'Official resets refill too and push the next refill {cycle} days out',
+          noCarry: 'Unused quota does not carry over'
+        }
+      },
+      claudeWeekly: {
+        mark: 'C',
+        name: 'Claude Weekly',
+        tagline: 'Kiro Claude pool with Opus 5.5',
+        priceUnit: '/ week',
+        highlight: '${quota} quota · {rate}x rate',
+        highlightPending: 'Loading prices',
+        rules: {
+          quota: '${quota} quota on activation',
+          term: 'Valid for 7 × 24 hours',
+          models: 'Opus 5.5 supported, Fable models not included',
+          rate: 'Billed at {rate}x, no prompt caching',
+          tokens: 'Billed via Kiro, so usable tokens vary by usage pattern'
+        }
+      },
+      claudeMonthly: {
+        mark: 'C',
+        name: 'Claude Monthly',
+        tagline: 'A longer, steadier Claude plan',
+        priceUnit: '/ month',
+        highlight: 'Stay tuned',
+        highlightPending: 'Stay tuned',
+        rules: {
+          term: 'Monthly term for longer coverage',
+          models: 'Same core Claude models',
+          pricing: 'Pricing and quota under review',
+          notify: 'We will announce it when it launches'
+        }
+      }
+    },
     features: {
       unifiedGateway: 'One-Click Access',
       unifiedGatewayDesc: 'Get a single API key to call all connected AI models. No separate applications needed.',

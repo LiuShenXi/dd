@@ -208,6 +208,7 @@ func ProvideHandlers(
 	asyncImageHandler *AsyncImageHandler,
 	batchImageHandler *BatchImageHandler,
 	carpoolHandler *CarpoolHandler,
+	homeProductsHandler *HomeProductsHandler,
 	_ *service.IdempotencyCoordinator,
 	_ *service.IdempotencyCleanupService,
 	_ *service.OpenAIQuotaAutoResetService,
@@ -236,6 +237,7 @@ func ProvideHandlers(
 		AsyncImage:        asyncImageHandler,
 		BatchImage:        batchImageHandler,
 		Carpool:           carpoolHandler,
+		HomeProducts:      homeProductsHandler,
 	}
 }
 
@@ -264,6 +266,7 @@ var ProviderSet = wire.NewSet(
 	NewAsyncImageHandler,
 	ProvideBatchImageHandler,
 	NewCarpoolHandler,
+	NewHomeProductsHandler,
 
 	// Admin handlers
 	admin.NewDashboardHandler,

@@ -49,6 +49,71 @@ export default {
       title: '我们帮你解决',
       subtitle: '简单三步，开始省心使用 AI'
     },
+    products: {
+      title: '选择你的车次',
+      subtitle: '价格和规则一眼看清，按需上车',
+      status: {
+        available: '在售',
+        pilot: '试点中',
+        soon: '即将推出'
+      },
+      priceTbd: '待定',
+      tierSeats: '车型',
+      tierPrice: '价格',
+      tierQuota: '每周额度',
+      seats: '{n} 人车',
+      viewRules: '查看详细规则',
+      contact: '开通请加列车长微信 {wechat} 或 QQ {qq}',
+      backHome: '返回首页',
+      rulesDoc: '规则说明',
+      summary: '规则要点',
+      docPending: '详细规则文档正在编写中，有疑问可以先联系列车长。',
+      notFound: '没有找到这个车次',
+      gpt: {
+        mark: 'G',
+        name: 'GPT 拼车',
+        tagline: 'Codex 官方订阅号池，多人分摊',
+        priceUnit: '起 / 28 天',
+        highlight: '每周最高 ${quota} 额度',
+        highlightPending: '价格加载中',
+        rules: {
+          term: '会员有效期 {days} 天，开通即发放首周额度',
+          refill: '每 {cycle} 天自然补满一次额度',
+          boost: '每期含 {boosts} 次加油，每次加当周额度的 {percent}%',
+          officialReset: '官方重置时同步补满，下次补满顺延 {cycle} 天',
+          noCarry: '当期未用完的额度不结转'
+        }
+      },
+      claudeWeekly: {
+        mark: 'C',
+        name: 'Claude 周卡',
+        tagline: 'Kiro Claude 号池，支持 Opus 5.5',
+        priceUnit: '/ 周',
+        highlight: '${quota} 额度 · {rate} 倍率',
+        highlightPending: '价格加载中',
+        rules: {
+          quota: '开通即发放 ${quota} 额度',
+          term: '有效期 7 × 24 小时',
+          models: '支持 Opus 5.5，不含 Fable 模型',
+          rate: '{rate} 倍率计费，无缓存',
+          tokens: '按 Kiro 计费折算，可用 Token 数因使用方式而异'
+        }
+      },
+      claudeMonthly: {
+        mark: 'C',
+        name: 'Claude 月卡',
+        tagline: '更长周期，更稳的 Claude 额度',
+        priceUnit: '/ 月',
+        highlight: '敬请期待',
+        highlightPending: '敬请期待',
+        rules: {
+          term: '按月开通，周期更长',
+          models: '同样支持 Claude 主力模型',
+          pricing: '价格与额度正在评估',
+          notify: '上线后会通过公告通知'
+        }
+      }
+    },
     features: {
       unifiedGateway: '一键接入',
       unifiedGatewayDesc: '获取一个 API 密钥，即可调用所有已接入的 AI 模型，无需分别申请。',
